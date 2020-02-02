@@ -31,8 +31,8 @@ CREATE TABLE public.recipes (
 	image bytea NOT NULL,
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	category text,
-	CONSTRAINT check_rating CHECK (rating between 0 and 5),
-	CONSTRAINT pk_name_recipe PRIMARY KEY (id)
+	CONSTRAINT recipes_ck_rating_range CHECK (rating between 0 and 5),
+	CONSTRAINT recipes_pkey PRIMARY KEY (id)
 
 );
 -- ddl-end --
@@ -43,7 +43,7 @@ ALTER TABLE public.recipes OWNER TO valentin;
 -- DROP TABLE IF EXISTS public.categories CASCADE;
 CREATE TABLE public.categories (
 	name text NOT NULL,
-	CONSTRAINT pk_name_categores PRIMARY KEY (name)
+	CONSTRAINT categories_pley PRIMARY KEY (name)
 
 );
 -- ddl-end --
@@ -54,7 +54,7 @@ ALTER TABLE public.categories OWNER TO valentin;
 -- DROP TABLE IF EXISTS public.tags CASCADE;
 CREATE TABLE public.tags (
 	name text NOT NULL,
-	CONSTRAINT pk_name_tags PRIMARY KEY (name)
+	CONSTRAINT tags_pkey PRIMARY KEY (name)
 
 );
 -- ddl-end --
@@ -66,30 +66,89 @@ ALTER TABLE public.tags OWNER TO valentin;
 CREATE TABLE public.recipes_tags (
 	tag text NOT NULL,
 	recipe_id integer NOT NULL,
-	CONSTRAINT pk_tag_recipe_id PRIMARY KEY (tag,recipe_id)
+	CONSTRAINT recipes_tags_pkey PRIMARY KEY (tag,recipe_id)
 
 );
 -- ddl-end --
 ALTER TABLE public.recipes_tags OWNER TO valentin;
 -- ddl-end --
 
--- object: fk_category | type: CONSTRAINT --
--- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS fk_category CASCADE;
-ALTER TABLE public.recipes ADD CONSTRAINT fk_category FOREIGN KEY (category)
+-- object: public.ingredients | type: TABLE --
+-- DROP TABLE IF EXISTS public.ingredients CASCADE;
+CREATE TABLE public.ingredients (
+	name text NOT NULL,
+	CONSTRAINT ingredients_pkey PRIMARY KEY (name)
+
+);
+-- ddl-end --
+ALTER TABLE public.ingredients OWNER TO valentin;
+-- ddl-end --
+
+-- object: public.recipes_ingredients | type: TABLE --
+-- DROP TABLE IF EXISTS public.recipes_ingredients CASCADE;
+CREATE TABLE public.recipes_ingredients (
+	recipe_id integer NOT NULL,
+	ingredient text NOT NULL,
+	quantity text NOT NULL,
+	CONSTRAINT recipes_ingredients_pkey PRIMARY KEY (recipe_id,ingredient)
+
+);
+-- ddl-end --
+ALTER TABLE public.recipes_ingredients OWNER TO valentin;
+-- ddl-end --
+
+-- object: public.recipes_instructions | type: TABLE --
+-- DROP TABLE IF EXISTS public.recipes_instructions CASCADE;
+CREATE TABLE public.recipes_instructions (
+	recipe_id integer NOT NULL,
+	step int2 NOT NULL,
+	instruction text NOT NULL,
+	CONSTRAINT recipes_instructions_pkey PRIMARY KEY (recipe_id,step),
+	CONSTRAINT recipes_instructions_ck_step_strict_positive CHECK (step > 0)
+
+);
+-- ddl-end --
+ALTER TABLE public.recipes_instructions OWNER TO valentin;
+-- ddl-end --
+
+-- object: recipes_fkey_categry | type: CONSTRAINT --
+-- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fkey_categry CASCADE;
+ALTER TABLE public.recipes ADD CONSTRAINT recipes_fkey_categry FOREIGN KEY (category)
 REFERENCES public.categories (name) MATCH FULL
 ON DELETE NO ACTION ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: fk_tag | type: CONSTRAINT --
--- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS fk_tag CASCADE;
-ALTER TABLE public.recipes_tags ADD CONSTRAINT fk_tag FOREIGN KEY (tag)
+-- object: recipes_tags_fkey_tag | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fkey_tag CASCADE;
+ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fkey_tag FOREIGN KEY (tag)
 REFERENCES public.tags (name) MATCH FULL
 ON DELETE NO ACTION ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: fk_recipe_id | type: CONSTRAINT --
--- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS fk_recipe_id CASCADE;
-ALTER TABLE public.recipes_tags ADD CONSTRAINT fk_recipe_id FOREIGN KEY (recipe_id)
+-- object: recipes_tags_fkey_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fkey_recipe_id CASCADE;
+ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fkey_recipe_id FOREIGN KEY (recipe_id)
+REFERENCES public.recipes (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_ingredients_fkey_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_ingredients DROP CONSTRAINT IF EXISTS recipes_ingredients_fkey_recipe_id CASCADE;
+ALTER TABLE public.recipes_ingredients ADD CONSTRAINT recipes_ingredients_fkey_recipe_id FOREIGN KEY (recipe_id)
+REFERENCES public.recipes (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_ingredients_fkey_ingredient | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_ingredients DROP CONSTRAINT IF EXISTS recipes_ingredients_fkey_ingredient CASCADE;
+ALTER TABLE public.recipes_ingredients ADD CONSTRAINT recipes_ingredients_fkey_ingredient FOREIGN KEY (ingredient)
+REFERENCES public.ingredients (name) MATCH FULL
+ON DELETE NO ACTION ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_instructions_fkey_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_instructions DROP CONSTRAINT IF EXISTS recipes_instructions_fkey_recipe_id CASCADE;
+ALTER TABLE public.recipes_instructions ADD CONSTRAINT recipes_instructions_fkey_recipe_id FOREIGN KEY (recipe_id)
 REFERENCES public.recipes (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
