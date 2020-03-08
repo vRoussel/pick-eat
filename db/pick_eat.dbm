@@ -16,10 +16,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="recipes" layer="0" collapse-mode="2" max-obj-count="9">
+<table name="recipes" layer="0" collapse-mode="2" max-obj-count="8">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="540" y="220"/>
+	<position x="320" y="220"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -33,46 +33,54 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="rating" not-null="true">
-		<type name="smallint" length="0"/>
-	</column>
 	<column name="image" not-null="true">
 		<type name="bytea" length="0"/>
 	</column>
 	<column name="publication_date" not-null="true" default-value="CURRENT_DATE">
 		<type name="date" length="0"/>
 	</column>
-	<column name="category">
-		<type name="text" length="0"/>
+	<column name="instructions" not-null="true">
+		<type name="text" length="0" dimension="1"/>
 	</column>
-	<constraint name="recipes_ck_rating_range" type="ck-constr" table="public.recipes">
-			<expression><![CDATA[rating between 0 and 5]]></expression>
-	</constraint>
-	<constraint name="recipes_pkey" type="pk-constr" table="public.recipes">
+	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<table name="categories" layer="0" collapse-mode="2" max-obj-count="1">
+<table name="categories" layer="0" collapse-mode="2" max-obj-count="2">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="600" y="20"/>
+	<position x="1480" y="280"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="categories_pley" type="pk-constr" table="public.categories">
+	<constraint name="categories_pk" type="pk-constr" table="public.categories">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="categories_uq_name" type="uq-constr" table="public.categories">
 		<columns names="name" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<table name="tags" layer="0" collapse-mode="2" max-obj-count="1">
+<table name="tags" layer="0" collapse-mode="2" max-obj-count="2">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1100" y="120"/>
+	<position x="1480" y="100"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="tags_pkey" type="pk-constr" table="public.tags">
+	<constraint name="tags_pk" type="pk-constr" table="public.tags">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="tags_uq_name" type="uq-constr" table="public.tags">
 		<columns names="name" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -80,34 +88,41 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_tags" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1100" y="280"/>
-	<column name="tag" not-null="true">
-		<type name="text" length="0"/>
+	<position x="1000" y="100"/>
+	<column name="tag_id" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
-	<constraint name="recipes_tags_pkey" type="pk-constr" table="public.recipes_tags">
-		<columns names="tag,recipe_id" ref-type="src-columns"/>
+	<constraint name="recipes_tags_pk" type="pk-constr" table="public.recipes_tags">
+		<columns names="tag_id,recipe_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <textbox name="TODO" layer="0" font-size="9">
-	<position x="1000" y="40"/>
+	<position x="240" y="520"/>
 	<comment><![CDATA[TODO
- - fix constraint names
  - mode course => generer liste de courses a partir des recettes
- - ingreidents qty]]></comment>
+ - ingreidents qty => on doit pouvoir les ajouter pour la liste de courses !
+ - au moins 3 tags et 1 categorie]]></comment>
 </textbox>
 
-<table name="ingredients" layer="0" collapse-mode="2" max-obj-count="1">
+<table name="ingredients" layer="0" collapse-mode="2" max-obj-count="2">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1120" y="580"/>
+	<position x="1480" y="520"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="ingredients_pkey" type="pk-constr" table="public.ingredients">
+	<constraint name="ingredients_pk" type="pk-constr" table="public.ingredients">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="ingredients_uq_name" type="uq-constr" table="public.ingredients">
 		<columns names="name" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -115,106 +130,108 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="580" y="540"/>
+	<position x="1000" y="500"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
-	<column name="ingredient" not-null="true">
-		<type name="text" length="0"/>
+	<column name="ingredient_id" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="quantity" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="recipes_ingredients_pkey" type="pk-constr" table="public.recipes_ingredients">
-		<columns names="recipe_id,ingredient" ref-type="src-columns"/>
+	<constraint name="recipes_ingredients_pk" type="pk-constr" table="public.recipes_ingredients">
+		<columns names="recipe_id,ingredient_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<table name="recipes_instructions" layer="0" collapse-mode="2" max-obj-count="3">
+<table name="recipes_categories" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="60" y="260"/>
+	<position x="1000" y="280"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
-	<column name="step" not-null="true">
-		<type name="int2" length="0"/>
+	<column name="category_id" not-null="true">
+		<type name="smallint" length="0"/>
 	</column>
-	<column name="instruction" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<constraint name="recipes_instructions_pkey" type="pk-constr" table="public.recipes_instructions">
-		<columns names="recipe_id,step" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="recipes_instructions_ck_step_strict_positive" type="ck-constr" table="public.recipes_instructions">
-			<expression><![CDATA[step > 0]]></expression>
+	<constraint name="recipes_categories_pk" type="pk-constr" table="public.recipes_categories">
+		<columns names="recipe_id,category_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<constraint name="recipes_fkey_categry" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.categories" table="public.recipes">
-	<columns names="category" ref-type="src-columns"/>
-	<columns names="name" ref-type="dst-columns"/>
+<constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
+	<columns names="tag_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="recipes_tags_fkey_tag" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.tags" table="public.recipes_tags">
-	<columns names="tag" ref-type="src-columns"/>
-	<columns names="name" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="recipes_tags_fkey_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
+<constraint name="recipes_tags_fk_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_tags">
 	<columns names="recipe_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="recipes_ingredients_fkey_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
+<constraint name="recipes_ingredients_fk_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_ingredients">
 	<columns names="recipe_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="recipes_ingredients_fkey_ingredient" type="fk-constr" comparison-type="MATCH FULL"
+<constraint name="recipes_ingredients_fk_ingredient_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.ingredients" table="public.recipes_ingredients">
-	<columns names="ingredient" ref-type="src-columns"/>
-	<columns names="name" ref-type="dst-columns"/>
+	<columns names="ingredient_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="recipes_instructions_fkey_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_instructions">
+<constraint name="recipes_categories_fk_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_categories">
 	<columns names="recipe_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<relationship name="rel_recipes_categories" type="relfk" layer="0"
-	 src-table="public.recipes"
-	 dst-table="public.categories" reference-fk="recipes_fkey_categry"
-	 src-required="false" dst-required="false"/>
+<constraint name="recipes_categories_fk_category_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.categories" table="public.recipes_categories">
+	<columns names="category_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
 
 <relationship name="rel_recipes_tags_tags" type="relfk" layer="0"
 	 src-table="public.recipes_tags"
-	 dst-table="public.tags" reference-fk="recipes_tags_fkey_tag"
-	 src-required="false" dst-required="false"/>
+	 dst-table="public.tags" reference-fk="recipes_tags_fk_tag_id"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="4.88386" y="-5.24103"/>
+	</label>
+</relationship>
 
 <relationship name="rel_recipes_tags_recipes" type="relfk" layer="0"
 	 src-table="public.recipes_tags"
-	 dst-table="public.recipes" reference-fk="recipes_tags_fkey_recipe_id"
+	 dst-table="public.recipes" reference-fk="recipes_tags_fk_recipe_id"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_recipes_ingredients_recipes" type="relfk" layer="0"
 	 src-table="public.recipes_ingredients"
-	 dst-table="public.recipes" reference-fk="recipes_ingredients_fkey_recipe_id"
+	 dst-table="public.recipes" reference-fk="recipes_ingredients_fk_recipe_id"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_recipes_ingredients_ingredients" type="relfk" layer="0"
 	 src-table="public.recipes_ingredients"
-	 dst-table="public.ingredients" reference-fk="recipes_ingredients_fkey_ingredient"
+	 dst-table="public.ingredients" reference-fk="recipes_ingredients_fk_ingredient_id"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-5.44881" y="-8.71432"/>
+	</label>
+</relationship>
+
+<relationship name="rel_recipes_categories_recipes" type="relfk" layer="0"
+	 src-table="public.recipes_categories"
+	 dst-table="public.recipes" reference-fk="recipes_categories_fk_recipe_id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_recipes_instructions_recipes" type="relfk" layer="0"
-	 src-table="public.recipes_instructions"
-	 dst-table="public.recipes" reference-fk="recipes_instructions_fkey_recipe_id"
+<relationship name="rel_recipes_categories_categories" type="relfk" layer="0"
+	 src-table="public.recipes_categories"
+	 dst-table="public.categories" reference-fk="recipes_categories_fk_category_id"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>
