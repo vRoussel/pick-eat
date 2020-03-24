@@ -20,8 +20,12 @@ pub async fn add_one() -> impl Responder {
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_one(id: web::Path<String>) -> impl Responder {
-    format!("Get recipe {}", id)
+pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<tokio_postgres::Client>) -> impl Responder {
+    match db_conn.query_one("SELECT * from recipes where id = $1", &[&id.into_inner()])
+          .await {
+        Ok(row) => row.get("name"),
+        Err(e) => format!("Not found ({:#?})", e.code()),
+    }
 }
 
 #[put("/recipes/{id}")]
