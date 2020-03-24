@@ -4,3 +4,11 @@ todo
 
 .clangd
 compile_commands.json
+
+
+#Added by cargo
+#
+#already existing elements are commented out
+
+/target
+**/*.rs.bk
