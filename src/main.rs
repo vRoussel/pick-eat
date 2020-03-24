@@ -17,47 +17,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-/*
-/recipes
-GET
-POST
 
-/recipes/{id}
-GET
-PUT
-PATCH
-DELETE
 
-/ingredients
-GET
-POST
 
-/ingredients/{id}
-GET
-PUT
-PATCH
-DELETE
 
-/tags
-GET
-POST
-
-/tags/{id}
-GET
-PUT
-PATCH
-DELETE
-
-/categories
-GET
-POST
-
-/categories/{id}
-GET
-PUT
-PATCH
-DELETE
-
-/search
-GET
-*/
