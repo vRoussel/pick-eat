@@ -25,8 +25,9 @@ CREATE ROLE valentin WITH
 CREATE TABLE public.recipes (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
-	cook_time interval HOUR TO MINUTE  NOT NULL,
 	description text NOT NULL,
+	preparation_time interval HOUR TO MINUTE  NOT NULL,
+	cooking_time interval HOUR TO MINUTE  NOT NULL,
 	image bytea NOT NULL,
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
@@ -80,6 +81,7 @@ ALTER TABLE public.recipes_tags OWNER TO valentin;
 CREATE TABLE public.ingredients (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
+	default_unit_id integer NOT NULL,
 	CONSTRAINT ingredients_pk PRIMARY KEY (id),
 	CONSTRAINT ingredients_uq_name UNIQUE (name)
 
@@ -93,7 +95,8 @@ ALTER TABLE public.ingredients OWNER TO valentin;
 CREATE TABLE public.recipes_ingredients (
 	recipe_id integer NOT NULL,
 	ingredient_id integer NOT NULL,
-	quantity text NOT NULL,
+	quantity smallint NOT NULL,
+	unit_id integer NOT NULL,
 	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id)
 
 );
@@ -113,6 +116,20 @@ CREATE TABLE public.recipes_categories (
 ALTER TABLE public.recipes_categories OWNER TO valentin;
 -- ddl-end --
 
+-- object: public.quantity_units | type: TABLE --
+-- DROP TABLE IF EXISTS public.quantity_units CASCADE;
+CREATE TABLE public.quantity_units (
+	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	full_name text NOT NULL,
+	short_name text NOT NULL,
+	CONSTRAINT quantity_units_pk PRIMARY KEY (id),
+	CONSTRAINT quantities_uq_full_name UNIQUE (full_name)
+
+);
+-- ddl-end --
+ALTER TABLE public.quantity_units OWNER TO valentin;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
@@ -127,6 +144,13 @@ REFERENCES public.recipes (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
+-- object: ingredients_fk_default_unit | type: CONSTRAINT --
+-- ALTER TABLE public.ingredients DROP CONSTRAINT IF EXISTS ingredients_fk_default_unit CASCADE;
+ALTER TABLE public.ingredients ADD CONSTRAINT ingredients_fk_default_unit FOREIGN KEY (default_unit_id)
+REFERENCES public.quantity_units (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE CASCADE;
+-- ddl-end --
+
 -- object: recipes_ingredients_fk_recipe_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_ingredients DROP CONSTRAINT IF EXISTS recipes_ingredients_fk_recipe_id CASCADE;
 ALTER TABLE public.recipes_ingredients ADD CONSTRAINT recipes_ingredients_fk_recipe_id FOREIGN KEY (recipe_id)
@@ -138,6 +162,13 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.recipes_ingredients DROP CONSTRAINT IF EXISTS recipes_ingredients_fk_ingredient_id CASCADE;
 ALTER TABLE public.recipes_ingredients ADD CONSTRAINT recipes_ingredients_fk_ingredient_id FOREIGN KEY (ingredient_id)
 REFERENCES public.ingredients (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_ingredients_fk_unit_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_ingredients DROP CONSTRAINT IF EXISTS recipes_ingredients_fk_unit_id CASCADE;
+ALTER TABLE public.recipes_ingredients ADD CONSTRAINT recipes_ingredients_fk_unit_id FOREIGN KEY (unit_id)
+REFERENCES public.quantity_units (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE CASCADE;
 -- ddl-end --
 

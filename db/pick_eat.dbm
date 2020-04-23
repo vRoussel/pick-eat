@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2" last-position="0,0" last-zoom="1" max-obj-count="8"
+<dbmodel pgmodeler-ver="0.9.2" last-position="72,27" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres">
 <role name="valentin"
       createdb="true"
@@ -16,7 +16,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="recipes" layer="0" collapse-mode="2" max-obj-count="8">
+<table name="recipes" layer="0" collapse-mode="2" max-obj-count="9">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="320" y="220"/>
@@ -27,11 +27,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="cook_time" not-null="true">
-		<type name="interval" length="0" interval-type="HOUR TO MINUTE"/>
-	</column>
 	<column name="description" not-null="true">
 		<type name="text" length="0"/>
+	</column>
+	<column name="preparation_time" not-null="true">
+		<type name="interval" length="0" interval-type="HOUR TO MINUTE"/>
+	</column>
+	<column name="cooking_time" not-null="true">
+		<type name="interval" length="0" interval-type="HOUR TO MINUTE"/>
 	</column>
 	<column name="image" not-null="true">
 		<type name="bytea" length="0"/>
@@ -108,16 +111,19 @@ CAUTION: Do not modify this file unless you know what you are doing.
  - au moins 3 tags et 1 categorie]]></comment>
 </textbox>
 
-<table name="ingredients" layer="0" collapse-mode="2" max-obj-count="2">
+<table name="ingredients" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1480" y="520"/>
+	<position x="1480" y="460"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
+	</column>
+	<column name="default_unit_id" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<constraint name="ingredients_pk" type="pk-constr" table="public.ingredients">
 		<columns names="id" ref-type="src-columns"/>
@@ -127,10 +133,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="3">
+<table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1000" y="500"/>
+	<position x="1000" y="440"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -138,7 +144,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="integer" length="0"/>
 	</column>
 	<column name="quantity" not-null="true">
-		<type name="text" length="0"/>
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="unit_id" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<constraint name="recipes_ingredients_pk" type="pk-constr" table="public.recipes_ingredients">
 		<columns names="recipe_id,ingredient_id" ref-type="src-columns"/>
@@ -160,6 +169,28 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
+<table name="quantity_units" layer="0" collapse-mode="2" max-obj-count="3">
+	<schema name="public"/>
+	<role name="valentin"/>
+	<position x="1580" y="740"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="full_name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="short_name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="quantity_units_pk" type="pk-constr" table="public.quantity_units">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="quantities_uq_full_name" type="uq-constr" table="public.quantity_units">
+		<columns names="full_name" ref-type="src-columns"/>
+	</constraint>
+</table>
+
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
 	<columns names="tag_id" ref-type="src-columns"/>
@@ -172,6 +203,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="ingredients_fk_default_unit" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.quantity_units" table="public.ingredients">
+	<columns names="default_unit_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <constraint name="recipes_ingredients_fk_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_ingredients">
 	<columns names="recipe_id" ref-type="src-columns"/>
@@ -181,6 +218,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <constraint name="recipes_ingredients_fk_ingredient_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.ingredients" table="public.recipes_ingredients">
 	<columns names="ingredient_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_ingredients_fk_unit_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.quantity_units" table="public.recipes_ingredients">
+	<columns names="unit_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -213,7 +256,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_recipes_ingredients_recipes" type="relfk" layer="0"
 	 src-table="public.recipes_ingredients"
 	 dst-table="public.recipes" reference-fk="recipes_ingredients_fk_recipe_id"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-9.09278" y="-4.6661"/>
+	</label>
+</relationship>
 
 <relationship name="rel_recipes_ingredients_ingredients" type="relfk" layer="0"
 	 src-table="public.recipes_ingredients"
@@ -232,6 +279,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_recipes_categories_categories" type="relfk" layer="0"
 	 src-table="public.recipes_categories"
 	 dst-table="public.categories" reference-fk="recipes_categories_fk_category_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_ingredients_quantity_units" type="relfk" layer="0"
+	 src-table="public.ingredients"
+	 dst-table="public.quantity_units" reference-fk="ingredients_fk_default_unit"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-5.74573" y="-21.8542"/>
+	</label>
+</relationship>
+
+<relationship name="rel_recipes_ingredients_quantity_units" type="relfk" layer="0"
+	 src-table="public.recipes_ingredients"
+	 dst-table="public.quantity_units" reference-fk="recipes_ingredients_fk_unit_id"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>
