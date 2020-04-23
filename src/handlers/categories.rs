@@ -1,4 +1,5 @@
 use actix_web::{get, post, put, delete, web, Responder};
+use crate::resources::category::Category;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -9,29 +10,27 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     ;
 }
 
-#[get("/ingredients")]
+#[get("/categories")]
 pub async fn get_all() -> impl Responder {
-    "Get all ingredients"
+    "Get all categories"
 }
 
-#[post("/ingredients")]
+#[post("/categories")]
 pub async fn add_one() -> impl Responder {
-    "Add new ingredient"
+    "Add new category"
 }
 
-#[get("/ingredients/{id}")]
+#[get("/categories/{id}")]
 pub async fn get_one(id: web::Path<String>) -> impl Responder {
-    format!("Get ingredient {}", id)
+    format!("Get category {}", id)
 }
 
-#[put("/ingredients/{id}")]
+#[put("/categories/{id}")]
 pub async fn modify_or_create_one(id: web::Path<String>) -> impl Responder {
-    format!("Put ingredient {}", id)
+    format!("Put category {}", id)
 }
 
-#[delete("/ingredients/{id}")]
+#[delete("/categories/{id}")]
 pub async fn delete_one(id: web::Path<String>) -> impl Responder {
-    format!("Delete ingredient {}", id)
+    format!("Delete category {}", id)
 }
-
-

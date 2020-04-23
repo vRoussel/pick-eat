@@ -5,6 +5,7 @@ use actix_web::{web, App, HttpServer};
 use tokio_postgres::{NoTls, Error};
 use tokio;
 mod resources;
+mod handlers;
 
 
 async fn start_web_server(db_conn: tokio_postgres::Client) -> std::io::Result<()> {
@@ -12,10 +13,11 @@ async fn start_web_server(db_conn: tokio_postgres::Client) -> std::io::Result<()
     HttpServer::new(move || App::new()
         .app_data(mydata.clone())
         .service(web::scope("/v1/")
-            .configure(resources::recipes::config)
-            .configure(resources::ingredients::config)
-            .configure(resources::tags::config)
-            .configure(resources::categories::config)
+            .configure(handlers::recipes::config)
+            .configure(handlers::ingredients::config)
+            .configure(handlers::tags::config)
+            .configure(handlers::categories::config)
+            .configure(handlers::units::config)
 //            .configure(resources::search::config)
         )
     )
@@ -36,7 +38,6 @@ async fn get_db_conn() -> Result<tokio_postgres::Client, tokio_postgres::Error> 
 
 #[actix_rt::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
     let db_conn = get_db_conn().await?;
     start_web_server(db_conn).await?;
     Ok(())

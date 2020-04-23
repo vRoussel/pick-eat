@@ -1,4 +1,5 @@
 use actix_web::{get, post, put, delete, web, Responder};
+use crate::resources::ingredient::Ingredient;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -9,29 +10,27 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     ;
 }
 
-#[get("/tags")]
+#[get("/ingredients")]
 pub async fn get_all() -> impl Responder {
-    "Get all tags"
+    "Get all ingredients"
 }
 
-#[post("/tags")]
+#[post("/ingredients")]
 pub async fn add_one() -> impl Responder {
-    "Add new tag"
+    "Add new ingredient"
 }
 
-#[get("/tags/{id}")]
+#[get("/ingredients/{id}")]
 pub async fn get_one(id: web::Path<String>) -> impl Responder {
-    format!("Get tag {}", id)
+    format!("Get ingredient {}", id)
 }
 
-#[put("/tags/{id}")]
+#[put("/ingredients/{id}")]
 pub async fn modify_or_create_one(id: web::Path<String>) -> impl Responder {
-    format!("Put tag {}", id)
+    format!("Put ingredient {}", id)
 }
 
-#[delete("/tags/{id}")]
+#[delete("/ingredients/{id}")]
 pub async fn delete_one(id: web::Path<String>) -> impl Responder {
-    format!("Delete tag {}", id)
+    format!("Delete ingredient {}", id)
 }
-
-
