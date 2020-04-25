@@ -1,11 +1,11 @@
 use actix_web::{get, post, put, delete, web, Responder};
 
-use crate::resources::category::Category;
-use crate::resources::ingredient::{Ingredient, QuantifiedIngredient};
-use crate::resources::tag::Tag;
-use crate::resources::unit::Unit;
-use crate::resources::recipe::Recipe;
-
+use crate::resources::{
+    category::Category,
+    ingredient::QuantifiedIngredient,
+    tag::Tag,
+    recipe::Recipe
+};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)

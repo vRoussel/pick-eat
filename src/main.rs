@@ -4,9 +4,9 @@ extern crate simplelog;
 extern crate log;
 
 use actix_web::{web, App, HttpServer};
-use tokio_postgres::{NoTls, Error};
 use log::*;
 use simplelog::*;
+use tokio_postgres::NoTls;
 use tokio;
 
 mod resources;
