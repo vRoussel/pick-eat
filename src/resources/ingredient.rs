@@ -15,6 +15,22 @@ pub struct QuantifiedIngredient {
     unit: Unit
 }
 
+impl From<&tokio_postgres::row::Row> for Ingredient {
+    fn from(row: &tokio_postgres::row::Row) -> Self {
+        let default_unit = Unit {
+            id: row.get("default_unit_id"),
+            full_name: row.get("default_unit_full_name"),
+            short_name: row.get("default_unit_short_name")
+        };
+
+        Ingredient {
+            id: row.get("id"),
+            name: row.get("name"),
+            default_unit: default_unit
+        }
+    }
+}
+
 impl From<&tokio_postgres::row::Row> for QuantifiedIngredient {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let unit = Unit {
