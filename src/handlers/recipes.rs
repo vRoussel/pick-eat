@@ -1,4 +1,6 @@
 use actix_web::{get, post, put, delete, web, Responder};
+use log::*;
+use tokio_postgres::Client;
 
 use crate::resources::{
     category::Category,
@@ -27,7 +29,7 @@ pub async fn add_one() -> impl Responder {
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<tokio_postgres::Client>) -> impl Responder {
+pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Responder {
     let id = id.into_inner();
     let recipe_query = "\
         SELECT \
@@ -95,27 +97,40 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<tokio_postgres::Clie
         .await {
             Ok(rows) if rows.len() == 1 => Recipe::from(&rows[0]),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            _ => return web::HttpResponse::InternalServerError().finish(),
+            Ok(_) => return web::HttpResponse::InternalServerError().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
     };
 
     let categories: Vec<_> = match db_conn.query(categories_query, &[&id])
         .await {
             Ok(rows) => rows.iter().map(|r| Category::from(r)).collect(),
-            Err(e) => {println!("{}", e); return web::HttpResponse::InternalServerError().finish()},
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
     };
     recipe.categories = categories;
 
     let tags: Vec<_> = match db_conn.query(tags_query, &[&id])
         .await {
             Ok(rows) => rows.iter().map(|r| Tag::from(r)).collect(),
-            Err(e) => {println!("{}", e); return web::HttpResponse::InternalServerError().finish()},
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
     };
     recipe.tags = tags;
 
     let ingredients: Vec<_> = match db_conn.query(ingredients_query, &[&id])
         .await {
             Ok(rows) => rows.iter().map(|r| QuantifiedIngredient::from(r)).collect(),
-            Err(e) => {println!("{}", e); return web::HttpResponse::InternalServerError().finish()},
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
     };
     recipe.ingredients = ingredients;
 
