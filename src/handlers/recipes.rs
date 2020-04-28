@@ -3,7 +3,7 @@ use log::*;
 use tokio_postgres::Client;
 
 use crate::resources::{
-    category::Category,
+    category::DBCategory,
     ingredient::QuantifiedIngredient,
     tag::Tag,
     recipe::Recipe
@@ -106,7 +106,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let categories: Vec<_> = match db_conn.query(categories_query, &[&id])
         .await {
-            Ok(rows) => rows.iter().map(|r| Category::from(r)).collect(),
+            Ok(rows) => rows.iter().map(|r| DBCategory::from(r)).collect(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish()
