@@ -44,7 +44,8 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
                 return web::HttpResponse::InternalServerError().finish()
             },
     };
-    web::HttpResponse::Ok().body(format!("{}", serde_json::to_string_pretty(&category).unwrap()))
+    trace!("{}", serde_json::to_string_pretty(&category).unwrap());
+    web::HttpResponse::Ok().json(category)
 }
 
 #[put("/categories/{id}")]
