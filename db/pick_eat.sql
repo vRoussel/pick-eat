@@ -81,7 +81,7 @@ ALTER TABLE public.recipes_tags OWNER TO valentin;
 CREATE TABLE public.ingredients (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
-	default_unit_id integer NOT NULL,
+	default_unit_id integer,
 	CONSTRAINT ingredients_pk PRIMARY KEY (id),
 	CONSTRAINT ingredients_uq_name UNIQUE (name)
 
@@ -95,8 +95,8 @@ ALTER TABLE public.ingredients OWNER TO valentin;
 CREATE TABLE public.recipes_ingredients (
 	recipe_id integer NOT NULL,
 	ingredient_id integer NOT NULL,
-	quantity smallint NOT NULL,
-	unit_id integer NOT NULL,
+	quantity smallint,
+	unit_id integer,
 	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id)
 
 );
