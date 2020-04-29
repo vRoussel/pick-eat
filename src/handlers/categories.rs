@@ -1,6 +1,9 @@
 use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
-use tokio_postgres::Client;
+use tokio_postgres::{
+    Client,
+    error::SqlState
+};
 
 use crate::resources::category::{DBCategory, NewCategory, CategoryUpdate};
 
@@ -19,8 +22,26 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/categories")]
-pub async fn add_one() -> impl Responder {
-    "Add new category"
+pub async fn add_one(new_category: web::Json<NewCategory>, db_conn: web::Data<Client>) -> impl Responder {
+    trace!("{:#?}", new_category);
+    let insert_query = "\
+        INSERT INTO categories (name) \
+            VALUES ($1) \
+        RETURNING id;
+    ";
+    let new_id = match db_conn.query(insert_query, &[&new_category.name])
+        .await {
+            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                //TODO add location with URI
+                => return web::HttpResponse::Conflict().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+        };
+    //TODO add location with URI
+    web::HttpResponse::Created().finish()
 }
 
 #[get("/categories/{id}")]
