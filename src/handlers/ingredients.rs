@@ -34,11 +34,11 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
             u.full_name as default_unit_full_name, \
             u.short_name as default_unit_short_name \
         FROM
-            ingredients as i,
-            quantity_units as u
+            ingredients as i \
+            LEFT JOIN quantity_units as u \
+            ON i.default_unit_id = u.id \
         WHERE
             i.id = $1 \
-            AND i.default_unit_id = u.id \
     ";
 
     let ingredient = match db_conn.query(query, &[&id])
