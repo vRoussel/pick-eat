@@ -32,7 +32,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
             i.name as name, \
             u.id as default_unit_id, \
             u.full_name as default_unit_full_name, \
-            u.short_name as default_unit_short_name
+            u.short_name as default_unit_short_name \
         FROM
             ingredients as i,
             quantity_units as u
