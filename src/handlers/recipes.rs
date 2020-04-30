@@ -4,9 +4,8 @@ use tokio_postgres::Client;
 
 use crate::resources::{
     category::DBCategory,
-    ingredient::QuantifiedIngredient,
     tag::Tag,
-    recipe::Recipe
+    recipe::{Recipe, QuantifiedIngredient}
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
