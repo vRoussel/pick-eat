@@ -2,7 +2,7 @@ use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
 use tokio_postgres::Client;
 
-use crate::resources::ingredient::Ingredient;
+use crate::resources::ingredient::DBIngredient;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -43,7 +43,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let ingredient = match db_conn.query(query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => Ingredient::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => DBIngredient::from(&rows[0]),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Err(e) => {error!("{}", e); return web::HttpResponse::InternalServerError().finish()},
             _ => return web::HttpResponse::InternalServerError().finish(),
