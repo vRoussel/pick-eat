@@ -76,19 +76,14 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
             ri.quantity as quantity, \
             u.id as unit_id, \
             u.full_name as unit_full_name, \
-            u.short_name as unit_short_name, \
-            u2.id as default_unit_id, \
-            u2.full_name as default_unit_full_name, \
-            u2.short_name as default_unit_short_name
+            u.short_name as unit_short_name \
         FROM \
             ingredients as i, \
-            recipes_ingredients as ri, \
-            quantity_units as u, \
-            quantity_units as u2 \
+            recipes_ingredients as ri \
+            LEFT JOIN quantity_units as u \
+            ON ri.unit_id = u.id \
         WHERE \
             i.id = ri.ingredient_id \
-            AND ri.unit_id = u.id \
-            AND i.default_unit_id = u2.id \
             AND ri.recipe_id = $1 \
     ";
 
