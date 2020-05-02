@@ -8,6 +8,14 @@ pub struct DBIngredient {
     pub(crate) default_unit: Option<DBUnit>
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QuantifiedDBIngredient {
+    id: i32,
+    name: String,
+    quantity: Option<i16>,
+    unit: Option<DBUnit>
+}
+
 impl From<&tokio_postgres::row::Row> for DBIngredient {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let default_unit = match row.try_get("default_unit_id") {
@@ -29,3 +37,24 @@ impl From<&tokio_postgres::row::Row> for DBIngredient {
     }
 }
 
+impl From<&tokio_postgres::row::Row> for QuantifiedDBIngredient {
+    fn from(row: &tokio_postgres::row::Row) -> Self {
+        let unit = match row.try_get("unit_id") {
+            Ok(unit_id) => Some(
+                DBUnit {
+                    id: unit_id,
+                    full_name: row.get("unit_full_name"),
+                    short_name: row.get("unit_short_name")
+                }
+            ),
+            Err(_) => None
+        };
+
+        QuantifiedDBIngredient {
+            id: row.get("id"),
+            name: row.get("name"),
+            quantity: row.get("quantity"),
+            unit: unit
+        }
+    }
+}

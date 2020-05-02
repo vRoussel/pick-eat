@@ -5,7 +5,8 @@ use tokio_postgres::Client;
 use crate::resources::{
     category::DBCategory,
     tag::DBTag,
-    recipe::{DBRecipe, QuantifiedDBIngredient}
+    recipe::DBRecipe,
+    ingredient::QuantifiedDBIngredient
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {

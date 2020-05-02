@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use super::category::DBCategory;
 use super::tag::DBTag;
 use super::unit::DBUnit;
+use super::ingredient::QuantifiedDBIngredient;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DBRecipe {
@@ -18,14 +19,6 @@ pub struct DBRecipe {
     pub(crate) instructions: Vec<String>
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct QuantifiedDBIngredient {
-    id: i32,
-    name: String,
-    quantity: Option<i16>,
-    unit: Option<DBUnit>
-}
-
 impl From<&tokio_postgres::row::Row> for DBRecipe {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         DBRecipe {
@@ -40,28 +33,6 @@ impl From<&tokio_postgres::row::Row> for DBRecipe {
             image: row.get("image"),
             publish_date: row.get("publication_date"),
             instructions: row.get("instructions")
-        }
-    }
-}
-
-impl From<&tokio_postgres::row::Row> for QuantifiedDBIngredient {
-    fn from(row: &tokio_postgres::row::Row) -> Self {
-        let unit = match row.try_get("unit_id") {
-            Ok(unit_id) => Some(
-                DBUnit {
-                    id: unit_id,
-                    full_name: row.get("unit_full_name"),
-                    short_name: row.get("unit_short_name")
-                }
-            ),
-            Err(_) => None
-        };
-
-        QuantifiedDBIngredient {
-            id: row.get("id"),
-            name: row.get("name"),
-            quantity: row.get("quantity"),
-            unit: unit
         }
     }
 }
