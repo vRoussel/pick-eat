@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Tag {
+pub struct DBTag {
     pub(crate) id: i32,
     pub(crate) name: String
 }
 
-impl From<&tokio_postgres::row::Row> for Tag {
+impl From<&tokio_postgres::row::Row> for DBTag {
     fn from(row: &tokio_postgres::row::Row) -> Self {
-        Tag {
+        DBTag {
             id: row.get("id"),
             name: row.get("name")
         }

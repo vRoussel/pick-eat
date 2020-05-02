@@ -4,8 +4,8 @@ use tokio_postgres::Client;
 
 use crate::resources::{
     category::DBCategory,
-    tag::Tag,
-    recipe::{Recipe, QuantifiedIngredient}
+    tag::DBTag,
+    recipe::{DBRecipe, QuantifiedDBIngredient}
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -89,7 +89,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let mut recipe = match db_conn.query(recipe_query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => Recipe::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => DBRecipe::from(&rows[0]),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Ok(_) => return web::HttpResponse::InternalServerError().finish(),
             Err(e) => {
@@ -110,7 +110,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let tags: Vec<_> = match db_conn.query(tags_query, &[&id])
         .await {
-            Ok(rows) => rows.iter().map(|r| Tag::from(r)).collect(),
+            Ok(rows) => rows.iter().map(|r| DBTag::from(r)).collect(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish()
@@ -120,7 +120,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let ingredients: Vec<_> = match db_conn.query(ingredients_query, &[&id])
         .await {
-            Ok(rows) => rows.iter().map(|r| QuantifiedIngredient::from(r)).collect(),
+            Ok(rows) => rows.iter().map(|r| QuantifiedDBIngredient::from(r)).collect(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish()
