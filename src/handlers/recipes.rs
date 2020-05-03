@@ -6,7 +6,7 @@ use crate::resources::{
     category::DBCategory,
     tag::DBTag,
     recipe::DBRecipe,
-    ingredient::QuantifiedDBIngredient
+    ingredient::DBQuantifiedIngredient
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -121,7 +121,7 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
 
     let ingredients: Vec<_> = match db_conn.query(ingredients_query, &[&id])
         .await {
-            Ok(rows) => rows.iter().map(|r| QuantifiedDBIngredient::from(r)).collect(),
+            Ok(rows) => rows.iter().map(|r| DBQuantifiedIngredient::from(r)).collect(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish()

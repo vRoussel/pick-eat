@@ -9,7 +9,7 @@ pub struct DBIngredient {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct QuantifiedDBIngredient {
+pub struct DBQuantifiedIngredient {
     id: i32,
     name: String,
     quantity: Option<i16>,
@@ -37,7 +37,7 @@ impl From<&tokio_postgres::row::Row> for DBIngredient {
     }
 }
 
-impl From<&tokio_postgres::row::Row> for QuantifiedDBIngredient {
+impl From<&tokio_postgres::row::Row> for DBQuantifiedIngredient {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let unit = match row.try_get("unit_id") {
             Ok(unit_id) => Some(
@@ -50,7 +50,7 @@ impl From<&tokio_postgres::row::Row> for QuantifiedDBIngredient {
             Err(_) => None
         };
 
-        QuantifiedDBIngredient {
+        DBQuantifiedIngredient {
             id: row.get("id"),
             name: row.get("name"),
             quantity: row.get("quantity"),
