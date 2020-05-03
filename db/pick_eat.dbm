@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2" last-position="70,25" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.2" last-position="69,24" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres">
 <role name="valentin"
       createdb="true"
@@ -188,6 +188,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 	<constraint name="quantities_uq_full_name" type="uq-constr" table="public.quantity_units">
 		<columns names="full_name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="quantities_uq_short_name" type="uq-constr" table="public.quantity_units">
+		<columns names="short_name" ref-type="src-columns"/>
 	</constraint>
 </table>
 

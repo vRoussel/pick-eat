@@ -123,7 +123,8 @@ CREATE TABLE public.quantity_units (
 	full_name text NOT NULL,
 	short_name text NOT NULL,
 	CONSTRAINT quantity_units_pk PRIMARY KEY (id),
-	CONSTRAINT quantities_uq_full_name UNIQUE (full_name)
+	CONSTRAINT quantities_uq_full_name UNIQUE (full_name),
+	CONSTRAINT quantities_uq_short_name UNIQUE (short_name)
 
 );
 -- ddl-end --
