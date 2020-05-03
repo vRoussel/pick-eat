@@ -1,8 +1,11 @@
 use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
-use tokio_postgres::Client;
+use tokio_postgres::{
+    Client,
+    error::SqlState
+};
 
-use crate::resources::tag::DBTag;
+use crate::resources::tag::{DBTag, NewTag};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -19,8 +22,26 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/tags")]
-pub async fn add_one() -> impl Responder {
-    "Add new tag"
+pub async fn add_one(new_tag: web::Json<NewTag>, db_conn: web::Data<Client>) -> impl Responder {
+    trace!("{:#?}", new_tag);
+    let insert_query = "\
+        INSERT INTO tags (name) \
+            VALUES ($1) \
+        RETURNING id;
+    ";
+    let new_id = match db_conn.query(insert_query, &[&new_tag.name])
+        .await {
+            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                //TODO add location with URI
+                => return web::HttpResponse::Conflict().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+        };
+    //TODO add location with URI
+    web::HttpResponse::Created().finish()
 }
 
 #[get("/tags/{id}")]
