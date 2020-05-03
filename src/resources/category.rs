@@ -7,6 +7,7 @@ pub struct DBCategory {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NewCategory {
     pub(crate) name: String
 }
