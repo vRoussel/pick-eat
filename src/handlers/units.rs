@@ -1,8 +1,11 @@
 use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
-use tokio_postgres::Client;
+use tokio_postgres::{
+    Client,
+    error::SqlState
+};
 
-use crate::resources::unit::DBUnit;
+use crate::resources::unit::{DBUnit, NewUnit};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -19,8 +22,26 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/units")]
-pub async fn add_one() -> impl Responder {
-    "Add new unit"
+pub async fn add_one(new_unit: web::Json<NewUnit>, db_conn: web::Data<Client>) -> impl Responder {
+    trace!("{:#?}", new_unit);
+    let insert_query = "\
+        INSERT INTO quantity_units (full_name, short_name) \
+            VALUES ($1, $2) \
+        RETURNING id;
+    ";
+    let new_id = match db_conn.query(insert_query, &[&new_unit.full_name, &new_unit.short_name])
+        .await {
+            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                //TODO add location with URI
+                => return web::HttpResponse::Conflict().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+        };
+    //TODO add location with URI
+    web::HttpResponse::Created().finish()
 }
 
 #[get("/units/{id}")]
