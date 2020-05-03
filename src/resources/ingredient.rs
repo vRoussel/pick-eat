@@ -16,6 +16,13 @@ pub struct DBQuantifiedIngredient {
     unit: Option<DBUnit>
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NewIngredient {
+    pub(crate) name: String,
+    pub(crate) default_unit_id: Option<i32>
+}
+
 impl From<&tokio_postgres::row::Row> for DBIngredient {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let default_unit = match row.try_get("default_unit_id") {

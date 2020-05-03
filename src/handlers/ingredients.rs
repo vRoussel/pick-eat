@@ -1,8 +1,8 @@
 use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
-use tokio_postgres::Client;
+use tokio_postgres::{Client, error::SqlState};
 
-use crate::resources::ingredient::DBIngredient;
+use crate::resources::ingredient::{DBIngredient, NewIngredient};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -19,8 +19,28 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/ingredients")]
-pub async fn add_one() -> impl Responder {
-    "Add new ingredient"
+pub async fn add_one(new_ingredient: web::Json<NewIngredient>, db_conn: web::Data<Client>) -> impl Responder {
+    trace!("{:#?}", new_ingredient);
+    let insert_query = "\
+        INSERT INTO ingredients (name, default_unit_id) \
+            VALUES ($1, $2) \
+        RETURNING id;
+    ";
+    let new_id = match db_conn.query(insert_query, &[&new_ingredient.name, &new_ingredient.default_unit_id])
+        .await {
+            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                //TODO add location with URI
+                => return web::HttpResponse::Conflict().finish(),
+            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+                => return web::HttpResponse::UnprocessableEntity().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+        };
+    //TODO add location with URI
+    web::HttpResponse::Created().finish()
 }
 
 #[get("/ingredients/{id}")]
