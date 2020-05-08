@@ -26,12 +26,13 @@ CREATE TABLE public.recipes (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
 	description text NOT NULL,
-	preparation_time interval HOUR TO MINUTE  NOT NULL,
-	cooking_time interval HOUR TO MINUTE  NOT NULL,
+	preparation_time_min smallint NOT NULL,
+	cooking_time_min smallint NOT NULL,
 	image bytea NOT NULL,
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
-	CONSTRAINT recipes_pk PRIMARY KEY (id)
+	CONSTRAINT recipes_pk PRIMARY KEY (id),
+	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 
 );
 -- ddl-end --
@@ -97,7 +98,8 @@ CREATE TABLE public.recipes_ingredients (
 	ingredient_id integer NOT NULL,
 	quantity smallint,
 	unit_id integer,
-	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id)
+	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id),
+	CONSTRAINT recipes_ingredients_ck_qty CHECK (quantity > 0)
 
 );
 -- ddl-end --

@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2" last-position="69,24" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.2" last-position="187,23" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres">
 <role name="valentin"
       createdb="true"
@@ -30,11 +30,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="preparation_time" not-null="true">
-		<type name="interval" length="0" interval-type="HOUR TO MINUTE"/>
+	<column name="preparation_time_min" not-null="true">
+		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
 	</column>
-	<column name="cooking_time" not-null="true">
-		<type name="interval" length="0" interval-type="HOUR TO MINUTE"/>
+	<column name="cooking_time_min" not-null="true">
+		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
 	</column>
 	<column name="image" not-null="true">
 		<type name="bytea" length="0"/>
@@ -47,6 +47,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="recipes_ck_times" type="ck-constr" table="public.recipes">
+			<expression><![CDATA[preparation_time_min >= 0 AND cooking_time_min >= 0]]></expression>
 	</constraint>
 </table>
 
@@ -133,7 +136,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="4">
+<table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="6">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1000" y="440"/>
@@ -151,6 +154,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<constraint name="recipes_ingredients_pk" type="pk-constr" table="public.recipes_ingredients">
 		<columns names="recipe_id,ingredient_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="recipes_ingredients_ck_qty" type="ck-constr" table="public.recipes_ingredients">
+			<expression><![CDATA[quantity > 0]]></expression>
 	</constraint>
 </table>
 
