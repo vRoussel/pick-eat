@@ -12,8 +12,8 @@ pub struct DBRecipe {
     pub(crate) ingredients: Vec<DBQuantifiedIngredient>,
     pub(crate) categories: Vec<DBCategory>,
     pub(crate) tags: Vec<DBTag>,
-    pub(crate) prep_time_min: i32,
-    pub(crate) cook_time_min: i32,
+    pub(crate) prep_time_min: i16,
+    pub(crate) cook_time_min: i16,
     pub(crate) image: Vec<u8>,
     pub(crate) publish_date: time::Date,
     pub(crate) instructions: Vec<String>

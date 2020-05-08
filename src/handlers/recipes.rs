@@ -36,8 +36,8 @@ pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Res
             id, \
             name, \
             description, \
-            (extract(epoch from preparation_time)/60)::integer as preparation_time_min, \
-            (extract(epoch from cooking_time)/60)::integer as cooking_time_min, \
+            preparation_time_min, \
+            cooking_time_min, \
             image, \
             publication_date, \
             instructions \
