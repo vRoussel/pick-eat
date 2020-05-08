@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 use super::category::DBCategory;
 use super::tag::DBTag;
 use super::unit::DBUnit;
-use super::ingredient::DBQuantifiedIngredient;
+use super::ingredient::QuantifiedIngredient;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DBRecipe {
     pub(crate) id: i32,
     pub(crate) name: String,
     pub(crate) desc: String,
-    pub(crate) ingredients: Vec<DBQuantifiedIngredient>,
+    pub(crate) q_ingredients: Vec<QuantifiedIngredient>,
     pub(crate) categories: Vec<DBCategory>,
     pub(crate) tags: Vec<DBTag>,
     pub(crate) prep_time_min: i16,
@@ -25,7 +25,7 @@ impl From<&tokio_postgres::row::Row> for DBRecipe {
             id: row.get("id"),
             name: row.get("name"),
             desc: row.get("description"),
-            ingredients: Vec::new(),
+            q_ingredients: Vec::new(),
             categories: Vec::new(),
             tags: Vec::new(),
             prep_time_min: row.get("preparation_time_min"),
