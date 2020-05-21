@@ -168,7 +168,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="integer" length="0"/>
 	</column>
 	<column name="category_id" not-null="true">
-		<type name="smallint" length="0"/>
+		<type name="integer" length="0"/>
 	</column>
 	<constraint name="recipes_categories_pk" type="pk-constr" table="public.recipes_categories">
 		<columns names="recipe_id,category_id" ref-type="src-columns"/>

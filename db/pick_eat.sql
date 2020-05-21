@@ -110,7 +110,7 @@ ALTER TABLE public.recipes_ingredients OWNER TO valentin;
 -- DROP TABLE IF EXISTS public.recipes_categories CASCADE;
 CREATE TABLE public.recipes_categories (
 	recipe_id integer NOT NULL,
-	category_id smallint NOT NULL,
+	category_id integer NOT NULL,
 	CONSTRAINT recipes_categories_pk PRIMARY KEY (recipe_id,category_id)
 
 );
