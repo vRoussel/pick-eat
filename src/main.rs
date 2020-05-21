@@ -11,6 +11,7 @@ use tokio;
 
 mod resources;
 mod handlers;
+mod utils;
 
 
 async fn start_web_server(db_conn: tokio_postgres::Client) -> std::io::Result<()> {

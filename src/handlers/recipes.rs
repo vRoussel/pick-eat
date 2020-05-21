@@ -1,13 +1,15 @@
 use actix_web::{get, post, put, delete, web, Responder};
 use log::*;
-use tokio_postgres::Client;
+use tokio_postgres::{Client, error::SqlState, types::ToSql};
 
 use crate::resources::{
     category::DBCategory,
     tag::DBTag,
-    recipe::DBRecipe,
+    recipe::{DBRecipe, NewRecipe},
     ingredient::QuantifiedIngredient
 };
+
+use crate::utils::*;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -24,8 +26,101 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/recipes")]
-pub async fn add_one() -> impl Responder {
-    "Add new recipe"
+pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_conn: web::Data<Client>) -> impl Responder {
+    //TODO multiple inserts so we need a transaction
+    trace!("{:#?}", new_recipe);
+    let recipe_query = "\
+        INSERT INTO recipes \
+        (name, description, preparation_time_min, cooking_time_min, image, instructions) \
+        VALUES ($1, $2, $3, $4, $5, $6) \
+        RETURNING id; \
+    ";
+    let new_id = match db_conn.query(recipe_query,
+        &[&new_recipe.name, &new_recipe.desc,
+          &new_recipe.prep_time_min, &new_recipe.cook_time_min,
+          &new_recipe.image, &new_recipe.instructions
+        ]).await {
+            Ok(rows) => rows[0].get::<&str,i32>("id"),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                //TODO add location with URI
+                => return web::HttpResponse::Conflict().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+        };
+
+    // Tags
+    let values_query_params = gen_query_params(new_recipe.tag_ids.len(), 2);
+    let tags_query = format!("\
+        INSERT INTO recipes_tags \
+        (tag_id, recipe_id) \
+        VALUES {}; \
+    ", values_query_params);
+
+    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+    for tag_id in &new_recipe.tag_ids {
+        flat_values.extend_from_slice(&[tag_id, &new_id]);
+    }
+
+    match db_conn.execute(tags_query.as_str(), &flat_values).await {
+        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+            => return web::HttpResponse::UnprocessableEntity().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+        _ => ()
+    }
+
+    // Categories
+    let values_query_params = gen_query_params(new_recipe.category_ids.len(), 2);
+    let categories_query = format!("\
+        INSERT INTO recipes_categories \
+        (category_id, recipe_id) \
+        VALUES {}; \
+    ", values_query_params);
+
+    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+    for category_id in &new_recipe.category_ids {
+        flat_values.extend_from_slice(&[category_id, &new_id]);
+    }
+
+    match db_conn.execute(categories_query.as_str(), &flat_values).await {
+        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+            => return web::HttpResponse::UnprocessableEntity().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+        _ => ()
+    }
+
+    // Ingredients
+    let values_query_params = gen_query_params(new_recipe.q_ingredient_ids.len(), 4);
+    let ingredients_query = format!("\
+        INSERT INTO recipes_ingredients \
+        (recipe_id, ingredient_id, quantity, unit_id) \
+        VALUES {}; \
+    ", values_query_params);
+
+    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+    for ingr in &new_recipe.q_ingredient_ids {
+        flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
+    }
+
+    match db_conn.execute(ingredients_query.as_str(), &flat_values).await {
+        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+            => return web::HttpResponse::UnprocessableEntity().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+        _ => ()
+    }
+
+    //TODO add location with URI
+    web::HttpResponse::Created().finish()
 }
 
 #[get("/recipes/{id}")]
