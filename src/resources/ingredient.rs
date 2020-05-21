@@ -16,6 +16,13 @@ pub struct QuantifiedIngredient {
     unit: Option<DBUnit>
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QuantifiedIngredientId {
+    pub(crate) id: i32,
+    pub(crate) quantity: Option<i16>,
+    pub(crate) unit_id: Option<i32>
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct NewIngredient {

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use super::category::DBCategory;
 use super::tag::DBTag;
 use super::unit::DBUnit;
-use super::ingredient::QuantifiedIngredient;
+use super::ingredient::{QuantifiedIngredient, QuantifiedIngredientId};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DBRecipe {
@@ -18,6 +18,21 @@ pub struct DBRecipe {
     pub(crate) publish_date: time::Date,
     pub(crate) instructions: Vec<String>
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NewRecipe {
+    pub(crate) name: String,
+    pub(crate) desc: String,
+    pub(crate) q_ingredient_ids: Vec<QuantifiedIngredientId>,
+    pub(crate) category_ids: Vec<i32>,
+    pub(crate) tag_ids: Vec<i32>,
+    pub(crate) prep_time_min: i16,
+    pub(crate) cook_time_min: i16,
+    pub(crate) image: Vec<u8>,
+    pub(crate) instructions: Vec<String>
+}
+
 
 impl From<&tokio_postgres::row::Row> for DBRecipe {
     fn from(row: &tokio_postgres::row::Row) -> Self {
