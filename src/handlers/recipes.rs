@@ -30,6 +30,7 @@ pub async fn get_all() -> impl Responder {
 pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>) -> impl Responder {
     //TODO multiple inserts so we need a transaction
     let mut db_conn = db_pool.get().await.unwrap();
+    let transaction = db_conn.transaction().await.expect("Unable to start db transaction");
     trace!("{:#?}", new_recipe);
     let recipe_query = "\
         INSERT INTO recipes \
@@ -37,7 +38,7 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>)
         VALUES ($1, $2, $3, $4, $5, $6) \
         RETURNING id; \
     ";
-    let new_id = match db_conn.query(recipe_query,
+    let new_id = match transaction.query(recipe_query,
         &[&new_recipe.name, &new_recipe.desc,
           &new_recipe.prep_time_min, &new_recipe.cook_time_min,
           &new_recipe.image, &new_recipe.instructions
@@ -65,7 +66,7 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>)
         flat_values.extend_from_slice(&[tag_id, &new_id]);
     }
 
-    match db_conn.execute(tags_query.as_str(), &flat_values).await {
+    match transaction.execute(tags_query.as_str(), &flat_values).await {
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
             => return web::HttpResponse::UnprocessableEntity().finish(),
         Err(e) => {
@@ -88,7 +89,7 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>)
         flat_values.extend_from_slice(&[category_id, &new_id]);
     }
 
-    match db_conn.execute(categories_query.as_str(), &flat_values).await {
+    match transaction.execute(categories_query.as_str(), &flat_values).await {
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
             => return web::HttpResponse::UnprocessableEntity().finish(),
         Err(e) => {
@@ -111,7 +112,7 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>)
         flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
     }
 
-    match db_conn.execute(ingredients_query.as_str(), &flat_values).await {
+    match transaction.execute(ingredients_query.as_str(), &flat_values).await {
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
             => return web::HttpResponse::UnprocessableEntity().finish(),
         Err(e) => {
@@ -122,6 +123,7 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>)
     }
 
     //TODO add location with URI
+    transaction.commit().await.expect("Error when commiting transaction");
     web::HttpResponse::Created().finish()
 }
 
