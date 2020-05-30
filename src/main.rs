@@ -2,8 +2,10 @@ extern crate actix_web;
 extern crate tokio_postgres;
 extern crate simplelog;
 extern crate log;
+extern crate config;
 
 use actix_web::{web, App, HttpServer};
+use bb8;
 use log::*;
 use simplelog::*;
 use tokio_postgres::NoTls;
@@ -12,10 +14,13 @@ use tokio;
 mod resources;
 mod handlers;
 mod utils;
+mod database;
+
+use database::Pool;
 
 
-async fn start_web_server(db_conn: tokio_postgres::Client) -> std::io::Result<()> {
-    let mydata = web::Data::new(db_conn);
+async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
+    let mydata = web::Data::new(db_pool);
     HttpServer::new(move || App::new()
         .app_data(mydata.clone())
         .service(web::scope("/v1/")
@@ -30,17 +35,6 @@ async fn start_web_server(db_conn: tokio_postgres::Client) -> std::io::Result<()
     .bind("127.0.0.1:8080")?.run().await
 }
 
-async fn get_db_conn() -> Result<tokio_postgres::Client, tokio_postgres::Error> {
-    let (client, connection) =
-        tokio_postgres::connect("host=localhost user=valentin dbname=pick_eat", NoTls).await?;
-
-    tokio::spawn(async move {
-        if let Err(e) = connection.await {
-            eprintln!("connection error: {}", e);
-        }
-    });
-    Ok(client)
-}
 
 fn setup_logging() {
     let pickeat_log_config = ConfigBuilder::new()
@@ -73,7 +67,7 @@ fn setup_logging() {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     info!("Starting");
-    let db_conn = get_db_conn().await?;
-    start_web_server(db_conn).await?;
+    let db_pool = database::get_pool().await?;
+    start_web_server(db_pool).await?;
     Ok(())
 }

@@ -1,6 +1,7 @@
 use actix_web::{get, post, put, delete, web, Responder};
+use crate::database::Pool;
 use log::*;
-use tokio_postgres::{Client, error::SqlState, types::ToSql};
+use tokio_postgres::{error::SqlState, types::ToSql};
 
 use crate::resources::{
     category::DBCategory,
@@ -26,8 +27,9 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/recipes")]
-pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_conn: web::Data<Client>) -> impl Responder {
+pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>) -> impl Responder {
     //TODO multiple inserts so we need a transaction
+    let mut db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_recipe);
     let recipe_query = "\
         INSERT INTO recipes \
@@ -124,7 +126,8 @@ pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_conn: web::Data<Client
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Responder {
+pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
     let id = id.into_inner();
     let recipe_query = "\
         SELECT \

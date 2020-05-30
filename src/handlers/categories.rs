@@ -1,9 +1,7 @@
 use actix_web::{get, post, put, delete, web, Responder};
+use crate::database::Pool;
 use log::*;
-use tokio_postgres::{
-    Client,
-    error::SqlState
-};
+use tokio_postgres::error::SqlState;
 
 use crate::resources::category::{DBCategory, NewCategory, CategoryUpdate};
 
@@ -22,7 +20,8 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/categories")]
-pub async fn add_one(new_category: web::Json<NewCategory>, db_conn: web::Data<Client>) -> impl Responder {
+pub async fn add_one(new_category: web::Json<NewCategory>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_category);
     let insert_query = "\
         INSERT INTO categories (name) \
@@ -45,7 +44,8 @@ pub async fn add_one(new_category: web::Json<NewCategory>, db_conn: web::Data<Cl
 }
 
 #[get("/categories/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_conn: web::Data<Client>) -> impl Responder {
+pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
     let id = id.into_inner();
     let query = "\
         SELECT \
