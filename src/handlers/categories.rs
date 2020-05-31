@@ -55,9 +55,9 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
         WHERE id = $1 \
     ";
 
-    let category = match db_conn.query(query, &[&id])
+    let category: category::FromDB = match db_conn.query(query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => category::FromDB::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Ok(_) => return web::HttpResponse::InternalServerError().finish(),
             Err(e) => {

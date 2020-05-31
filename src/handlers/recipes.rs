@@ -199,9 +199,9 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
             },
     };
 
-    let categories: Vec<_> = match db_conn.query(categories_query, &[&id])
+    let categories: Vec<category::FromDB> = match db_conn.query(categories_query, &[&id])
         .await {
-            Ok(rows) => rows.iter().map(|r| category::FromDB::from(r)).collect(),
+            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish()
