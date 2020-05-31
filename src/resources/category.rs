@@ -1,25 +1,25 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DBCategory {
+pub struct FromDB {
     pub(crate) id: i32,
     pub(crate) name: String
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct NewCategory {
+pub struct New {
     pub(crate) name: String
 }
 
 #[derive(Debug, Deserialize)]
-pub struct CategoryUpdate {
+pub struct Update {
     pub(crate) name: Option<String>
 }
 
-impl From<&tokio_postgres::row::Row> for DBCategory {
+impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
-        DBCategory {
+        FromDB {
             id: row.get("id"),
             name: row.get("name")
         }

@@ -3,7 +3,7 @@ use crate::database::Pool;
 use log::*;
 use tokio_postgres::error::SqlState;
 
-use crate::resources::category::{DBCategory, NewCategory, CategoryUpdate};
+use crate::resources::category;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -20,7 +20,7 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/categories")]
-pub async fn add_one(new_category: web::Json<NewCategory>, db_pool: web::Data<Pool>) -> impl Responder {
+pub async fn add_one(new_category: web::Json<category::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_category);
     let insert_query = "\
@@ -57,7 +57,7 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
 
     let category = match db_conn.query(query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => DBCategory::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => category::FromDB::from(&rows[0]),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Ok(_) => return web::HttpResponse::InternalServerError().finish(),
             Err(e) => {
