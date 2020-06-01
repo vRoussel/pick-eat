@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2" last-position="187,23" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.2" last-position="179,22" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres">
 <role name="valentin"
       createdb="true"
@@ -175,7 +175,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="quantity_units" layer="0" collapse-mode="2" max-obj-count="3">
+<table name="units" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1580" y="740"/>
@@ -189,13 +189,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="short_name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="quantity_units_pk" type="pk-constr" table="public.quantity_units">
+	<constraint name="units_pk" type="pk-constr" table="public.units">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="quantities_uq_full_name" type="uq-constr" table="public.quantity_units">
+	<constraint name="units_uq_full_name" type="uq-constr" table="public.units">
 		<columns names="full_name" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="quantities_uq_short_name" type="uq-constr" table="public.quantity_units">
+	<constraint name="units_uq_short_name" type="uq-constr" table="public.units">
 		<columns names="short_name" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -213,7 +213,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <constraint name="ingredients_fk_default_unit" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.quantity_units" table="public.ingredients">
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.units" table="public.ingredients">
 	<columns names="default_unit_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -231,7 +231,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <constraint name="recipes_ingredients_fk_unit_id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.quantity_units" table="public.recipes_ingredients">
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.units" table="public.recipes_ingredients">
 	<columns names="unit_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -292,7 +292,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <relationship name="rel_ingredients_quantity_units" type="relfk" layer="0"
 	 src-table="public.ingredients"
-	 dst-table="public.quantity_units" reference-fk="ingredients_fk_default_unit"
+	 dst-table="public.units" reference-fk="ingredients_fk_default_unit"
 	 src-required="false" dst-required="false">
 	<label ref-type="name-label">
 		<position x="-5.74573" y="-21.8542"/>
@@ -301,7 +301,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <relationship name="rel_recipes_ingredients_quantity_units" type="relfk" layer="0"
 	 src-table="public.recipes_ingredients"
-	 dst-table="public.quantity_units" reference-fk="recipes_ingredients_fk_unit_id"
+	 dst-table="public.units" reference-fk="recipes_ingredients_fk_unit_id"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

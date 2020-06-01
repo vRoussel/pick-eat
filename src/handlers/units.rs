@@ -24,7 +24,7 @@ pub async fn add_one(new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_unit);
     let insert_query = "\
-        INSERT INTO quantity_units (full_name, short_name) \
+        INSERT INTO units (full_name, short_name) \
             VALUES ($1, $2) \
         RETURNING id;
     ";
@@ -52,7 +52,7 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
             id, \
             full_name, \
             short_name \
-        FROM quantity_units \
+        FROM units \
         WHERE id = $1 \
     ";
 

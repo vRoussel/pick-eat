@@ -181,7 +181,7 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
         FROM \
             ingredients as i, \
             recipes_ingredients as ri \
-            LEFT JOIN quantity_units as u \
+            LEFT JOIN units as u \
             ON ri.unit_id = u.id \
         WHERE \
             i.id = ri.ingredient_id \
