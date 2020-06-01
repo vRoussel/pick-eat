@@ -1,40 +1,47 @@
 use serde::{Deserialize, Serialize};
-use super::unit::DBUnit;
+use super::unit;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DBIngredient {
+pub struct FromDB {
     pub(crate) id: i32,
     pub(crate) name: String,
-    pub(crate) default_unit: Option<DBUnit>
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct QuantifiedIngredient {
-    id: i32,
-    name: String,
-    quantity: Option<i16>,
-    unit: Option<DBUnit>
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct QuantifiedIngredientId {
-    pub(crate) id: i32,
-    pub(crate) quantity: Option<i16>,
-    pub(crate) unit_id: Option<i32>
+    pub(crate) default_unit: Option<unit::FromDB>
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct NewIngredient {
+pub struct New {
     pub(crate) name: String,
     pub(crate) default_unit_id: Option<i32>
 }
 
-impl From<&tokio_postgres::row::Row> for DBIngredient {
+pub mod quantified {
+    use serde::{Deserialize, Serialize};
+    use super::unit;
+
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct Full {
+        pub(crate) id: i32,
+        pub(crate) name: String,
+        pub(crate) quantity: Option<i16>,
+        pub(crate) unit: Option<unit::FromDB>
+    }
+
+    #[derive(Debug, Deserialize)]
+    #[serde(deny_unknown_fields)]
+    pub struct Ref {
+        pub(crate) id: i32,
+        pub(crate) quantity: Option<i16>,
+        pub(crate) unit_id: Option<i32>
+    }
+}
+
+
+impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let default_unit = match row.try_get("default_unit_id") {
             Ok(unit_id) => Some(
-                DBUnit {
+                unit::FromDB {
                     id: unit_id,
                     full_name: row.get("default_unit_full_name"),
                     short_name: row.get("default_unit_short_name")
@@ -43,7 +50,7 @@ impl From<&tokio_postgres::row::Row> for DBIngredient {
             Err(_) => None
         };
 
-        DBIngredient {
+        FromDB {
             id: row.get("id"),
             name: row.get("name"),
             default_unit: default_unit
@@ -51,11 +58,11 @@ impl From<&tokio_postgres::row::Row> for DBIngredient {
     }
 }
 
-impl From<&tokio_postgres::row::Row> for QuantifiedIngredient {
+impl From<&tokio_postgres::row::Row> for quantified::Full {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let unit = match row.try_get("unit_id") {
             Ok(unit_id) => Some(
-                DBUnit {
+                unit::FromDB {
                     id: unit_id,
                     full_name: row.get("unit_full_name"),
                     short_name: row.get("unit_short_name")
@@ -64,7 +71,7 @@ impl From<&tokio_postgres::row::Row> for QuantifiedIngredient {
             Err(_) => None
         };
 
-        QuantifiedIngredient {
+        quantified::Full {
             id: row.get("id"),
             name: row.get("name"),
             quantity: row.get("quantity"),

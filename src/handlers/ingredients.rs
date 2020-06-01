@@ -3,7 +3,7 @@ use crate::database::Pool;
 use log::*;
 use tokio_postgres::{error::SqlState};
 
-use crate::resources::ingredient::{DBIngredient, NewIngredient};
+use crate::resources::ingredient;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -20,7 +20,7 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/ingredients")]
-pub async fn add_one(new_ingredient: web::Json<NewIngredient>, db_pool: web::Data<Pool>) -> impl Responder {
+pub async fn add_one(new_ingredient: web::Json<ingredient::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_ingredient);
     let insert_query = "\
@@ -64,9 +64,9 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
             i.id = $1 \
     ";
 
-    let ingredient = match db_conn.query(query, &[&id])
+    let ingredient: ingredient::FromDB = match db_conn.query(query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => DBIngredient::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Err(e) => {error!("{}", e); return web::HttpResponse::InternalServerError().finish()},
             _ => return web::HttpResponse::InternalServerError().finish(),

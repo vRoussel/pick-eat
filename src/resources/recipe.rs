@@ -1,17 +1,17 @@
 use serde::{Deserialize, Serialize};
 use super::category;
-use super::tag::DBTag;
-use super::unit::DBUnit;
-use super::ingredient::{QuantifiedIngredient, QuantifiedIngredientId};
+use super::tag;
+use super::ingredient;
+use super::ingredient::quantified as QIngredient;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DBRecipe {
     pub(crate) id: i32,
     pub(crate) name: String,
     pub(crate) desc: String,
-    pub(crate) q_ingredients: Vec<QuantifiedIngredient>,
+    pub(crate) q_ingredients: Vec<QIngredient::Full>,
     pub(crate) categories: Vec<category::FromDB>,
-    pub(crate) tags: Vec<DBTag>,
+    pub(crate) tags: Vec<tag::FromDB>,
     pub(crate) prep_time_min: i16,
     pub(crate) cook_time_min: i16,
     pub(crate) image: Vec<u8>,
@@ -24,7 +24,7 @@ pub struct DBRecipe {
 pub struct NewRecipe {
     pub(crate) name: String,
     pub(crate) desc: String,
-    pub(crate) q_ingredient_ids: Vec<QuantifiedIngredientId>,
+    pub(crate) q_ingredient_ids: Vec<QIngredient::Ref>,
     pub(crate) category_ids: Vec<i32>,
     pub(crate) tag_ids: Vec<i32>,
     pub(crate) prep_time_min: i16,
