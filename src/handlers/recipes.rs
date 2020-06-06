@@ -6,7 +6,7 @@ use tokio_postgres::{error::SqlState, types::ToSql};
 use crate::resources::{
     category,
     tag,
-    recipe::{DBRecipe, NewRecipe},
+    recipe,
     ingredient,
     ingredient::quantified as QIngredient
 };
@@ -28,7 +28,7 @@ pub async fn get_all() -> impl Responder {
 }
 
 #[post("/recipes")]
-pub async fn add_one(new_recipe: web::Json<NewRecipe>, db_pool: web::Data<Pool>) -> impl Responder {
+pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool>) -> impl Responder {
     //TODO multiple inserts so we need a transaction
     let mut db_conn = db_pool.get().await.unwrap();
     let transaction = db_conn.transaction().await.expect("Unable to start db transaction");
@@ -189,9 +189,9 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
     ";
 
 
-    let mut recipe = match db_conn.query(recipe_query, &[&id])
+    let mut recipe: recipe::FromDB = match db_conn.query(recipe_query, &[&id])
         .await {
-            Ok(rows) if rows.len() == 1 => DBRecipe::from(&rows[0]),
+            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
             Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
             Ok(_) => return web::HttpResponse::InternalServerError().finish(),
             Err(e) => {

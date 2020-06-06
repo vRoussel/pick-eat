@@ -5,7 +5,7 @@ use super::ingredient;
 use super::ingredient::quantified as QIngredient;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DBRecipe {
+pub struct FromDB {
     pub(crate) id: i32,
     pub(crate) name: String,
     pub(crate) desc: String,
@@ -21,7 +21,7 @@ pub struct DBRecipe {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct NewRecipe {
+pub struct New {
     pub(crate) name: String,
     pub(crate) desc: String,
     pub(crate) q_ingredient_ids: Vec<QIngredient::Ref>,
@@ -34,9 +34,9 @@ pub struct NewRecipe {
 }
 
 
-impl From<&tokio_postgres::row::Row> for DBRecipe {
+impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
-        DBRecipe {
+        FromDB {
             id: row.get("id"),
             name: row.get("name"),
             desc: row.get("description"),
