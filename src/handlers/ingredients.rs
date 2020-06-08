@@ -9,7 +9,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
        .service(add_one)
        .service(get_one)
-       .service(modify_or_create_one)
+       .service(modify_one)
        .service(delete_one)
     ;
 }
@@ -78,8 +78,33 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
 }
 
 #[put("/ingredients/{id}")]
-pub async fn modify_or_create_one(id: web::Path<String>) -> impl Responder {
-    format!("Put ingredient {}", id)
+pub async fn modify_one(id: web::Path<i32>, new_ingredient: web::Json<ingredient::New>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
+    let id = id.into_inner();
+    trace!("{:#?}", new_ingredient);
+    let update_query = "\
+        UPDATE ingredients SET \
+            name = $1, \
+            default_unit_id = $2 \
+        WHERE id = $3 \
+        RETURNING id;
+    ";
+    match db_conn.query(update_query,
+        &[&new_ingredient.name, &new_ingredient.default_unit_id, &id])
+        .await {
+            Ok(rows) if rows.len() == 0
+                => return web::HttpResponse::NotFound().finish(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                => return web::HttpResponse::Conflict().finish(),
+            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+                => return web::HttpResponse::UnprocessableEntity().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+            Ok(_) => ()
+        };
+    web::HttpResponse::Ok().finish()
 }
 
 #[delete("/ingredients/{id}")]

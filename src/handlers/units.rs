@@ -9,7 +9,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
        .service(add_one)
        .service(get_one)
-       .service(modify_or_create_one)
+       .service(modify_one)
        .service(delete_one)
     ;
 }
@@ -72,8 +72,31 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
 }
 
 #[put("/units/{id}")]
-pub async fn modify_or_create_one(id: web::Path<String>) -> impl Responder {
-    format!("Put unit {}", id)
+pub async fn modify_one(id: web::Path<i32>, new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
+    let id = id.into_inner();
+    trace!("{:#?}", new_unit);
+    let update_query = "\
+        UPDATE units SET \
+            full_name = $1, \
+            short_name = $2, \
+        WHERE id = $3 \
+        RETURNING id;
+    ";
+    match db_conn.query(update_query,
+        &[&new_unit.full_name, &new_unit.short_name, &id])
+        .await {
+            Ok(rows) if rows.len() == 0
+                => return web::HttpResponse::NotFound().finish(),
+            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+                => return web::HttpResponse::Conflict().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+            Ok(_) => ()
+        };
+    web::HttpResponse::Ok().finish()
 }
 
 #[delete("/units/{id}")]
