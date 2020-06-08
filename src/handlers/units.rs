@@ -1,4 +1,4 @@
-use actix_web::{get, post, put, delete, web, Responder};
+use actix_web::{get, post, put, delete, web, Responder, http};
 use crate::database::Pool;
 use log::*;
 use tokio_postgres::error::SqlState;
@@ -40,7 +40,9 @@ pub async fn add_one(new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -
             }
         };
     //TODO add location with URI
-    web::HttpResponse::Created().finish()
+    web::HttpResponse::Created()
+        .set_header(http::header::LOCATION, format!("/{}", new_id))
+        .finish()
 }
 
 #[get("/units/{id}")]

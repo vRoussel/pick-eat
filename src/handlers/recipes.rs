@@ -1,4 +1,4 @@
-use actix_web::{get, post, put, delete, web, Responder};
+use actix_web::{get, post, put, delete, web, Responder, http};
 use crate::database::Pool;
 use log::*;
 use tokio_postgres::{error::SqlState, types::ToSql};
@@ -123,9 +123,10 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
         _ => ()
     }
 
-    //TODO add location with URI
     transaction.commit().await.expect("Error when commiting transaction");
-    web::HttpResponse::Created().finish()
+    web::HttpResponse::Created()
+        .set_header(http::header::LOCATION, format!("/{}", new_id))
+        .finish()
 }
 
 #[get("/recipes/{id}")]
