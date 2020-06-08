@@ -29,7 +29,6 @@ pub async fn get_all() -> impl Responder {
 
 #[post("/recipes")]
 pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool>) -> impl Responder {
-    //TODO multiple inserts so we need a transaction
     let mut db_conn = db_pool.get().await.unwrap();
     let transaction = db_conn.transaction().await.expect("Unable to start db transaction");
     trace!("{:#?}", new_recipe);
@@ -46,8 +45,9 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
         ]).await {
             Ok(rows) => rows[0].get::<&str,i32>("id"),
             Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                //TODO add location with URI
-                => return web::HttpResponse::Conflict().finish(),
+                //TODO add location with URI or error message
+                => return web::HttpResponse::Conflict()
+                    .finish(),
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish();

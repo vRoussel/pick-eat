@@ -39,7 +39,6 @@ pub async fn add_one(new_category: web::Json<category::New>, db_pool: web::Data<
                 return web::HttpResponse::InternalServerError().finish();
             }
         };
-    //TODO add location with URI
     web::HttpResponse::Created()
         .set_header(http::header::LOCATION, format!("/{}", new_id))
         .finish()
