@@ -49,14 +49,14 @@ fn setup_logging() {
     let init_log =
         CombinedLogger::init(
             vec![
-                TermLogger::new(LevelFilter::Debug, pickeat_log_config.clone(), TerminalMode::Mixed).unwrap(),
+                TermLogger::new(LevelFilter::Trace, pickeat_log_config.clone(), TerminalMode::Mixed).unwrap(),
                 TermLogger::new(LevelFilter::Warn, others_log_config.clone(), TerminalMode::Mixed).unwrap(),
             ]
     );
     if let Err(_) = init_log {
         CombinedLogger::init(
             vec![
-                SimpleLogger::new(LevelFilter::Debug, pickeat_log_config.clone()),
+                SimpleLogger::new(LevelFilter::Trace, pickeat_log_config.clone()),
                 SimpleLogger::new(LevelFilter::Warn, others_log_config.clone()),
             ]
         ).expect("Could not setup logging");
