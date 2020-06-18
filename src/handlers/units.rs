@@ -100,6 +100,22 @@ pub async fn modify_one(id: web::Path<i32>, new_unit: web::Json<unit::New>, db_p
 }
 
 #[delete("/units/{id}")]
-pub async fn delete_one(id: web::Path<String>) -> impl Responder {
-    format!("Delete unit {}", id)
+pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
+    let db_conn = db_pool.get().await.unwrap();
+    let id = id.into_inner();
+    let delete_query = "\
+        DELETE FROM units \
+        WHERE id = $1 \
+        RETURNING id;
+    ";
+    match db_conn.query(delete_query, &[&id])
+        .await {
+            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+            Ok(_) => (),
+        };
+    web::HttpResponse::NoContent().finish()
 }
