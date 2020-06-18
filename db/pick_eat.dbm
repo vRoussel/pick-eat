@@ -243,7 +243,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <constraint name="recipes_categories_fk_category_id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.categories" table="public.recipes_categories">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.categories" table="public.recipes_categories">
 	<columns names="category_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
