@@ -55,72 +55,78 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
         };
 
     // Tags
-    let values_query_params = gen_query_params(new_recipe.tag_ids.len(), 2);
-    let tags_query = format!("\
-        INSERT INTO recipes_tags \
-        (tag_id, recipe_id) \
-        VALUES {}; \
-    ", values_query_params);
+    if !new_recipe.tag_ids.is_empty() {
+        let values_query_params = gen_query_params(new_recipe.tag_ids.len(), 2);
+        let tags_query = format!("\
+            INSERT INTO recipes_tags \
+            (tag_id, recipe_id) \
+            VALUES {}; \
+        ", values_query_params);
 
-    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-    for tag_id in &new_recipe.tag_ids {
-        flat_values.extend_from_slice(&[tag_id, &new_id]);
-    }
+        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+        for tag_id in &new_recipe.tag_ids {
+            flat_values.extend_from_slice(&[tag_id, &new_id]);
+        }
 
-    match transaction.execute(tags_query.as_str(), &flat_values).await {
-        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
-            => return web::HttpResponse::UnprocessableEntity().finish(),
-        Err(e) => {
-            error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
-        },
-        _ => ()
+        match transaction.execute(tags_query.as_str(), &flat_values).await {
+            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+                => return web::HttpResponse::UnprocessableEntity().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            },
+            _ => ()
+        }
     }
 
     // Categories
-    let values_query_params = gen_query_params(new_recipe.category_ids.len(), 2);
-    let categories_query = format!("\
-        INSERT INTO recipes_categories \
-        (category_id, recipe_id) \
-        VALUES {}; \
-    ", values_query_params);
+    if !new_recipe.category_ids.is_empty() {
+        let values_query_params = gen_query_params(new_recipe.category_ids.len(), 2);
+        let categories_query = format!("\
+            INSERT INTO recipes_categories \
+            (category_id, recipe_id) \
+            VALUES {}; \
+        ", values_query_params);
 
-    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-    for category_id in &new_recipe.category_ids {
-        flat_values.extend_from_slice(&[category_id, &new_id]);
-    }
+        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+        for category_id in &new_recipe.category_ids {
+            flat_values.extend_from_slice(&[category_id, &new_id]);
+        }
 
-    match transaction.execute(categories_query.as_str(), &flat_values).await {
-        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
-            => return web::HttpResponse::UnprocessableEntity().finish(),
-        Err(e) => {
-            error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
-        },
-        _ => ()
+        match transaction.execute(categories_query.as_str(), &flat_values).await {
+            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+                => return web::HttpResponse::UnprocessableEntity().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            },
+            _ => ()
+        }
     }
 
     // Ingredients
-    let values_query_params = gen_query_params(new_recipe.q_ingredient_ids.len(), 4);
-    let ingredients_query = format!("\
-        INSERT INTO recipes_ingredients \
-        (recipe_id, ingredient_id, quantity, unit_id) \
-        VALUES {}; \
-    ", values_query_params);
+    if !new_recipe.q_ingredient_ids.is_empty() {
+        let values_query_params = gen_query_params(new_recipe.q_ingredient_ids.len(), 4);
+        let ingredients_query = format!("\
+            INSERT INTO recipes_ingredients \
+            (recipe_id, ingredient_id, quantity, unit_id) \
+            VALUES {}; \
+        ", values_query_params);
 
-    let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-    for ingr in &new_recipe.q_ingredient_ids {
-        flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
-    }
+        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
+        for ingr in &new_recipe.q_ingredient_ids {
+            flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
+        }
 
-    match transaction.execute(ingredients_query.as_str(), &flat_values).await {
-        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
-            => return web::HttpResponse::UnprocessableEntity().finish(),
-        Err(e) => {
-            error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
-        },
-        _ => ()
+        match transaction.execute(ingredients_query.as_str(), &flat_values).await {
+            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
+                => return web::HttpResponse::UnprocessableEntity().finish(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            },
+            _ => ()
+        }
     }
 
     transaction.commit().await.expect("Error when commiting transaction");
