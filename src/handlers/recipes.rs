@@ -34,14 +34,15 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
     trace!("{:#?}", new_recipe);
     let recipe_query = "\
         INSERT INTO recipes \
-        (name, description, preparation_time_min, cooking_time_min, image, instructions) \
-        VALUES ($1, $2, $3, $4, $5, $6) \
+        (name, description, preparation_time_min, cooking_time_min, image, instructions, n_shares) \
+        VALUES ($1, $2, $3, $4, $5, $6, $7) \
         RETURNING id; \
     ";
     let new_id = match transaction.query(recipe_query,
         &[&new_recipe.name, &new_recipe.desc,
           &new_recipe.prep_time_min, &new_recipe.cook_time_min,
-          &new_recipe.image, &new_recipe.instructions
+          &new_recipe.image, &new_recipe.instructions,
+          &new_recipe.n_shares
         ]).await {
             Ok(rows) => rows[0].get::<&str,i32>("id"),
             Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
@@ -141,7 +142,8 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
             cooking_time_min, \
             image, \
             publication_date, \
-            instructions \
+            instructions, \
+            n_shares \
         FROM recipes \
         WHERE id = $1 \
     ";
@@ -247,15 +249,16 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             preparation_time_min = $3, \
             cooking_time_min = $4, \
             image = $5, \
-            instructions = $6 \
-        WHERE id = $7 \
+            instructions = $6, \
+            n_shares = $7 \
+        WHERE id = $8 \
         RETURNING id; \
     ";
     match transaction.query(recipe_query,
         &[&new_recipe.name, &new_recipe.desc,
           &new_recipe.prep_time_min, &new_recipe.cook_time_min,
           &new_recipe.image, &new_recipe.instructions,
-          &id
+          &new_recipe.n_shares, &id
         ]).await {
             Ok(rows) if rows.len() == 0
                 => return web::HttpResponse::NotFound().finish(),

@@ -31,6 +31,7 @@ CREATE TABLE public.recipes (
 	image bytea NOT NULL,
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
+	n_shares smallint NOT NULL,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 

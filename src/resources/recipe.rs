@@ -16,7 +16,8 @@ pub struct FromDB {
     pub(crate) cook_time_min: i16,
     pub(crate) image: Vec<u8>,
     pub(crate) publish_date: time::Date,
-    pub(crate) instructions: Vec<String>
+    pub(crate) instructions: Vec<String>,
+    pub(crate) n_shares: i16
 }
 
 #[derive(Debug, Deserialize)]
@@ -30,7 +31,8 @@ pub struct New {
     pub(crate) prep_time_min: i16,
     pub(crate) cook_time_min: i16,
     pub(crate) image: Vec<u8>,
-    pub(crate) instructions: Vec<String>
+    pub(crate) instructions: Vec<String>,
+    pub(crate) n_shares: i16
 }
 
 
@@ -47,7 +49,8 @@ impl From<&tokio_postgres::row::Row> for FromDB {
             cook_time_min: row.get("cooking_time_min"),
             image: row.get("image"),
             publish_date: row.get("publication_date"),
-            instructions: row.get("instructions")
+            instructions: row.get("instructions"),
+            n_shares: row.get("n_shares")
         }
     }
 }
