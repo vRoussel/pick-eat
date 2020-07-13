@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+
 use actix_web::{get, post, put, delete, web, Responder, http};
 use crate::database::Pool;
 use log::*;
 use tokio_postgres::{error::SqlState, types::ToSql};
+
+use serde::{Deserialize, Serialize};
 
 use crate::resources::{
     category,
@@ -10,7 +14,6 @@ use crate::resources::{
     ingredient,
     ingredient::quantified as QIngredient
 };
-
 use crate::utils::*;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -23,8 +26,141 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 #[get("/recipes")]
-pub async fn get_all() -> impl Responder {
-    "Get all recipes"
+pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
+    let (min, max) = params.range();
+    let db_conn = db_pool.get().await.unwrap();
+    let recipes_query = "\
+        SELECT \
+            id, \
+            name, \
+            description, \
+            preparation_time_min, \
+            cooking_time_min, \
+            image, \
+            publication_date, \
+            instructions, \
+            n_shares \
+        FROM recipes \
+        ORDER BY name
+        OFFSET $1
+        LIMIT $2
+    ";
+
+    let mut recipes: Vec<recipe::FromDB> = match db_conn.query(recipes_query, &[&(min-1), &(max-min+1)])
+        .await {
+            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+
+    let mut recipe_id_to_idx = HashMap::new();
+    for (i,r) in recipes.iter().enumerate() {
+        recipe_id_to_idx.insert(r.id, i);
+    }
+    let recipe_ids = recipe_id_to_idx.keys()
+                                  .map(|s| s as &(dyn ToSql + Sync))
+                                  .collect::<Vec<_>>();
+
+    let query_params = gen_sql_query_params(recipe_ids.len(), 1);
+    let categories_query = format!("\
+        SELECT \
+            rc.recipe_id, \
+            c.id, \
+            c.name \
+        FROM \
+            categories as c, \
+            recipes_categories as rc \
+        WHERE \
+            c.id = rc.category_id \
+            AND rc.recipe_id IN ({}) \
+    ", query_params);
+
+    match db_conn.query(categories_query.as_str(), &recipe_ids)
+        .await {
+            Ok(rows) => {
+                for r in &rows {
+                    let id: i32 = r.get("recipe_id");
+                    let idx  = recipe_id_to_idx.get(&id).unwrap();
+                    let recipe = recipes.get_mut(*idx).unwrap();
+                    recipe.categories.push(r.into());
+                }
+            }
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+    };
+
+
+    let tags_query = format!("\
+        SELECT \
+            rt.recipe_id, \
+            t.id, \
+            t.name \
+        FROM \
+            tags as t, \
+            recipes_tags as rt \
+        WHERE \
+            t.id = rt.tag_id \
+            AND rt.recipe_id IN ({}) \
+    ", query_params);
+
+    match db_conn.query(tags_query.as_str(), &recipe_ids)
+        .await {
+            Ok(rows) => {
+                for r in &rows {
+                    let id: i32 = r.get("recipe_id");
+                    let idx  = recipe_id_to_idx.get(&id).unwrap();
+                    let recipe = recipes.get_mut(*idx).unwrap();
+                    recipe.tags.push(r.into());
+                }
+            }
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+    };
+
+
+    let ingredients_query = format!("\
+        SELECT \
+            ri.recipe_id, \
+            i.id as id, \
+            i.name as name, \
+            ri.quantity as quantity, \
+            u.id as unit_id, \
+            u.full_name as unit_full_name, \
+            u.short_name as unit_short_name \
+        FROM \
+            ingredients as i, \
+            recipes_ingredients as ri \
+            LEFT JOIN units as u \
+            ON ri.unit_id = u.id \
+        WHERE \
+            i.id = ri.ingredient_id \
+            AND ri.recipe_id IN ({}) \
+    ", query_params);
+
+    match db_conn.query(ingredients_query.as_str(), &recipe_ids)
+        .await {
+            Ok(rows) => {
+                for r in &rows {
+                    let id: i32 = r.get("recipe_id");
+                    let idx  = recipe_id_to_idx.get(&id).unwrap();
+                    let recipe = recipes.get_mut(*idx).unwrap();
+                    recipe.q_ingredients.push(r.into());
+                }
+            }
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish()
+            },
+    };
+
+    web::HttpResponse::PartialContent().body(format!("{}", serde_json::to_string_pretty(&recipes).unwrap()))
 }
 
 #[post("/recipes")]
