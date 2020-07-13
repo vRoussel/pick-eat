@@ -39,7 +39,23 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             }
     };
 
-    web::HttpResponse::PartialContent().body(format!("{}", serde_json::to_string_pretty(&units).unwrap()))
+    let count_query = "SELECT count(*) FROM units";
+    let n_units: usize = match db_conn.query(count_query, &[])
+        .await {
+            Ok(rows) => rows[0].get::<usize,i64>(0) as usize,
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    let mut ret = web::HttpResponse::PartialContent();
+    if n_units == units.len() {
+        ret = web::HttpResponse::Ok();
+    }
+
+
+    ret.body(format!("{}", serde_json::to_string_pretty(&units).unwrap()))
 }
 
 #[post("/units")]

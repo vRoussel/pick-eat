@@ -160,7 +160,23 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             },
     };
 
-    web::HttpResponse::PartialContent().body(format!("{}", serde_json::to_string_pretty(&recipes).unwrap()))
+    let count_query = "SELECT count(*) FROM recipes";
+    let n_recipes: usize = match db_conn.query(count_query, &[])
+        .await {
+            Ok(rows) => rows[0].get::<usize,i64>(0) as usize,
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    let mut ret = web::HttpResponse::PartialContent();
+    if n_recipes == recipes.len() {
+        ret = web::HttpResponse::Ok();
+    }
+
+
+    ret.body(format!("{}", serde_json::to_string_pretty(&recipes).unwrap()))
 }
 
 #[post("/recipes")]
