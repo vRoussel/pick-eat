@@ -4,6 +4,7 @@ use log::*;
 use tokio_postgres::error::SqlState;
 
 use crate::resources::unit;
+use crate::utils::*;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -15,8 +16,30 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 #[get("/units")]
-pub async fn get_all() -> impl Responder {
-    "Get all units"
+pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
+    let (min, max) = params.range();
+    let db_conn = db_pool.get().await.unwrap();
+    let units_query = "\
+        SELECT \
+            id, \
+            full_name, \
+            short_name \
+        FROM units \
+        ORDER BY full_name
+        OFFSET $1
+        LIMIT $2
+    ";
+
+    let units: Vec<unit::FromDB> = match db_conn.query(units_query, &[&(min-1), &(max-min+1)])
+        .await {
+            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    web::HttpResponse::PartialContent().body(format!("{}", serde_json::to_string_pretty(&units).unwrap()))
 }
 
 #[post("/units")]
