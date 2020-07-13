@@ -56,7 +56,7 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
 
     // Tags
     if !new_recipe.tag_ids.is_empty() {
-        let values_query_params = gen_query_params(new_recipe.tag_ids.len(), 2);
+        let values_query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let tags_query = format!("\
             INSERT INTO recipes_tags \
             (tag_id, recipe_id) \
@@ -81,7 +81,7 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
 
     // Categories
     if !new_recipe.category_ids.is_empty() {
-        let values_query_params = gen_query_params(new_recipe.category_ids.len(), 2);
+        let values_query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let categories_query = format!("\
             INSERT INTO recipes_categories \
             (category_id, recipe_id) \
@@ -106,7 +106,7 @@ pub async fn add_one(new_recipe: web::Json<recipe::New>, db_pool: web::Data<Pool
 
     // Ingredients
     if !new_recipe.q_ingredient_ids.is_empty() {
-        let values_query_params = gen_query_params(new_recipe.q_ingredient_ids.len(), 4);
+        let values_query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let ingredients_query = format!("\
             INSERT INTO recipes_ingredients \
             (recipe_id, ingredient_id, quantity, unit_id) \
@@ -294,7 +294,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
     } else {
-        let query_params = gen_query_params(new_recipe.tag_ids.len(), 2);
+        let query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let insert_tags_query = format!("\
             INSERT INTO recipes_tags \
             (tag_id, recipe_id) \
@@ -316,7 +316,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
 
-        let query_params = gen_query_params_from(new_recipe.tag_ids.len(), 1, 2);
+        let query_params = gen_sql_query_params_from(new_recipe.tag_ids.len(), 1, 2);
         let remove_tags_query = format!("\
             DELETE FROM recipes_tags \
             WHERE \
@@ -350,7 +350,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
     } else {
-        let query_params = gen_query_params(new_recipe.category_ids.len(), 2);
+        let query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let insert_categories_query = format!("\
             INSERT INTO recipes_categories \
             (category_id, recipe_id) \
@@ -372,7 +372,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
 
-        let query_params = gen_query_params_from(new_recipe.category_ids.len(), 1, 2);
+        let query_params = gen_sql_query_params_from(new_recipe.category_ids.len(), 1, 2);
         let remove_categories_query = format!("\
             DELETE FROM recipes_categories \
             WHERE \
@@ -406,7 +406,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
     } else {
-        let query_params = gen_query_params(new_recipe.q_ingredient_ids.len(), 4);
+        let query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let insert_ingredients_query = format!("\
             INSERT INTO recipes_ingredients \
             (recipe_id, ingredient_id, quantity, unit_id) \
@@ -428,7 +428,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
             _ => ()
         }
 
-        let query_params = gen_query_params_from(new_recipe.q_ingredient_ids.len(), 1, 2);
+        let query_params = gen_sql_query_params_from(new_recipe.q_ingredient_ids.len(), 1, 2);
         let remove_ingredients_query = format!("\
             DELETE FROM recipes_ingredients \
             WHERE \

@@ -1,7 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 /// Helper function used for queries with 'batch insert'
-/// gen_query_params_from(2,3,1) will return: "($1,$2,$3),($4,$5,$6)"
-/// gen_query_params_from(2,3,2) will return: "($2,$3,$4),($5,$6,$7)"
-pub fn gen_query_params_from(n_rows: usize, n_params_per_row: usize, start_from: usize) -> String {
+/// gen_sql_query_params_from(2,3,1) will return: "($1,$2,$3),($4,$5,$6)"
+/// gen_sql_query_params_from(2,3,2) will return: "($2,$3,$4),($5,$6,$7)"
+pub fn gen_sql_query_params_from(n_rows: usize, n_params_per_row: usize, start_from: usize) -> String {
     let mut rows = Vec::with_capacity(n_rows);
     let mut n = start_from;
     for _ in 0..n_rows {
@@ -15,6 +17,7 @@ pub fn gen_query_params_from(n_rows: usize, n_params_per_row: usize, start_from:
     rows.join(",")
 }
 
-pub fn gen_query_params(n_rows: usize, n_params_per_row: usize) -> String {
-    gen_query_params_from(n_rows, n_params_per_row, 1)
+pub fn gen_sql_query_params(n_rows: usize, n_params_per_row: usize) -> String {
+    gen_sql_query_params_from(n_rows, n_params_per_row, 1)
+}
 }
