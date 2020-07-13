@@ -20,4 +20,18 @@ pub fn gen_sql_query_params_from(n_rows: usize, n_params_per_row: usize, start_f
 pub fn gen_sql_query_params(n_rows: usize, n_params_per_row: usize) -> String {
     gen_sql_query_params_from(n_rows, n_params_per_row, 1)
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HttpParams {
+    range: String
 }
+
+impl HttpParams {
+    pub fn range(&self) -> (i64,i64) {
+        let pair = self.range.split('-')
+            .map(|s| s.parse::<i64>().expect("Bad range"))
+            .collect::<Vec<_>>();
+        (pair[0], pair[1])
+    }
+}
+
