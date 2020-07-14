@@ -6,6 +6,8 @@ use tokio_postgres::{error::SqlState};
 use crate::resources::ingredient;
 use crate::utils::*;
 
+static MAX_PER_REQUEST: i64 = 100;
+
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
        .service(add_one)
@@ -17,8 +19,33 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 #[get("/ingredients")]
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
-    let (min, max) = params.range();
     let db_conn = db_pool.get().await.unwrap();
+
+    let count_query = "SELECT count(*) FROM ingredients";
+    let n_all_ingredients: i64 = match db_conn.query(count_query, &[])
+        .await {
+            Ok(rows) => rows[0].get(0),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    let accept_range = format!("ingredient {}", MAX_PER_REQUEST);
+
+    let (min, max) = params.range();
+    if max - min + 1 > MAX_PER_REQUEST {
+        return web::HttpResponse::BadRequest()
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    } else if min > n_all_ingredients {
+        let content_range = format!("{}-{}/{}", 0, 0, n_all_ingredients);
+        return web::HttpResponse::NoContent()
+            .set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    }
+
     let ingredients_query = "\
         SELECT \
             i.id as id, \
@@ -44,22 +71,17 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             }
     };
 
-    let count_query = "SELECT count(*) FROM ingredients";
-    let n_ingredients: usize = match db_conn.query(count_query, &[])
-        .await {
-            Ok(rows) => rows[0].get::<usize,i64>(0) as usize,
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-    };
+    let n_fetched_ingredients = ingredients.len() as i64;
 
     let mut ret = web::HttpResponse::PartialContent();
-    if n_ingredients == ingredients.len() {
+    if n_all_ingredients == n_fetched_ingredients {
         ret = web::HttpResponse::Ok();
     }
+    let content_range = format!("{}-{}/{}", min, min + n_fetched_ingredients - 1, n_all_ingredients);
 
-    ret.body(format!("{}", serde_json::to_string_pretty(&ingredients).unwrap()))
+    ret.set_header(http::header::CONTENT_RANGE, content_range)
+       .set_header(http::header::ACCEPT_RANGES, accept_range)
+       .body(format!("{}", serde_json::to_string_pretty(&ingredients).unwrap()))
 }
 
 #[post("/ingredients")]

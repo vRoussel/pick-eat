@@ -16,6 +16,8 @@ use crate::resources::{
 };
 use crate::utils::*;
 
+static MAX_PER_REQUEST: i64 = 50;
+
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
        .service(add_one)
@@ -27,8 +29,33 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 #[get("/recipes")]
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
-    let (min, max) = params.range();
     let db_conn = db_pool.get().await.unwrap();
+
+    let count_query = "SELECT count(*) FROM recipes";
+    let n_all_recipes: i64 = match db_conn.query(count_query, &[])
+        .await {
+            Ok(rows) => rows[0].get(0),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    let accept_range = format!("recipe {}", MAX_PER_REQUEST);
+
+    let (min, max) = params.range();
+    if max - min + 1 > MAX_PER_REQUEST {
+        return web::HttpResponse::BadRequest()
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    } else if min > n_all_recipes {
+        let content_range = format!("{}-{}/{}", 0, 0, n_all_recipes);
+        return web::HttpResponse::NoContent()
+            .set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    }
+
     let recipes_query = "\
         SELECT \
             id, \
@@ -160,23 +187,17 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             },
     };
 
-    let count_query = "SELECT count(*) FROM recipes";
-    let n_recipes: usize = match db_conn.query(count_query, &[])
-        .await {
-            Ok(rows) => rows[0].get::<usize,i64>(0) as usize,
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-    };
+    let n_fetched_recipes = recipes.len() as i64;
 
     let mut ret = web::HttpResponse::PartialContent();
-    if n_recipes == recipes.len() {
+    if n_all_recipes == n_fetched_recipes {
         ret = web::HttpResponse::Ok();
     }
+    let content_range = format!("{}-{}/{}", min, min + n_fetched_recipes - 1, n_all_recipes);
 
-
-    ret.body(format!("{}", serde_json::to_string_pretty(&recipes).unwrap()))
+    ret.set_header(http::header::CONTENT_RANGE, content_range)
+       .set_header(http::header::ACCEPT_RANGES, accept_range)
+       .body(format!("{}", serde_json::to_string_pretty(&recipes).unwrap()))
 }
 
 #[post("/recipes")]
