@@ -6,6 +6,8 @@ use tokio_postgres::error::SqlState;
 use crate::resources::category;
 use crate::utils::*;
 
+static MAX_PER_REQUEST: i64 = 100;
+
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
        .service(add_one)
@@ -17,8 +19,33 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 #[get("/categories")]
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
-    let (min, max) = params.range();
     let db_conn = db_pool.get().await.unwrap();
+
+    let count_query = "SELECT count(*) FROM categories";
+    let n_all_categories: i64 = match db_conn.query(count_query, &[])
+        .await {
+            Ok(rows) => rows[0].get(0),
+            Err(e) => {
+                error!("{}", e);
+                return web::HttpResponse::InternalServerError().finish();
+            }
+    };
+
+    let accept_range = format!("category {}", MAX_PER_REQUEST);
+
+    let (min, max) = params.range();
+    if max - min + 1 > MAX_PER_REQUEST {
+        return web::HttpResponse::BadRequest()
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    } else if min > n_all_categories {
+        let content_range = format!("{}-{}/{}", 0, 0, n_all_categories);
+        return web::HttpResponse::NoContent()
+            .set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range)
+            .finish()
+    }
+
     let categories_query = "\
         SELECT \
             id, \
@@ -38,21 +65,17 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             }
     };
 
-    let count_query = "SELECT count(*) FROM categories";
-    let n_categories: usize = match db_conn.query(count_query, &[])
-        .await {
-            Ok(rows) => rows[0].get::<usize,i64>(0) as usize,
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-    };
+    let n_fetched_categories = categories.len() as i64;
 
     let mut ret = web::HttpResponse::PartialContent();
-    if n_categories == categories.len() {
+    if n_all_categories == n_fetched_categories {
         ret = web::HttpResponse::Ok();
     }
-    ret.body(format!("{}", serde_json::to_string_pretty(&categories).unwrap()))
+    let content_range = format!("{}-{}/{}", min, min + n_fetched_categories - 1, n_all_categories);
+
+    ret.set_header(http::header::CONTENT_RANGE, content_range)
+       .set_header(http::header::ACCEPT_RANGES, accept_range)
+       .body(format!("{}", serde_json::to_string_pretty(&categories).unwrap()))
 }
 
 #[post("/categories")]
