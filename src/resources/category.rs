@@ -12,11 +12,6 @@ pub struct New {
     pub(crate) name: String
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Update {
-    pub(crate) name: Option<String>
-}
-
 impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         FromDB {
