@@ -76,22 +76,17 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 pub async fn add_one(new_category: web::Json<category::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_category);
-    let insert_query = "\
-        INSERT INTO categories (name) \
-            VALUES ($1) \
-        RETURNING id;
-    ";
-    let new_id = match db_conn.query(insert_query, &[&new_category.name])
-        .await {
-            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                //TODO add location with URI
-                => return web::HttpResponse::Conflict().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-        };
+    let new_id = match category::add_one(&db_conn, &new_category).await {
+        Ok(v) => v,
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
+            return web::HttpResponse::Conflict().finish();
+        },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
+    };
+
     web::HttpResponse::Created()
         .set_header(http::header::LOCATION, format!("/{}", new_id))
         .finish()

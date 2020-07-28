@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Client;
+use tokio_postgres::{Client, error::Error};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FromDB {
@@ -22,7 +22,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
     }
 }
 
-pub async fn get_many(db_conn: &Client, min: i64, max: i64) -> Result<Vec<FromDB>, Box<dyn std::error::Error>> {
+pub async fn get_many(db_conn: &Client, min: i64, max: i64) -> Result<Vec<FromDB>, Error> {
     let categories_query = "\
         SELECT \
             id, \
@@ -36,5 +36,15 @@ pub async fn get_many(db_conn: &Client, min: i64, max: i64) -> Result<Vec<FromDB
     db_conn.query(categories_query, &[&(min-1), &(max-min+1)])
         .await
         .map(|rows|rows.iter().map(|r| r.into()).collect())
-        .map_err(|e|e.into())
+}
+
+pub async fn add_one(db_conn: &Client, new_category: &New) -> Result<i32, Error> {
+    let insert_query = "\
+        INSERT INTO categories (name) \
+            VALUES ($1) \
+        RETURNING id;
+    ";
+    db_conn.query(insert_query, &[&new_category.name])
+        .await
+        .map(|rows| rows[0].get(0))
 }
