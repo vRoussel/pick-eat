@@ -22,8 +22,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let total_count: i64 = match get_total_count(&db_conn, "categories")
-        .await {
+    let total_count: i64 = match get_total_count(&db_conn, "categories").await {
             Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
@@ -48,27 +47,13 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
     }
 
     let (range_first, range_last) = range;
-
-    let categories_query = "\
-        SELECT \
-            id, \
-            name \
-        FROM categories \
-        ORDER BY name
-        OFFSET $1
-        LIMIT $2
-    ";
-
-    let categories: Vec<category::FromDB> = match db_conn.query(categories_query, &[&(min-1), &(max-min+1)])
-        .await {
-            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
+    let categories = match category::get_many(&db_conn, range_first, range_last).await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
     };
-
-
 
     let fetched_count = categories.len() as i64;
     let mut ret;
