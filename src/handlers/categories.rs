@@ -95,7 +95,6 @@ pub async fn add_one(new_category: web::Json<category::New>, db_pool: web::Data<
 #[get("/categories/{id}")]
 pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
     let query = "\
         SELECT \
             id, \
@@ -104,16 +103,15 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
         WHERE id = $1 \
     ";
 
-    let category: category::FromDB = match db_conn.query(query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Ok(_) => return web::HttpResponse::InternalServerError().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
+    let category = match category::get_one(&db_conn, id.into_inner()).await {
+        Ok(Some(v)) => v,
+        Ok(None) => { return web::HttpResponse::NotFound().finish(); },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
     };
+
     trace!("{}", serde_json::to_string_pretty(&category).unwrap());
     web::HttpResponse::Ok().json(category)
 }
@@ -121,45 +119,32 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
 #[put("/categories/{id}")]
 pub async fn modify_one(id: web::Path<i32>, new_category: web::Json<category::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
     trace!("{:#?}", new_category);
-    let update_query = "\
-        UPDATE categories SET \
-            name = $1 \
-        WHERE id = $2 \
-        RETURNING id;
-    ";
-    match db_conn.query(update_query, &[&new_category.name, &id])
-        .await {
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                => return web::HttpResponse::Conflict().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => (),
-        };
+
+    match category::modify_one(&db_conn, id.into_inner(), &new_category).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+            => return web::HttpResponse::Conflict().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::Ok().finish()
 }
 
 #[delete("/categories/{id}")]
 pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
-    let delete_query = "\
-        DELETE FROM categories \
-        WHERE id = $1 \
-        RETURNING id;
-    ";
-    match db_conn.query(delete_query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => (),
-        };
+
+    match category::delete_one(&db_conn, id.into_inner()).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::NoContent().finish()
 }

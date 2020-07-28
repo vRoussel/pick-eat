@@ -48,3 +48,40 @@ pub async fn add_one(db_conn: &Client, new_category: &New) -> Result<i32, Error>
         .await
         .map(|rows| rows[0].get(0))
 }
+
+pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
+    let query = "\
+        SELECT \
+            id, \
+            name \
+        FROM categories \
+        WHERE id = $1 \
+    ";
+
+    db_conn.query_opt(query, &[&id])
+        .await
+        .map(|opt| opt.map(|ref row| row.into()))
+}
+
+pub async fn modify_one(db_conn: &Client, id: i32, new_category: &New) -> Result<Option<()>, Error> {
+    let update_query = "\
+        UPDATE categories SET \
+            name = $1 \
+        WHERE id = $2 \
+        RETURNING id;
+    ";
+    db_conn.query_opt(update_query, &[&new_category.name, &id])
+        .await
+        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+}
+
+pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
+    let delete_query = "\
+        DELETE FROM categories \
+        WHERE id = $1 \
+        RETURNING id;
+    ";
+    db_conn.query_opt(delete_query, &[&id])
+        .await
+        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+}
