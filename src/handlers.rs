@@ -30,3 +30,11 @@ pub fn check_range(range: (i64,i64), max_range_size: i64, total_count: i64) -> R
 
     Ok(())
 }
+
+pub async fn get_total_count(db_conn: &tokio_postgres::Client, table_name: &str) -> Result<i64, Box<dyn std::error::Error>> {
+    let query = format!("SELECT count(*) FROM {}", table_name);
+    db_conn.query(query.as_str(), &[])
+        .await
+        .map(|rows| rows[0].get(0))
+        .map_err(|e|e.into())
+}
