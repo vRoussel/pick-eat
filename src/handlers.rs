@@ -3,3 +3,30 @@ pub mod ingredients;
 pub mod tags;
 pub mod categories;
 pub mod units;
+
+pub enum RangeError {
+    OutOfBounds,
+    TooWide,
+    Invalid
+}
+
+pub fn check_range(range: (i64,i64), max_range_size: i64, total_count: i64) -> Result<(),RangeError> {
+    let (range_first, range_last) = range;
+
+    //TODO < 0 not working
+    if range_first < 0 || range_last < 0
+       || range_last < range_first {
+        return Err(RangeError::Invalid);
+    }
+
+    let range_size = range_last - range_first + 1;
+    if range_size > max_range_size {
+        return Err(RangeError::TooWide);
+    }
+
+    if range_first > total_count {
+        return Err(RangeError::OutOfBounds);
+    }
+
+    Ok(())
+}
