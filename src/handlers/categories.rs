@@ -5,6 +5,7 @@ use tokio_postgres::error::SqlState;
 
 use crate::resources::category;
 use crate::utils::*;
+use super::*;
 
 static MAX_PER_REQUEST: i64 = 100;
 
@@ -21,10 +22,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let count_query = "SELECT count(*) FROM categories";
-    let n_all_categories: i64 = match db_conn.query(count_query, &[])
+    let total_count: i64 = match get_total_count(&db_conn, "categories")
         .await {
-            Ok(rows) => rows[0].get(0),
+            Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish();
@@ -33,18 +33,21 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 
     let accept_range = format!("category {}", MAX_PER_REQUEST);
 
-    let (min, max) = params.range();
-    if max - min + 1 > MAX_PER_REQUEST {
-        return web::HttpResponse::BadRequest()
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
-            .finish()
-    } else if min > n_all_categories {
-        let content_range = format!("{}-{}/{}", 0, 0, n_all_categories);
-        return web::HttpResponse::NoContent()
-            .set_header(http::header::CONTENT_RANGE, content_range)
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
+    let range = params.range();
+    if let Err(e) = check_range(range, MAX_PER_REQUEST, total_count) {
+        let content_range = format!("{}-{}/{}", 0, 0, total_count);
+        let mut ret = match e {
+            RangeError::OutOfBounds => web::HttpResponse::NoContent(),
+            RangeError::TooWide => web::HttpResponse::BadRequest(),
+            RangeError::Invalid => web::HttpResponse::BadRequest(),
+        };
+
+        return ret.set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range.clone())
             .finish()
     }
+
+    let (range_first, range_last) = range;
 
     let categories_query = "\
         SELECT \
@@ -65,13 +68,19 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
             }
     };
 
-    let n_fetched_categories = categories.len() as i64;
 
-    let mut ret = web::HttpResponse::PartialContent();
-    if n_all_categories == n_fetched_categories {
+
+    let fetched_count = categories.len() as i64;
+    let mut ret;
+    if fetched_count < total_count {
+        ret = web::HttpResponse::PartialContent();
+    } else {
         ret = web::HttpResponse::Ok();
     }
-    let content_range = format!("{}-{}/{}", min, min + n_fetched_categories - 1, n_all_categories);
+
+    let first_fetched = range_first;
+    let last_fetched = first_fetched + fetched_count - 1;
+    let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     ret.set_header(http::header::CONTENT_RANGE, content_range)
        .set_header(http::header::ACCEPT_RANGES, accept_range)
