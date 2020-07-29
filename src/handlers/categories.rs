@@ -95,13 +95,6 @@ pub async fn add_one(new_category: web::Json<category::New>, db_pool: web::Data<
 #[get("/categories/{id}")]
 pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let query = "\
-        SELECT \
-            id, \
-            name \
-        FROM categories \
-        WHERE id = $1 \
-    ";
 
     let category = match category::get_one(&db_conn, id.into_inner()).await {
         Ok(Some(v)) => v,

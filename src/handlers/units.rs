@@ -5,6 +5,7 @@ use tokio_postgres::error::SqlState;
 
 use crate::resources::unit;
 use crate::utils::*;
+use super::*;
 
 static MAX_PER_REQUEST: i64 = 100;
 
@@ -21,10 +22,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let count_query = "SELECT count(*) FROM units";
-    let n_all_units: i64 = match db_conn.query(count_query, &[])
-        .await {
-            Ok(rows) => rows[0].get(0),
+    let total_count: i64 = match get_total_count(&db_conn, "units").await {
+            Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish();
@@ -33,47 +32,40 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 
     let accept_range = format!("unit {}", MAX_PER_REQUEST);
 
-    let (min, max) = params.range();
-    if max - min + 1 > MAX_PER_REQUEST {
-        return web::HttpResponse::BadRequest()
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
-            .finish()
-    } else if min > n_all_units {
-        let content_range = format!("{}-{}/{}", 0, 0, n_all_units);
-        return web::HttpResponse::NoContent()
-            .set_header(http::header::CONTENT_RANGE, content_range)
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
+    let range = params.range();
+    if let Err(e) = check_range(range, MAX_PER_REQUEST, total_count) {
+        let content_range = format!("{}-{}/{}", 0, 0, total_count);
+        let mut ret = match e {
+            RangeError::OutOfBounds => web::HttpResponse::NoContent(),
+            RangeError::TooWide => web::HttpResponse::BadRequest(),
+            RangeError::Invalid => web::HttpResponse::BadRequest(),
+        };
+
+        return ret.set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range.clone())
             .finish()
     }
 
-    let units_query = "\
-        SELECT \
-            id, \
-            full_name, \
-            short_name \
-        FROM units \
-        ORDER BY full_name
-        OFFSET $1
-        LIMIT $2
-    ";
-
-    let units: Vec<unit::FromDB> = match db_conn.query(units_query, &[&(min-1), &(max-min+1)])
-        .await {
-            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
+    let (range_first, range_last) = range;
+    let units = match unit::get_many(&db_conn, range_first, range_last).await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
     };
 
-    let n_fetched_units = units.len() as i64;
-
-    let mut ret = web::HttpResponse::PartialContent();
-    if n_all_units == n_fetched_units {
+    let fetched_count = units.len() as i64;
+    let mut ret;
+    if fetched_count < total_count {
+        ret = web::HttpResponse::PartialContent();
+    } else {
         ret = web::HttpResponse::Ok();
     }
 
-    let content_range = format!("{}-{}/{}", min, min + n_fetched_units - 1, n_all_units);
+    let first_fetched = range_first;
+    let last_fetched = first_fetched + fetched_count - 1;
+    let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     ret.set_header(http::header::CONTENT_RANGE, content_range)
        .set_header(http::header::ACCEPT_RANGES, accept_range)
@@ -84,22 +76,17 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 pub async fn add_one(new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_unit);
-    let insert_query = "\
-        INSERT INTO units (full_name, short_name) \
-            VALUES ($1, $2) \
-        RETURNING id;
-    ";
-    let new_id = match db_conn.query(insert_query, &[&new_unit.full_name, &new_unit.short_name])
-        .await {
-            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                //TODO add location with URI
-                => return web::HttpResponse::Conflict().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-        };
+    let new_id = match unit::add_one(&db_conn, &new_unit).await {
+        Ok(v) => v,
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
+            return web::HttpResponse::Conflict().finish();
+        },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
+    };
+
     web::HttpResponse::Created()
         .set_header(http::header::LOCATION, format!("/{}", new_id))
         .finish()
@@ -108,75 +95,49 @@ pub async fn add_one(new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -
 #[get("/units/{id}")]
 pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
-    let query = "\
-        SELECT \
-            id, \
-            full_name, \
-            short_name \
-        FROM units \
-        WHERE id = $1 \
-    ";
 
-    let unit: unit::FromDB = match db_conn.query(query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Ok(_) => return web::HttpResponse::InternalServerError().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
+    let unit = match unit::get_one(&db_conn, id.into_inner()).await {
+        Ok(Some(v)) => v,
+        Ok(None) => { return web::HttpResponse::NotFound().finish(); },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
     };
-    web::HttpResponse::Ok().body(format!("{}", serde_json::to_string_pretty(&unit).unwrap()))
 
+    trace!("{}", serde_json::to_string_pretty(&unit).unwrap());
+    web::HttpResponse::Ok().json(unit)
 }
 
 #[put("/units/{id}")]
 pub async fn modify_one(id: web::Path<i32>, new_unit: web::Json<unit::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
     trace!("{:#?}", new_unit);
-    let update_query = "\
-        UPDATE units SET \
-            full_name = $1, \
-            short_name = $2, \
-        WHERE id = $3 \
-        RETURNING id;
-    ";
-    match db_conn.query(update_query,
-        &[&new_unit.full_name, &new_unit.short_name, &id])
-        .await {
-            Ok(rows) if rows.len() == 0
-                => return web::HttpResponse::NotFound().finish(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                => return web::HttpResponse::Conflict().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => ()
-        };
+
+    match unit::modify_one(&db_conn, id.into_inner(), &new_unit).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+            => return web::HttpResponse::Conflict().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::Ok().finish()
 }
 
 #[delete("/units/{id}")]
 pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
-    let delete_query = "\
-        DELETE FROM units \
-        WHERE id = $1 \
-        RETURNING id;
-    ";
-    match db_conn.query(delete_query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => (),
-        };
+
+    match unit::delete_one(&db_conn, id.into_inner()).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::NoContent().finish()
 }

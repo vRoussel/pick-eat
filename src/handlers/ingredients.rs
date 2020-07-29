@@ -5,6 +5,7 @@ use tokio_postgres::{error::SqlState};
 
 use crate::resources::ingredient;
 use crate::utils::*;
+use super::*;
 
 static MAX_PER_REQUEST: i64 = 100;
 
@@ -21,10 +22,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let count_query = "SELECT count(*) FROM ingredients";
-    let n_all_ingredients: i64 = match db_conn.query(count_query, &[])
-        .await {
-            Ok(rows) => rows[0].get(0),
+    let total_count: i64 = match get_total_count(&db_conn, "ingredients").await {
+            Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
                 return web::HttpResponse::InternalServerError().finish();
@@ -33,51 +32,40 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 
     let accept_range = format!("ingredient {}", MAX_PER_REQUEST);
 
-    let (min, max) = params.range();
-    if max - min + 1 > MAX_PER_REQUEST {
-        return web::HttpResponse::BadRequest()
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
-            .finish()
-    } else if min > n_all_ingredients {
-        let content_range = format!("{}-{}/{}", 0, 0, n_all_ingredients);
-        return web::HttpResponse::NoContent()
-            .set_header(http::header::CONTENT_RANGE, content_range)
-            .set_header(http::header::ACCEPT_RANGES, accept_range)
+    let range = params.range();
+    if let Err(e) = check_range(range, MAX_PER_REQUEST, total_count) {
+        let content_range = format!("{}-{}/{}", 0, 0, total_count);
+        let mut ret = match e {
+            RangeError::OutOfBounds => web::HttpResponse::NoContent(),
+            RangeError::TooWide => web::HttpResponse::BadRequest(),
+            RangeError::Invalid => web::HttpResponse::BadRequest(),
+        };
+
+        return ret.set_header(http::header::CONTENT_RANGE, content_range)
+            .set_header(http::header::ACCEPT_RANGES, accept_range.clone())
             .finish()
     }
 
-    let ingredients_query = "\
-        SELECT \
-            i.id as id, \
-            i.name as name, \
-            u.id as default_unit_id, \
-            u.full_name as default_unit_full_name, \
-            u.short_name as default_unit_short_name \
-        FROM
-            ingredients as i \
-            LEFT JOIN units as u \
-            ON i.default_unit_id = u.id \
-        ORDER BY name
-        OFFSET $1
-        LIMIT $2
-    ";
-
-    let ingredients: Vec<ingredient::FromDB> = match db_conn.query(ingredients_query, &[&(min-1), &(max-min+1)])
-        .await {
-            Ok(rows) => rows.iter().map(|r| r.into()).collect(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
+    let (range_first, range_last) = range;
+    let ingredients = match ingredient::get_many(&db_conn, range_first, range_last).await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
     };
 
-    let n_fetched_ingredients = ingredients.len() as i64;
-
-    let mut ret = web::HttpResponse::PartialContent();
-    if n_all_ingredients == n_fetched_ingredients {
+    let fetched_count = ingredients.len() as i64;
+    let mut ret;
+    if fetched_count < total_count {
+        ret = web::HttpResponse::PartialContent();
+    } else {
         ret = web::HttpResponse::Ok();
     }
-    let content_range = format!("{}-{}/{}", min, min + n_fetched_ingredients - 1, n_all_ingredients);
+
+    let first_fetched = range_first;
+    let last_fetched = first_fetched + fetched_count - 1;
+    let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     ret.set_header(http::header::CONTENT_RANGE, content_range)
        .set_header(http::header::ACCEPT_RANGES, accept_range)
@@ -88,107 +76,68 @@ pub async fn get_all(params: web::Query<HttpParams>, db_pool: web::Data<Pool>) -
 pub async fn add_one(new_ingredient: web::Json<ingredient::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", new_ingredient);
-    let insert_query = "\
-        INSERT INTO ingredients (name, default_unit_id) \
-            VALUES ($1, $2) \
-        RETURNING id;
-    ";
-    let new_id = match db_conn.query(insert_query, &[&new_ingredient.name, &new_ingredient.default_unit_id])
-        .await {
-            Ok(rows) => rows[0].get::<&str,i32>("id").to_string(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                //TODO add location with URI
-                => return web::HttpResponse::Conflict().finish(),
-            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
-                => return web::HttpResponse::UnprocessableEntity().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish();
-            }
-        };
+    let new_id = match ingredient::add_one(&db_conn, &new_ingredient).await {
+        Ok(v) => v,
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
+            return web::HttpResponse::Conflict().finish();
+        },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
+    };
+
     web::HttpResponse::Created()
         .set_header(http::header::LOCATION, format!("/{}", new_id))
         .finish()
-
 }
 
 #[get("/ingredients/{id}")]
 pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
-    let query = "\
-        SELECT \
-            i.id as id, \
-            i.name as name, \
-            u.id as default_unit_id, \
-            u.full_name as default_unit_full_name, \
-            u.short_name as default_unit_short_name \
-        FROM
-            ingredients as i \
-            LEFT JOIN units as u \
-            ON i.default_unit_id = u.id \
-        WHERE
-            i.id = $1 \
-    ";
 
-    let ingredient: ingredient::FromDB = match db_conn.query(query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 1 => (&rows[0]).into(),
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Err(e) => {error!("{}", e); return web::HttpResponse::InternalServerError().finish()},
-            _ => return web::HttpResponse::InternalServerError().finish(),
+    let ingredient = match ingredient::get_one(&db_conn, id.into_inner()).await {
+        Ok(Some(v)) => v,
+        Ok(None) => { return web::HttpResponse::NotFound().finish(); },
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
     };
-    web::HttpResponse::Ok().body(format!("{}", serde_json::to_string_pretty(&ingredient).unwrap()))
 
+    trace!("{}", serde_json::to_string_pretty(&ingredient).unwrap());
+    web::HttpResponse::Ok().json(ingredient)
 }
 
 #[put("/ingredients/{id}")]
 pub async fn modify_one(id: web::Path<i32>, new_ingredient: web::Json<ingredient::New>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
     trace!("{:#?}", new_ingredient);
-    let update_query = "\
-        UPDATE ingredients SET \
-            name = $1, \
-            default_unit_id = $2 \
-        WHERE id = $3 \
-        RETURNING id;
-    ";
-    match db_conn.query(update_query,
-        &[&new_ingredient.name, &new_ingredient.default_unit_id, &id])
-        .await {
-            Ok(rows) if rows.len() == 0
-                => return web::HttpResponse::NotFound().finish(),
-            Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
-                => return web::HttpResponse::Conflict().finish(),
-            Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION)
-                => return web::HttpResponse::UnprocessableEntity().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => ()
-        };
+
+    match ingredient::modify_one(&db_conn, id.into_inner(), &new_ingredient).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION)
+            => return web::HttpResponse::Conflict().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::Ok().finish()
 }
 
 #[delete("/ingredients/{id}")]
 pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
-    let id = id.into_inner();
-    let delete_query = "\
-        DELETE FROM ingredients \
-        WHERE id = $1 \
-        RETURNING id;
-    ";
-    match db_conn.query(delete_query, &[&id])
-        .await {
-            Ok(rows) if rows.len() == 0 => return web::HttpResponse::NotFound().finish(),
-            Err(e) => {
-                error!("{}", e);
-                return web::HttpResponse::InternalServerError().finish()
-            },
-            Ok(_) => (),
-        };
+
+    match ingredient::delete_one(&db_conn, id.into_inner()).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        },
+    }
     web::HttpResponse::NoContent().finish()
 }
