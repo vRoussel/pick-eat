@@ -144,7 +144,7 @@ pub async fn modify_one(id: web::Path<i32>, new_recipe: web::Json<recipe::New>, 
 pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    match category::delete_one(&db_conn, id.into_inner()).await {
+    match recipe::delete_one(&db_conn, id.into_inner()).await {
         Ok(Some(_)) => (),
         Ok(None) => return web::HttpResponse::NotFound().finish(),
         Err(e) => {
