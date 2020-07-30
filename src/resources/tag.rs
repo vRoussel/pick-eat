@@ -72,7 +72,7 @@ pub async fn modify_one(db_conn: &Client, id: i32, new_tag: &New) -> Result<Opti
     ";
     db_conn.query_opt(update_query, &[&new_tag.name, &id])
         .await
-        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
@@ -83,5 +83,5 @@ pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> 
     ";
     db_conn.query_opt(delete_query, &[&id])
         .await
-        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }

@@ -348,7 +348,7 @@ pub async fn modify_one(db_conn: &mut Client, id: i32, new_recipe: &New) -> Resu
           &new_recipe.image, &new_recipe.instructions,
           &new_recipe.n_shares, &id
          ]).await
-      .map(|opt| opt.map(|row| ()))?; // OK(Some(row)) => Ok(Some(()))
+      .map(|opt| opt.map(|_| ()))?; // OK(Some(row)) => Ok(Some(()))
 
     //TODO this is ugly and should be more simple
 
@@ -473,5 +473,5 @@ pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> 
     ";
     db_conn.query_opt(delete_query, &[&id])
         .await
-        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }

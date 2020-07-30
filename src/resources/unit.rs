@@ -78,7 +78,7 @@ pub async fn modify_one(db_conn: &Client, id: i32, new_unit: &New) -> Result<Opt
     ";
     db_conn.query_opt(update_query, &[&new_unit.full_name, &new_unit.short_name, &id])
         .await
-        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
@@ -89,5 +89,5 @@ pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> 
     ";
     db_conn.query_opt(delete_query, &[&id])
         .await
-        .map(|opt| opt.map(|row| ())) // OK(Some(row)) => Ok(Some(()))
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
