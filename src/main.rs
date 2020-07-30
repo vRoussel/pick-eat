@@ -5,11 +5,8 @@ extern crate log;
 extern crate config;
 
 use actix_web::{web, App, HttpServer};
-use bb8;
 use log::*;
 use simplelog::*;
-use tokio_postgres::NoTls;
-use tokio;
 
 mod resources;
 mod handlers;

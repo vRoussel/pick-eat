@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use tokio_postgres::{Client, error::Error, types::ToSql};
 use super::category;
 use super::tag;
-use super::ingredient;
 use super::ingredient::quantified as QIngredient;
 use crate::utils::*;
 

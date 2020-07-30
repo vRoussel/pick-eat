@@ -1,19 +1,9 @@
-use std::collections::HashMap;
-
 use actix_web::{get, post, put, delete, web, Responder, http};
 use crate::database::Pool;
 use log::*;
-use tokio_postgres::{error::SqlState, types::ToSql};
+use tokio_postgres::error::SqlState;
 
-use serde::{Deserialize, Serialize};
-
-use crate::resources::{
-    category,
-    tag,
-    recipe,
-    ingredient,
-    ingredient::quantified as QIngredient
-};
+use crate::resources::recipe;
 use crate::utils::*;
 use super::*;
 
