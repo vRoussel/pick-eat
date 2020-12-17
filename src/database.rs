@@ -1,7 +1,7 @@
 use bb8;
 use bb8_postgres::PostgresConnectionManager;
 use std::time::Duration;
-use tokio_postgres::NoTls;
+use tokio_postgres::tls::NoTls;
 
 pub type Pool = bb8::Pool<PostgresConnectionManager<NoTls>>;
 
