@@ -1,9 +1,8 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler  version: 0.9.2
--- PostgreSQL version: 12.0
+-- pgModeler  version: 0.9.3-beta1
+-- PostgreSQL version: 13.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
-
 -- object: valentin | type: ROLE --
 -- DROP ROLE IF EXISTS valentin;
 CREATE ROLE valentin WITH 
@@ -12,13 +11,14 @@ CREATE ROLE valentin WITH
 -- ddl-end --
 
 
--- Database creation must be done outside a multicommand file.
+-- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
--- -- object: pick_eat | type: DATABASE --
--- -- DROP DATABASE IF EXISTS pick_eat;
--- CREATE DATABASE pick_eat;
--- -- ddl-end --
 -- 
+-- object: pick_eat | type: DATABASE --
+-- DROP DATABASE IF EXISTS pick_eat;
+CREATE DATABASE pick_eat;
+-- ddl-end --
+
 
 -- object: public.recipes | type: TABLE --
 -- DROP TABLE IF EXISTS public.recipes CASCADE;
