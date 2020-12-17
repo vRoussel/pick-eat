@@ -28,7 +28,7 @@ CREATE TABLE public.recipes (
 	description text NOT NULL,
 	preparation_time_min smallint NOT NULL,
 	cooking_time_min smallint NOT NULL,
-	image bytea NOT NULL,
+	image text NOT NULL,
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
 	n_shares smallint NOT NULL,

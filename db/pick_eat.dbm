@@ -37,7 +37,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
 	</column>
 	<column name="image" not-null="true">
-		<type name="bytea" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="publication_date" not-null="true" default-value="CURRENT_DATE">
 		<type name="date" length="0"/>

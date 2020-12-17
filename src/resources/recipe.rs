@@ -16,7 +16,7 @@ pub struct FromDB {
     pub(crate) tags: Vec<tag::FromDB>,
     pub(crate) prep_time_min: i16,
     pub(crate) cook_time_min: i16,
-    pub(crate) image: Vec<u8>,
+    pub(crate) image: String,
     pub(crate) publish_date: time::Date,
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16
@@ -32,7 +32,7 @@ pub struct New {
     pub(crate) tag_ids: Vec<i32>,
     pub(crate) prep_time_min: i16,
     pub(crate) cook_time_min: i16,
-    pub(crate) image: Vec<u8>,
+    pub(crate) image: String,
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16
 }
