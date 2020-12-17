@@ -1,10 +1,4 @@
-extern crate actix_web;
-extern crate tokio_postgres;
-extern crate simplelog;
-extern crate log;
-extern crate config;
-
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, middleware::Logger};
 use log::*;
 use simplelog::*;
 
@@ -19,6 +13,7 @@ use database::Pool;
 async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
     let mydata = web::Data::new(db_pool);
     HttpServer::new(move || App::new()
+        .wrap(Logger::default())
         .app_data(mydata.clone())
         .service(web::scope("/v1/")
             .configure(handlers::recipes::config)
@@ -46,8 +41,8 @@ fn setup_logging() {
     let init_log =
         CombinedLogger::init(
             vec![
-                TermLogger::new(LevelFilter::Trace, pickeat_log_config.clone(), TerminalMode::Mixed).unwrap(),
-                TermLogger::new(LevelFilter::Warn, others_log_config.clone(), TerminalMode::Mixed).unwrap(),
+                TermLogger::new(LevelFilter::Trace, pickeat_log_config.clone(), TerminalMode::Mixed),
+                TermLogger::new(LevelFilter::Warn, others_log_config.clone(), TerminalMode::Mixed),
             ]
     );
     if let Err(_) = init_log {
