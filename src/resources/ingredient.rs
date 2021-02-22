@@ -1,31 +1,33 @@
-use serde::{Deserialize, Serialize};
-use tokio_postgres::{Client, error::Error};
 use super::unit;
+use crate::query_params::Range;
+use serde::{Deserialize, Serialize};
+use tokio_postgres::types::ToSql;
+use tokio_postgres::{error::Error, Client};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FromDB {
     pub(crate) id: i32,
     pub(crate) name: String,
-    pub(crate) default_unit: Option<unit::FromDB>
+    pub(crate) default_unit: Option<unit::FromDB>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
     pub(crate) name: String,
-    pub(crate) default_unit_id: Option<i32>
+    pub(crate) default_unit_id: Option<i32>,
 }
 
 pub mod quantified {
-    use serde::{Deserialize, Serialize};
     use super::unit;
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Full {
         pub(crate) id: i32,
         pub(crate) name: String,
         pub(crate) quantity: Option<i16>,
-        pub(crate) unit: Option<unit::FromDB>
+        pub(crate) unit: Option<unit::FromDB>,
     }
 
     #[derive(Debug, Deserialize)]
@@ -33,28 +35,25 @@ pub mod quantified {
     pub struct Ref {
         pub(crate) id: i32,
         pub(crate) quantity: Option<i16>,
-        pub(crate) unit_id: Option<i32>
+        pub(crate) unit_id: Option<i32>,
     }
 }
-
 
 impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let default_unit = match row.try_get("default_unit_id") {
-            Ok(unit_id) => Some(
-                unit::FromDB {
-                    id: unit_id,
-                    full_name: row.get("default_unit_full_name"),
-                    short_name: row.get("default_unit_short_name")
-                }
-            ),
-            Err(_) => None
+            Ok(unit_id) => Some(unit::FromDB {
+                id: unit_id,
+                full_name: row.get("default_unit_full_name"),
+                short_name: row.get("default_unit_short_name"),
+            }),
+            Err(_) => None,
         };
 
         FromDB {
             id: row.get("id"),
             name: row.get("name"),
-            default_unit: default_unit
+            default_unit: default_unit,
         }
     }
 }
@@ -62,27 +61,26 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 impl From<&tokio_postgres::row::Row> for quantified::Full {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         let unit = match row.try_get("unit_id") {
-            Ok(unit_id) => Some(
-                unit::FromDB {
-                    id: unit_id,
-                    full_name: row.get("unit_full_name"),
-                    short_name: row.get("unit_short_name")
-                }
-            ),
-            Err(_) => None
+            Ok(unit_id) => Some(unit::FromDB {
+                id: unit_id,
+                full_name: row.get("unit_full_name"),
+                short_name: row.get("unit_short_name"),
+            }),
+            Err(_) => None,
         };
 
         quantified::Full {
             id: row.get("id"),
             name: row.get("name"),
             quantity: row.get("quantity"),
-            unit: unit
+            unit: unit,
         }
     }
 }
 
-pub async fn get_many(db_conn: &Client, min: i64, max: i64) -> Result<Vec<FromDB>, Error> {
-    let ingredients_query = "\
+pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
+    let mut ingredients_query = String::from(
+        "\
         SELECT \
             i.id as id, \
             i.name as name, \
@@ -94,13 +92,32 @@ pub async fn get_many(db_conn: &Client, min: i64, max: i64) -> Result<Vec<FromDB
             LEFT JOIN units as u \
             ON i.default_unit_id = u.id \
         ORDER BY name
-        OFFSET $1
-        LIMIT $2
-    ";
+    ",
+    );
 
-    db_conn.query(ingredients_query, &[&(min-1), &(max-min+1)])
+    let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
+    if let Some(r) = range {
+        ingredients_query.push_str(
+            " \
+            OFFSET $1 \
+            LIMIT $2 \
+        ",
+        );
+        params.push(Box::new(r.from - 1));
+        params.push(Box::new(r.to - (r.from - 1)));
+    }
+
+    db_conn
+        .query(
+            ingredients_query.as_str(),
+            params
+                .iter()
+                .map(|b| b.as_ref())
+                .collect::<Vec<&(dyn ToSql + Sync)>>()
+                .as_slice(),
+        )
         .await
-        .map(|rows|rows.iter().map(|r| r.into()).collect())
+        .map(|rows| rows.iter().map(|r| r.into()).collect())
 }
 
 pub async fn add_one(db_conn: &Client, new_ingredient: &New) -> Result<i32, Error> {
@@ -109,7 +126,11 @@ pub async fn add_one(db_conn: &Client, new_ingredient: &New) -> Result<i32, Erro
             VALUES ($1, $2) \
         RETURNING id;
     ";
-    db_conn.query(insert_query, &[&new_ingredient.name, &new_ingredient.default_unit_id])
+    db_conn
+        .query(
+            insert_query,
+            &[&new_ingredient.name, &new_ingredient.default_unit_id],
+        )
         .await
         .map(|rows| rows[0].get(0))
 }
@@ -130,12 +151,17 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
             i.id = $1 \
     ";
 
-    db_conn.query_opt(query, &[&id])
+    db_conn
+        .query_opt(query, &[&id])
         .await
         .map(|opt| opt.map(|ref row| row.into()))
 }
 
-pub async fn modify_one(db_conn: &Client, id: i32, new_ingredient: &New) -> Result<Option<()>, Error> {
+pub async fn modify_one(
+    db_conn: &Client,
+    id: i32,
+    new_ingredient: &New,
+) -> Result<Option<()>, Error> {
     let update_query = "\
         UPDATE ingredients SET \
             name = $1, \
@@ -143,7 +169,11 @@ pub async fn modify_one(db_conn: &Client, id: i32, new_ingredient: &New) -> Resu
         WHERE id = $3 \
         RETURNING id;
     ";
-    db_conn.query_opt(update_query, &[&new_ingredient.name, &new_ingredient.default_unit_id, &id])
+    db_conn
+        .query_opt(
+            update_query,
+            &[&new_ingredient.name, &new_ingredient.default_unit_id, &id],
+        )
         .await
         .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
@@ -154,7 +184,8 @@ pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> 
         WHERE id = $1 \
         RETURNING id;
     ";
-    db_conn.query_opt(delete_query, &[&id])
+    db_conn
+        .query_opt(delete_query, &[&id])
         .await
         .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
