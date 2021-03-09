@@ -174,7 +174,7 @@ export default {
             });
         },
         createImageWidget() {
-            return cloudinary.createUploadWidget({
+            return window.cloudinary.createUploadWidget({
                 cloudName: 'pickeat',
                 uploadPreset: 'devel1',
                 cropping: true,
