@@ -42,25 +42,6 @@
             </div>
         </div>
 
-        <div class="field" v-if="tags.length > 0">
-        <fieldset class="box">
-            <legend class="subtitle">Tags</legend>
-            <template v-for="tag in tags" :key="tag.id">
-                <input type="checkbox" v-model="new_recipe.tags" :value="tag.id" :id="tag.name">
-                <label class="checkbox" :for="tag.name">{{ tag.name }}</label>
-            </template>
-        </fieldset>
-        </div>
-
-        <div class="field" v-if="categories.length > 0">
-        <fieldset class="box">
-            <legend class="subtitle">Catégories</legend>
-            <template v-for="category in categories" :key="category.id">
-                <input type="checkbox" v-model="new_recipe.categories" :value="category.id" :id="category.name">
-                <label class="checkbox" :for="category.name">{{ category.name }}</label>
-            </template>
-        </fieldset>
-        </div>
 
         <div class="field" v-if="ingredients.length > 0">
             <fieldset id="ingredients" class="box">
@@ -84,11 +65,28 @@
 
         <button class="button is-primary is-large">Ajouter</button>
     </form>
+
+            <div class="field" v-if="tags.length > 0">
+                <legend class="subtitle">Tags</legend>
+                <toggle-buttons :choices="tags" v-model:picked="new_recipe.tags">
+                </toggle-buttons>
+            </div>
+
+            <div class="field" v-if="categories.length > 0">
+                <legend class="subtitle">categories</legend>
+                <toggle-buttons :choices="categories" v-model:picked="new_recipe.categories">
+                </toggle-buttons>
+            </div>
 </template>
 
 <script>
+import ToggleButtons from './ToggleButtons.vue'
+
 export default {
     name: 'new-recipe-form',
+    components: {
+      ToggleButtons
+    },
     props: {
         categories: {
             type: Array,
