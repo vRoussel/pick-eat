@@ -10,37 +10,33 @@
 
             <div class="field">
                 <label class="label">Description</label>
-                    <textarea v-model="new_recipe.description" class="textarea" name="desc" id="desc"></textarea>
-                <div class="control">
-                </div>
+                <textarea v-model="new_recipe.description" class="textarea" name="desc" id="desc"></textarea>
             </div>
 
             <div class="field">
                 <label class="label">Temps de préparation</label>
-                    <input v-model.number="new_recipe.prep_time" class="input" type="number" name="prep-time" id="prep-time">
                 <div class="control">
+                    <input v-model.number="new_recipe.prep_time" class="input" type="number" name="prep-time" id="prep-time">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Temps de cuisson</label>
-                    <input v-model.number="new_recipe.cook_time" class="input" type="number" name="cook-time" id="cook-time">
                 <div class="control">
+                    <input v-model.number="new_recipe.cook_time" class="input" type="number" name="cook-time" id="cook-time">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Parts</label>
-                    <input v-model.number="new_recipe.shares" class="input" type="number" name="shares" id="shares">
                 <div class="control">
+                    <input v-model.number="new_recipe.shares" class="input" type="number" name="shares" id="shares">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Etapes</label>
-                    <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
-                <div class="control">
-                </div>
+                <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
             </div>
 
             <div class="field" v-if="tags.length > 0">
