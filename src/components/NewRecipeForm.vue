@@ -1,70 +1,47 @@
 <template>
-    <form @submit.prevent="send" id="recipe-form" >
-        <div class="field">
-            <label class="label">Nom</label>
-            <div class="control">
-                <input v-model="new_recipe.name" class="input" type="text" name="name" id="name" required>
+    <div class="columns is-centered is-mobile">
+        <form @submit.prevent="send" id="recipe-form" class="column is-half-desktop is-three-quarters-mobile">
+            <div class="field">
+                <label class="label">Nom</label>
+                <div class="control">
+                    <input v-model="new_recipe.name" class="input" type="text" name="name" id="name" required>
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label">Description</label>
-                <textarea v-model="new_recipe.description" class="textarea" name="desc" id="desc"></textarea>
-            <div class="control">
+            <div class="field">
+                <label class="label">Description</label>
+                    <textarea v-model="new_recipe.description" class="textarea" name="desc" id="desc"></textarea>
+                <div class="control">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label">Temps de préparation</label>
-                <input v-model.number="new_recipe.prep_time" class="input" type="number" name="prep-time" id="prep-time">
-            <div class="control">
+            <div class="field">
+                <label class="label">Temps de préparation</label>
+                    <input v-model.number="new_recipe.prep_time" class="input" type="number" name="prep-time" id="prep-time">
+                <div class="control">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label">Temps de cuisson</label>
-                <input v-model.number="new_recipe.cook_time" class="input" type="number" name="cook-time" id="cook-time">
-            <div class="control">
+            <div class="field">
+                <label class="label">Temps de cuisson</label>
+                    <input v-model.number="new_recipe.cook_time" class="input" type="number" name="cook-time" id="cook-time">
+                <div class="control">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label">Parts</label>
-                <input v-model.number="new_recipe.shares" class="input" type="number" name="shares" id="shares">
-            <div class="control">
+            <div class="field">
+                <label class="label">Parts</label>
+                    <input v-model.number="new_recipe.shares" class="input" type="number" name="shares" id="shares">
+                <div class="control">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label">Etapes</label>
-                <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
-            <div class="control">
+            <div class="field">
+                <label class="label">Etapes</label>
+                    <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
+                <div class="control">
+                </div>
             </div>
-        </div>
-
-
-        <div class="field" v-if="ingredients.length > 0">
-            <fieldset id="ingredients" class="box">
-                <legend class="subtitle">Ingrédients</legend>
-                <template v-for="ingredient in ingredients" :key="ingredient.id">
-                    <input type="checkbox" v-model="new_recipe.ingredients" :value="picked_ingredient(ingredient)" :id="ingredient.name">
-                    <label class="checkbox" :for="ingredient.name">{{ ingredient.name }}</label>
-                    <input v-if="ingredient.id in picked_ingredients" v-model.number="picked_ingredients[ingredient.id].quantity" class="input" type="number" name="count" id="count">
-                    <select v-if="ingredient.id in picked_ingredients" v-model="picked_ingredients[ingredient.id].unit_id">
-                        <option v-for="unit in units" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
-                    </select>
-                </template>
-            </fieldset>
-        </div>
-
-        <div class="field">
-        <button @click="imageWidget.open()" type="button" class="cloudinary-button" id="upload_widget">Photo</button>
-        </div>
-        <div class="yoyoyo">
-        </div>
-
-        <button class="button is-primary is-large">Ajouter</button>
-    </form>
 
             <div class="field" v-if="tags.length > 0">
                 <legend class="subtitle">Tags</legend>
@@ -77,6 +54,30 @@
                 <toggle-buttons :choices="categories" v-model:picked="new_recipe.categories">
                 </toggle-buttons>
             </div>
+
+            <div class="field" v-if="ingredients.length > 0">
+                <fieldset id="ingredients" class="box">
+                    <legend class="subtitle">Ingrédients</legend>
+                    <template v-for="ingredient in ingredients" :key="ingredient.id">
+                        <input type="checkbox" v-model="new_recipe.ingredients" :value="picked_ingredient(ingredient)" :id="ingredient.name">
+                        <label class="checkbox" :for="ingredient.name">{{ ingredient.name }}</label>
+                        <input v-if="ingredient.id in picked_ingredients" v-model.number="picked_ingredients[ingredient.id].quantity" class="input" type="number" name="count" id="count">
+                        <select v-if="ingredient.id in picked_ingredients" v-model="picked_ingredients[ingredient.id].unit_id">
+                            <option v-for="unit in units" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
+                        </select>
+                    </template>
+                </fieldset>
+            </div>
+
+            <div class="field">
+            <button @click="imageWidget.open()" type="button" class="button is-fullwidth" id="upload_widget">Photo</button>
+            </div>
+            <div class="yoyoyo">
+            </div>
+
+            <button class="button is-primary is-large is-fullwidth">Ajouter</button>
+        </form>
+    </div>
 </template>
 
 <script>
