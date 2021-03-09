@@ -193,6 +193,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+<!--
 <style scoped>
 #recipe-form fieldset {
         grid-column: 1/-1;
@@ -222,3 +223,4 @@ export default {
         margin-right: 10px;
     }
 </style>
+-->
