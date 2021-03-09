@@ -19,22 +19,22 @@ export default {
     }
   },
   created() {
-    fetch('http://127.0.0.1/api/v1/tags?range=1-10')
+    fetch('http://127.0.0.1/api/v1/tags')
         .then(response => response.json())
         .then(json => {
             this.tags = json
         });
-    fetch('http://127.0.0.1/api/v1/categories?range=1-10')
+    fetch('http://127.0.0.1/api/v1/categories')
         .then(response => response.json())
         .then(json => {
             this.categories = json
         });
-    fetch('http://127.0.0.1/api/v1/units?range=1-10')
+    fetch('http://127.0.0.1/api/v1/units')
         .then(response => response.json())
         .then(json => {
             this.units = json
         });
-    fetch('http://127.0.0.1/api/v1/ingredients?range=1-10')
+    fetch('http://127.0.0.1/api/v1/ingredients')
         .then(response => response.json())
         .then(json => {
             this.ingredients = json
