@@ -68,7 +68,7 @@
             <div class="field">
             <button @click="imageWidget.open()" type="button" class="button is-fullwidth" id="upload_widget">Photo</button>
             </div>
-            <div class="yoyoyo">
+            <div class="img-preview">
             </div>
 
             <button class="button is-primary is-large is-fullwidth">Ajouter</button>
@@ -175,7 +175,7 @@ export default {
                 cloudName: 'pickeat',
                 uploadPreset: 'devel1',
                 cropping: true,
-                thumbnails: '.yoyoyo',
+                thumbnails: '.img-preview',
                 showAdvanced_options: true},
                 (error, result) => {
                     if (result.event == "success") {
