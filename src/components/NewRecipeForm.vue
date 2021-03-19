@@ -129,7 +129,7 @@ export default {
                 body: JSON.stringify({
                     "name": r.name,
                     "desc": r.description,
-                    "q_ingredient_ids": r.ingredients,
+                    "q_ingredient_ids": Array.from(r.ingredients.values()),
                     "category_ids": Array.from(r.categories),
                     "tag_ids": Array.from(r.tags),
                     "prep_time_min": r.prep_time,

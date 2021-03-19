@@ -4,16 +4,16 @@
             <option v-for="ingr in ingr_remaining" :key="ingr.id" :value="ingr">{{ ingr.name }}</option>
         </select>
     </div>
-    <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.ingr.id">
+    <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
         <div class="column is-narrow">
-            <button class="delete" type="button" @click="del_ingr(ingr.ingr)"></button>
+            <button class="delete" type="button" @click="del_ingr(ingr.id)"></button>
         </div>
-        <span class="column has-text-right"> {{ ingr.ingr.name }}</span>
-        <input v-model.number="picked_obj[ingr.ingr.id].quantity" class="input column is-2" type="number">
+        <span class="column has-text-right"> {{ ingr_by_id.get(ingr.id).name }}</span>
+        <input v-model.number="picked_obj[ingr.id].quantity" class="input column is-2" type="number">
         <div class="column">
             <div class="select is-fullwidth">
-                <select class="column is-6" v-model="picked_obj[ingr.ingr.id].unit_id">
-                    <option v-for="unit in unit_choices" :value="unit" :key="unit.id">{{ unit.full_name }}</option>
+                <select class="column is-6" v-model="picked_obj[ingr.id].unit_id">
+                    <option v-for="unit in unit_choices" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
                 </select>
             </div>
         </div>
@@ -46,21 +46,24 @@ export default {
         },
         ingr_remaining() {
             return this.ingr_choices.filter(ingr => !this.picked.has(ingr.id))
+        },
+        ingr_by_id() {
+            return new Map(this.ingr_choices.map(ingr => [ingr.id, ingr]))
         }
     },
     emits: ['update:picked'],
     methods: {
         add_ingr(ingr) {
             this.picked.set(ingr.id, {
-                ingr: ingr,
-                unit_id: ingr.default_unit,
+                id: ingr.id,
+                unit_id: ingr.default_unit.id,
                 quantity: ""
             })
             this.$emit('update:picked', this.picked)
             this.ingr_selected = -1
         },
-        del_ingr(ingr) {
-            this.picked.delete(ingr.id)
+        del_ingr(id) {
+            this.picked.delete(id)
             this.$emit('update:picked', this.picked)
         }
     }
