@@ -66,7 +66,7 @@
             </div>
 
             <div class="field">
-            <button @click="imageWidget.open()" type="button" class="button is-fullwidth" id="upload_widget">Photo</button>
+            <button @click="imageWidget.open()" type="button" class="cloudinary-button button is-fullwidth" id="upload_widget">Photo</button>
             </div>
             <div class="img-preview">
             </div>
