@@ -52,17 +52,9 @@
             </div>
 
             <div class="field" v-if="ingredients.length > 0">
-                <fieldset id="ingredients" class="box">
-                    <legend class="subtitle">Ingrédients</legend>
-                    <template v-for="ingredient in ingredients" :key="ingredient.id">
-                        <input type="checkbox" v-model="new_recipe.ingredients" :value="picked_ingredient(ingredient)" :id="ingredient.name">
-                        <label class="checkbox" :for="ingredient.name">{{ ingredient.name }}</label>
-                        <input v-if="ingredient.id in picked_ingredients" v-model.number="picked_ingredients[ingredient.id].quantity" class="input" type="number" name="count" id="count">
-                        <select v-if="ingredient.id in picked_ingredients" v-model="picked_ingredients[ingredient.id].unit_id">
-                            <option v-for="unit in units" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
-                        </select>
-                    </template>
-                </fieldset>
+                <label class="label">Ingrédients</label>
+                <ingredient-picker :ingr_choices="ingredients" :unit_choices="units" v-model:picked="new_recipe.ingredients">
+                </ingredient-picker>
             </div>
 
             <div class="field">
@@ -78,11 +70,13 @@
 
 <script>
 import ToggleButtons from './ToggleButtons.vue'
+import IngredientPicker from './IngredientPicker.vue'
 
 export default {
     name: 'new-recipe-form',
     components: {
-      ToggleButtons
+      ToggleButtons,
+      IngredientPicker
     },
     props: {
         categories: {
@@ -105,8 +99,6 @@ export default {
 
     data: function() {
         return {
-            //TODO should this exactly match expected post structure ?
-            // or should we map somehow in send func
             new_recipe: {
                 name: "",
                 description: "",
@@ -116,31 +108,14 @@ export default {
                 instructions: "",
                 tags: new Set(),
                 categories: new Set(),
-                ingredients: [],
+                ingredients: new Map(),
                 image_url: ""
             },
             imageWidget: this.createImageWidget()
         }
     },
 
-    computed: {
-        picked_ingredients() {
-            var result = this.new_recipe.ingredients.reduce(function(map, obj) {
-                map[obj.id] = obj;
-                return map;
-            }, {});
-            return result;
-        }
-    },
-
     methods: {
-        picked_ingredient (ingr) {
-            return this.picked_ingredients[ingr.id] || {
-                id: ingr.id,
-                unit_id: ingr.default_unit.id,
-                quantity: ""
-            }
-        },
         send() {
             console.log("Sending");
             const r = this.new_recipe;
