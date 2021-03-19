@@ -188,36 +188,3 @@ export default {
     }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<!--
-<style scoped>
-#recipe-form fieldset {
-        grid-column: 1/-1;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, 20px 200px );
-        align-items: center;
-    }
-
-#recipe-form fieldset#ingredients {
-        grid-column: 1/-1;
-        display: grid;
-        grid-template-columns: 20px max-content 100px 100px;
-        align-items: center;
-        grid-column-gap: 10px;
-    }
-
-#recipe-form fieldset#ingredients input[type="checkbox"] {
-        grid-column-start: 1;
-    }
-
-#recipe-form fieldset label {
-        justify-self: start;
-    }
-
-#recipe-form fieldset input[type="checkbox"] {
-        justify-self: end;
-        margin-right: 10px;
-    }
-</style>
--->
