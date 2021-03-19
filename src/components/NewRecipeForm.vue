@@ -40,14 +40,14 @@
             </div>
 
             <div class="field" v-if="tags.length > 0">
-                <legend class="subtitle">Tags</legend>
-                <toggle-buttons :choices="tags" v-model:picked="new_recipe.tags">
+                <label class="label">Tags</label>
+                <toggle-buttons class="my-3" :choices="tags" v-model:picked="new_recipe.tags">
                 </toggle-buttons>
             </div>
 
             <div class="field" v-if="categories.length > 0">
-                <legend class="subtitle">categories</legend>
-                <toggle-buttons :choices="categories" v-model:picked="new_recipe.categories">
+                <label class="label">Catégories</label>
+                <toggle-buttons class="my-3" :choices="categories" v-model:picked="new_recipe.categories">
                 </toggle-buttons>
             </div>
 
