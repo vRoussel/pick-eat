@@ -4,6 +4,7 @@
 
 <script>
 import NewRecipeForm from './components/NewRecipeForm.vue'
+import store from '@/store/store.js'
 
 export default {
   name: 'App',
@@ -23,21 +24,25 @@ export default {
         .then(response => response.json())
         .then(json => {
             this.tags = json
+            store.tags = json;
         });
     fetch('http://127.0.0.1/api/v1/categories')
         .then(response => response.json())
         .then(json => {
             this.categories = json
+            store.categories = json
         });
     fetch('http://127.0.0.1/api/v1/units')
         .then(response => response.json())
         .then(json => {
             this.units = json
+            store.units = json
         });
     fetch('http://127.0.0.1/api/v1/ingredients')
         .then(response => response.json())
         .then(json => {
             this.ingredients = json
+            store.ingredients = json
         });
     }
 
