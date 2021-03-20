@@ -13,7 +13,7 @@
         <div class="column">
             <div class="select is-fullwidth">
                 <select class="column is-6" v-model="picked_obj[ingr.id].unit_id">
-                    <option v-for="unit in unit_choices" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
+                    <option v-for="unit in store.units" :value="unit.id" :key="unit.id">{{ unit.full_name }}</option>
                 </select>
             </div>
         </div>
@@ -21,16 +21,11 @@
 </template>
 
 <script>
+import store from '@/store/store.js'
 //TODO use v-select
 export default {
     name: 'ingredient-picker',
     props: {
-        ingr_choices: {
-            type: Array
-        },
-        unit_choices: {
-            type: Array
-        },
         picked: {
             type: Map
         }
@@ -45,10 +40,10 @@ export default {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return this.ingr_choices.filter(ingr => !this.picked.has(ingr.id))
+            return store.ingredients.filter(ingr => !this.picked.has(ingr.id))
         },
         ingr_by_id() {
-            return new Map(this.ingr_choices.map(ingr => [ingr.id, ingr]))
+            return new Map(store.ingredients.map(ingr => [ingr.id, ingr]))
         }
     },
     emits: ['update:picked'],
