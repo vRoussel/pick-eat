@@ -39,21 +39,21 @@
                 <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
             </div>
 
-            <div class="field" v-if="tags.length > 0">
+            <div class="field" v-if="store.tags.length > 0">
                 <label class="label">Tags</label>
-                <toggle-buttons class="my-3" :choices="tags" v-model:picked="new_recipe.tags">
+                <toggle-buttons class="my-3" :choices="store.tags" v-model:picked="new_recipe.tags">
                 </toggle-buttons>
             </div>
 
-            <div class="field" v-if="categories.length > 0">
+            <div class="field" v-if="store.categories.length > 0">
                 <label class="label">Catégories</label>
-                <toggle-buttons class="my-3" :choices="categories" v-model:picked="new_recipe.categories">
+                <toggle-buttons class="my-3" :choices="store.categories" v-model:picked="new_recipe.categories">
                 </toggle-buttons>
             </div>
 
-            <div class="field" v-if="ingredients.length > 0">
+            <div class="field" v-if="store.ingredients.length > 0">
                 <label class="label">Ingrédients</label>
-                <ingredient-picker :ingr_choices="ingredients" :unit_choices="units" v-model:picked="new_recipe.ingredients">
+                <ingredient-picker v-model:picked="new_recipe.ingredients">
                 </ingredient-picker>
             </div>
 
@@ -69,8 +69,9 @@
 </template>
 
 <script>
-import ToggleButtons from './ToggleButtons.vue'
-import IngredientPicker from './IngredientPicker.vue'
+import ToggleButtons from '@/components/ToggleButtons.vue'
+import IngredientPicker from '@/components/IngredientPicker.vue'
+import store from '@/store/store.js'
 
 export default {
     name: 'new-recipe-form',
@@ -78,25 +79,6 @@ export default {
       ToggleButtons,
       IngredientPicker
     },
-    props: {
-        categories: {
-            type: Array,
-            default: () => []
-        },
-        tags: {
-            type: Array,
-            default: () => []
-        },
-        ingredients: {
-            type: Array,
-            default: () => []
-        },
-        units: {
-            type: Array,
-            default: () => []
-        }
-    },
-
     data: function() {
         return {
             new_recipe: {
@@ -111,7 +93,8 @@ export default {
                 ingredients: new Map(),
                 image_url: ""
             },
-            imageWidget: this.createImageWidget()
+            imageWidget: this.createImageWidget(),
+            store: store
         }
     },
 
