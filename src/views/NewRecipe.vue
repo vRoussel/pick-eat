@@ -58,9 +58,7 @@
             </div>
 
             <div class="field">
-            <button @click="imageWidget.open()" type="button" class="cloudinary-button button is-fullwidth" id="upload_widget">Photo</button>
-            </div>
-            <div class="img-preview">
+                <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
             <button class="button is-primary is-large is-fullwidth">Ajouter</button>
@@ -72,12 +70,14 @@
 import ToggleButtons from '@/components/ToggleButtons.vue'
 import IngredientPicker from '@/components/IngredientPicker.vue'
 import store from '@/store/store.js'
+import ImageChooser from '@/components/ImageChooser.vue'
 
 export default {
     name: 'new-recipe-form',
     components: {
       ToggleButtons,
-      IngredientPicker
+      IngredientPicker,
+      ImageChooser,
     },
     data: function() {
         return {
@@ -93,11 +93,9 @@ export default {
                 ingredients: new Map(),
                 image_url: ""
             },
-            imageWidget: this.createImageWidget(),
             store: store
         }
     },
-
     methods: {
         send() {
             console.log("Sending");
@@ -128,21 +126,7 @@ export default {
                 console.log(response.status);
             });
         },
-        createImageWidget() {
-            return window.cloudinary.createUploadWidget({
-                cloudName: 'pickeat',
-                uploadPreset: 'devel1',
-                cropping: true,
-                thumbnails: '.img-preview',
-                showAdvanced_options: true},
-                (error, result) => {
-                    if (result.event == "success") {
-                        this.new_recipe.image_url = result.info.secure_url
-                        console.log(result)
-                    }
-                }
-            )
-        }
+        //TODO this should probably be a component
     }
 }
 </script>
