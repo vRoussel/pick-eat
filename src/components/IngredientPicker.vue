@@ -33,6 +33,7 @@ export default {
     data: function() {
         return {
             ingr_selected: -1,
+            store: store
         }
     },
     computed: {
