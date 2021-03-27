@@ -41,9 +41,7 @@ export default {
                 croppingShowDimensions: true},
                 (error, result) => {
                     if (result.event == "success") {
-                        //this.image_url = result.info.secure_url
                         this.$emit('update:image_url', result.info.secure_url)
-                        console.log(result)
                     }
                 }
             )
