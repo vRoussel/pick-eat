@@ -1,25 +1,20 @@
 <template>
     <multiselect :options="ingr_remaining" label="name" track-by="id" placeholder="Miam" @select="add_ingr" :clear-on-select="true" :closeOnSelect="false"></multiselect>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
-        <div class="column is-narrow">
-            <button class="delete" type="button" @click="del_ingr(ingr.id)"></button>
-        </div>
-        <span class="column has-text-right"> {{ ingr_by_id.get(ingr.id).name }}</span>
-        <input v-model.number="picked_obj[ingr.id].quantity" class="input column is-2" type="number">
-        <div class="column">
-            <multiselect v-model="picked_obj[ingr.id].unit_id" :options="store.units" label="full_name" track-by="id" placeholder="Unité"></multiselect>
-        </div>
+        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :name="ingr.name" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
     </div>
 </template>
 
 <script>
 import store from '@/store/store.js'
 import Multiselect from '@suadelabs/vue3-multiselect'
+import IngredientListItem from '@/components/IngredientListItem.vue'
 
 export default {
     name: 'ingredient-picker',
     components : {
-        Multiselect
+        Multiselect,
+        IngredientListItem
     },
     props: {
         picked: {
