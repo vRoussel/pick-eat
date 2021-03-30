@@ -26,7 +26,7 @@ pub mod quantified {
     pub struct Full {
         pub(crate) id: i32,
         pub(crate) name: String,
-        pub(crate) quantity: Option<i16>,
+        pub(crate) quantity: Option<f32>,
         pub(crate) unit: Option<unit::FromDB>,
     }
 
@@ -34,7 +34,7 @@ pub mod quantified {
     #[serde(deny_unknown_fields)]
     pub struct Ref {
         pub(crate) id: i32,
-        pub(crate) quantity: Option<i16>,
+        pub(crate) quantity: Option<f32>,
         pub(crate) unit_id: Option<i32>,
     }
 }

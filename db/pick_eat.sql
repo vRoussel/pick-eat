@@ -97,7 +97,7 @@ ALTER TABLE public.ingredients OWNER TO valentin;
 CREATE TABLE public.recipes_ingredients (
 	recipe_id integer NOT NULL,
 	ingredient_id integer NOT NULL,
-	quantity smallint,
+	quantity real,
 	unit_id integer,
 	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id),
 	CONSTRAINT recipes_ingredients_ck_qty CHECK (quantity > 0)
