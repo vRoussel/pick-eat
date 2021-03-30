@@ -2,7 +2,7 @@
         <div class="column is-narrow">
             <button class="delete" type="button" @click="this.$emit('delete')"></button>
         </div>
-        <span class="column has-text-right"> {{ this.name }}</span>
+        <span class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" type="number">
         <div class="column">
             <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" track-by="id" placeholder="Unité"></multiselect>
@@ -19,7 +19,7 @@ export default {
         Multiselect
     },
     //TODO add types
-    props: ['name', 'quantity', 'unit_id'],
+    props: ['id', 'quantity', 'unit_id'],
     data: function() {
         return {
             store: store
@@ -46,6 +46,9 @@ export default {
                 this.$emit('update:quantity', v)
             },
 
+        },
+        ingredient_name() {
+            return this.store.ingredients.find(ingr => ingr.id === this.id).name
         },
     },
     emits: ['update:quantity', 'update:unit_id', 'delete'],

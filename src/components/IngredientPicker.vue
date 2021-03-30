@@ -1,7 +1,7 @@
 <template>
     <multiselect :options="ingr_remaining" label="name" track-by="id" placeholder="Miam" @select="add_ingr" :clear-on-select="true" :closeOnSelect="false"></multiselect>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
-        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :name="ingr.name" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
+        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
     </div>
 </template>
 
