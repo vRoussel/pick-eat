@@ -3,7 +3,7 @@
             <button class="delete" type="button" @click="this.$emit('delete')"></button>
         </div>
         <span class="column has-text-right"> {{ ingredient_name }}</span>
-        <input v-model.number="ingredient_quantity" class="input column is-2" type="number">
+        <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
             <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" track-by="id" placeholder="Unité"></multiselect>
         </div>
