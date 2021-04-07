@@ -18,8 +18,11 @@ export default {
     components : {
         Multiselect
     },
-    //TODO add types
-    props: ['id', 'quantity', 'unit_id'],
+    props: {
+        id: Number,
+        quantity: String,
+        unit_id: Number
+    },
     data: function() {
         return {
             store: store
