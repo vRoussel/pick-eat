@@ -44,7 +44,7 @@ export default {
             this.picked.set(ingr.id, {
                 id: ingr.id,
                 unit_id: ingr.default_unit ? ingr.default_unit.id : null,
-                quantity: ""
+                quantity: null,
             })
             this.$emit('update:picked', this.picked)
             this.$refs.multiselect.clear()
