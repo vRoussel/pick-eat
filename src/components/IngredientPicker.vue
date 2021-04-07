@@ -41,7 +41,6 @@ export default {
     emits: ['update:picked'],
     methods: {
         add_ingr(ingr) {
-            console.log(ingr)
             this.picked.set(ingr.id, {
                 id: ingr.id,
                 unit_id: ingr.default_unit ? ingr.default_unit.id : null,
