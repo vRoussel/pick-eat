@@ -1,5 +1,5 @@
 <template>
-    <multiselect :options="ingr_remaining" label="name" track-by="id" placeholder="Miam" @select="add_ingr" :clear-on-select="true" :closeOnSelect="false"></multiselect>
+    <Multiselect :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="name" object valueProp="id" v-model="dummy" ref="multiselect"/>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
         <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
     </div>
@@ -7,7 +7,7 @@
 
 <script>
 import store from '@/store/store.js'
-import Multiselect from '@suadelabs/vue3-multiselect'
+import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
 
 export default {
@@ -23,7 +23,8 @@ export default {
     },
     data: function() {
         return {
-            store: store
+            store: store,
+            dummy: null,
         }
     },
     computed: {
@@ -47,6 +48,7 @@ export default {
                 quantity: ""
             })
             this.$emit('update:picked', this.picked)
+            this.$refs.multiselect.clear()
         },
         del_ingr(id) {
             this.picked.delete(id)
@@ -56,4 +58,4 @@ export default {
 }
 </script>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
+<style src="@vueform/multiselect/themes/default.css"></style>

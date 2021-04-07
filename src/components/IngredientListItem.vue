@@ -5,13 +5,13 @@
         <span class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
-            <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" track-by="id" placeholder="Unité"></multiselect>
+            <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" searchable trackBy="full_name" valueProp="id"/>
         </div>
 </template>
 
 <script>
 import store from '@/store/store.js'
-import Multiselect from '@suadelabs/vue3-multiselect'
+import Multiselect from '@vueform/multiselect'
 
 export default {
     name: 'ingredient-list-item',
@@ -28,13 +28,10 @@ export default {
     computed: {
         ingredient_unit: {
             get() {
-                if (this.unit_id == null)
-                    return null
-                else
-                    return this.store.units.find(unit => unit.id === this.unit_id)
+                return this.unit_id
             },
             set(v) {
-                this.$emit('update:unit_id', v == null ? null : v.id)
+                this.$emit('update:unit_id', v)
             },
 
         },
@@ -55,6 +52,6 @@ export default {
 }
 </script>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
+<style src="@vueform/multiselect/themes/default.css"></style>
 
 
