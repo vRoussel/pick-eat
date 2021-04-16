@@ -20,7 +20,7 @@ export default {
     },
     props: {
         id: Number,
-        quantity: String,
+        quantity: Number,
         unit_id: Number
     },
     data: function() {
