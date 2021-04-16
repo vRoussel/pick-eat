@@ -5,7 +5,7 @@
         <span class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
-            <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" searchable trackBy="full_name" valueProp="id"/>
+            <multiselect v-model="ingredient_unit" :options="store.units" label="full_name" searchable trackBy="full_name" valueProp="id" :disabled="quantity == null"/>
         </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
                 return this.quantity
             },
             set(v) {
-                this.$emit('update:quantity', v)
+                this.$emit('update:quantity', v == "" ? null : v)
             },
 
         },

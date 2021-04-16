@@ -100,6 +100,10 @@ export default {
         send() {
             console.log("Sending");
             const r = this.new_recipe;
+            for (var ingr of r.q_ingredient_ids) {
+                if (ingr.quantity == null)
+                    ingr.unit_id = null;
+            }
             const url = 'http://127.0.0.1/api/v1/recipes';
             const options = {
                 method: 'POST',
