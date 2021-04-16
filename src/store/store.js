@@ -42,6 +42,21 @@ const getUnits = function() {
         });
 }
 
+const addRecipe = function(recipe) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(recipe)
+    };
+    console.log(options.body);
+    fetch(`${API_ROOT}/recipes`, options)
+        .then(response => {
+            console.log(response.status);
+        });
+}
 export default {
     state: readonly(state),
     getTags,

@@ -1,6 +1,6 @@
 <template>
     <div class="columns is-centered is-mobile">
-        <form @submit.prevent="send" id="recipe-form" class="column is-half-desktop is-three-quarters-mobile">
+        <form @submit.prevent="sendRecipe" id="recipe-form" class="column is-half-desktop is-three-quarters-mobile">
             <div class="field">
                 <label class="label">Nom</label>
                 <div class="control">
@@ -96,38 +96,25 @@ export default {
         }
     },
     methods: {
-        send() {
-            console.log("Sending");
+        sendRecipe() {
             const r = this.new_recipe;
-            for (var ingr of r.q_ingredient_ids) {
+            let recipe = {
+                "name": r.name,
+                "desc": r.description,
+                "q_ingredient_ids": Array.from(r.ingredients.values()),
+                "category_ids": Array.from(r.categories),
+                "tag_ids": Array.from(r.tags),
+                "prep_time_min": r.prep_time,
+                "cook_time_min": r.cook_time,
+                "image": r.image_url,
+                "instructions": r.instructions.split(/\r?\n/),
+                "n_shares": r.shares
+            }
+            for (var ingr of recipe.q_ingredient_ids) {
                 if (ingr.quantity == null)
                     ingr.unit_id = null;
             }
-            const url = 'http://127.0.0.1/api/v1/recipes';
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                body: JSON.stringify({
-                    "name": r.name,
-                    "desc": r.description,
-                    "q_ingredient_ids": Array.from(r.ingredients.values()),
-                    "category_ids": Array.from(r.categories),
-                    "tag_ids": Array.from(r.tags),
-                    "prep_time_min": r.prep_time,
-                    "cook_time_min": r.cook_time,
-                    "image": r.image_url,
-                    "instructions": r.instructions.split(/\r?\n/),
-                    "n_shares": r.shares
-                })
-            };
-            console.log(options.body);
-            fetch(url, options)
-            .then(response => {
-                console.log(response.status);
-            });
+            this.store.addRecipe(recipe)
         },
         //TODO this should probably be a component
     }
