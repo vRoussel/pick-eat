@@ -69,11 +69,11 @@
 <script>
 import ToggleButtons from '@/components/ToggleButtons.vue'
 import IngredientPicker from '@/components/IngredientPicker.vue'
-import store from '@/store/store.js'
 import ImageChooser from '@/components/ImageChooser.vue'
 
 export default {
     name: 'new-recipe-form',
+    inject: ["store"],
     components: {
       ToggleButtons,
       IngredientPicker,
@@ -92,8 +92,7 @@ export default {
                 categories: new Set(),
                 ingredients: new Map(),
                 image_url: ""
-            },
-            store: store
+            }
         }
     },
     methods: {

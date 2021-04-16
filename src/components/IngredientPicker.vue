@@ -6,12 +6,12 @@
 </template>
 
 <script>
-import store from '@/store/store.js'
 import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
 
 export default {
     name: 'ingredient-picker',
+    inject: ["store"],
     components : {
         Multiselect,
         IngredientListItem
@@ -23,7 +23,6 @@ export default {
     },
     data: function() {
         return {
-            store: store,
             dummy: null,
         }
     },

@@ -26,6 +26,9 @@ import store from '@/store/store.js'
 
 export default {
   name: 'App',
+  provide: {
+    store,
+  },
   components: {
   },
   data: function() {

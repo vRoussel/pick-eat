@@ -10,11 +10,11 @@
 </template>
 
 <script>
-import store from '@/store/store.js'
 import Multiselect from '@vueform/multiselect'
 
 export default {
     name: 'ingredient-list-item',
+    inject: ["store"],
     components : {
         Multiselect
     },
@@ -22,11 +22,6 @@ export default {
         id: Number,
         quantity: Number,
         unit_id: Number
-    },
-    data: function() {
-        return {
-            store: store
-        }
     },
     computed: {
         ingredient_unit: {
