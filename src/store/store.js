@@ -11,38 +11,46 @@ const API_HOST = '192.168.1.59';
 const API_ROOT = `http://${API_HOST}/api/v1`
 
 const getTags = async function() {
-    return fetch(`${API_ROOT}/tags`)
-        .then(response => response.json())
-        .then(json => {
-            state.tags = json;
-        });
+    let ret = await fetch(`${API_ROOT}/tags`)
+    if (ret.ok) {
+        state.tags = await ret.json()
+        return ret
+    }
+    else
+        throw ret
 }
 
-const getCategories = function() {
-    fetch(`${API_ROOT}/categories`)
-        .then(response => response.json())
-        .then(json => {
-            state.categories = json;
-        });
+const getCategories = async function() {
+    let ret = await fetch(`${API_ROOT}/categories`)
+    if (ret.ok) {
+        state.categories = await ret.json()
+        return ret
+    }
+    else
+        throw ret
 }
 
-const getIngredients = function() {
-    fetch(`${API_ROOT}/ingredients`)
-        .then(response => response.json())
-        .then(json => {
-            state.ingredients = json;
-        });
+const getIngredients = async function() {
+    let ret = await fetch(`${API_ROOT}/ingredients`)
+    if (ret.ok) {
+        state.ingredients = await ret.json()
+        return ret
+    }
+    else
+        throw ret
 }
 
-const getUnits = function() {
-    fetch(`${API_ROOT}/units`)
-        .then(response => response.json())
-        .then(json => {
-            state.units = json;
-        });
+const getUnits = async function() {
+    let ret = await fetch(`${API_ROOT}/units`)
+    if (ret.ok) {
+        state.units = await ret.json()
+        return ret
+    }
+    else
+        throw ret
 }
 
-const addRecipe = function(recipe) {
+const addRecipe = async function(recipe) {
     const options = {
         method: 'POST',
         headers: {
@@ -51,12 +59,31 @@ const addRecipe = function(recipe) {
         },
         body: JSON.stringify(recipe)
     };
-    console.log(options.body);
-    fetch(`${API_ROOT}/recipes`, options)
-        .then(response => {
-            console.log(response.status);
-        });
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/recipes`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
 }
+
+const addTag = async function(tag) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(tag)
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/tags`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
+}
+
 export default {
     state: readonly(state),
     getTags,

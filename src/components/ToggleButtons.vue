@@ -3,6 +3,7 @@
         <template v-for="el in choices" :key="el.id">
             <button type="button" :class="buttonClass(el.id)" @click="clicked(el.id)">{{ el.name }}</button>
         </template>
+        <button v-if="extendable" type="button" class="button is-circular is-success is-outlined" @click="addChoice">+</button>
     </div>
 </template>
 
@@ -15,9 +16,12 @@ export default {
         },
         picked: {
             type: Set
+        },
+        extendable: {
+            type: Boolean
         }
     },
-    emits: ['update:picked'],
+    emits: ['update:picked', 'add'],
     methods: {
         buttonClass(id) {
             return {
@@ -32,7 +36,19 @@ export default {
             else
                 this.picked.add(id)
             this.$emit('update:picked', this.picked)
+        },
+        addChoice() {
+            var new_tag = prompt("Nouveau tag");
+            if (new_tag != null) {
+                this.$emit('add', new_tag)
+            }
         }
-    }
+    },
 }
 </script>
+
+<style>
+.is-circular {
+    border-radius: 50%;
+}
+</style>

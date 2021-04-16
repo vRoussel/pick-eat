@@ -41,7 +41,7 @@
 
             <div class="field" v-if="store.state.tags.length > 0">
                 <label class="label">Tags</label>
-                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags">
+                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @add="addTag">
                 </toggle-buttons>
             </div>
 
@@ -116,7 +116,18 @@ export default {
             }
             this.store.addRecipe(recipe)
         },
-        //TODO this should probably be a component
+        async addTag(tag_name) {
+            let tag = {
+                "name": tag_name,
+            }
+            try {
+                await this.store.addTag(tag)
+                this.store.getTags()
+            }
+            catch (error) {
+                console.error(error)
+            }
+        }
     }
 }
 </script>

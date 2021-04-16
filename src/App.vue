@@ -36,11 +36,10 @@ export default {
         navbarIsOpen: false,
     }
   },
-  created() {
-    store.getTags();
-    store.getCategories();
-    store.getIngredients();
-    store.getUnits();
+  created: function() {
+    let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits()]
+    for (let ret of api_calls)
+        ret.catch(error => console.error(error));
   }
 }
 </script>
