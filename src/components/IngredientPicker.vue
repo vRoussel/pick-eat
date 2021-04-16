@@ -31,10 +31,10 @@ export default {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return store.ingredients.filter(ingr => !this.picked.has(ingr.id))
+            return this.store.state.ingredients.filter(ingr => !this.picked.has(ingr.id))
         },
         ingr_by_id() {
-            return new Map(store.ingredients.map(ingr => [ingr.id, ingr]))
+            return new Map(this.store.state.ingredients.map(ingr => [ingr.id, ingr]))
         }
     },
     emits: ['update:picked'],

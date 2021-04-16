@@ -39,19 +39,19 @@
                 <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
             </div>
 
-            <div class="field" v-if="store.tags.length > 0">
+            <div class="field" v-if="store.state.tags.length > 0">
                 <label class="label">Tags</label>
-                <toggle-buttons class="my-3" :choices="store.tags" v-model:picked="new_recipe.tags">
+                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags">
                 </toggle-buttons>
             </div>
 
-            <div class="field" v-if="store.categories.length > 0">
+            <div class="field" v-if="store.state.categories.length > 0">
                 <label class="label">Catégories</label>
-                <toggle-buttons class="my-3" :choices="store.categories" v-model:picked="new_recipe.categories">
+                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories">
                 </toggle-buttons>
             </div>
 
-            <div class="field" v-if="store.ingredients.length > 0">
+            <div class="field" v-if="store.state.ingredients.length > 0">
                 <label class="label">Ingrédients</label>
                 <ingredient-picker v-model:picked="new_recipe.ingredients">
                 </ingredient-picker>

@@ -37,28 +37,10 @@ export default {
     }
   },
   created() {
-    let api_host = '192.168.1.59';
-    fetch(`http://${api_host}/api/v1/tags`)
-        .then(response => response.json())
-        .then(json => {
-            store.tags = json;
-        });
-    fetch(`http://${api_host}/api/v1/categories`)
-        .then(response => response.json())
-        .then(json => {
-            store.categories = json
-        });
-    fetch(`http://${api_host}/api/v1/units`)
-        .then(response => response.json())
-        .then(json => {
-            store.units = json
-        });
-    fetch(`http://${api_host}/api/v1/ingredients`)
-        .then(response => response.json())
-        .then(json => {
-            store.ingredients = json
-        });
-    }
-
+    store.getTags();
+    store.getCategories();
+    store.getIngredients();
+    store.getUnits();
+  }
 }
 </script>
