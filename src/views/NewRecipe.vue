@@ -136,3 +136,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.is-circular {
+    border-radius: 50% !important;
+}
+</style>
