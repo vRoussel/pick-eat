@@ -84,6 +84,57 @@ const addTag = async function(tag) {
         throw ret
 }
 
+const addCategory = async function(tag) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(tag)
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/categories`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
+}
+
+const addIngredient = async function(ingredient) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(ingredient)
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/ingredients`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
+}
+
+const addUnit = async function(unit) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(unit)
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/units`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
+}
+
 export default {
     state: readonly(state),
     getTags,
@@ -92,4 +143,7 @@ export default {
     getUnits,
     addRecipe,
     addTag,
+    addCategory,
+    addIngredient,
+    addUnit,
 }
