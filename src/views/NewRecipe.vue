@@ -16,21 +16,21 @@
             <div class="field">
                 <label class="label">Temps de préparation</label>
                 <div class="control">
-                    <input v-model.number="new_recipe.prep_time" class="input" type="number" name="prep-time" id="prep-time">
+                    <input v-model.number="new_recipe.prep_time" class="input" type="number" min=0 step="1" name="prep-time" id="prep-time">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Temps de cuisson</label>
                 <div class="control">
-                    <input v-model.number="new_recipe.cook_time" class="input" type="number" name="cook-time" id="cook-time">
+                    <input v-model.number="new_recipe.cook_time" class="input" type="number" min=0 step="1" name="cook-time" id="cook-time">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Parts</label>
                 <div class="control">
-                    <input v-model.number="new_recipe.shares" class="input" type="number" name="shares" id="shares">
+                    <input v-model.number="new_recipe.shares" class="input" type="number" min=0 step="1" name="shares" id="shares">
                 </div>
             </div>
 
