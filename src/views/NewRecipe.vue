@@ -39,23 +39,39 @@
                 <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
             </div>
 
-            <div class="field" v-if="store.state.tags.length > 0">
-                <label class="label">Tags</label>
-                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @add="addTag">
+            <fieldset class="block">
+                <legend class="level is-mobile mb-1">
+                    <div class="level-left">
+                        <span class="label level-item">Tags</span>
+                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewTagForm">+</button>
+                    </div>
+                </legend>
+                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags">
                 </toggle-buttons>
-            </div>
+            </fieldset>
 
-            <div class="field" v-if="store.state.categories.length > 0">
-                <label class="label">Catégories</label>
+            <fieldset class="block">
+                <legend class="level is-mobile mb-1">
+                    <div class="level-left">
+                        <span class="label level-item">Categories</span>
+                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewCategoryForm">+</button>
+                    </div>
+                </legend>
                 <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories">
                 </toggle-buttons>
-            </div>
+            </fieldset>
 
-            <div class="field" v-if="store.state.ingredients.length > 0">
-                <label class="label">Ingrédients</label>
+            <fieldset class="block">
+                <legend class="level is-mobile mb-1">
+                    <div class="level-left">
+                        <span class="label level-item">Ingredients</span>
+                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewIngredientForm">+</button>
+                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewUnitForm">+</button>
+                    </div>
+                </legend>
                 <ingredient-picker v-model:picked="new_recipe.ingredients">
                 </ingredient-picker>
-            </div>
+            </fieldset>
 
             <div class="field">
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
@@ -121,17 +137,17 @@ export default {
             }
             this.store.addRecipe(recipe)
         },
-        async addTag(tag_name) {
-            let tag = {
-                "name": tag_name,
-            }
-            try {
-                await this.store.addTag(tag)
-                this.store.getTags()
-            }
-            catch (error) {
-                console.error(error)
-            }
+        openNewTagForm() {
+            this.currentModalContent = "NewTag"
+        },
+        openNewCategoryForm() {
+            this.currentModalContent = "NewCategory"
+        },
+        openNewIngredientForm() {
+            this.currentModalContent = "NewIngredient"
+        },
+        openNewUnitForm() {
+            this.currentModalContent = "NewUnit"
         }
     }
 }
