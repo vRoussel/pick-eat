@@ -61,6 +61,8 @@
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
+            <dynamic-modal v-model:currentComponent="currentModalContent"></dynamic-modal>
+
             <button class="button is-primary is-large is-fullwidth">Ajouter</button>
         </form>
     </div>
@@ -70,6 +72,7 @@
 import ToggleButtons from '@/components/ToggleButtons.vue'
 import IngredientPicker from '@/components/IngredientPicker.vue'
 import ImageChooser from '@/components/ImageChooser.vue'
+import DynamicModal from '@/components/DynamicModal.vue'
 
 export default {
     name: 'new-recipe-form',
@@ -78,6 +81,7 @@ export default {
       ToggleButtons,
       IngredientPicker,
       ImageChooser,
+      DynamicModal,
     },
     data: function() {
         return {
@@ -92,7 +96,8 @@ export default {
                 categories: new Set(),
                 ingredients: new Map(),
                 image_url: ""
-            }
+            },
+            currentModalContent: null,
         }
     },
     methods: {
