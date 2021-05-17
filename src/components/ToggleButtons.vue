@@ -21,7 +21,7 @@ export default {
             type: Boolean
         }
     },
-    emits: ['update:picked', 'add'],
+    emits: ['update:picked', 'addChoice'],
     methods: {
         buttonClass(id) {
             return {
@@ -38,10 +38,7 @@ export default {
             this.$emit('update:picked', this.picked)
         },
         addChoice() {
-            var new_tag = prompt("Nouveau tag");
-            if (new_tag != null) {
-                this.$emit('add', new_tag)
-            }
+            this.$emit('addChoice')
         }
     },
 }

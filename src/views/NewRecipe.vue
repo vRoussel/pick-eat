@@ -35,24 +35,14 @@
             </div>
 
             <fieldset class="block">
-                <legend class="level is-mobile mb-1">
-                    <div class="level-left">
-                        <span class="label level-item">Tags</span>
-                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewTagForm">+</button>
-                    </div>
-                </legend>
-                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags">
+                <legend class="label">Tags</legend>
+                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @addChoice="openNewTagForm">
                 </toggle-buttons>
             </fieldset>
 
             <fieldset class="block">
-                <legend class="level is-mobile mb-1">
-                    <div class="level-left">
-                        <span class="label level-item">Categories</span>
-                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewCategoryForm">+</button>
-                    </div>
-                </legend>
-                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories">
+                <legend class="label">Catégories</legend>
+                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable @addChoice="openNewCategoryForm">
                 </toggle-buttons>
             </fieldset>
 
