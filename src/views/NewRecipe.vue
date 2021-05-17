@@ -35,14 +35,14 @@
             </div>
 
             <fieldset class="block">
-                <legend class="label">Tags</legend>
-                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @addChoice="openNewTagForm">
+                <legend class="label">Catégories</legend>
+                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable @addChoice="openNewCategoryForm">
                 </toggle-buttons>
             </fieldset>
 
             <fieldset class="block">
-                <legend class="label">Catégories</legend>
-                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable @addChoice="openNewCategoryForm">
+                <legend class="label">Tags</legend>
+                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @addChoice="openNewTagForm">
                 </toggle-buttons>
             </fieldset>
 
@@ -97,8 +97,8 @@ export default {
                 cook_time: 0,
                 shares: 0,
                 instructions: "",
-                tags: new Set(),
                 categories: new Set(),
+                tags: new Set(),
                 ingredients: new Map(),
                 notes: "",
                 image_url: ""
