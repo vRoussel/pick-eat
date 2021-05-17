@@ -38,3 +38,18 @@ export default {
 
 }
 </script>
+
+
+<style>
+.modal.has-overflow {
+  position: fixed !important;
+  overflow: auto !important;
+}
+.modal.has-overflow .modal-background {
+    position: fixed !important;
+}
+.modal.has-overflow .modal-content {
+    overflow: visible !important;
+}
+</style>
+
