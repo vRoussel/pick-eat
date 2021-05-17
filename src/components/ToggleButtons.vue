@@ -3,7 +3,7 @@
         <template v-for="el in choices" :key="el.id">
             <button type="button" :class="buttonClass(el.id)" @click="clicked(el.id)">{{ el.name }}</button>
         </template>
-        <button v-if="extendable" type="button" class="button is-circular is-success is-outlined" @click="addChoice">+</button>
+        <button v-if="extendable" type="button" class="button is-circular is-info is-outlined" @click="addChoice">+</button>
     </div>
 </template>
 
