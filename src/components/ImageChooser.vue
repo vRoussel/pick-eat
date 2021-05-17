@@ -21,7 +21,7 @@ export default {
     computed: {
         image_preview() {
             if (this.image_url === "")
-                return 'https://bulma.io/images/placeholders/128x128.png'
+                return require('@/assets/photo.png')
             else
                 return this.image_url.replace("/upload", "/upload/c_limit,h_128,w_128");
         },
