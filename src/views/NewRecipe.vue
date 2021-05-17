@@ -9,11 +9,6 @@
             </div>
 
             <div class="field">
-                <label class="label">Description</label>
-                <textarea v-model="new_recipe.description" class="textarea" name="desc" id="desc"></textarea>
-            </div>
-
-            <div class="field">
                 <label class="label">Temps de préparation (minutes)</label>
                 <div class="control">
                     <input v-model.number="new_recipe.prep_time" class="input" type="number" min=0 step="1" name="prep-time" id="prep-time">
@@ -74,6 +69,11 @@
             </fieldset>
 
             <div class="field">
+                <label class="label">Notes</label>
+                <textarea v-model="new_recipe.notes" class="textarea" name="notes" id="notes"></textarea>
+            </div>
+
+            <div class="field">
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
@@ -103,7 +103,6 @@ export default {
         return {
             new_recipe: {
                 name: "",
-                description: "",
                 prep_time: 0,
                 cook_time: 0,
                 shares: 0,
@@ -111,6 +110,7 @@ export default {
                 tags: new Set(),
                 categories: new Set(),
                 ingredients: new Map(),
+                notes: "",
                 image_url: ""
             },
             currentModalContent: null,
@@ -121,7 +121,6 @@ export default {
             const r = this.new_recipe;
             let recipe = {
                 "name": r.name,
-                "desc": r.description,
                 "q_ingredient_ids": Array.from(r.ingredients.values()),
                 "category_ids": Array.from(r.categories),
                 "tag_ids": Array.from(r.tags),
@@ -129,6 +128,7 @@ export default {
                 "cook_time_min": r.cook_time,
                 "image": r.image_url,
                 "instructions": r.instructions.split(/\r?\n/),
+                "notes": r.notes,
                 "n_shares": r.shares
             }
             for (var ingr of recipe.q_ingredient_ids) {
