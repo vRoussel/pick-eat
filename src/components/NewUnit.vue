@@ -3,7 +3,7 @@
     <div class="box">
         <div class="field">
             <label class="label">Nom complet</label>
-            <input v-model="full_name" class="input" type="text" name="full_name" id="full_name" required>
+            <input v-model="full_name" class="input" type="text" name="full_name" id="full_name" ref="unitName" required>
         </div>
         <div class="field">
             <label class="label">Nom court</label>
@@ -45,6 +45,9 @@ export default {
                 .catch((e) => console.error(e))
             this.$emit('done')
         },
+    },
+    mounted() {
+        this.$refs.unitName.focus()
     },
     emits: ['done']
 }

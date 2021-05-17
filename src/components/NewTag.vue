@@ -3,7 +3,7 @@
     <div class="box">
         <div class="field">
             <label class="label">Nom du tag</label>
-            <input v-model="name" class="input" type="text" name="name" id="name" required>
+            <input v-model="name" class="input" type="text" name="name" id="name" ref="tagName" required>
         </div>
         <div class="field is-grouped">
           <div class="control">
@@ -39,6 +39,9 @@ export default {
                 .catch((e) => console.error(e))
             this.$emit('done')
         },
+    },
+    mounted() {
+        this.$refs.tagName.focus()
     },
     emits: ['done']
 }

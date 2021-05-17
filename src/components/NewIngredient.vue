@@ -3,7 +3,7 @@
     <div class="box">
         <div class="field">
             <label class="label">Nom</label>
-            <input v-model="name" class="input" type="text" name="name" id="name" required>
+            <input v-model="name" class="input" type="text" name="name" id="name" ref="ingrName" required>
         </div>
         <div class="field">
             <label class="label">Unité par défaut</label>
@@ -60,6 +60,9 @@ export default {
         openNewUnitForm() {
             this.currentModalContent = "NewUnit"
         }
+    },
+    mounted() {
+        this.$refs.ingrName.focus()
     },
     emits: ['done']
 }
