@@ -14,14 +14,14 @@
             </div>
 
             <div class="field">
-                <label class="label">Temps de préparation</label>
+                <label class="label">Temps de préparation (minutes)</label>
                 <div class="control">
                     <input v-model.number="new_recipe.prep_time" class="input" type="number" min=0 step="1" name="prep-time" id="prep-time">
                 </div>
             </div>
 
             <div class="field">
-                <label class="label">Temps de cuisson</label>
+                <label class="label">Temps de cuisson (minutes)</label>
                 <div class="control">
                     <input v-model.number="new_recipe.cook_time" class="input" type="number" min=0 step="1" name="cook-time" id="cook-time">
                 </div>

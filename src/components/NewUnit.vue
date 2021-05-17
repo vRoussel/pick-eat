@@ -2,7 +2,7 @@
     <form @submit.prevent="sendUnit" class="column is-half-desktop is-three-quarters-mobile">
     <div class="box">
         <div class="field">
-            <label class="label">Nom complet de l'unité</label>
+            <label class="label">Nom complet</label>
             <input v-model="full_name" class="input" type="text" name="full_name" id="full_name" required>
         </div>
         <div class="field">

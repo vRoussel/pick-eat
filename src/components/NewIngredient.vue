@@ -2,7 +2,7 @@
     <form @submit.prevent="sendIngredient" class="column is-half-desktop is-three-quarters-mobile">
     <div class="box">
         <div class="field">
-            <label class="label">Nom de l'ingrédient</label>
+            <label class="label">Nom</label>
             <input v-model="name" class="input" type="text" name="name" id="name" required>
         </div>
         <div class="field">
