@@ -46,14 +46,15 @@
                 </toggle-buttons>
             </fieldset>
 
+
             <fieldset class="block">
-                <legend class="level is-mobile mb-1">
+                <legend class="label">Ingrédients</legend>
+                <div class="level is-mobile mb-2">
                     <div class="level-left">
-                        <span class="label level-item">Ingredients</span>
-                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewIngredientForm">+</button>
-                        <button type="button" class="button is-circular is-success is-outlined is-small level-item" @click="openNewUnitForm">+</button>
+                    <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @click="openNewIngredientForm">Ingrédient manquant ?</button>
+                    <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @click="openNewUnitForm">Unité manquante ?</button>
                     </div>
-                </legend>
+                </div>
                 <ingredient-picker v-model:picked="new_recipe.ingredients">
                 </ingredient-picker>
             </fieldset>
