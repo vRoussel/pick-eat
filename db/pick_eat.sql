@@ -25,7 +25,7 @@ CREATE DATABASE pick_eat;
 CREATE TABLE public.recipes (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
-	description text NOT NULL,
+	notes text NOT NULL,
 	preparation_time_min smallint NOT NULL,
 	cooking_time_min smallint NOT NULL,
 	image text NOT NULL,

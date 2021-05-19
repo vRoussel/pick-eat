@@ -10,7 +10,7 @@ use tokio_postgres::{error::Error, types::ToSql, Client};
 pub struct FromDB {
     pub(crate) id: i32,
     pub(crate) name: String,
-    pub(crate) desc: String,
+    pub(crate) notes: String,
     pub(crate) q_ingredients: Vec<QIngredient::Full>,
     pub(crate) categories: Vec<category::FromDB>,
     pub(crate) tags: Vec<tag::FromDB>,
@@ -26,7 +26,7 @@ pub struct FromDB {
 #[serde(deny_unknown_fields)]
 pub struct New {
     pub(crate) name: String,
-    pub(crate) desc: String,
+    pub(crate) notes: String,
     pub(crate) q_ingredient_ids: Vec<QIngredient::Ref>,
     pub(crate) category_ids: Vec<i32>,
     pub(crate) tag_ids: Vec<i32>,
@@ -42,7 +42,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
         FromDB {
             id: row.get("id"),
             name: row.get("name"),
-            desc: row.get("description"),
+            notes: row.get("notes"),
             q_ingredients: Vec::new(),
             categories: Vec::new(),
             tags: Vec::new(),
@@ -61,7 +61,7 @@ pub async fn get_many(db_conn: &Client, range: &Range) -> Result<Vec<FromDB>, Er
         SELECT \
             id, \
             name, \
-            description, \
+            notes, \
             preparation_time_min, \
             cooking_time_min, \
             image, \
@@ -202,7 +202,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         .expect("Unable to start db transaction");
     let recipe_query = "\
         INSERT INTO recipes \
-        (name, description, preparation_time_min, cooking_time_min, image, instructions, n_shares) \
+        (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares) \
         VALUES ($1, $2, $3, $4, $5, $6, $7) \
         RETURNING id; \
     ";
@@ -212,7 +212,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
             recipe_query,
             &[
                 &new_recipe.name,
-                &new_recipe.desc,
+                &new_recipe.notes,
                 &new_recipe.prep_time_min,
                 &new_recipe.cook_time_min,
                 &new_recipe.image,
@@ -301,7 +301,7 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
         SELECT \
             id, \
             name, \
-            description, \
+            notes, \
             preparation_time_min, \
             cooking_time_min, \
             image, \
@@ -396,7 +396,7 @@ pub async fn modify_one(
     let recipe_query = "\
         UPDATE recipes SET \
             name = $1, \
-            description = $2, \
+            notes = $2, \
             preparation_time_min = $3, \
             cooking_time_min = $4, \
             image = $5, \
@@ -410,7 +410,7 @@ pub async fn modify_one(
             recipe_query,
             &[
                 &new_recipe.name,
-                &new_recipe.desc,
+                &new_recipe.notes,
                 &new_recipe.prep_time_min,
                 &new_recipe.cook_time_min,
                 &new_recipe.image,
