@@ -47,7 +47,7 @@
             </fieldset>
 
             <fieldset class="block">
-                <legend class="label">Seasons</legend>
+                <legend class="label">Saisons</legend>
                 <toggle-buttons class="my-3" :choices="store.state.seasons" v-model:picked="new_recipe.seasons">
                 </toggle-buttons>
             </fieldset>
