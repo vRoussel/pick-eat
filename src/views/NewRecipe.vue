@@ -46,6 +46,12 @@
                 </toggle-buttons>
             </fieldset>
 
+            <fieldset class="block">
+                <legend class="label">Seasons</legend>
+                <toggle-buttons class="my-3" :choices="store.state.seasons" v-model:picked="new_recipe.seasons">
+                </toggle-buttons>
+            </fieldset>
+
 
             <fieldset class="block">
                 <legend class="label">Ingrédients</legend>
@@ -100,6 +106,7 @@ export default {
                 instructions: "",
                 categories: new Set(),
                 tags: new Set(),
+                seasons: new Set(),
                 ingredients: new Map(),
                 notes: "",
                 image_url: ""
@@ -115,6 +122,7 @@ export default {
                 "q_ingredient_ids": Array.from(r.ingredients.values()),
                 "category_ids": Array.from(r.categories),
                 "tag_ids": Array.from(r.tags),
+                "season_ids": Array.from(r.seasons),
                 "prep_time_min": r.prep_time,
                 "cook_time_min": r.cook_time,
                 "image": r.image_url,

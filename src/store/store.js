@@ -3,6 +3,7 @@ import { reactive, readonly } from 'vue'
 const state =  reactive ({
     tags: [],
     categories: [],
+    seasons: [],
     ingredients: [],
     units: []
 });
@@ -24,6 +25,16 @@ const getCategories = async function() {
     let ret = await fetch(`${API_ROOT}/categories`)
     if (ret.ok) {
         state.categories = await ret.json()
+        return ret
+    }
+    else
+        throw ret
+}
+
+const getSeasons = async function() {
+    let ret = await fetch(`${API_ROOT}/seasons`)
+    if (ret.ok) {
+        state.seasons = await ret.json()
         return ret
     }
     else
@@ -141,6 +152,7 @@ export default {
     getIngredients,
     getCategories,
     getUnits,
+    getSeasons,
     addRecipe,
     addTag,
     addCategory,

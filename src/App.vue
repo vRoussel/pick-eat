@@ -37,7 +37,7 @@ export default {
     }
   },
   created: function() {
-    let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits()]
+    let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
     for (let ret of api_calls)
         ret.catch(error => console.error(error));
   }
