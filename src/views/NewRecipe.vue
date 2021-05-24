@@ -31,7 +31,7 @@
 
             <div class="field">
                 <label class="label">Etapes</label>
-                <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time"></textarea>
+                <textarea v-model="new_recipe.instructions" class="textarea" name="cook-time" id="cook-time" placeholder="Une étape par ligne"></textarea>
             </div>
 
             <fieldset class="block">
