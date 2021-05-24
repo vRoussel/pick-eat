@@ -86,6 +86,7 @@ import ToggleButtons from '@/components/ToggleButtons.vue'
 import IngredientPicker from '@/components/IngredientPicker.vue'
 import ImageChooser from '@/components/ImageChooser.vue'
 import DynamicModal from '@/components/DynamicModal.vue'
+import Swal from 'sweetalert2'
 
 export default {
     name: 'new-recipe-form',
@@ -128,13 +129,28 @@ export default {
                 "image": r.image_url,
                 "instructions": r.instructions.split(/\r?\n/),
                 "notes": r.notes,
-                "n_shares": r.shares
+                "n_shares": r.shares,
+                "is_favorite": false
             }
             for (var ingr of recipe.q_ingredient_ids) {
                 if (ingr.quantity == null)
                     ingr.unit_id = null;
             }
             this.store.addRecipe(recipe)
+                .then(() => {
+                    Swal.fire({
+                      title: 'Recette ajoutée',
+                      icon: 'success'
+                    })
+                }) 
+                .catch((e) => {
+                    console.log(e)
+                    Swal.fire({
+                      title: 'Erreur',
+                      text: e.statusText,
+                      icon: 'error'
+                    })
+                })
         },
         openNewTagForm() {
             this.currentModalContent = "NewTag"
