@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="sendIngredient" class="column is-half-desktop is-three-quarters-mobile">
+    <form @submit.prevent="sendIngredient" class="column is-half-desktop is-three-quarters-mobile" autocomplete="off">
     <div class="box">
         <div class="field">
             <label class="label">Nom</label>

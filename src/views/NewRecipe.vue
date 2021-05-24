@@ -1,6 +1,6 @@
 <template>
     <div class="columns is-centered is-mobile">
-        <form @submit.prevent="sendRecipe" id="recipe-form" class="column is-half-desktop is-three-quarters-mobile">
+        <form @submit.prevent="sendRecipe" id="recipe-form" class="column is-half-desktop is-three-quarters-mobile" autocomplete="off">
             <div class="field">
                 <label class="label">Nom</label>
                 <div class="control">
