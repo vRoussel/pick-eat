@@ -144,7 +144,6 @@ export default {
                     })
                 }) 
                 .catch((e) => {
-                    console.log(e)
                     Swal.fire({
                       title: 'Erreur',
                       text: e.statusText,
