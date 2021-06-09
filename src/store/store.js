@@ -8,8 +8,28 @@ const state =  reactive ({
     units: []
 });
 
-const API_HOST = '192.168.1.59';
+const API_HOST = '192.168.1.60';
 const API_ROOT = `http://${API_HOST}/api/v1`
+
+const getRecipes = async function(from, to) {
+    let ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}`)
+    if (ret.ok) {
+        console.log(ret)
+        console.log(ret.headers.get('content-range'))
+        let json = await ret.json()
+        console.log(json)
+        let total_count = parseInt(ret.headers.get('content-range').split('/')[1])
+        return [json, total_count]
+    }
+}
+
+const getOneRecipe = async function(id) {
+    let ret = await fetch(`${API_ROOT}/recipes/${id}`)
+    if (ret.ok) {
+        let json = await ret.json()
+        return json
+    }
+}
 
 const getTags = async function() {
     let ret = await fetch(`${API_ROOT}/tags`)
@@ -146,6 +166,26 @@ const addUnit = async function(unit) {
         throw ret
 }
 
+const toggleFavorite = async function(recipe) {
+    recipe.is_favorite = !recipe.is_favorite
+    const options = {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify({'is_favorite': !recipe.is_favorite})
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/recipes/${recipe.id}`, options)
+    if (ret.ok) {
+        return ret
+    } else
+        recipe.is_favorite = !recipe.is_favorite
+        throw ret
+
+}
+
 export default {
     state: readonly(state),
     getTags,
@@ -153,9 +193,12 @@ export default {
     getCategories,
     getUnits,
     getSeasons,
+    getRecipes,
     addRecipe,
     addTag,
     addCategory,
     addIngredient,
     addUnit,
+    toggleFavorite,
+    getOneRecipe,
 }

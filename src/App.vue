@@ -13,7 +13,7 @@
   </div>
   <div id="mynavbar" class="navbar-menu" v-bind:class="{'is-active': navbarIsOpen}">
     <div class="navbar-start">
-        <router-link to="/" class="navbar-item is-tab">Home</router-link>
+        <router-link to="/recipes?page=1" class="navbar-item is-tab">Recettes</router-link>
         <router-link to="/new-recipe" class="navbar-item is-tab">Nouvelle recette</router-link>
     </div>
   </div>
@@ -43,3 +43,9 @@ export default {
   }
 }
 </script>
+
+<style>
+@font-face {
+  font-family: "Rounded_Elegance";
+  src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");}
+</style>
