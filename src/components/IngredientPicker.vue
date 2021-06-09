@@ -1,5 +1,5 @@
 <template>
-    <Multiselect :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchableName" object valueProp="id" v-model="dummy" ref="multiselect"/>
+    <Multiselect :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
         <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
     </div>
@@ -8,6 +8,7 @@
 <script>
 import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
+import {obj_with_searchable_name} from '@/utils/utils.js'
 
 export default {
     name: 'ingredient-picker',
@@ -31,7 +32,9 @@ export default {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return this.store.state.ingredients.filter(ingr => !this.picked.has(ingr.id)).map(ingr_with_searchable_name)
+            return this.store.state.ingredients
+                .filter(ingr => !this.picked.has(ingr.id))
+                .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
     },
     emits: ['update:picked'],
@@ -51,18 +54,6 @@ export default {
         },
     }
 }
-
-function str_without_accents(str) {
-    return str.normalize('NFD').replace(/\p{Diacritic}/gu, "")
-}
-
-function ingr_with_searchable_name(ingr) {
-    return {
-        ...ingr,
-        searchableName: ingr.name + '#' + str_without_accents(ingr.name)
-    }
-}
-
 </script>
 
 <style src="@vueform/multiselect/themes/default.css"></style>

@@ -8,7 +8,7 @@
         <div class="field">
             <label class="label">Unité par défaut</label>
             <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @click="openNewUnitForm">Unité manquante ?</button>
-            <multiselect v-model="default_unit" :options="store.state.units" label="full_name" searchable trackBy="full_name" valueProp="id"/>
+            <multiselect v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id"/>
         </div>
         <dynamic-modal v-model:currentComponent="currentModalContent"></dynamic-modal>
         <div class="field is-grouped">
@@ -25,6 +25,7 @@
 
 <script>
 import Multiselect from '@vueform/multiselect'
+import {obj_with_searchable_name} from '@/utils/utils.js'
 
 export default {
     name: 'new-ingredient',
@@ -43,6 +44,11 @@ export default {
             currentModalContent: null,
         }
     },
+    computed: {
+        searchableUnits() {
+            return this.store.state.units.map(unit => obj_with_searchable_name(unit, "full_name"))
+        }
+    },
     methods: {
         cancel() {
             this.$emit('done')
@@ -59,7 +65,7 @@ export default {
         },
         openNewUnitForm() {
             this.currentModalContent = "NewUnit"
-        }
+        },
     },
     mounted() {
         this.$refs.ingrName.focus()

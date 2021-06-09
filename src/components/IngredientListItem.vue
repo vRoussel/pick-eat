@@ -5,12 +5,13 @@
         <span class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
-            <multiselect v-model="ingredient_unit" :options="store.state.units" label="full_name" searchable trackBy="full_name" valueProp="id"/>
+            <multiselect v-model="ingredient_unit" :options="searchable_units" label="full_name" searchable trackBy="searchable_name" valueProp="id"/>
         </div>
 </template>
 
 <script>
 import Multiselect from '@vueform/multiselect'
+import {obj_with_searchable_name} from '@/utils/utils.js'
 
 export default {
     name: 'ingredient-list-item',
@@ -45,6 +46,9 @@ export default {
         ingredient_name() {
             return this.store.state.ingredients.find(ingr => ingr.id === this.id).name
         },
+        searchable_units() {
+            return this.store.state.units.map(unit => obj_with_searchable_name(unit, "full_name"))
+        }
     },
     emits: ['update:quantity', 'update:unit_id', 'delete'],
 }
