@@ -1,5 +1,5 @@
 <template>
-    <Multiselect :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="name" object valueProp="id" v-model="dummy" ref="multiselect"/>
+    <Multiselect :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchableName" object valueProp="id" v-model="dummy" ref="multiselect"/>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
         <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
     </div>
@@ -31,11 +31,8 @@ export default {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return this.store.state.ingredients.filter(ingr => !this.picked.has(ingr.id))
+            return this.store.state.ingredients.filter(ingr => !this.picked.has(ingr.id)).map(ingr_with_searchable_name)
         },
-        ingr_by_id() {
-            return new Map(this.store.state.ingredients.map(ingr => [ingr.id, ingr]))
-        }
     },
     emits: ['update:picked'],
     methods: {
@@ -51,9 +48,21 @@ export default {
         del_ingr(id) {
             this.picked.delete(id)
             this.$emit('update:picked', this.picked)
-        }
+        },
     }
 }
+
+function str_without_accents(str) {
+    return str.normalize('NFD').replace(/\p{Diacritic}/gu, "")
+}
+
+function ingr_with_searchable_name(ingr) {
+    return {
+        ...ingr,
+        searchableName: ingr.name + '#' + str_without_accents(ingr.name)
+    }
+}
+
 </script>
 
 <style src="@vueform/multiselect/themes/default.css"></style>
