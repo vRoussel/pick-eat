@@ -68,7 +68,7 @@
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
-            <dynamic-modal :currentComponent="currentModalContent" :input="currentModalInput" @close="closeModal"></dynamic-modal>
+            <dynamic-modal ref="modal"></dynamic-modal>
 
             <button class="button is-primary is-large is-fullwidth">Ajouter</button>
         </form>
@@ -106,8 +106,6 @@ export default {
                 notes: "",
                 image_url: ""
             },
-            currentModalContent: null,
-            currentModalInput: null,
         }
     },
     methods: {
@@ -147,22 +145,17 @@ export default {
                 })
         },
         openNewTagForm() {
-            this.currentModalContent = "NewTag"
+            this.$refs.modal.openNewTagForm()
         },
         openNewCategoryForm() {
-            this.currentModalContent = "NewCategory"
+            this.$refs.modal.openNewCategoryFormForm()
         },
         openNewIngredientForm(input) {
-            this.currentModalInput = input
-            this.currentModalContent = "NewIngredient"
+            this.$refs.modal.openNewIngredientForm(input)
         },
         openNewUnitForm() {
-            this.currentModalContent = "NewUnit"
+            this.$refs.modal.openNewUnitForm(null)
         },
-        closeModal() {
-            this.currentModalContent = null
-            this.currentModalInput = null
-        }
     }
 }
 </script>

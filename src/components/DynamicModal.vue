@@ -21,13 +21,30 @@ export default {
         NewIngredient,
         NewUnit,
     },
-    props: {
-        currentComponent: null,
-        input: null
+    data: function() {
+        return {
+            currentComponent: null,
+            input: null
+        }
     },
     methods: {
+        openNewTagForm() {
+            this.currentComponent = "NewTag"
+        },
+        openNewCategoryForm() {
+            this.currentComponent = "NewCategory"
+        },
+        openNewIngredientForm(input) {
+            this.input = input
+            this.currentComponent = "NewIngredient"
+        },
+        openNewUnitForm(input) {
+            this.input = input
+            this.currentComponent = "NewUnit"
+        },
         close() {
-            this.$emit('close', null)
+            this.currentComponent = null
+            this.input = null
         },
     },
     computed: {
@@ -35,8 +52,6 @@ export default {
             return this.currentComponent != null
         },
     },
-    emits: ['close']
-
 }
 </script>
 
