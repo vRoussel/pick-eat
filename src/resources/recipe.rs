@@ -39,6 +39,12 @@ pub struct New {
     pub(crate) is_favorite: bool,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Patched {
+    pub(crate) is_favorite: bool,
+}
+
 impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         FromDB {
@@ -576,6 +582,19 @@ pub async fn modify_one(
         .await
         .expect("Error when commiting transaction");
     Ok(Some(()))
+}
+
+pub async fn patch_one(db_conn: &Client, id: i32, patched_recipe: &Patched) -> Result<Option<()>, Error> {
+    let patch_query = "\
+        UPDATE recipes \
+        SET is_favorite = $1 \
+        WHERE id = $2 \
+        RETURNING id;
+    ";
+    db_conn
+        .query_opt(patch_query, &[&patched_recipe.is_favorite, &id])
+        .await
+        .map(|opt| opt.map(|_| ())) // OK(Some(row)) => Ok(Some(()))
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {

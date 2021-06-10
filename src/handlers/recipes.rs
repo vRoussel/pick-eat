@@ -1,4 +1,4 @@
-use actix_web::{delete, get, http, post, put, web, Responder};
+use actix_web::{delete, get, http, post, put, patch, web, Responder};
 use log::*;
 use serde::Deserialize;
 use tokio_postgres::error::SqlState;
@@ -14,6 +14,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(add_one)
         .service(get_one)
         .service(modify_one)
+        .service(patch_one)
         .service(delete_one);
 }
 
@@ -144,6 +145,22 @@ pub async fn modify_one(
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION) => {
             return web::HttpResponse::UnprocessableEntity().finish()
         }
+        Err(e) => {
+            error!("{}", e);
+            return web::HttpResponse::InternalServerError().finish();
+        }
+    }
+    web::HttpResponse::Ok().finish()
+}
+
+#[patch("/recipes/{id}")]
+pub async fn patch_one(id: web::Path<i32>, patched_recipe: web::Json<recipe::Patched>, db_pool: web::Data<Pool>) -> impl Responder {
+    let mut db_conn = db_pool.get().await.unwrap();
+    trace!("{:#?}", patched_recipe);
+
+    match recipe::patch_one(&mut db_conn, id.into_inner(), &patched_recipe).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return web::HttpResponse::NotFound().finish(),
         Err(e) => {
             error!("{}", e);
             return web::HttpResponse::InternalServerError().finish();
