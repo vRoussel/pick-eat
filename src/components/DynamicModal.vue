@@ -2,7 +2,7 @@
     <div class="modal has-overflow" :class="{'is-active': isActive}">
         <div class="modal-background" @click="close"></div>
         <div class="modal-content columns is-centered is-mobile">
-            <component :is="currentComponent" @done="close"></component>
+            <component :is="currentComponent" :input="input" @done="close"></component>
         </div>
     </div>
 </template>
@@ -23,10 +23,11 @@ export default {
     },
     props: {
         currentComponent: null,
+        input: null
     },
     methods: {
         close() {
-            this.$emit('update:currentComponent', null)
+            this.$emit('close', null)
         },
     },
     computed: {
@@ -34,7 +35,7 @@ export default {
             return this.currentComponent != null
         },
     },
-    emits: ['update:currentComponent']
+    emits: ['close']
 
 }
 </script>

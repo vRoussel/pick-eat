@@ -27,9 +27,12 @@ export default {
     inject: ["store"],
     data: function() {
         return {
-            full_name: null,
+            full_name: this.input,
             short_name: null,
         }
+    },
+    props: {
+        input: null
     },
     methods: {
         cancel() {

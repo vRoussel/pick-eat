@@ -7,10 +7,10 @@
         </div>
         <div class="field">
             <label class="label">Unité par défaut</label>
-            <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @click="openNewUnitForm">Unité manquante ?</button>
-            <multiselect v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id"/>
+            <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @mousedown="save_unit_search" @click="openNewUnitForm">Unité manquante ?</button>
+            <multiselect v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
         </div>
-        <dynamic-modal v-model:currentComponent="currentModalContent"></dynamic-modal>
+        <dynamic-modal :currentComponent="currentModalContent" :input="currentModalInput" @close="closeModal"></dynamic-modal>
         <div class="field is-grouped">
           <div class="control">
             <button class="button is-success" type="submit">Ok</button>
@@ -39,10 +39,15 @@ export default {
     },
     data: function() {
         return {
-            name: null,
+            name: this.input,
             default_unit: null,
             currentModalContent: null,
+            currentModalInput: null,
+            unit_search: null
         }
+    },
+    props: {
+        input: null
     },
     computed: {
         searchableUnits() {
@@ -64,8 +69,16 @@ export default {
             this.$emit('done')
         },
         openNewUnitForm() {
+            this.currentModalInput = this.unit_search
             this.currentModalContent = "NewUnit"
         },
+        closeModal() {
+            this.currentModalContent = null
+            this.currentModalInput = null
+        },
+        save_unit_search() {
+            this.unit_search = this.$refs.multiselect.search
+        }
     },
     mounted() {
         this.$refs.ingrName.focus()

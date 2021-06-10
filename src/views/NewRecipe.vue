@@ -55,13 +55,7 @@
 
             <fieldset class="block">
                 <legend class="label">Ingrédients</legend>
-                <div class="level is-mobile mb-2">
-                    <div class="level-left">
-                    <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @click="openNewIngredientForm">Ingrédient manquant ?</button>
-                    <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @click="openNewUnitForm">Unité manquante ?</button>
-                    </div>
-                </div>
-                <ingredient-picker v-model:picked="new_recipe.ingredients">
+                <ingredient-picker v-model:picked="new_recipe.ingredients" @newIngredient="openNewIngredientForm" @NewUnit="openNewUnitForm">
                 </ingredient-picker>
             </fieldset>
 
@@ -74,7 +68,7 @@
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
-            <dynamic-modal v-model:currentComponent="currentModalContent"></dynamic-modal>
+            <dynamic-modal :currentComponent="currentModalContent" :input="currentModalInput" @close="closeModal"></dynamic-modal>
 
             <button class="button is-primary is-large is-fullwidth">Ajouter</button>
         </form>
@@ -113,6 +107,7 @@ export default {
                 image_url: ""
             },
             currentModalContent: null,
+            currentModalInput: null,
         }
     },
     methods: {
@@ -157,11 +152,16 @@ export default {
         openNewCategoryForm() {
             this.currentModalContent = "NewCategory"
         },
-        openNewIngredientForm() {
+        openNewIngredientForm(input) {
+            this.currentModalInput = input
             this.currentModalContent = "NewIngredient"
         },
         openNewUnitForm() {
             this.currentModalContent = "NewUnit"
+        },
+        closeModal() {
+            this.currentModalContent = null
+            this.currentModalInput = null
         }
     }
 }
