@@ -44,7 +44,7 @@ export default {
                 .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
     },
-    emits: ['update:picked', 'newIngredient'],
+    emits: ['update:picked', 'newIngredient', 'newUnit'],
     methods: {
         add_ingr(ingr) {
             this.picked.set(ingr.id, {
