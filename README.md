@@ -1,4 +1,4 @@
-# pick-eat-front2
+# pick-eat-front
 
 ## Project setup
 ```
