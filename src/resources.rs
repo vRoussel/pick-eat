@@ -1,6 +1,7 @@
 pub mod category;
 pub mod ingredient;
 pub mod recipe;
+pub mod season;
 pub mod tag;
 pub mod unit;
 

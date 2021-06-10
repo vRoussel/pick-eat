@@ -24,7 +24,8 @@ async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
                     .configure(handlers::ingredients::config)
                     .configure(handlers::tags::config)
                     .configure(handlers::categories::config)
-                    .configure(handlers::units::config), //            .configure(resources::search::config)
+                    .configure(handlers::units::config) //            .configure(resources::search::config)
+                    .configure(handlers::seasons::config),
             )
     })
     .bind("127.0.0.1:8080")?

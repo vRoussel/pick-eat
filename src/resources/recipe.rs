@@ -1,5 +1,5 @@
 use super::ingredient::quantified as QIngredient;
-use super::{category, tag};
+use super::{category, season, tag};
 use crate::query_params::Range;
 use crate::utils::*;
 use serde::{Deserialize, Serialize};
@@ -21,6 +21,7 @@ pub struct FromDB {
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16,
     pub(crate) is_favorite: bool,
+    pub(crate) seasons: Vec<season::FromDB>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -36,6 +37,7 @@ pub struct New {
     pub(crate) image: String,
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16,
+    pub(crate) season_ids: Vec<i32>,
     pub(crate) is_favorite: bool,
 }
 
@@ -60,6 +62,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
             publish_date: row.get("publication_date"),
             instructions: row.get("instructions"),
             n_shares: row.get("n_shares"),
+            seasons: Vec::new(),
             is_favorite: row.get("is_favorite"),
         }
     }
@@ -165,6 +168,34 @@ pub async fn get_many(db_conn: &Client, range: &Range) -> Result<Vec<FromDB>, Er
                 let idx = recipe_id_to_idx.get(&id).unwrap();
                 let recipe = recipes.get_mut(*idx).unwrap();
                 recipe.tags.push(r.into());
+            }
+        })?;
+
+    let seasons_query = format!(
+        "\
+        SELECT \
+            rs.recipe_id, \
+            s.id, \
+            s.name \
+        FROM \
+            seasons as s, \
+            recipes_seasons as rs \
+        WHERE \
+            s.id = rs.season_id \
+            AND rs.recipe_id IN ({}) \
+    ",
+        query_params
+    );
+
+    db_conn
+        .query(seasons_query.as_str(), &recipe_ids)
+        .await
+        .map(|rows| {
+            for r in &rows {
+                let id: i32 = r.get("recipe_id");
+                let idx = recipe_id_to_idx.get(&id).unwrap();
+                let recipe = recipes.get_mut(*idx).unwrap();
+                recipe.seasons.push(r.into());
             }
         })?;
 
@@ -347,6 +378,18 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
             AND rt.recipe_id = $1 \
     ";
 
+    let seasons_query = "\
+        SELECT \
+            s.id, \
+            s.name \
+        FROM \
+            seasons as s, \
+            recipes_seasons as rs \
+        WHERE \
+            s.id = rs.season_id \
+            AND rs.recipe_id = $1 \
+    ";
+
     let ingredients_query = "\
         SELECT \
             i.id as id, \
@@ -381,6 +424,11 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
             .await
             .map(|rows| rows.iter().map(|r| r.into()).collect())?;
 
+        let seasons: Vec<season::FromDB> = db_conn
+            .query(seasons_query, &[&id])
+            .await
+            .map(|rows| rows.iter().map(|r| r.into()).collect())?;
+
         let ingredients: Vec<QIngredient::Full> = db_conn
             .query(ingredients_query, &[&id])
             .await
@@ -388,6 +436,7 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
 
         recipe.categories = categories;
         recipe.tags = tags;
+        recipe.seasons = seasons;
         recipe.q_ingredients = ingredients;
     }
 
@@ -480,6 +529,52 @@ pub async fn modify_one(
         }
         transaction
             .execute(remove_tags_query.as_str(), &query_args)
+            .await?;
+    }
+
+    // Seasons
+    if new_recipe.season_ids.is_empty() {
+        let remove_seasons_query = "\
+            DELETE FROM recipes_seasons \
+            WHERE recipe_id = $1;
+        ";
+        transaction.execute(remove_seasons_query, &[&id]).await?;
+    } else {
+        let query_params = gen_sql_query_params(new_recipe.season_ids.len(), 2);
+        let insert_seasons_query = format!(
+            "\
+            INSERT INTO recipes_seasons \
+            (season_id, recipe_id) \
+            VALUES {} \
+            ON CONFLICT DO NOTHING;
+        ",
+            query_params
+        );
+
+        let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
+        for season_id in &new_recipe.season_ids {
+            query_args.extend_from_slice(&[season_id, &id]);
+        }
+        transaction
+            .execute(insert_seasons_query.as_str(), &query_args)
+            .await?;
+
+        let query_params = gen_sql_query_params_from(new_recipe.season_ids.len(), 1, 2);
+        let remove_seasons_query = format!(
+            "\
+            DELETE FROM recipes_seasons \
+            WHERE \
+                recipe_id = $1 \
+                AND season_id NOT IN ({});
+        ",
+            query_params
+        );
+        let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
+        for season_id in &new_recipe.season_ids {
+            query_args.push(season_id);
+        }
+        transaction
+            .execute(remove_seasons_query.as_str(), &query_args)
             .await?;
     }
 
