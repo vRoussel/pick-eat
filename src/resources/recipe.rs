@@ -20,6 +20,7 @@ pub struct FromDB {
     pub(crate) publish_date: time::Date,
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16,
+    pub(crate) is_favorite: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -35,6 +36,7 @@ pub struct New {
     pub(crate) image: String,
     pub(crate) instructions: Vec<String>,
     pub(crate) n_shares: i16,
+    pub(crate) is_favorite: bool,
 }
 
 impl From<&tokio_postgres::row::Row> for FromDB {
@@ -52,6 +54,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
             publish_date: row.get("publication_date"),
             instructions: row.get("instructions"),
             n_shares: row.get("n_shares"),
+            is_favorite: row.get("is_favorite"),
         }
     }
 }
@@ -67,7 +70,8 @@ pub async fn get_many(db_conn: &Client, range: &Range) -> Result<Vec<FromDB>, Er
             image, \
             publication_date, \
             instructions, \
-            n_shares \
+            n_shares, \
+            is_favorite \
         FROM recipes \
         ORDER BY name \
         OFFSET $1 \
@@ -307,7 +311,8 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
             image, \
             publication_date, \
             instructions, \
-            n_shares \
+            n_shares, \
+            is_favorite \
         FROM recipes \
         WHERE id = $1 \
     ";
@@ -401,8 +406,9 @@ pub async fn modify_one(
             cooking_time_min = $4, \
             image = $5, \
             instructions = $6, \
-            n_shares = $7 \
-        WHERE id = $8 \
+            n_shares = $7, \
+            is_favorite = $8 \
+        WHERE id = $9 \
         RETURNING id; \
     ";
     transaction
@@ -416,6 +422,7 @@ pub async fn modify_one(
                 &new_recipe.image,
                 &new_recipe.instructions,
                 &new_recipe.n_shares,
+                &new_recipe.is_favorite,
                 &id,
             ],
         )
