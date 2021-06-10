@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.3-beta1" use-changelog="false" last-position="262,72" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.3-beta1" use-changelog="false" last-position="0,162" last-zoom="0.9" max-obj-count="12"
 	 default-schema="public" default-owner="postgres">
 <role name="valentin"
       createdb="true"
@@ -16,10 +16,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="recipes" layer="0" collapse-mode="2" max-obj-count="10" z-value="0">
+<table name="recipes" layer="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="320" y="220"/>
+	<position x="320" y="420"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -47,6 +47,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="n_shares" not-null="true">
 		<type name="smallint" length="0"/>
+	</column>
+	<column name="is_favorite" not-null="true" default-value="false">
+		<type name="boolean" length="0"/>
 	</column>
 	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
 		<columns names="id" ref-type="src-columns"/>
@@ -109,18 +112,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<textbox name="TODO" layer="0" z-value="0" font-size="9">
-	<position x="240" y="520"/>
-	<comment><![CDATA[TODO
- - mode course => generer liste de courses a partir des recettes
- - ingreidents qty => on doit pouvoir les ajouter pour la liste de courses !
- - au moins 3 tags et 1 categorie]]></comment>
-</textbox>
-
 <table name="ingredients" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1480" y="460"/>
+	<position x="1480" y="440"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -142,7 +137,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1000" y="440"/>
+	<position x="1000" y="500"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -181,7 +176,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="units" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
-	<position x="1580" y="740"/>
+	<position x="1480" y="620"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -200,6 +195,40 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 	<constraint name="units_uq_short_name" type="uq-constr" table="public.units">
 		<columns names="short_name" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="seasons" layer="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="valentin"/>
+	<position x="1480" y="840"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="seasons_pk" type="pk-constr" table="public.seasons">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="seasons_uq_name" type="uq-constr" table="public.seasons">
+		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="recipes_seasons" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="valentin"/>
+	<position x="1000" y="840"/>
+	<column name="recipe_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="season_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="recipes_seasons_pk" type="pk-constr" table="public.recipes_seasons">
+		<columns names="recipe_id,season_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -248,6 +277,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <constraint name="recipes_categories_fk_category_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.categories" table="public.recipes_categories">
 	<columns names="category_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_seasons_fk_season_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.seasons" table="public.recipes_seasons">
+	<columns names="season_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_seasons_fk_recipe_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_seasons">
+	<columns names="recipe_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -306,5 +347,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-table="public.recipes_ingredients"
 	 dst-table="public.units" reference-fk="recipes_ingredients_fk_unit_id"
 	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_recipes_seasons_seasons" type="relfk" layer="0"
+	 src-table="public.recipes_seasons"
+	 dst-table="public.seasons" reference-fk="recipes_seasons_fk_season_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_seasons_recipes" type="relfk" layer="0"
+	 src-table="public.recipes_seasons"
+	 dst-table="public.recipes" reference-fk="recipes_seasons_fk_recipe_id"
+	 src-required="false" dst-required="true"/>
 
 </dbmodel>
