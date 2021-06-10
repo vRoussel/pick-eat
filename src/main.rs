@@ -16,7 +16,7 @@ async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .wrap(Cors::permissive())
+            .wrap(Cors::permissive().expose_headers(vec!["content-range"]))
             .app_data(mydata.clone())
             .service(
                 web::scope("/v1/")
