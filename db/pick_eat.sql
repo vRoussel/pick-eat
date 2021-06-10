@@ -135,6 +135,31 @@ CREATE TABLE public.units (
 ALTER TABLE public.units OWNER TO valentin;
 -- ddl-end --
 
+-- object: public.seasons | type: TABLE --
+-- DROP TABLE IF EXISTS public.seasons CASCADE;
+CREATE TABLE public.seasons (
+	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	name text NOT NULL,
+	CONSTRAINT seasons_pk PRIMARY KEY (id),
+	CONSTRAINT seasons_uq_name UNIQUE (name)
+
+);
+-- ddl-end --
+ALTER TABLE public.seasons OWNER TO valentin;
+-- ddl-end --
+
+-- object: public.recipes_seasons | type: TABLE --
+-- DROP TABLE IF EXISTS public.recipes_seasons CASCADE;
+CREATE TABLE public.recipes_seasons (
+	recipe_id integer NOT NULL,
+	season_id integer NOT NULL,
+	CONSTRAINT recipes_seasons_pk PRIMARY KEY (recipe_id,season_id)
+
+);
+-- ddl-end --
+ALTER TABLE public.recipes_seasons OWNER TO valentin;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
@@ -188,6 +213,20 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.recipes_categories DROP CONSTRAINT IF EXISTS recipes_categories_fk_category_id CASCADE;
 ALTER TABLE public.recipes_categories ADD CONSTRAINT recipes_categories_fk_category_id FOREIGN KEY (category_id)
 REFERENCES public.categories (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_seasons_fk_season_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_seasons DROP CONSTRAINT IF EXISTS recipes_seasons_fk_season_id CASCADE;
+ALTER TABLE public.recipes_seasons ADD CONSTRAINT recipes_seasons_fk_season_id FOREIGN KEY (season_id)
+REFERENCES public.seasons (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_seasons_fk_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_seasons DROP CONSTRAINT IF EXISTS recipes_seasons_fk_recipe_id CASCADE;
+ALTER TABLE public.recipes_seasons ADD CONSTRAINT recipes_seasons_fk_recipe_id FOREIGN KEY (recipe_id)
+REFERENCES public.recipes (id) MATCH FULL
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
