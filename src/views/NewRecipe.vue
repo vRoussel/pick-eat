@@ -153,8 +153,8 @@ export default {
         openNewIngredientForm(input) {
             this.$refs.modal.openNewIngredientForm(input)
         },
-        openNewUnitForm() {
-            this.$refs.modal.openNewUnitForm(null)
+        openNewUnitForm(input) {
+            this.$refs.modal.openNewUnitForm(input)
         },
     }
 }

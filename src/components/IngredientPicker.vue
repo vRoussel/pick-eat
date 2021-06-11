@@ -1,13 +1,13 @@
 <template>
     <div class="level is-mobile mb-2">
         <div class="level-left">
-        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="this.$emit('newIngredient', this.ingredient_search)">Ingrédient manquant ?</button>
-        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @click="this.$emit('newUnit', null)">Unité manquante ?</button>
+        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="new_ingredient(ingredient_search)">Ingrédient manquant ?</button>
+        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @mousedown="save_unit_search" @click="new_unit(unit_search)">Unité manquante ?</button>
         </div>
     </div>
-    <Multiselect class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
+    <Multiselect @keydown.ctrl.enter.prevent="new_ingredient($event.target.value)" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
-        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id"></ingredient-list-item>
+        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @newUnit="new_unit" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
     </div>
 </template>
 
@@ -31,7 +31,9 @@ export default {
     data: function() {
         return {
             dummy: null,
-            ingredient_search: null
+            ingredient_search: null,
+            unit_search: null,
+            current_unit_input: null
         }
     },
     computed: {
@@ -61,6 +63,19 @@ export default {
         },
         save_ingredient_search() {
             this.ingredient_search = this.$refs.multiselect.search
+        },
+        save_unit_search() {
+            if (this.current_unit_input !== undefined)
+                this.unit_search = this.current_unit_input.search
+        },
+        save_current_unit_input(elem) {
+            this.current_unit_input = elem
+        },
+        new_ingredient(input) {
+            this.$emit('newIngredient', input)
+        },
+        new_unit(input) {
+            this.$emit('newUnit', input)
         }
     }
 }

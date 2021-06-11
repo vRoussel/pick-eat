@@ -5,7 +5,7 @@
         <span class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
-            <multiselect v-model="ingredient_unit" :options="searchable_units" label="full_name" searchable trackBy="searchable_name" valueProp="id"/>
+            <multiselect @keydown.ctrl.enter.prevent="new_unit($event.target.value)" @open="notify_input_selected" v-model="ingredient_unit" :options="searchable_units" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
         </div>
 </template>
 
@@ -48,9 +48,17 @@ export default {
         },
         searchable_units() {
             return this.store.state.units.map(unit => obj_with_searchable_name(unit, "full_name"))
+        },
+    },
+    methods: {
+        new_unit(input) {
+            this.$emit('newUnit', input)
+        },
+        notify_input_selected() {
+            this.$emit('unit-input-selected', this.$refs.multiselect)
         }
     },
-    emits: ['update:quantity', 'update:unit_id', 'delete'],
+    emits: ['update:quantity', 'update:unit_id', 'delete', 'newUnit', 'unit-input-selected'],
 }
 </script>
 

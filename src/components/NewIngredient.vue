@@ -7,8 +7,8 @@
         </div>
         <div class="field">
             <label class="label">Unité par défaut</label>
-            <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @mousedown="save_unit_search" @click="openNewUnitForm">Unité manquante ?</button>
-            <multiselect v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
+            <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @mousedown="save_unit_search" @click="openNewUnitForm(unit_search)">Unité manquante ?</button>
+            <multiselect @keydown.ctrl.enter.prevent="openNewUnitForm($event.target.value)" v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
         </div>
         <dynamic-modal ref="modal"></dynamic-modal>
         <div class="field is-grouped">
@@ -66,8 +66,8 @@ export default {
                 .catch((e) => console.error(e))
             this.$emit('done')
         },
-        openNewUnitForm() {
-            this.$refs.modal.openNewUnitForm(this.unit_search)
+        openNewUnitForm(input) {
+            this.$refs.modal.openNewUnitForm(input)
         },
         save_unit_search() {
             this.unit_search = this.$refs.multiselect.search
