@@ -1,8 +1,8 @@
 <template>
         <div class="column is-narrow">
-            <button class="delete" type="button" @click="this.$emit('delete')"></button>
+            <button tabindex="-1" class="delete" type="button" @click="this.$emit('delete')"></button>
         </div>
-        <span class="column has-text-right"> {{ ingredient_name }}</span>
+        <span tabindex="-1" class="column has-text-right"> {{ ingredient_name }}</span>
         <input v-model.number="ingredient_quantity" class="input column is-2" min=0 step="any" type="number">
         <div class="column">
             <multiselect @keydown.ctrl.enter.prevent="new_unit($event.target.value)" @open="notify_input_selected" v-model="ingredient_unit" :options="searchable_units" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
