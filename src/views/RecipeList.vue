@@ -1,7 +1,7 @@
 <template>
     <div class="container my-4 px-4">
         <div class="columns is-multiline mt-4">
-                <div class="column is-3-desktop is-4-tablet" v-for="recipe in recipes" :key="recipe.id">
+            <div class="column is-one-fifth-fullhd is-3-desktop is-4-tablet my-4" v-for="recipe in recipes" :key="recipe.id">
                 <div class="card">
                     <div class="card-image">
                         <figure class="image is-512x512">
