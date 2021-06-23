@@ -43,7 +43,7 @@ export default {
     data: function() {
         return {
             recipes: [],
-            per_page: 4,
+            per_page: 20,
             max_page: 1
         }
     },
