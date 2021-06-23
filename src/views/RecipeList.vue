@@ -1,5 +1,6 @@
 <template>
-            <div class="columns is-multiline mt-4">
+    <div class="container my-4 px-4">
+        <div class="columns is-multiline mt-4">
                 <div class="column is-3-desktop is-4-tablet" v-for="recipe in recipes" :key="recipe.id">
                 <div class="card">
                     <div class="card-image">
@@ -19,6 +20,7 @@
                     </header>
                 </div>
             </div>
+        </div>
     </div>
     <pagination :current_page="page" :max_page="max_page" base_url="/recipes" url_param="page"></pagination>
 </template>
