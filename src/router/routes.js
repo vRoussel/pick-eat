@@ -13,7 +13,7 @@ const routes = [
         name: 'recipe-list',
         path: '/recipes',
         component: RecipeList,
-        props: route => ({ page: parseInt(route.query.page) })
+        props: route => ({ page: parseInt(route.query.page) || 1 })
     },
     {
         name: 'recipe',

@@ -13,7 +13,7 @@
   </div>
   <div id="mynavbar" class="navbar-menu" v-bind:class="{'is-active': navbarIsOpen}">
     <div class="navbar-start">
-        <router-link to="/recipes?page=1" class="navbar-item is-tab">Recettes</router-link>
+        <router-link to="/recipes" class="navbar-item is-tab">Recettes</router-link>
         <router-link to="/new-recipe" class="navbar-item is-tab">Nouvelle recette</router-link>
     </div>
   </div>
