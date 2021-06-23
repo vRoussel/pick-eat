@@ -9,12 +9,12 @@
                         </figure>
                     </div>
                     <header class="card-header">
-                        <p class="card-header-title recipe-name">
+                        <p class="card-header-title is-size-4-mobile is-size-5-tablet">
                             {{ recipe.name }}
                         </p>
                         <div class="card-header-icon" aria-label="favorite">
                           <span class="icon">
-                            <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-clickable" @click="toggleFavorite(recipe)"></i>
+                            <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-size-4-mobile is-size-5-tablet is-clickable" @click="toggleFavorite(recipe)"></i>
                           </span>
                         </div>
                     </header>
