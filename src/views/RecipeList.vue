@@ -64,7 +64,7 @@ export default {
             this.getRecipes(from,to)
         }
     },
-    mounted() {
+    created() {
         this.loadRecipes()
     },
     watch: {
