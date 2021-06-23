@@ -5,7 +5,7 @@
                 <div class="card">
                     <div class="card-image">
                         <figure class="image is-512x512">
-                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')"/>
+                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" class="is-clickable" @click="openRecipe(recipe.id)"/>
                         </figure>
                     </div>
                     <header class="card-header">
@@ -62,6 +62,9 @@ export default {
             let from = (this.page - 1 ) * this.per_page + 1
             let to = this.page * this.per_page
             this.getRecipes(from,to)
+        },
+        openRecipe(id) {
+            this.$router.push({ name: 'recipe', params: { id } })
         }
     },
     created() {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory} from 'vue-router';
 import NewRecipeForm from '@/views/NewRecipe.vue';
 import RecipeList from '@/views/RecipeList.vue';
+import Recipe from '@/views/Recipe.vue';
 
 const routes = [
     {
@@ -13,6 +14,12 @@ const routes = [
         path: '/recipes',
         component: RecipeList,
         props: route => ({ page: parseInt(route.query.page) })
+    },
+    {
+        name: 'recipe',
+        path: '/recipe/:id',
+        component: Recipe,
+        props: route => ({ id: parseInt(route.params.id) })
     }
 ];
 
