@@ -40,7 +40,15 @@ export default {
     let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
     for (let ret of api_calls)
         ret.catch(error => console.error(error));
-  }
+  },
+  watch: {
+        $route: {
+            immediate: true,
+            handler(to) {
+                document.title = to.meta.title || 'Some Default Title';
+            }
+        },
+    }
 }
 </script>
 

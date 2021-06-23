@@ -94,7 +94,7 @@ export default {
         loadRecipe() {
             this.store.getOneRecipe(this.id).then(result => {
                 this.recipe = result
-                console.log(result)
+                document.title = this.recipe.name + ' - PickEat'
             });
         }
     },
