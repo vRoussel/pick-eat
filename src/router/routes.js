@@ -20,7 +20,12 @@ const routes = [
         path: '/recipe/:id',
         component: Recipe,
         props: route => ({ id: parseInt(route.params.id) })
-    }
+    },
+    {
+        name: 'default',
+        path: '/',
+        redirect: '/recipes',
+    },
 ];
 
 const router = createRouter({
