@@ -88,4 +88,12 @@ export default {
     .card-header-icon {
         cursor: auto;
     }
+    .card {
+        display:flex;
+        height: 100%;
+        flex-direction: column;
+    }
+    .card-header {
+        flex-grow: 1;
+    }
 </style>
