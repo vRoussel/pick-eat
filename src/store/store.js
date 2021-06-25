@@ -184,7 +184,7 @@ const toggleFavorite = async function(recipe) {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
         },
-        body: JSON.stringify({'is_favorite': !recipe.is_favorite})
+        body: JSON.stringify({'is_favorite': recipe.is_favorite})
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/recipes/${recipe.id}`, options)
