@@ -48,29 +48,6 @@
                 </div>
             </div>
         </div>
-    <!--
-            <div class="columns is-multiline mt-4">
-                <div class="column is-3-desktop is-4-tablet" v-for="recipe in recipes" :key="recipe.id">
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="image is-512x512">
-                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')"/>
-                        </figure>
-                    </div>
-                    <header class="card-header">
-                        <p class="card-header-title recipe-name">
-                            {{ recipe.name }}
-                        </p>
-                        <div class="card-header-icon" aria-label="favorite">
-                          <span class="icon">
-                            <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-clickable" @click="toggleFavorite(recipe)"></i>
-                          </span>
-                        </div>
-                    </header>
-                </div>
-            </div>
-    </div>
-    -->
 </template>
 
 <script>
@@ -101,25 +78,5 @@ export default {
     created() {
         this.loadRecipe()
     },
-    //watch: {
-    //    page: function(val) {
-    //        this.$route.query.page = val
-    //        this.loadRecipes()
-    //    }
-    //}
 }
 </script>
-
-<style>
-    .recipe-name {
-        font-size: 2em;
-        font-family: "Rounded_Elegance";
-    }
-
-    .fa-heart {
-        color: red;
-    }
-    .card-header-icon {
-        cursor: auto;
-    }
-</style>
