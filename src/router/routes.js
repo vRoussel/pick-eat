@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory} from 'vue-router';
-import NewRecipeForm from '@/views/NewRecipe.vue';
+import NewRecipe from '@/views/NewRecipe.vue';
 import RecipeList from '@/views/RecipeList.vue';
 import Recipe from '@/views/Recipe.vue';
 
@@ -7,7 +7,7 @@ const routes = [
     {
         name: 'new-recipe',
         path: '/new-recipe',
-        component: NewRecipeForm,
+        component: NewRecipe,
         meta: {
             title: 'Ajouter une recette - PickEat'
         }
