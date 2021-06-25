@@ -9,7 +9,7 @@
                         </figure>
                     </div>
                     <header class="card-header">
-                        <p class="card-header-title is-size-4-mobile is-size-5-tablet">
+                        <p class="recipe-name card-header-title is-size-4-mobile is-size-5-tablet">
                             {{ recipe.name }}
                         </p>
                         <div class="card-header-icon" aria-label="favorite">
