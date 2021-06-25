@@ -196,6 +196,23 @@ const toggleFavorite = async function(recipe) {
 
 }
 
+const updateRecipe = async function(id, recipe) {
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(recipe)
+    };
+    console.debug(options.body);
+    let ret = await fetch(`${API_ROOT}/recipes/${id}`, options)
+    if (ret.ok)
+        return ret
+    else
+        throw ret
+}
+
 export default {
     state: readonly(state),
     getTags,
@@ -211,4 +228,5 @@ export default {
     addUnit,
     toggleFavorite,
     getOneRecipe,
+    updateRecipe,
 }
