@@ -4,7 +4,7 @@
             <div class="column is-one-fifth-fullhd is-3-desktop is-4-tablet my-4" v-for="recipe in recipes" :key="recipe.id">
                 <div class="card">
                     <div class="card-image">
-                        <figure class="image is-512x512">
+                        <figure class="image">
                                 <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" class="is-clickable" @click="openRecipe(recipe.id)"/>
                         </figure>
                     </div>
