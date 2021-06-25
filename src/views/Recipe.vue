@@ -1,14 +1,17 @@
 <template>
         <div class="container is-max-desktop px-4 my-4">
-           <recipe-view :recipe='recipe'></recipe-view>
+           <recipe-view v-if="mode === 'view'" :recipe='recipe' @edit="editRecipe"></recipe-view>
+           <recipe-form v-else :existing_recipe='recipe' @done='afterEdit'></recipe-form>
         </div>
 </template>
 
 <script>
+import RecipeForm from '@/components/RecipeForm.vue'
 import RecipeView from '@/components/RecipeView.vue'
 export default {
     name: 'recipe',
     components: {
+      RecipeForm,
       RecipeView,
     },
     inject: ["store"],
@@ -20,6 +23,7 @@ export default {
     data: function() {
         return {
             recipe: null,
+            mode: 'view',
         }
     },
     methods: {
@@ -31,6 +35,13 @@ export default {
                 this.recipe = result
                 document.title = this.recipe.name + ' - PickEat'
             });
+        },
+        editRecipe() {
+            this.mode = 'update'
+        },
+        afterEdit() {
+            this.loadRecipe()
+            this.mode = 'view'
         }
     },
     created() {
