@@ -81,8 +81,8 @@ export default {
 
 <style>
     .recipe-name {
-        font-size: 1em;
         font-family: "Rounded_Elegance";
+        overflow-wrap: anywhere;
     }
 
     .fa-heart {
