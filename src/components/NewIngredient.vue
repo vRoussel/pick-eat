@@ -7,13 +7,13 @@
         </div>
         <div class="field">
             <label class="label">Unité par défaut</label>
-            <button type="button" class="button is-rounded is-info is-outlined is-small mb-2" @mousedown="save_unit_search" @click="openNewUnitForm(unit_search)">Unité manquante ?</button>
+            <button type="button" class="button is-rounded is-primary is-outlined is-small mb-2" @mousedown="save_unit_search" @click="openNewUnitForm(unit_search)">Unité manquante ?</button>
             <multiselect @keydown.ctrl.enter.prevent="openNewUnitForm($event.target.value)" v-model="default_unit" :options="searchableUnits" label="full_name" searchable trackBy="searchable_name" valueProp="id" ref="multiselect"/>
         </div>
         <dynamic-modal ref="modal"></dynamic-modal>
         <div class="field is-grouped">
           <div class="control">
-            <button class="button is-success" type="submit">Ok</button>
+            <button class="button is-primary" type="submit">Ok</button>
           </div>
           <div class="control">
             <button class="button" type="button" @click="cancel">Annuler</button>

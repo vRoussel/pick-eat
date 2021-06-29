@@ -172,7 +172,7 @@ export default {
             this.$refs.modal.openNewTagForm()
         },
         openNewCategoryForm() {
-            this.$refs.modal.openNewCategoryFormForm()
+            this.$refs.modal.openNewCategoryForm()
         },
         openNewIngredientForm(input) {
             this.$refs.modal.openNewIngredientForm(input)

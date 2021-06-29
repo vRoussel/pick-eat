@@ -1,8 +1,8 @@
 <template>
     <div class="level is-mobile mb-2">
         <div class="level-left">
-        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="new_ingredient(ingredient_search)">Ingrédient manquant ?</button>
-        <button type="button" class="button is-rounded is-info is-outlined is-small level-item" @mousedown="save_unit_search" @click="new_unit(unit_search)">Unité manquante ?</button>
+        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="new_ingredient(ingredient_search)">Ingrédient manquant ?</button>
+        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_unit_search" @click="new_unit(unit_search)">Unité manquante ?</button>
         </div>
     </div>
     <Multiselect @keydown.ctrl.enter.prevent="new_ingredient($event.target.value)" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>

@@ -77,14 +77,14 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
     th, .recipe-name {
         font-family: "Rounded_Elegance";
         font-weight: bold;
     }
 
     th, .edit_icon, .time_icon, .instruction_index {
-        color: #BF9C53 !important;
+        color: $primary !important;
     }
 
     .recipe-name {

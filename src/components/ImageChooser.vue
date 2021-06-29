@@ -1,5 +1,5 @@
 <template>
-<figure class="image container is-128x128">
+<figure class="image container is-256x256">
     <img @click="imageWidget.open()" class="is-clickable" :src="image_preview">
 </figure>
 </template>
@@ -23,7 +23,7 @@ export default {
             if (this.image_url === "")
                 return require('@/assets/photo.png')
             else
-                return this.image_url.replace("/upload", "/upload/c_limit,h_128,w_128");
+                return this.image_url.replace("/upload", "/upload/c_limit,h_256,w_256");
         },
     },
     methods: {

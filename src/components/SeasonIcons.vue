@@ -44,13 +44,13 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
     .inactive {
         color: lightgrey
     }
     
     .active {
-        color: #BF9C53
+        color: $primary
     }
 
 </style>

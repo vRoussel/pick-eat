@@ -7,7 +7,7 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button class="button is-success" type="submit">Ok</button>
+            <button class="button is-primary" type="submit">Ok</button>
           </div>
           <div class="control">
             <button class="button" type="button" @click="cancel">Annuler</button>
