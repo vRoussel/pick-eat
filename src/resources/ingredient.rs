@@ -80,17 +80,17 @@ impl From<&tokio_postgres::row::Row> for quantified::Full {
 
 pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
     let mut ingredients_query = String::from(
-        "\
-        SELECT \
-            i.id as id, \
-            i.name as name, \
-            u.id as default_unit_id, \
-            u.full_name as default_unit_full_name, \
-            u.short_name as default_unit_short_name \
+        "
+        SELECT
+            i.id as id,
+            i.name as name,
+            u.id as default_unit_id,
+            u.full_name as default_unit_full_name,
+            u.short_name as default_unit_short_name
         FROM
-            ingredients as i \
-            LEFT JOIN units as u \
-            ON i.default_unit_id = u.id \
+            ingredients as i
+            LEFT JOIN units as u
+            ON i.default_unit_id = u.id
         ORDER BY name
     ",
     );
@@ -98,9 +98,9 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
     let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
     if let Some(r) = range {
         ingredients_query.push_str(
-            " \
-            OFFSET $1 \
-            LIMIT $2 \
+            "
+            OFFSET $1
+            LIMIT $2
         ",
         );
         let offset = r.from - 1;
@@ -123,9 +123,9 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
 }
 
 pub async fn add_one(db_conn: &Client, new_ingredient: &New) -> Result<i32, Error> {
-    let insert_query = "\
-        INSERT INTO ingredients (name, default_unit_id) \
-            VALUES ($1, $2) \
+    let insert_query = "
+        INSERT INTO ingredients (name, default_unit_id)
+            VALUES ($1, $2)
         RETURNING id;
     ";
     db_conn
@@ -138,19 +138,19 @@ pub async fn add_one(db_conn: &Client, new_ingredient: &New) -> Result<i32, Erro
 }
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "\
-        SELECT \
-            i.id as id, \
-            i.name as name, \
-            u.id as default_unit_id, \
-            u.full_name as default_unit_full_name, \
-            u.short_name as default_unit_short_name \
+    let query = "
+        SELECT
+            i.id as id,
+            i.name as name,
+            u.id as default_unit_id,
+            u.full_name as default_unit_full_name,
+            u.short_name as default_unit_short_name
         FROM
-            ingredients as i \
-            LEFT JOIN units as u \
-            ON i.default_unit_id = u.id \
+            ingredients as i
+            LEFT JOIN units as u
+            ON i.default_unit_id = u.id
         WHERE
-            i.id = $1 \
+            i.id = $1
     ";
 
     db_conn
@@ -164,11 +164,11 @@ pub async fn modify_one(
     id: i32,
     new_ingredient: &New,
 ) -> Result<Option<()>, Error> {
-    let update_query = "\
-        UPDATE ingredients SET \
-            name = $1, \
-            default_unit_id = $2, \
-        WHERE id = $3 \
+    let update_query = "
+        UPDATE ingredients SET
+            name = $1,
+            default_unit_id = $2,
+        WHERE id = $3
         RETURNING id;
     ";
     db_conn
@@ -181,9 +181,9 @@ pub async fn modify_one(
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
-    let delete_query = "\
-        DELETE FROM ingredients \
-        WHERE id = $1 \
+    let delete_query = "
+        DELETE FROM ingredients
+        WHERE id = $1
         RETURNING id;
     ";
     db_conn

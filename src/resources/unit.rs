@@ -29,22 +29,22 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 
 pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
     let mut units_query = String::from(
-        "\
-        SELECT \
-            id, \
-            full_name, \
-            short_name \
-        FROM units \
-        ORDER BY full_name \
+        "
+        SELECT
+            id,
+            full_name,
+            short_name
+        FROM units
+        ORDER BY full_name
     ",
     );
 
     let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
     if let Some(r) = range {
         units_query.push_str(
-            " \
-            OFFSET $1 \
-            LIMIT $2 \
+            "
+            OFFSET $1
+            LIMIT $2
         ",
         );
         let offset = r.from - 1;
@@ -67,9 +67,9 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
 }
 
 pub async fn add_one(db_conn: &Client, new_unit: &New) -> Result<i32, Error> {
-    let insert_query = "\
-        INSERT INTO units (full_name, short_name) \
-            VALUES ($1, $2) \
+    let insert_query = "
+        INSERT INTO units (full_name, short_name)
+            VALUES ($1, $2)
         RETURNING id;
     ";
     db_conn
@@ -79,13 +79,13 @@ pub async fn add_one(db_conn: &Client, new_unit: &New) -> Result<i32, Error> {
 }
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "\
-        SELECT \
-            id, \
-            full_name, \
-            short_name \
-        FROM units \
-        WHERE id = $1 \
+    let query = "
+        SELECT
+            id,
+            full_name,
+            short_name
+        FROM units
+        WHERE id = $1
     ";
 
     db_conn
@@ -95,11 +95,11 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
 }
 
 pub async fn modify_one(db_conn: &Client, id: i32, new_unit: &New) -> Result<Option<()>, Error> {
-    let update_query = "\
-        UPDATE units SET \
-            full_name = $1, \
+    let update_query = "
+        UPDATE units SET
+            full_name = $1,
             short_name = $2
-        WHERE id = $3 \
+        WHERE id = $3
         RETURNING id;
     ";
     db_conn
@@ -112,9 +112,9 @@ pub async fn modify_one(db_conn: &Client, id: i32, new_unit: &New) -> Result<Opt
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
-    let delete_query = "\
-        DELETE FROM units \
-        WHERE id = $1 \
+    let delete_query = "
+        DELETE FROM units
+        WHERE id = $1
         RETURNING id;
     ";
     db_conn

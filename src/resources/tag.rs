@@ -26,21 +26,21 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 
 pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
     let mut tags_query = String::from(
-        "\
-        SELECT \
-            id, \
-            name \
-        FROM tags \
-        ORDER BY name \
+        "
+        SELECT
+            id,
+            name
+        FROM tags
+        ORDER BY name
     ",
     );
 
     let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
     if let Some(r) = range {
         tags_query.push_str(
-            " \
-            OFFSET $1 \
-            LIMIT $2 \
+            "
+            OFFSET $1
+            LIMIT $2
         ",
         );
         let offset = r.from - 1;
@@ -63,9 +63,9 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
 }
 
 pub async fn add_one(db_conn: &Client, new_tag: &New) -> Result<i32, Error> {
-    let insert_query = "\
-        INSERT INTO tags (name) \
-            VALUES ($1) \
+    let insert_query = "
+        INSERT INTO tags (name)
+            VALUES ($1)
         RETURNING id;
     ";
     db_conn
@@ -75,12 +75,12 @@ pub async fn add_one(db_conn: &Client, new_tag: &New) -> Result<i32, Error> {
 }
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "\
-        SELECT \
-            id, \
-            name \
-        FROM tags \
-        WHERE id = $1 \
+    let query = "
+        SELECT
+            id,
+            name
+        FROM tags
+        WHERE id = $1
     ";
 
     db_conn
@@ -90,10 +90,10 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
 }
 
 pub async fn modify_one(db_conn: &Client, id: i32, new_tag: &New) -> Result<Option<()>, Error> {
-    let update_query = "\
-        UPDATE tags SET \
-            name = $1 \
-        WHERE id = $2 \
+    let update_query = "
+        UPDATE tags SET
+            name = $1
+        WHERE id = $2
         RETURNING id;
     ";
     db_conn
@@ -103,9 +103,9 @@ pub async fn modify_one(db_conn: &Client, id: i32, new_tag: &New) -> Result<Opti
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
-    let delete_query = "\
-        DELETE FROM tags \
-        WHERE id = $1 \
+    let delete_query = "
+        DELETE FROM tags
+        WHERE id = $1
         RETURNING id;
     ";
     db_conn

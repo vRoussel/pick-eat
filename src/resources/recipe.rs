@@ -68,7 +68,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 }
 
 pub async fn get_many(db_conn: &Client, range: &Range) -> Result<Vec<FromDB>, Error> {
-    let recipes_query = "\
+    let recipes_query = "
         WITH r_ids AS (
             SELECT id
             FROM recipes
@@ -193,7 +193,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         .transaction()
         .await
         .expect("Unable to start db transaction");
-    let recipe_query = "\
+    let recipe_query = "
         INSERT INTO recipes
         (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -220,7 +220,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
     if !new_recipe.tag_ids.is_empty() {
         let values_query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let tags_query = format!(
-            "\
+            "
             INSERT INTO recipes_tags
             (tag_id, recipe_id)
             VALUES {};
@@ -242,7 +242,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
     if !new_recipe.category_ids.is_empty() {
         let values_query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let categories_query = format!(
-            "\
+            "
             INSERT INTO recipes_categories
             (category_id, recipe_id)
             VALUES {};
@@ -264,7 +264,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
     if !new_recipe.q_ingredient_ids.is_empty() {
         let values_query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let ingredients_query = format!(
-            "\
+            "
             INSERT INTO recipes_ingredients
             (recipe_id, ingredient_id, quantity, unit_id)
             VALUES {};
@@ -405,7 +405,7 @@ pub async fn modify_one(
         .await
         .expect("Unable to start db transaction");
 
-    let recipe_query = "\
+    let recipe_query = "
         UPDATE recipes SET
             name = $1,
             notes = $2,
@@ -440,7 +440,7 @@ pub async fn modify_one(
 
     // Tags
     if new_recipe.tag_ids.is_empty() {
-        let remove_tags_query = "\
+        let remove_tags_query = "
             DELETE FROM recipes_tags
             WHERE recipe_id = $1;
         ";
@@ -448,7 +448,7 @@ pub async fn modify_one(
     } else {
         let query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let insert_tags_query = format!(
-            "\
+            "
             INSERT INTO recipes_tags
             (tag_id, recipe_id)
             VALUES {}
@@ -467,7 +467,7 @@ pub async fn modify_one(
 
         let query_params = gen_sql_query_params_from(new_recipe.tag_ids.len(), 1, 2);
         let remove_tags_query = format!(
-            "\
+            "
             DELETE FROM recipes_tags
             WHERE
                 recipe_id = $1
@@ -486,7 +486,7 @@ pub async fn modify_one(
 
     // Seasons
     if new_recipe.season_ids.is_empty() {
-        let remove_seasons_query = "\
+        let remove_seasons_query = "
             DELETE FROM recipes_seasons
             WHERE recipe_id = $1;
         ";
@@ -494,7 +494,7 @@ pub async fn modify_one(
     } else {
         let query_params = gen_sql_query_params(new_recipe.season_ids.len(), 2);
         let insert_seasons_query = format!(
-            "\
+            "
             INSERT INTO recipes_seasons
             (season_id, recipe_id)
             VALUES {}
@@ -513,7 +513,7 @@ pub async fn modify_one(
 
         let query_params = gen_sql_query_params_from(new_recipe.season_ids.len(), 1, 2);
         let remove_seasons_query = format!(
-            "\
+            "
             DELETE FROM recipes_seasons
             WHERE
                 recipe_id = $1
@@ -532,7 +532,7 @@ pub async fn modify_one(
 
     // Categories
     if new_recipe.category_ids.is_empty() {
-        let remove_categories_query = "\
+        let remove_categories_query = "
             DELETE FROM recipes_categories
             WHERE recipe_id = $1;
         ";
@@ -540,7 +540,7 @@ pub async fn modify_one(
     } else {
         let query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let insert_categories_query = format!(
-            "\
+            "
             INSERT INTO recipes_categories
             (category_id, recipe_id)
             VALUES {}
@@ -559,7 +559,7 @@ pub async fn modify_one(
 
         let query_params = gen_sql_query_params_from(new_recipe.category_ids.len(), 1, 2);
         let remove_categories_query = format!(
-            "\
+            "
             DELETE FROM recipes_categories
             WHERE
                 recipe_id = $1
@@ -578,7 +578,7 @@ pub async fn modify_one(
 
     // Ingredients
     if new_recipe.q_ingredient_ids.is_empty() {
-        let remove_ingredients_query = "\
+        let remove_ingredients_query = "
             DELETE FROM recipes_ingredients
             WHERE recipe_id = $1;
         ";
@@ -588,7 +588,7 @@ pub async fn modify_one(
     } else {
         let query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let insert_ingredients_query = format!(
-            "\
+            "
             INSERT INTO recipes_ingredients
             (recipe_id, ingredient_id, quantity, unit_id)
             VALUES {}
@@ -607,7 +607,7 @@ pub async fn modify_one(
 
         let query_params = gen_sql_query_params_from(new_recipe.q_ingredient_ids.len(), 1, 2);
         let remove_ingredients_query = format!(
-            "\
+            "
             DELETE FROM recipes_ingredients
             WHERE
                 recipe_id = $1
@@ -636,7 +636,7 @@ pub async fn patch_one(
     id: i32,
     patched_recipe: &Patched,
 ) -> Result<Option<()>, Error> {
-    let patch_query = "\
+    let patch_query = "
         UPDATE recipes
         SET is_favorite = $1
         WHERE id = $2
@@ -649,7 +649,7 @@ pub async fn patch_one(
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
-    let delete_query = "\
+    let delete_query = "
         DELETE FROM recipes
         WHERE id = $1
         RETURNING id;

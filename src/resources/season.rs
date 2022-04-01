@@ -19,12 +19,12 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 
 pub async fn get_many(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
     let seasons_query = String::from(
-        "\
-        SELECT \
-            id, \
-            name \
-        FROM seasons \
-        ORDER BY id \
+        "
+        SELECT
+            id,
+            name
+        FROM seasons
+        ORDER BY id
     ",
     );
 
@@ -35,12 +35,12 @@ pub async fn get_many(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
 }
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "\
-        SELECT \
-            id, \
-            name \
-        FROM seasons \
-        WHERE id = $1 \
+    let query = "
+        SELECT
+            id,
+            name
+        FROM seasons
+        WHERE id = $1
     ";
 
     db_conn

@@ -26,21 +26,21 @@ impl From<&tokio_postgres::row::Row> for FromDB {
 
 pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
     let mut categories_query = String::from(
-        "\
-        SELECT \
-            id, \
-            name \
-        FROM categories \
-        ORDER BY name \
+        "
+        SELECT
+            id,
+            name
+        FROM categories
+        ORDER BY name
     ",
     );
 
     let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
     if let Some(r) = range {
         categories_query.push_str(
-            " \
-            OFFSET $1 \
-            LIMIT $2 \
+            "
+            OFFSET $1
+            LIMIT $2
         ",
         );
         let offset = r.from - 1;
@@ -63,9 +63,9 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
 }
 
 pub async fn add_one(db_conn: &Client, new_category: &New) -> Result<i32, Error> {
-    let insert_query = "\
-        INSERT INTO categories (name) \
-            VALUES ($1) \
+    let insert_query = "
+        INSERT INTO categories (name)
+            VALUES ($1)
         RETURNING id;
     ";
     db_conn
@@ -75,12 +75,12 @@ pub async fn add_one(db_conn: &Client, new_category: &New) -> Result<i32, Error>
 }
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "\
-        SELECT \
-            id, \
-            name \
-        FROM categories \
-        WHERE id = $1 \
+    let query = "
+        SELECT
+            id,
+            name
+        FROM categories
+        WHERE id = $1
     ";
 
     db_conn
@@ -94,10 +94,10 @@ pub async fn modify_one(
     id: i32,
     new_category: &New,
 ) -> Result<Option<()>, Error> {
-    let update_query = "\
-        UPDATE categories SET \
-            name = $1 \
-        WHERE id = $2 \
+    let update_query = "
+        UPDATE categories SET
+            name = $1
+        WHERE id = $2
         RETURNING id;
     ";
     db_conn
@@ -107,9 +107,9 @@ pub async fn modify_one(
 }
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
-    let delete_query = "\
-        DELETE FROM categories \
-        WHERE id = $1 \
+    let delete_query = "
+        DELETE FROM categories
+        WHERE id = $1
         RETURNING id;
     ";
     db_conn
