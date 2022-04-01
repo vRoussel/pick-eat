@@ -103,8 +103,10 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
             LIMIT $2 \
         ",
         );
-        params.push(Box::new(r.from - 1));
-        params.push(Box::new(r.to - (r.from - 1)));
+        let offset = r.from - 1;
+        let limit = r.to - r.from + 1;
+        params.push(Box::new(offset));
+        params.push(Box::new(limit));
     }
 
     db_conn
