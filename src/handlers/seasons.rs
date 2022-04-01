@@ -19,10 +19,8 @@ pub async fn get_all(db_pool: web::Data<Pool>) -> impl Responder {
         }
     };
 
-    web::HttpResponse::Ok().body(format!(
-        "{}",
-        serde_json::to_string_pretty(&seasonss).unwrap()
-    ))
+    trace!("{}", serde_json::to_string_pretty(&seasonss).unwrap());
+    web::HttpResponse::Ok().json(seasonss)
 }
 
 #[get("/seasons/{id}")]

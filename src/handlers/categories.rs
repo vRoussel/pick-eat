@@ -78,12 +78,10 @@ pub async fn get_all(
     let last_fetched = first_fetched + fetched_count - 1;
     let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
+    trace!("{}", serde_json::to_string_pretty(&categories).unwrap());
     ret.set_header(http::header::CONTENT_RANGE, content_range)
         .set_header(http::header::ACCEPT_RANGES, accept_range)
-        .body(format!(
-            "{}",
-            serde_json::to_string_pretty(&categories).unwrap()
-        ))
+        .json(categories)
 }
 
 #[post("/categories")]

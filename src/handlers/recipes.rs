@@ -1,4 +1,4 @@
-use actix_web::{delete, get, http, post, put, patch, web, Responder};
+use actix_web::{delete, get, http, patch, post, put, web, Responder};
 use log::*;
 use serde::Deserialize;
 use tokio_postgres::error::SqlState;
@@ -74,12 +74,10 @@ pub async fn get_all(
     let last_fetched = first_fetched + fetched_count - 1;
     let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
+    trace!("{}", serde_json::to_string_pretty(&recipes).unwrap());
     ret.set_header(http::header::CONTENT_RANGE, content_range)
         .set_header(http::header::ACCEPT_RANGES, accept_range)
-        .body(format!(
-            "{}",
-            serde_json::to_string_pretty(&recipes).unwrap()
-        ))
+        .json(recipes)
 }
 
 #[post("/recipes")]
@@ -154,7 +152,11 @@ pub async fn modify_one(
 }
 
 #[patch("/recipes/{id}")]
-pub async fn patch_one(id: web::Path<i32>, patched_recipe: web::Json<recipe::Patched>, db_pool: web::Data<Pool>) -> impl Responder {
+pub async fn patch_one(
+    id: web::Path<i32>,
+    patched_recipe: web::Json<recipe::Patched>,
+    db_pool: web::Data<Pool>,
+) -> impl Responder {
     let mut db_conn = db_pool.get().await.unwrap();
     trace!("{:#?}", patched_recipe);
 
