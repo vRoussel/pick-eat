@@ -194,10 +194,10 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         .await
         .expect("Unable to start db transaction");
     let recipe_query = "\
-        INSERT INTO recipes \
-        (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares) \
-        VALUES ($1, $2, $3, $4, $5, $6, $7) \
-        RETURNING id; \
+        INSERT INTO recipes
+        (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id;
     ";
 
     let new_id: i32 = transaction
@@ -221,9 +221,9 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         let values_query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let tags_query = format!(
             "\
-            INSERT INTO recipes_tags \
-            (tag_id, recipe_id) \
-            VALUES {}; \
+            INSERT INTO recipes_tags
+            (tag_id, recipe_id)
+            VALUES {};
         ",
             values_query_params
         );
@@ -243,9 +243,9 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         let values_query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let categories_query = format!(
             "\
-            INSERT INTO recipes_categories \
-            (category_id, recipe_id) \
-            VALUES {}; \
+            INSERT INTO recipes_categories
+            (category_id, recipe_id)
+            VALUES {};
         ",
             values_query_params
         );
@@ -265,9 +265,9 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         let values_query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let ingredients_query = format!(
             "\
-            INSERT INTO recipes_ingredients \
-            (recipe_id, ingredient_id, quantity, unit_id) \
-            VALUES {}; \
+            INSERT INTO recipes_ingredients
+            (recipe_id, ingredient_id, quantity, unit_id)
+            VALUES {};
         ",
             values_query_params
         );
@@ -406,17 +406,17 @@ pub async fn modify_one(
         .expect("Unable to start db transaction");
 
     let recipe_query = "\
-        UPDATE recipes SET \
-            name = $1, \
-            notes = $2, \
-            preparation_time_min = $3, \
-            cooking_time_min = $4, \
-            image = $5, \
-            instructions = $6, \
-            n_shares = $7, \
-            is_favorite = $8 \
-        WHERE id = $9 \
-        RETURNING id; \
+        UPDATE recipes SET
+            name = $1,
+            notes = $2,
+            preparation_time_min = $3,
+            cooking_time_min = $4,
+            image = $5,
+            instructions = $6,
+            n_shares = $7,
+            is_favorite = $8
+        WHERE id = $9
+        RETURNING id;
     ";
     transaction
         .query_opt(
@@ -441,7 +441,7 @@ pub async fn modify_one(
     // Tags
     if new_recipe.tag_ids.is_empty() {
         let remove_tags_query = "\
-            DELETE FROM recipes_tags \
+            DELETE FROM recipes_tags
             WHERE recipe_id = $1;
         ";
         transaction.execute(remove_tags_query, &[&id]).await?;
@@ -449,9 +449,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
         let insert_tags_query = format!(
             "\
-            INSERT INTO recipes_tags \
-            (tag_id, recipe_id) \
-            VALUES {} \
+            INSERT INTO recipes_tags
+            (tag_id, recipe_id)
+            VALUES {}
             ON CONFLICT DO NOTHING;
         ",
             query_params
@@ -468,9 +468,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params_from(new_recipe.tag_ids.len(), 1, 2);
         let remove_tags_query = format!(
             "\
-            DELETE FROM recipes_tags \
-            WHERE \
-                recipe_id = $1 \
+            DELETE FROM recipes_tags
+            WHERE
+                recipe_id = $1
                 AND tag_id NOT IN ({});
         ",
             query_params
@@ -487,7 +487,7 @@ pub async fn modify_one(
     // Seasons
     if new_recipe.season_ids.is_empty() {
         let remove_seasons_query = "\
-            DELETE FROM recipes_seasons \
+            DELETE FROM recipes_seasons
             WHERE recipe_id = $1;
         ";
         transaction.execute(remove_seasons_query, &[&id]).await?;
@@ -495,9 +495,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params(new_recipe.season_ids.len(), 2);
         let insert_seasons_query = format!(
             "\
-            INSERT INTO recipes_seasons \
-            (season_id, recipe_id) \
-            VALUES {} \
+            INSERT INTO recipes_seasons
+            (season_id, recipe_id)
+            VALUES {}
             ON CONFLICT DO NOTHING;
         ",
             query_params
@@ -514,9 +514,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params_from(new_recipe.season_ids.len(), 1, 2);
         let remove_seasons_query = format!(
             "\
-            DELETE FROM recipes_seasons \
-            WHERE \
-                recipe_id = $1 \
+            DELETE FROM recipes_seasons
+            WHERE
+                recipe_id = $1
                 AND season_id NOT IN ({});
         ",
             query_params
@@ -533,7 +533,7 @@ pub async fn modify_one(
     // Categories
     if new_recipe.category_ids.is_empty() {
         let remove_categories_query = "\
-            DELETE FROM recipes_categories \
+            DELETE FROM recipes_categories
             WHERE recipe_id = $1;
         ";
         transaction.execute(remove_categories_query, &[&id]).await?;
@@ -541,9 +541,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
         let insert_categories_query = format!(
             "\
-            INSERT INTO recipes_categories \
-            (category_id, recipe_id) \
-            VALUES {} \
+            INSERT INTO recipes_categories
+            (category_id, recipe_id)
+            VALUES {}
             ON CONFLICT DO NOTHING;
         ",
             query_params
@@ -560,9 +560,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params_from(new_recipe.category_ids.len(), 1, 2);
         let remove_categories_query = format!(
             "\
-            DELETE FROM recipes_categories \
-            WHERE \
-                recipe_id = $1 \
+            DELETE FROM recipes_categories
+            WHERE
+                recipe_id = $1
                 AND category_id NOT IN ({});
         ",
             query_params
@@ -579,7 +579,7 @@ pub async fn modify_one(
     // Ingredients
     if new_recipe.q_ingredient_ids.is_empty() {
         let remove_ingredients_query = "\
-            DELETE FROM recipes_ingredients \
+            DELETE FROM recipes_ingredients
             WHERE recipe_id = $1;
         ";
         transaction
@@ -589,9 +589,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
         let insert_ingredients_query = format!(
             "\
-            INSERT INTO recipes_ingredients \
-            (recipe_id, ingredient_id, quantity, unit_id) \
-            VALUES {} \
+            INSERT INTO recipes_ingredients
+            (recipe_id, ingredient_id, quantity, unit_id)
+            VALUES {}
             ON CONFLICT DO NOTHING;
         ",
             query_params
@@ -608,9 +608,9 @@ pub async fn modify_one(
         let query_params = gen_sql_query_params_from(new_recipe.q_ingredient_ids.len(), 1, 2);
         let remove_ingredients_query = format!(
             "\
-            DELETE FROM recipes_ingredients \
-            WHERE \
-                recipe_id = $1 \
+            DELETE FROM recipes_ingredients
+            WHERE
+                recipe_id = $1
                 AND ingredient_id NOT IN ({});
         ",
             query_params
@@ -631,11 +631,15 @@ pub async fn modify_one(
     Ok(Some(()))
 }
 
-pub async fn patch_one(db_conn: &Client, id: i32, patched_recipe: &Patched) -> Result<Option<()>, Error> {
+pub async fn patch_one(
+    db_conn: &Client,
+    id: i32,
+    patched_recipe: &Patched,
+) -> Result<Option<()>, Error> {
     let patch_query = "\
-        UPDATE recipes \
-        SET is_favorite = $1 \
-        WHERE id = $2 \
+        UPDATE recipes
+        SET is_favorite = $1
+        WHERE id = $2
         RETURNING id;
     ";
     db_conn
@@ -646,8 +650,8 @@ pub async fn patch_one(db_conn: &Client, id: i32, patched_recipe: &Patched) -> R
 
 pub async fn delete_one(db_conn: &Client, id: i32) -> Result<Option<()>, Error> {
     let delete_query = "\
-        DELETE FROM recipes \
-        WHERE id = $1 \
+        DELETE FROM recipes
+        WHERE id = $1
         RETURNING id;
     ";
     db_conn
