@@ -19,7 +19,7 @@ async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
             .wrap(Cors::permissive().expose_headers(vec!["content-range"]))
             .app_data(mydata.clone())
             .service(
-                web::scope("/v1/")
+                web::scope("/v1")
                     .configure(handlers::recipes::config)
                     .configure(handlers::ingredients::config)
                     .configure(handlers::tags::config)
