@@ -48,11 +48,13 @@ fn setup_logging() {
             LevelFilter::Trace,
             pickeat_log_config.clone(),
             TerminalMode::Mixed,
+            ColorChoice::Auto,
         ),
         TermLogger::new(
             LevelFilter::Warn,
             others_log_config.clone(),
             TerminalMode::Mixed,
+            ColorChoice::Auto,
         ),
     ]);
     if let Err(_) = init_log {

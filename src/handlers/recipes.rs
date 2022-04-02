@@ -1,4 +1,4 @@
-use actix_web::{delete, get, http, patch, post, put, web, Responder};
+use actix_web::{delete, get, http, patch, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 use tokio_postgres::error::SqlState;
@@ -34,7 +34,7 @@ pub async fn get_all(
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     };
 
@@ -43,14 +43,14 @@ pub async fn get_all(
     if let Err(e) = params.range.validate(MAX_PER_REQUEST, total_count) {
         let content_range = format!("{}-{}/{}", 0, 0, total_count);
         let mut ret = match e {
-            RangeError::OutOfBounds => web::HttpResponse::NoContent(),
-            RangeError::TooWide => web::HttpResponse::BadRequest(),
-            RangeError::Invalid => web::HttpResponse::BadRequest(),
+            RangeError::OutOfBounds => HttpResponse::NoContent(),
+            RangeError::TooWide => HttpResponse::BadRequest(),
+            RangeError::Invalid => HttpResponse::BadRequest(),
         };
 
         return ret
-            .set_header(http::header::CONTENT_RANGE, content_range)
-            .set_header(http::header::ACCEPT_RANGES, accept_range.clone())
+            .insert_header((http::header::CONTENT_RANGE, content_range))
+            .insert_header((http::header::ACCEPT_RANGES, accept_range.clone()))
             .finish();
     }
 
@@ -58,16 +58,16 @@ pub async fn get_all(
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     };
 
     let fetched_count = recipes.len() as i64;
     let mut ret;
     if fetched_count < total_count {
-        ret = web::HttpResponse::PartialContent();
+        ret = HttpResponse::PartialContent();
     } else {
-        ret = web::HttpResponse::Ok();
+        ret = HttpResponse::Ok();
     }
 
     let first_fetched = &params.range.from;
@@ -75,8 +75,8 @@ pub async fn get_all(
     let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     trace!("{}", serde_json::to_string_pretty(&recipes).unwrap());
-    ret.set_header(http::header::CONTENT_RANGE, content_range)
-        .set_header(http::header::ACCEPT_RANGES, accept_range)
+    ret.insert_header((http::header::CONTENT_RANGE, content_range))
+        .insert_header((http::header::ACCEPT_RANGES, accept_range))
         .json(recipes)
 }
 
@@ -90,19 +90,19 @@ pub async fn add_one(
     let new_id = match recipe::add_one(&mut db_conn, &new_recipe).await {
         Ok(v) => v,
         Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
-            return web::HttpResponse::Conflict().finish()
+            return HttpResponse::Conflict().finish()
         }
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION) => {
-            return web::HttpResponse::UnprocessableEntity().finish()
+            return HttpResponse::UnprocessableEntity().finish()
         }
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     };
 
-    web::HttpResponse::Created()
-        .set_header(http::header::LOCATION, format!("/{}", new_id))
+    HttpResponse::Created()
+        .insert_header((http::header::LOCATION, format!("/{}", new_id)))
         .finish()
 }
 
@@ -113,16 +113,16 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
     let recipe = match recipe::get_one(&db_conn, id.into_inner()).await {
         Ok(Some(v)) => v,
         Ok(None) => {
-            return web::HttpResponse::NotFound().finish();
+            return HttpResponse::NotFound().finish();
         }
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     };
 
     trace!("{}", serde_json::to_string_pretty(&recipe).unwrap());
-    web::HttpResponse::Ok().json(recipe)
+    HttpResponse::Ok().json(recipe)
 }
 
 #[put("/recipes/{id}")]
@@ -136,19 +136,19 @@ pub async fn modify_one(
 
     match recipe::modify_one(&mut db_conn, id.into_inner(), &new_recipe).await {
         Ok(Some(_)) => (),
-        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Ok(None) => return HttpResponse::NotFound().finish(),
         Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
-            return web::HttpResponse::Conflict().finish()
+            return HttpResponse::Conflict().finish()
         }
         Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION) => {
-            return web::HttpResponse::UnprocessableEntity().finish()
+            return HttpResponse::UnprocessableEntity().finish()
         }
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     }
-    web::HttpResponse::Ok().finish()
+    HttpResponse::Ok().finish()
 }
 
 #[patch("/recipes/{id}")]
@@ -162,13 +162,13 @@ pub async fn patch_one(
 
     match recipe::patch_one(&mut db_conn, id.into_inner(), &patched_recipe).await {
         Ok(Some(_)) => (),
-        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     }
-    web::HttpResponse::Ok().finish()
+    HttpResponse::Ok().finish()
 }
 
 #[delete("/recipes/{id}")]
@@ -177,11 +177,11 @@ pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Re
 
     match recipe::delete_one(&db_conn, id.into_inner()).await {
         Ok(Some(_)) => (),
-        Ok(None) => return web::HttpResponse::NotFound().finish(),
+        Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
             error!("{}", e);
-            return web::HttpResponse::InternalServerError().finish();
+            return HttpResponse::InternalServerError().finish();
         }
     }
-    web::HttpResponse::NoContent().finish()
+    HttpResponse::NoContent().finish()
 }
