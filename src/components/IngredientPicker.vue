@@ -1,13 +1,13 @@
 <template>
     <div class="level is-mobile mb-2">
         <div class="level-left">
-        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="new_ingredient(ingredient_search)">Ingrédient manquant ?</button>
-        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_unit_search" @click="new_unit(unit_search)">Unité manquante ?</button>
+        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="create_ingredient(ingredient_search)">Ingrédient manquant ?</button>
+        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_unit_search" @click="create_unit(unit_search)">Unité manquante ?</button>
         </div>
     </div>
-    <Multiselect @keydown.ctrl.enter.prevent="new_ingredient($event.target.value)" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
+    <Multiselect @keydown.ctrl.enter.prevent="create_ingredient($event.target.value)" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="add_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
     <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
-        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @newUnit="new_unit" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
+        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @createUnit="create_unit" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
     </div>
 </template>
 
@@ -46,7 +46,7 @@ export default {
                 .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
     },
-    emits: ['update:picked', 'newIngredient', 'newUnit'],
+    emits: ['update:picked', 'createIngredient', 'createUnit'],
     methods: {
         add_ingr(ingr) {
             this.picked.set(ingr.id, {
@@ -74,11 +74,11 @@ export default {
         save_current_unit_input(elem) {
             this.current_unit_input = elem
         },
-        new_ingredient(input) {
-            this.$emit('newIngredient', input)
+        create_ingredient(input) {
+            this.$emit('createIngredient', input)
         },
-        new_unit(input) {
-            this.$emit('newUnit', input)
+        create_unit(input) {
+            this.$emit('createUnit', input)
         }
     }
 }

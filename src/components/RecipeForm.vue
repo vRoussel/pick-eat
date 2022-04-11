@@ -54,7 +54,7 @@
 
             <fieldset class="block">
                 <legend class="label">Ingrédients</legend>
-                <ingredient-picker v-model:picked="new_recipe.ingredients" @newIngredient="openNewIngredientForm" @NewUnit="openNewUnitForm">
+                <ingredient-picker v-model:picked="new_recipe.ingredients" @createIngredient="openNewIngredientForm" @createUnit="openNewUnitForm">
                 </ingredient-picker>
             </fieldset>
 
