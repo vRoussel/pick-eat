@@ -11,7 +11,7 @@
                     <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" width="512"/>
                 </figure>
             </div>
-            <div class="column is-flex is-flex-direction-column is-justify-content-space-evenly">
+            <div class="column is-flex is-flex-direction-column is-justify-content-space-evenly" id="recipe-name-column">
                 <p class="recipe-name is-size-5-mobile is-size-2-tablet">{{ recipe.name }}</p>
                 <season-icons class="is-size-4-mobile is-size-3-tablet" :seasons="this.recipe.seasons"></season-icons>
                 <p class="is-size-6-mobile is-size-5-tablet">
@@ -77,7 +77,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     th, .recipe-name {
         font-family: "Rounded_Elegance";
         font-weight: bold;
@@ -89,9 +89,24 @@ export default {
 
     .recipe-name {
         overflow-wrap: anywhere;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    #recipe-name-column p.recipe-name:hover {
+        -webkit-line-clamp: none;
     }
 
     .fa-heart {
         color: red;
+    }
+
+    #recipe-name-column {
+         @include until($tablet) {
+            padding-left: 0;
+            padding-right: 0;
+         }
     }
 </style>

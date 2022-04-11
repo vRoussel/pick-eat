@@ -79,10 +79,21 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .recipe-name {
         font-family: "Rounded_Elegance";
+        padding: 0;
+        margin: $card-header-padding;
+
         overflow-wrap: anywhere;
+        -webkit-line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-header:hover p {
+        -webkit-line-clamp: none;
     }
 
     .fa-heart {
