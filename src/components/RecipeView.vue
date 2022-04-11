@@ -5,7 +5,7 @@
               <i class="edit_icon fa fa-pencil-alt is-size-6-mobile is-size-5-tablet is-clickable" @click="editRecipe()"></i>
             </span>
         </div>
-        <div class="columns is-mobile has-text-centered">
+        <div class="columns is-mobile has-text-centered my-0">
             <div class="column is-6-mobile is-4-tablet">
                 <figure class="image">
                     <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" width="512"/>
