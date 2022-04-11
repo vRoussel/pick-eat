@@ -21,7 +21,12 @@
                 </p>
             </div>
         </div>
-        <div class="columns is-centered my-4">
+        <div class="tags is-centered mt-4 mb-0">
+            <span class="tag is-medium is-rounded is-primary is-light" v-for="tag in recipe.tags" :key="tag.id">
+                {{ tag.name }}
+            </span>
+        </div>
+        <div class="columns is-centered mt-0">
             <div class="column is-4-tablet">
                 <table class="table is-fullwidth">
                     <thead>
