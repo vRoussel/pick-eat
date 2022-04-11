@@ -56,6 +56,9 @@ export default {
             })
             this.$emit('update:picked', this.picked)
             this.$refs.multiselect.clear()
+            this.$nextTick(() => {
+                this.$refs.multiselect.$el.focus()
+})
         },
         del_ingr(id) {
             this.picked.delete(id)
