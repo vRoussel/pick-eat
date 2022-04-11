@@ -44,7 +44,6 @@ export default {
                 "short_name": this.short_name,
             }
             this.store.addUnit(unit)
-                .then(() => this.store.getUnits())
                 .catch((e) => console.error(e))
             this.$emit('done')
         },

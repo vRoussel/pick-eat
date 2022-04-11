@@ -62,7 +62,6 @@ export default {
                 "default_unit_id": this.default_unit
             }
             this.store.addIngredient(ingredient)
-                .then(() => this.store.getIngredients())
                 .catch((e) => console.error(e))
             this.$emit('done')
         },

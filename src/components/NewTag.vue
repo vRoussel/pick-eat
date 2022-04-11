@@ -35,7 +35,6 @@ export default {
                 "name": this.name,
             }
             this.store.addTag(tag)
-                .then(() => this.store.getTags())
                 .catch((e) => console.error(e))
             this.$emit('done')
         },

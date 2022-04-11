@@ -1,4 +1,5 @@
 import { reactive, readonly } from 'vue'
+import {insert_sorted} from '@/utils/utils.js'
 
 const state =  reactive ({
     tags: [],
@@ -119,27 +120,39 @@ const addTag = async function(tag) {
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/tags`, options)
-    if (ret.ok)
-        return ret
-    else
+    if (!ret.ok)
         throw ret
+
+    let location = ret.headers.get('location')
+    let ret2 = await fetch(`${API_ROOT}/tags${location}`)
+    if (!ret2.ok)
+        throw ret
+
+    let new_tag = await ret2.json()
+    insert_sorted(state.tags, new_tag, (a,b) => a.name.localeCompare(b.name))
 }
 
-const addCategory = async function(tag) {
+const addCategory = async function(category) {
     const options = {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
         },
-        body: JSON.stringify(tag)
+        body: JSON.stringify(category)
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/categories`, options)
-    if (ret.ok)
-        return ret
-    else
+    if (!ret.ok)
         throw ret
+
+    let location = ret.headers.get('location')
+    let ret2 = await fetch(`${API_ROOT}/categories${location}`)
+    if (!ret2.ok)
+        throw ret
+
+    let new_categ = await ret2.json()
+    insert_sorted(state.categories, new_categ, (a,b) => a.name.localeCompare(b.name))
 }
 
 const addIngredient = async function(ingredient) {
@@ -153,10 +166,16 @@ const addIngredient = async function(ingredient) {
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/ingredients`, options)
-    if (ret.ok)
-        return ret
-    else
+    if (!ret.ok)
         throw ret
+
+    let location = ret.headers.get('location')
+    let ret2 = await fetch(`${API_ROOT}/ingredients${location}`)
+    if (!ret2.ok)
+        throw ret
+
+    let new_ingr = await ret2.json()
+    insert_sorted(state.ingredients, new_ingr, (a,b) => a.name.localeCompare(b.name))
 }
 
 const addUnit = async function(unit) {
@@ -170,10 +189,16 @@ const addUnit = async function(unit) {
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/units`, options)
-    if (ret.ok)
-        return ret
-    else
+    if (!ret.ok)
         throw ret
+
+    let location = ret.headers.get('location')
+    let ret2 = await fetch(`${API_ROOT}/units${location}`)
+    if (!ret2.ok)
+        throw ret
+
+    let new_unit = await ret2.json()
+    insert_sorted(state.units, new_unit, (a,b) => a.full_name.localeCompare(b.full_name))
 }
 
 const toggleFavorite = async function(recipe) {

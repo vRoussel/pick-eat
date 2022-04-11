@@ -35,7 +35,6 @@ export default {
                 "name": this.name,
             }
             this.store.addCategory(category)
-                .then(() => this.store.getCategories())
                 .catch((e) => console.error(e))
             this.$emit('done')
         },
