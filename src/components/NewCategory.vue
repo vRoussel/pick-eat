@@ -36,12 +36,15 @@ export default {
             }
             this.store.addCategory(category)
                 .catch((e) => console.error(e))
-            this.$emit('done')
+                .then((new_categ) => {
+                    this.$emit('created', new_categ)
+                    this.$emit('done')
+                })
         },
     },
     mounted() {
         this.$refs.categName.focus()
     },
-    emits: ['done']
+    emits: ['done', 'created']
 }
 </script>

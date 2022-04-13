@@ -36,12 +36,15 @@ export default {
             }
             this.store.addTag(tag)
                 .catch((e) => console.error(e))
-            this.$emit('done')
+                .then((new_tag) => {
+                    this.$emit('created', new_tag)
+                    this.$emit('done')
+                })
         },
     },
     mounted() {
         this.$refs.tagName.focus()
     },
-    emits: ['done']
+    emits: ['done', 'created']
 }
 </script>

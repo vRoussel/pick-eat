@@ -45,12 +45,15 @@ export default {
             }
             this.store.addUnit(unit)
                 .catch((e) => console.error(e))
-            this.$emit('done')
+                .then((new_unit) => {
+                    this.$emit('created', new_unit)
+                    this.$emit('done')
+                })
         },
     },
     mounted() {
         this.$refs.unitName.focus()
     },
-    emits: ['done']
+    emits: ['done', 'created']
 }
 </script>

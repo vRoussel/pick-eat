@@ -1,55 +1,26 @@
 <template is-clipped>
-    <div class="modal has-overflow" :class="{'is-active': isActive}">
+    <div class="modal has-overflow" :class="{'is-active': active}">
         <div class="modal-background" @click="close"></div>
         <div class="modal-content columns is-centered is-mobile">
-            <component :is="currentComponent" :input="input" @done="close"></component>
+            <slot v-if="active"></slot>
         </div>
     </div>
 </template>
 
 <script>
-import NewTag from '@/components/NewTag.vue'
-import NewCategory from '@/components/NewCategory.vue'
-import NewIngredient from '@/components/NewIngredient.vue'
-import NewUnit from '@/components/NewUnit.vue'
-
 export default {
     name: 'dynamic-modal',
-    components: {
-        NewTag,
-        NewCategory,
-        NewIngredient,
-        NewUnit,
-    },
     data: function() {
         return {
-            currentComponent: null,
-            input: null
+            active: false,
         }
     },
     methods: {
-        openNewTagForm() {
-            this.currentComponent = "NewTag"
-        },
-        openNewCategoryForm() {
-            this.currentComponent = "NewCategory"
-        },
-        openNewIngredientForm(input) {
-            this.input = input
-            this.currentComponent = "NewIngredient"
-        },
-        openNewUnitForm(input) {
-            this.input = input
-            this.currentComponent = "NewUnit"
+        open() {
+            this.active = true
         },
         close() {
-            this.currentComponent = null
-            this.input = null
-        },
-    },
-    computed: {
-        isActive: function() {
-            return this.currentComponent != null
+            this.active = false
         },
     },
 }

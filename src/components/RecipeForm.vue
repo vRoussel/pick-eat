@@ -35,26 +35,26 @@
 
             <fieldset class="block">
                 <legend class="label">Catégories</legend>
-                <toggle-buttons class="my-3" :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable @addChoice="openNewCategoryForm">
+                <toggle-buttons :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable :extendComponent="NewCategory_">
                 </toggle-buttons>
             </fieldset>
 
             <fieldset class="block">
                 <legend class="label">Tags</legend>
-                <toggle-buttons class="my-3" :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable @addChoice="openNewTagForm">
+                <toggle-buttons :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable :extendComponent="NewTag_">
                 </toggle-buttons>
             </fieldset>
 
             <fieldset class="block">
                 <legend class="label">Saisons</legend>
-                <toggle-buttons class="my-3" :choices="store.state.seasons" v-model:picked="new_recipe.seasons">
+                <toggle-buttons :choices="store.state.seasons" v-model:picked="new_recipe.seasons">
                 </toggle-buttons>
             </fieldset>
 
 
             <fieldset class="block">
                 <legend class="label">Ingrédients</legend>
-                <ingredient-picker v-model:picked="new_recipe.ingredients" @createIngredient="openNewIngredientForm" @createUnit="openNewUnitForm">
+                <ingredient-picker v-model:picked="new_recipe.ingredients" @createIngredient="openNewIngredientForm" @createUnit="openNewUnitForm" ref="ingredients">
                 </ingredient-picker>
             </fieldset>
 
@@ -67,8 +67,6 @@
                 <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
             </div>
 
-            <dynamic-modal ref="modal"></dynamic-modal>
-
             <button class="button is-primary is-large is-fullwidth">{{ update_mode ? 'Modifier' : 'Ajouter' }}</button>
             <button class="button is-light is-large is-fullwidth" v-if="update_mode">Annuler</button>
         </form>
@@ -78,8 +76,10 @@
 import ToggleButtons from '@/components/ToggleButtons.vue'
 import IngredientPicker from '@/components/IngredientPicker.vue'
 import ImageChooser from '@/components/ImageChooser.vue'
-import DynamicModal from '@/components/DynamicModal.vue'
+import NewTag from '@/components/NewTag.vue'
+import NewCategory from '@/components/NewCategory.vue'
 import Swal from 'sweetalert2'
+import {shallowRef} from 'vue'
 
 export default {
     name: 'recipe-form',
@@ -88,7 +88,6 @@ export default {
       ToggleButtons,
       IngredientPicker,
       ImageChooser,
-      DynamicModal,
     },
     props: {
         existing_recipe: {
@@ -110,6 +109,8 @@ export default {
                 notes: "",
                 image_url: ""
             },
+            NewTag_: shallowRef(NewTag),
+            NewCategory_: shallowRef(NewCategory),
         }
     },
     methods: {
@@ -165,20 +166,17 @@ export default {
 
             }
         },
-        cancel() {
-            this.$emit('done')
-        },
-        openNewTagForm() {
-            this.$refs.modal.openNewTagForm()
-        },
-        openNewCategoryForm() {
-            this.$refs.modal.openNewCategoryForm()
-        },
         openNewIngredientForm(input) {
             this.$refs.modal.openNewIngredientForm(input)
         },
         openNewUnitForm(input) {
             this.$refs.modal.openNewUnitForm(input)
+        },
+        addIngredient(new_ingredient) {
+            this.$refs.ingredients.add_ingr(new_ingredient)
+        },
+        setUnit(new_unit) {
+            this.$refs.ingredients.set_current_unit(new_unit)
         },
     },
     mounted() {

@@ -130,6 +130,7 @@ const addTag = async function(tag) {
 
     let new_tag = await ret2.json()
     insert_sorted(state.tags, new_tag, (a,b) => a.name.localeCompare(b.name))
+    return new_tag
 }
 
 const addCategory = async function(category) {
@@ -153,6 +154,7 @@ const addCategory = async function(category) {
 
     let new_categ = await ret2.json()
     insert_sorted(state.categories, new_categ, (a,b) => a.name.localeCompare(b.name))
+    return new_categ
 }
 
 const addIngredient = async function(ingredient) {
@@ -176,6 +178,7 @@ const addIngredient = async function(ingredient) {
 
     let new_ingr = await ret2.json()
     insert_sorted(state.ingredients, new_ingr, (a,b) => a.name.localeCompare(b.name))
+    return new_ingr
 }
 
 const addUnit = async function(unit) {
@@ -199,6 +202,7 @@ const addUnit = async function(unit) {
 
     let new_unit = await ret2.json()
     insert_sorted(state.units, new_unit, (a,b) => a.full_name.localeCompare(b.full_name))
+    return new_unit
 }
 
 const toggleFavorite = async function(recipe) {
