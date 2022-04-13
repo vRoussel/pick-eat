@@ -14,6 +14,11 @@ export function insert_sorted(array, el, cmp) {
     let max = array.length - 1;
     let i = Math.floor((min + max) / 2);
 
+    if (cmp(el, array[max]) >= 0) {
+        array.push(el);
+        return;
+    }
+
     while (min < max) {
         if (cmp(el, array[i]) < 0) {
             max = i;
