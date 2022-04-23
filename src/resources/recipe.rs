@@ -23,6 +23,14 @@ pub struct FromDB {
     pub(crate) seasons: Vec<season::FromDB>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FromDBLight {
+    pub(crate) id: i32,
+    pub(crate) name: String,
+    pub(crate) image: String,
+    pub(crate) is_favorite: bool,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
@@ -67,125 +75,48 @@ impl From<&tokio_postgres::row::Row> for FromDB {
     }
 }
 
-pub async fn get_many(db_conn: &Client, range: &Range) -> Result<Vec<FromDB>, Error> {
-    let recipes_query = "
-        WITH r_ids AS (
-            SELECT id
-            FROM recipes
-            ORDER BY name
-            OFFSET $1
-            LIMIT $2
-        ),
-        r_seasons AS (
-            SELECT
-                s.id,
-                s.name
-            FROM
-                seasons AS s INNER JOIN recipes_seasons AS rs
-                ON s.id = rs.season_id
-            WHERE rs.recipe_id in (SELECT id FROM r_ids)
-        ),
-        r_tags AS (
-            SELECT
-                t.id,
-                t.name
-            FROM
-                tags AS t INNER JOIN recipes_tags AS rt
-                ON t.id = rt.tag_id
-            WHERE rt.recipe_id in (SELECT id FROM r_ids)
-        ),
-        r_categories AS (
-            SELECT
-                c.id,
-                c.name
-            FROM
-                categories AS c INNER JOIN recipes_categories AS rc
-                ON c.id = rc.category_id
-            WHERE rc.recipe_id in (SELECT id FROM r_ids)
-        ),
-        r_units AS (
-            SELECT
-                u.id,
-                u.short_name,
-                u.full_name
-            FROM
-                units AS u INNER JOIN recipes_ingredients AS ri
-                ON u.id = ri.unit_id
-            WHERE ri.recipe_id in (SELECT id FROM r_ids)
-        ),
-        r_ingredients AS (
-            SELECT
-                i.id,
-                i.name,
-                ri.quantity,
-                row_to_json(u) as unit
-            FROM
-                ingredients AS i INNER JOIN recipes_ingredients AS ri
-                ON i.id = ri.ingredient_id
-                INNER JOIN (select * from r_units) as u
-                ON u.id = ri.unit_id
-            WHERE ri.recipe_id in (SELECT id FROM r_ids)
-        ),
+impl From<&tokio_postgres::row::Row> for FromDBLight {
+    fn from(row: &tokio_postgres::row::Row) -> Self {
+        FromDBLight {
+            id: row.get("id"),
+            name: row.get("name"),
+            image: row.get("image"),
+            is_favorite: row.get("is_favorite"),
+        }
+    }
+}
 
-        r_seasons_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(s)), '[]'::json) AS seasons
-            FROM (SELECT * FROM r_seasons) AS s
-        ),
-        r_tags_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(t)), '[]'::json) AS tags
-            FROM (SELECT * FROM r_tags) AS t
-        ),
-        r_categories_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(c)), '[]'::json) AS categories
-            FROM (SELECT * FROM r_categories) AS c
-        ),
-        r_ingredients_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(i)), '[]'::json) AS ingredients
-            FROM (SELECT * FROM r_ingredients) AS i
-        )
+pub async fn get_many(
+    db_conn: &Client,
+    range: &Range,
+) -> Result<(Vec<FromDBLight>, i64), Error> {
+    let query: String;
 
-        SELECT
-            r.id,
-            r.name,
-            r.notes,
-            r.preparation_time_min,
-            r.cooking_time_min,
-            r.image,
-            r.publication_date,
-            r.instructions,
-            r.n_shares,
-            r.is_favorite,
-            seasons,
-            tags,
-            categories,
-            ingredients
-        FROM
-            recipes as r,
-            r_seasons_json,
-            r_tags_json,
-            r_categories_json,
-            r_ingredients_json
-        WHERE r.id in (SELECT id FROM r_ids);
-    ";
-
-    let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
-    //offset
-    params.push(Box::new(range.from - 1));
-    //limit
-    params.push(Box::new(range.to - (range.from - 1)));
-
+    let params: Vec<&(dyn ToSql + Sync)>;
     let offset = range.from - 1;
     let limit = range.to - range.from + 1;
-    let recipes: Vec<FromDB> = db_conn
-        .query(recipes_query, &[&offset, &limit])
-        .await
-        .map(|rows| rows.iter().map(|r| r.into()).collect())?;
 
-    Ok(recipes)
+    query = String::from(
+        "
+        SELECT
+            id,
+            r.name,
+            r.image,
+            r.is_favorite,
+            count(*) OVER() AS total_count
+        FROM recipes AS r
+        ORDER BY name
+        OFFSET $1
+        LIMIT $2
+    ",
+    );
+    params = vec![&offset, &limit];
+
+    let rows = db_conn.query(&query, &params).await?;
+    let total_count: i64 = rows.get(0).map(|r| r.get("total_count")).unwrap_or(0);
+    let recipes: Vec<FromDBLight> = rows.iter().map(|r| r.into()).collect();
+
+    Ok((recipes, total_count))
 }
 
 pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Error> {

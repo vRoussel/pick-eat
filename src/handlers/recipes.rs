@@ -30,18 +30,10 @@ pub async fn get_all(
 ) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let total_count: i64 = match get_total_count(&db_conn, "recipes").await {
-        Ok(v) => v,
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
-
     let accept_range = format!("recipe {}", MAX_PER_REQUEST.unwrap_or(0));
 
-    if let Err(e) = params.range.validate(MAX_PER_REQUEST, total_count) {
-        let content_range = format!("{}-{}/{}", 0, 0, total_count);
+    if let Err(e) = params.range.validate(MAX_PER_REQUEST) {
+        let content_range = format!("{}-{}/{}", 0, 0, "*");
         let mut ret = match e {
             RangeError::OutOfBounds => HttpResponse::NoContent(),
             RangeError::TooWide => HttpResponse::BadRequest(),
@@ -50,28 +42,38 @@ pub async fn get_all(
 
         return ret
             .insert_header((http::header::CONTENT_RANGE, content_range))
-            .insert_header((http::header::ACCEPT_RANGES, accept_range.clone()))
+            .insert_header((http::header::ACCEPT_RANGES, accept_range))
             .finish();
     }
 
-    let recipes = match recipe::get_many(&db_conn, &params.range).await {
-        Ok(v) => v,
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
+    let (recipes, total_count) =
+        match recipe::get_many(&db_conn, &params.range).await {
+            Ok(v) => v,
+            Err(e) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        };
 
     let fetched_count = recipes.len() as i64;
     let mut ret;
-    if fetched_count < total_count {
+    let (first_fetched, last_fetched);
+
+    if fetched_count == 0 {
+        first_fetched = 0;
+        last_fetched = 0;
+    } else {
+        first_fetched = params.range.from;
+        last_fetched = first_fetched + fetched_count - 1;
+    }
+
+    if fetched_count == 0 {
+        ret = HttpResponse::NoContent();
+    } else if fetched_count < total_count {
         ret = HttpResponse::PartialContent();
     } else {
         ret = HttpResponse::Ok();
     }
-
-    let first_fetched = &params.range.from;
-    let last_fetched = first_fetched + fetched_count - 1;
     let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     trace!("{}", serde_json::to_string_pretty(&recipes).unwrap());
