@@ -255,9 +255,8 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
                 u.short_name,
                 u.full_name
             FROM
-                units AS u INNER JOIN recipes_ingredients AS ri
-                ON u.id = ri.unit_id
-            WHERE ri.recipe_id =$1
+                units AS u
+            WHERE u.id in (SELECT unit_id from recipes_ingredients where recipe_id = $1)
         ),
         r_ingredients AS (
             SELECT
@@ -268,7 +267,7 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
             FROM
                 ingredients AS i INNER JOIN recipes_ingredients AS ri
                 ON i.id = ri.ingredient_id
-                INNER JOIN (select * from r_units) as u
+                LEFT JOIN (select * from r_units) as u
                 ON u.id = ri.unit_id
             WHERE ri.recipe_id = $1
         ),
