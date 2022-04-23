@@ -9,10 +9,6 @@ const state =  reactive ({
     units: []
 });
 
-let cache = {
-    recipes: new Map()
-}
-
 const API_HOST = '192.168.1.60';
 const API_ROOT = `http://${API_HOST}/api/v1`
 
@@ -21,20 +17,11 @@ const getRecipes = async function(from, to) {
     if (ret.ok) {
         let json = await ret.json()
         let total_count = parseInt(ret.headers.get('content-range').split('/')[1])
-        json.forEach(cacheRecipe)
         return [json, total_count]
     }
 }
 
-function cacheRecipe(recipe) {
-    cache.recipes.set(recipe.id, recipe)
-}
-
 const getOneRecipe = async function(id) {
-    //if (cache.recipes.has(id)) {
-    //    return cache.recipes.get(id)
-    //}
-
     let ret = await fetch(`${API_ROOT}/recipes/${id}`)
     if (ret.ok) {
         let json = await ret.json()
