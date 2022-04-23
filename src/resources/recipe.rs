@@ -89,6 +89,7 @@ impl From<&tokio_postgres::row::Row> for FromDBLight {
 pub async fn get_many(
     db_conn: &Client,
     range: &Range,
+    search: &Option<String>,
 ) -> Result<(Vec<FromDBLight>, i64), Error> {
     let query: String;
 
@@ -96,21 +97,45 @@ pub async fn get_many(
     let offset = range.from - 1;
     let limit = range.to - range.from + 1;
 
-    query = String::from(
-        "
-        SELECT
-            id,
-            r.name,
-            r.image,
-            r.is_favorite,
-            count(*) OVER() AS total_count
-        FROM recipes AS r
-        ORDER BY name
-        OFFSET $1
-        LIMIT $2
-    ",
-    );
-    params = vec![&offset, &limit];
+    if let Some(ref s) = search {
+        query = String::from(
+            "
+            SELECT
+                r.id,
+                r.name,
+                r.image,
+                r.is_favorite,
+                count(*) OVER() AS total_count,
+                AVG(w.word <<-> unaccent(r.name)) AS rank
+            FROM
+                ( SELECT UNNEST(STRING_TO_ARRAY($1, ' ')) AS word ) AS w
+                CROSS JOIN
+                recipes AS r
+            GROUP BY r.id
+            HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.4
+            ORDER BY rank
+            OFFSET $2
+            LIMIT $3
+        ",
+        );
+        params = vec![s, &offset, &limit];
+    } else {
+        query = String::from(
+            "
+            SELECT
+                id,
+                r.name,
+                r.image,
+                r.is_favorite,
+                count(*) OVER() AS total_count
+            FROM recipes AS r
+            ORDER BY name
+            OFFSET $1
+            LIMIT $2
+        ",
+        );
+        params = vec![&offset, &limit];
+    };
 
     let rows = db_conn.query(&query, &params).await?;
     let total_count: i64 = rows.get(0).map(|r| r.get("total_count")).unwrap_or(0);

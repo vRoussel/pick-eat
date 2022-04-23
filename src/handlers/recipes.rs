@@ -21,6 +21,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 #[derive(Debug, Deserialize)]
 pub struct GetQueryParams {
     range: Range,
+    search: Option<String>,
 }
 
 #[get("/recipes")]
@@ -47,7 +48,7 @@ pub async fn get_all(
     }
 
     let (recipes, total_count) =
-        match recipe::get_many(&db_conn, &params.range).await {
+        match recipe::get_many(&db_conn, &params.range, &params.search).await {
             Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
