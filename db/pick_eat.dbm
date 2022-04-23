@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 CAUTION: Do not modify this file unless you know what you are doing.
-         Unexpected results may occur if the code is changed deliberately.
+ Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.3-beta1" use-changelog="false" last-position="0,162" last-zoom="0.9" max-obj-count="12"
-	 default-schema="public" default-owner="postgres">
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="12"
+	 default-owner="postgres">
 <role name="valentin"
-      createdb="true"
-      login="true">
+ createdb="true"
+ login="true">
 </role>
 
 <database name="pick_eat" is-template="false" allow-conns="true">
 </database>
 
-<schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
+<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="recipes" layer="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
+<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="320" y="420"/>
@@ -59,7 +59,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="categories" layer="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1480" y="280"/>
@@ -78,7 +78,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="tags" layer="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="tags" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1480" y="100"/>
@@ -97,7 +97,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_tags" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="recipes_tags" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1000" y="100"/>
@@ -112,7 +112,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="ingredients" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="ingredients" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1480" y="440"/>
@@ -134,7 +134,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_ingredients" layer="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="recipes_ingredients" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1000" y="500"/>
@@ -158,7 +158,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_categories" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="recipes_categories" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1000" y="280"/>
@@ -173,7 +173,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="units" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="units" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1480" y="620"/>
@@ -198,7 +198,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="seasons" layer="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="seasons" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1480" y="840"/>
@@ -217,7 +217,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes_seasons" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="recipes_seasons" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="valentin"/>
 	<position x="1000" y="840"/>
@@ -292,68 +292,52 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<relationship name="rel_recipes_tags_tags" type="relfk" layer="0"
+<relationship name="rel_recipes_tags_tags" type="relfk" layers="0"
 	 src-table="public.recipes_tags"
 	 dst-table="public.tags" reference-fk="recipes_tags_fk_tag_id"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="4.88386" y="-5.24103"/>
-	</label>
-</relationship>
+	 src-required="false" dst-required="true"/>
 
-<relationship name="rel_recipes_tags_recipes" type="relfk" layer="0"
+<relationship name="rel_recipes_tags_recipes" type="relfk" layers="0"
 	 src-table="public.recipes_tags"
 	 dst-table="public.recipes" reference-fk="recipes_tags_fk_recipe_id"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="true"/>
 
-<relationship name="rel_recipes_ingredients_recipes" type="relfk" layer="0"
-	 src-table="public.recipes_ingredients"
-	 dst-table="public.recipes" reference-fk="recipes_ingredients_fk_recipe_id"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="-9.09278" y="-4.6661"/>
-	</label>
-</relationship>
-
-<relationship name="rel_recipes_ingredients_ingredients" type="relfk" layer="0"
-	 src-table="public.recipes_ingredients"
-	 dst-table="public.ingredients" reference-fk="recipes_ingredients_fk_ingredient_id"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="-5.44881" y="-8.71432"/>
-	</label>
-</relationship>
-
-<relationship name="rel_recipes_categories_recipes" type="relfk" layer="0"
-	 src-table="public.recipes_categories"
-	 dst-table="public.recipes" reference-fk="recipes_categories_fk_recipe_id"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_recipes_categories_categories" type="relfk" layer="0"
-	 src-table="public.recipes_categories"
-	 dst-table="public.categories" reference-fk="recipes_categories_fk_category_id"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_ingredients_quantity_units" type="relfk" layer="0"
+<relationship name="rel_ingredients_units" type="relfk" layers="0"
 	 src-table="public.ingredients"
 	 dst-table="public.units" reference-fk="ingredients_fk_default_unit"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="-5.74573" y="-21.8542"/>
-	</label>
-</relationship>
+	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_recipes_ingredients_quantity_units" type="relfk" layer="0"
+<relationship name="rel_recipes_ingredients_recipes" type="relfk" layers="0"
+	 src-table="public.recipes_ingredients"
+	 dst-table="public.recipes" reference-fk="recipes_ingredients_fk_recipe_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_ingredients_ingredients" type="relfk" layers="0"
+	 src-table="public.recipes_ingredients"
+	 dst-table="public.ingredients" reference-fk="recipes_ingredients_fk_ingredient_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_ingredients_units" type="relfk" layers="0"
 	 src-table="public.recipes_ingredients"
 	 dst-table="public.units" reference-fk="recipes_ingredients_fk_unit_id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_recipes_seasons_seasons" type="relfk" layer="0"
+<relationship name="rel_recipes_categories_recipes" type="relfk" layers="0"
+	 src-table="public.recipes_categories"
+	 dst-table="public.recipes" reference-fk="recipes_categories_fk_recipe_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_categories_categories" type="relfk" layers="0"
+	 src-table="public.recipes_categories"
+	 dst-table="public.categories" reference-fk="recipes_categories_fk_category_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_seasons_seasons" type="relfk" layers="0"
 	 src-table="public.recipes_seasons"
 	 dst-table="public.seasons" reference-fk="recipes_seasons_fk_season_id"
 	 src-required="false" dst-required="true"/>
 
-<relationship name="rel_recipes_seasons_recipes" type="relfk" layer="0"
+<relationship name="rel_recipes_seasons_recipes" type="relfk" layers="0"
 	 src-table="public.recipes_seasons"
 	 dst-table="public.recipes" reference-fk="recipes_seasons_fk_recipe_id"
 	 src-required="false" dst-required="true"/>
