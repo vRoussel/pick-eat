@@ -11,7 +11,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn get_all(db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let seasonss = match season::get_many(&db_conn).await {
+    let seasonss = match season::get_all(&db_conn).await {
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);

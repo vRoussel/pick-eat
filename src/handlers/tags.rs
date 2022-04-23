@@ -1,13 +1,9 @@
 use crate::database::Pool;
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
-use serde::Deserialize;
 use tokio_postgres::error::SqlState;
 
-use crate::query_params::{Range, RangeError};
-use crate::resources::{get_total_count, tag};
-
-static MAX_PER_REQUEST: Option<i64> = None;
+use crate::resources::tag;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -17,71 +13,20 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(delete_one);
 }
 
-#[derive(Debug, Deserialize)]
-pub struct GetQueryParams {
-    range: Option<Range>,
-}
-
 #[get("/tags")]
-pub async fn get_all(
-    params: web::Query<GetQueryParams>,
-    db_pool: web::Data<Pool>,
-) -> impl Responder {
+pub async fn get_all(db_pool: web::Data<Pool>) -> impl Responder {
     let db_conn = db_pool.get().await.unwrap();
 
-    let total_count: i64 = match get_total_count(&db_conn, "tags").await {
+    let tags = match tag::get_all(&db_conn).await {
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);
             return HttpResponse::InternalServerError().finish();
         }
     };
-
-    let accept_range = format!("tag {}", MAX_PER_REQUEST.unwrap_or(0));
-
-    if let Some(range) = &params.range {
-        if let Err(e) = range.validate(MAX_PER_REQUEST, total_count) {
-            let content_range = format!("{}-{}/{}", 0, 0, total_count);
-            let mut ret = match e {
-                RangeError::OutOfBounds => HttpResponse::NoContent(),
-                RangeError::TooWide => HttpResponse::BadRequest(),
-                RangeError::Invalid => HttpResponse::BadRequest(),
-            };
-
-            return ret
-                .insert_header((http::header::CONTENT_RANGE, content_range))
-                .insert_header((http::header::ACCEPT_RANGES, accept_range.clone()))
-                .finish();
-        }
-    }
-
-    let tags = match tag::get_many(&db_conn, &params.range).await {
-        Ok(v) => v,
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
-
-    let fetched_count = tags.len() as i64;
-    let mut ret;
-    if fetched_count < total_count {
-        ret = HttpResponse::PartialContent();
-    } else {
-        ret = HttpResponse::Ok();
-    }
-
-    let first_fetched = match &params.range {
-        Some(r) => r.from,
-        None => 1,
-    };
-    let last_fetched = first_fetched + fetched_count - 1;
-    let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
 
     trace!("{}", serde_json::to_string_pretty(&tags).unwrap());
-    ret.insert_header((http::header::CONTENT_RANGE, content_range))
-        .insert_header((http::header::ACCEPT_RANGES, accept_range))
-        .json(tags)
+    HttpResponse::Ok().json(tags)
 }
 
 #[post("/tags")]

@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::{error::Error, Client};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -17,7 +16,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
     }
 }
 
-pub async fn get_many(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
+pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
     let seasons_query = String::from(
         "
         SELECT

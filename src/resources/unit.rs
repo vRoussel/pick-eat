@@ -1,6 +1,4 @@
-use crate::query_params::Range;
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::{error::Error, Client};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,8 +25,8 @@ impl From<&tokio_postgres::row::Row> for FromDB {
     }
 }
 
-pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<FromDB>, Error> {
-    let mut units_query = String::from(
+pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
+    let units_query = String::from(
         "
         SELECT
             id,
@@ -39,29 +37,8 @@ pub async fn get_many(db_conn: &Client, range: &Option<Range>) -> Result<Vec<Fro
     ",
     );
 
-    let mut params: Vec<Box<dyn ToSql + Sync>> = Vec::new();
-    if let Some(r) = range {
-        units_query.push_str(
-            "
-            OFFSET $1
-            LIMIT $2
-        ",
-        );
-        let offset = r.from - 1;
-        let limit = r.to - r.from + 1;
-        params.push(Box::new(offset));
-        params.push(Box::new(limit));
-    }
-
     db_conn
-        .query(
-            units_query.as_str(),
-            params
-                .iter()
-                .map(|b| b.as_ref())
-                .collect::<Vec<&(dyn ToSql + Sync)>>()
-                .as_slice(),
-        )
+        .query(units_query.as_str(), &[])
         .await
         .map(|rows| rows.iter().map(|r| r.into()).collect())
 }
