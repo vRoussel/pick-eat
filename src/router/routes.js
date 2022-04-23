@@ -16,7 +16,10 @@ const routes = [
         name: 'recipe-list',
         path: '/recipes',
         component: RecipeList,
-        props: route => ({ page: parseInt(route.query.page) || 1 }),
+        props: route => ({
+            page: parseInt(route.query.page) || 1,
+            url_search: route.query.search
+        }),
         meta: {
             title: 'Liste des recettes - PickEat'
         }

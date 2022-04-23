@@ -12,8 +12,12 @@ const state =  reactive ({
 const API_HOST = '192.168.1.60';
 const API_ROOT = `http://${API_HOST}/api/v1`
 
-const getRecipes = async function(from, to) {
-    let ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}`)
+const getRecipes = async function(from, to, search) {
+    let ret = null;
+    if (search == null)
+        ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}`)
+    else
+        ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}&search=${search}`)
     if (ret.ok) {
         let json = await ret.json()
         let total_count = parseInt(ret.headers.get('content-range').split('/')[1])

@@ -38,9 +38,6 @@ export default {
         max_page: {
             type: Number
         },
-        base_url: {
-            type: String
-        },
         url_param: {
             type: String
         }
@@ -63,7 +60,7 @@ export default {
     methods: {
         go_page(page) {
             if (page === null) return;
-            this.$router.push({ path: this.base_url, query: { [this.url_param]: page } });
+            this.$router.push({ path: this.$route.path, query: { ...this.$route.query, [this.url_param]: page } });
         },
     },
 }
