@@ -68,9 +68,7 @@ pub async fn get_all(
         last_fetched = first_fetched + fetched_count - 1;
     }
 
-    if fetched_count == 0 {
-        ret = HttpResponse::NoContent();
-    } else if fetched_count < total_count {
+    if fetched_count < total_count && fetched_count > 0 {
         ret = HttpResponse::PartialContent();
     } else {
         ret = HttpResponse::Ok();
