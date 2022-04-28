@@ -14,7 +14,7 @@ const API_ROOT = `http://${API_HOST}/api/v1`
 
 const getRecipes = async function(from, to, search) {
     let ret = null;
-    if (search == null)
+    if (search == null || search == "")
         ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}`)
     else
         ret = await fetch(`${API_ROOT}/recipes?range=${from}-${to}&search=${search}`)
