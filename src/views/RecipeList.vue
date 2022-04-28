@@ -1,16 +1,6 @@
 <template>
     <div class="container my-4 px-4">
-        <div class="field has-addons">
-            <div class="control has-icons-left has-icons-right is-expanded-mobile">
-                <input @input="e => input_search = e.target.value" class="input is-rounded" type="text" placeholder="Trouver une recette" :value="input_search">
-                <span class="icon is-right" v-if="this.input_search">
-                   <i class="fas fa-times is-clickable" @click="clearSearch()"></i>
-                </span>
-                <span class="icon is-left">
-                   <i class="fas fa-search"></i>
-                </span>
-            </div>
-        </div>
+        <live-search :initial_query="this.url_search" @search="runSearch" @clear="clearSearch"></live-search>
         <div class="columns is-multiline mt-4">
             <div class="column is-one-fifth-fullhd is-3-desktop is-4-tablet my-4" v-for="recipe in recipes" :key="recipe.id">
                 <div class="card">
@@ -38,12 +28,14 @@
 
 <script>
 import Pagination from '@/components/Pagination.vue'
+import LiveSearch from '@/components/LiveSearch.vue'
 
 export default {
     name: 'recipe-list',
     inject: ["store"],
     components: {
-        Pagination
+        Pagination,
+        LiveSearch
     },
     props: {
         page: {
@@ -60,8 +52,6 @@ export default {
             recipes: [],
             per_page: 20,
             max_page: 1,
-            input_search : this.url_search,
-            timer: null
         }
     },
     methods: {
@@ -69,7 +59,7 @@ export default {
             this.store.toggleFavorite(recipe)
         },
         loadRecipes() {
-            this.store.getRecipes(this.from,this.to,this.input_search).then(result => {
+            this.store.getRecipes(this.from,this.to,this.url_search).then(result => {
                 let [recipes, total_count] = result
                 this.recipes = recipes
                 this.max_page = Math.ceil(total_count / this.per_page) || 1
@@ -78,22 +68,12 @@ export default {
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
         },
-        runSearch(query) {
-            if (this.timer) {
-                clearTimeout(this.timer)
-                this.timer = null
-            }
-            this.timer = setTimeout(() => {
-                if (query == null || query == "") {
-                    this.$router.push({ name: 'recipe-list'});
-                } else {
-                    this.$router.push({ name: 'recipe-list', query: { 'search': query } });
-                }
-            }, 400)
+        runSearch(q) {
+            console.log(q)
+            this.$router.push({ name: 'recipe-list', query: { 'search': q } });
         },
         clearSearch() {
-            this.input_search = null
-            this.$router.push({ name: 'recipe-list' });
+            this.$router.push({ name: 'recipe-list'});
         }
     },
     created() {
@@ -113,12 +93,8 @@ export default {
             this.loadRecipes()
         },
         url_search : function() {
-            //this.input_search = val
             this.loadRecipes()
         },
-        input_search : function(val) {
-            this.runSearch(val)
-        }
     }
 }
 </script>
