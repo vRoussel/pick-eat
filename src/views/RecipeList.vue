@@ -6,7 +6,7 @@
                 <div class="card">
                     <div class="card-image">
                         <figure class="image is-square is-fullwidth">
-                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" class="is-clickable" @click="openRecipe(recipe.id)"/>
+                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG" class="is-clickable" @click="openRecipe(recipe.id)"/>
                         </figure>
                     </div>
                     <header class="card-header">
@@ -29,6 +29,7 @@
 <script>
 import Pagination from '@/components/Pagination.vue'
 import LiveSearch from '@/components/LiveSearch.vue'
+import {PLACEHOLDER_IMG} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-list',
@@ -77,6 +78,7 @@ export default {
         }
     },
     created() {
+        this.PLACEHOLDER_IMG = PLACEHOLDER_IMG
         this.loadRecipes()
     },
     computed: {

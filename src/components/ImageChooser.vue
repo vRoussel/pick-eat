@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import {PLACEHOLDER_IMG} from '@/utils/utils.js'
+
 export default {
     name: 'image-chooser',
     props: {
@@ -21,7 +23,7 @@ export default {
     computed: {
         image_preview() {
             if (this.image_url === "")
-                return require('@/assets/photo.png')
+                return PLACEHOLDER_IMG
             else
                 return this.image_url.replace("/upload", "/upload/c_limit,h_256,w_256");
         },

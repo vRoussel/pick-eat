@@ -8,7 +8,7 @@
         <div class="columns is-mobile has-text-centered my-0">
             <div class="column is-6-mobile is-4-tablet">
                 <figure class="image">
-                    <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')" width="512"/>
+                    <img :src="image" width="512"/>
                 </figure>
             </div>
             <div class="column is-flex is-flex-direction-column is-justify-content-space-evenly" id="recipe-name-column">
@@ -60,6 +60,7 @@
 
 <script>
 import SeasonIcons from '@/components/SeasonIcons.vue'
+import {PLACEHOLDER_IMG} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-view',
@@ -77,6 +78,14 @@ export default {
             this.$emit('edit')
             console.log('hello there1')
         },
+    },
+    computed : {
+        image() {
+            if (this.recipe.image === "")
+                return PLACEHOLDER_IMG
+            else
+                return this.recipe.image.replace("/upload", "/upload/c_limit,h_512,w_512");
+        }
     },
     emits: ['edit']
 }
