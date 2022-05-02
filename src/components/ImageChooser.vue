@@ -1,6 +1,7 @@
 <template>
 <figure class="image container is-256x256">
     <img @click="imageWidget.open()" class="is-clickable" :src="image_preview">
+    <button @click="clear" type="button" class="delete is-medium" style="position: absolute; top: 5px; right: 5px;"></button>
 </figure>
 </template>
 
@@ -47,6 +48,9 @@ export default {
                     }
                 }
             )
+        },
+        clear() {
+            this.$emit('update:image_url', "")
         }
 
     }
