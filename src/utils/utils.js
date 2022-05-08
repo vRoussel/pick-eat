@@ -32,3 +32,11 @@ export function insert_sorted(array, el, cmp) {
     console.log(i)
     array.splice(i, 0, el);
 }
+
+export let modal_stack = []
+export function close_last_opened_modal() {
+    let l = modal_stack.length
+    if (l > 0) {
+        modal_stack[l-1].close()
+    }
+}

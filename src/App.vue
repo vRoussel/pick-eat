@@ -24,6 +24,7 @@
 
 <script>
 import store from '@/store/store.js'
+import {close_last_opened_modal} from '@/utils/utils.js'
 
 export default {
   name: 'App',
@@ -41,6 +42,12 @@ export default {
     let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
     for (let ret of api_calls)
         ret.catch(error => console.error(error));
+
+    document.addEventListener.call(window, "keydown", e => {
+        if (e.key == 'Escape') {
+            close_last_opened_modal()
+        }
+    });
   },
   watch: {
         $route: {

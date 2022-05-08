@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import {modal_stack} from '@/utils/utils.js'
+
 export default {
     name: 'dynamic-modal',
     data: function() {
@@ -18,9 +20,11 @@ export default {
     methods: {
         open() {
             this.active = true
+            modal_stack.push(this)
         },
         close() {
             this.active = false
+            modal_stack.pop()
         },
     },
 }
