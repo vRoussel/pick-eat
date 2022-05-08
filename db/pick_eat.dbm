@@ -3,8 +3,13 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="12"
-	 default-owner="postgres">
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,30" last-zoom="0.85" max-obj-count="12"
+	 default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#95171c"
+	 show-layer-names="false" show-layer-rects="false">
 <role name="valentin"
  createdb="true"
  login="true">

@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler  version: 0.9.3-beta1
--- PostgreSQL version: 13.0
+-- pgModeler version: 1.0.0-alpha
+-- PostgreSQL version: 14.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- object: valentin | type: ROLE --
@@ -20,6 +20,9 @@ CREATE DATABASE pick_eat;
 -- ddl-end --
 
 
+SET check_function_bodies = false;
+-- ddl-end --
+
 -- object: public.recipes | type: TABLE --
 -- DROP TABLE IF EXISTS public.recipes CASCADE;
 CREATE TABLE public.recipes (
@@ -35,7 +38,6 @@ CREATE TABLE public.recipes (
 	is_favorite boolean NOT NULL DEFAULT false,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
-
 );
 -- ddl-end --
 ALTER TABLE public.recipes OWNER TO valentin;
@@ -48,7 +50,6 @@ CREATE TABLE public.categories (
 	name text NOT NULL,
 	CONSTRAINT categories_pk PRIMARY KEY (id),
 	CONSTRAINT categories_uq_name UNIQUE (name)
-
 );
 -- ddl-end --
 ALTER TABLE public.categories OWNER TO valentin;
@@ -61,7 +62,6 @@ CREATE TABLE public.tags (
 	name text NOT NULL,
 	CONSTRAINT tags_pk PRIMARY KEY (id),
 	CONSTRAINT tags_uq_name UNIQUE (name)
-
 );
 -- ddl-end --
 ALTER TABLE public.tags OWNER TO valentin;
@@ -73,7 +73,6 @@ CREATE TABLE public.recipes_tags (
 	tag_id integer NOT NULL,
 	recipe_id integer NOT NULL,
 	CONSTRAINT recipes_tags_pk PRIMARY KEY (tag_id,recipe_id)
-
 );
 -- ddl-end --
 ALTER TABLE public.recipes_tags OWNER TO valentin;
@@ -87,7 +86,6 @@ CREATE TABLE public.ingredients (
 	default_unit_id integer,
 	CONSTRAINT ingredients_pk PRIMARY KEY (id),
 	CONSTRAINT ingredients_uq_name UNIQUE (name)
-
 );
 -- ddl-end --
 ALTER TABLE public.ingredients OWNER TO valentin;
@@ -102,7 +100,6 @@ CREATE TABLE public.recipes_ingredients (
 	unit_id integer,
 	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id),
 	CONSTRAINT recipes_ingredients_ck_qty CHECK (quantity > 0)
-
 );
 -- ddl-end --
 ALTER TABLE public.recipes_ingredients OWNER TO valentin;
@@ -114,7 +111,6 @@ CREATE TABLE public.recipes_categories (
 	recipe_id integer NOT NULL,
 	category_id integer NOT NULL,
 	CONSTRAINT recipes_categories_pk PRIMARY KEY (recipe_id,category_id)
-
 );
 -- ddl-end --
 ALTER TABLE public.recipes_categories OWNER TO valentin;
@@ -129,7 +125,6 @@ CREATE TABLE public.units (
 	CONSTRAINT units_pk PRIMARY KEY (id),
 	CONSTRAINT units_uq_full_name UNIQUE (full_name),
 	CONSTRAINT units_uq_short_name UNIQUE (short_name)
-
 );
 -- ddl-end --
 ALTER TABLE public.units OWNER TO valentin;
@@ -142,7 +137,6 @@ CREATE TABLE public.seasons (
 	name text NOT NULL,
 	CONSTRAINT seasons_pk PRIMARY KEY (id),
 	CONSTRAINT seasons_uq_name UNIQUE (name)
-
 );
 -- ddl-end --
 ALTER TABLE public.seasons OWNER TO valentin;
@@ -154,7 +148,6 @@ CREATE TABLE public.recipes_seasons (
 	recipe_id integer NOT NULL,
 	season_id integer NOT NULL,
 	CONSTRAINT recipes_seasons_pk PRIMARY KEY (recipe_id,season_id)
-
 );
 -- ddl-end --
 ALTER TABLE public.recipes_seasons OWNER TO valentin;
