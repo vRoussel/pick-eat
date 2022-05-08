@@ -160,6 +160,36 @@ CREATE TABLE public.recipes_seasons (
 ALTER TABLE public.recipes_seasons OWNER TO valentin;
 -- ddl-end --
 
+-- object: pg_trgm | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS pg_trgm CASCADE;
+CREATE EXTENSION pg_trgm
+WITH SCHEMA public;
+-- ddl-end --
+
+-- object: unaccent | type: EXTENSION --
+-- DROP EXTENSION IF EXISTS unaccent CASCADE;
+CREATE EXTENSION unaccent
+WITH SCHEMA public;
+-- ddl-end --
+
+-- -- object: public.gist_trgm_ops | type: OPERATOR CLASS --
+-- -- DROP OPERATOR CLASS IF EXISTS public.gist_trgm_ops USING gist CASCADE;
+-- CREATE OPERATOR CLASS public.gist_trgm_ops FOR TYPE smallint
+--  USING gist AS
+-- 	STORAGE	text;
+-- -- ddl-end --
+-- ALTER OPERATOR CLASS public.gist_trgm_ops USING gist OWNER TO valentin;
+-- -- ddl-end --
+-- 
+-- object: trgm_idx | type: INDEX --
+-- DROP INDEX IF EXISTS public.trgm_idx CASCADE;
+CREATE INDEX trgm_idx ON public.recipes
+USING gist
+(
+	name public.gist_trgm_ops
+);
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
