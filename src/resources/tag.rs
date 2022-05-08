@@ -42,7 +42,7 @@ pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
 pub async fn add_one(db_conn: &Client, new_tag: &New) -> Result<i32, Error> {
     let insert_query = "
         INSERT INTO tags (name)
-            VALUES ($1)
+            VALUES (sentence_case($1))
         RETURNING id;
     ";
     db_conn
@@ -69,7 +69,7 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
 pub async fn modify_one(db_conn: &Client, id: i32, new_tag: &New) -> Result<Option<()>, Error> {
     let update_query = "
         UPDATE tags SET
-            name = $1
+            name = sentence_case($1)
         WHERE id = $2
         RETURNING id;
     ";

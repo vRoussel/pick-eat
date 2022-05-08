@@ -152,7 +152,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
     let recipe_query = "
         INSERT INTO recipes
         (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7)
         RETURNING id;
     ";
 
@@ -362,7 +362,7 @@ pub async fn modify_one(
 
     let recipe_query = "
         UPDATE recipes SET
-            name = $1,
+            name = sentence_case($1),
             notes = $2,
             preparation_time_min = $3,
             cooking_time_min = $4,

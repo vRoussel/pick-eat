@@ -46,7 +46,7 @@ pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
 pub async fn add_one(db_conn: &Client, new_unit: &New) -> Result<i32, Error> {
     let insert_query = "
         INSERT INTO units (full_name, short_name)
-            VALUES ($1, $2)
+            VALUES (sentence_case($1), $2)
         RETURNING id;
     ";
     db_conn
@@ -74,7 +74,7 @@ pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error>
 pub async fn modify_one(db_conn: &Client, id: i32, new_unit: &New) -> Result<Option<()>, Error> {
     let update_query = "
         UPDATE units SET
-            full_name = $1,
+            full_name = sentence_case($1),
             short_name = $2
         WHERE id = $3
         RETURNING id;

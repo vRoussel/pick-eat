@@ -165,6 +165,23 @@ CREATE EXTENSION unaccent
 WITH SCHEMA public;
 -- ddl-end --
 
+-- object: public.sentence_case | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.sentence_case(text) CASCADE;
+CREATE FUNCTION public.sentence_case (s text)
+	RETURNS text
+	LANGUAGE sql
+	IMMUTABLE 
+	RETURNS NULL ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+select upper(left($1, 1)) || lower(right($1, -1));
+$$;
+-- ddl-end --
+ALTER FUNCTION public.sentence_case(text) OWNER TO valentin;
+-- ddl-end --
+
 -- -- object: public.gist_trgm_ops | type: OPERATOR CLASS --
 -- -- DROP OPERATOR CLASS IF EXISTS public.gist_trgm_ops USING gist CASCADE;
 -- CREATE OPERATOR CLASS public.gist_trgm_ops FOR TYPE smallint

@@ -102,7 +102,7 @@ pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
 pub async fn add_one(db_conn: &Client, new_ingredient: &New) -> Result<i32, Error> {
     let insert_query = "
         INSERT INTO ingredients (name, default_unit_id)
-            VALUES ($1, $2)
+            VALUES (sentence_case($1), $2)
         RETURNING id;
     ";
     db_conn
@@ -143,7 +143,7 @@ pub async fn modify_one(
 ) -> Result<Option<()>, Error> {
     let update_query = "
         UPDATE ingredients SET
-            name = $1,
+            name = sentence_case($1),
             default_unit_id = $2,
         WHERE id = $3
         RETURNING id;
