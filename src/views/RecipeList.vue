@@ -32,24 +32,7 @@
             </div>
             <div class="column columns is-multiline">
                 <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
-                    <div class="card">
-                        <div class="card-image">
-                            <figure class="image is-square is-fullwidth">
-                                    <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG" class="is-clickable" @click="openRecipe(recipe.id)"/>
-                            </figure>
-                        </div>
-                        <header class="card-header">
-                            <p class="recipe-name card-header-title is-size-4-mobile
-                            is-size-5-tablet" v-tooltip="recipe.name">
-                                {{ recipe.name }}
-                            </p>
-                            <div class="card-header-icon" aria-label="favorite">
-                              <span class="icon">
-                                <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-size-4-mobile is-size-5-tablet is-clickable" @click="toggleFavorite(recipe)"></i>
-                              </span>
-                            </div>
-                        </header>
-                    </div>
+                    <recipe-list-item :recipe=recipe></recipe-list-item>
                 </div>
             </div>
         </div>
@@ -60,8 +43,8 @@
 <script>
 import Pagination from '@/components/Pagination.vue'
 import LiveSearch from '@/components/LiveSearch.vue'
-import {PLACEHOLDER_IMG} from '@/utils/utils.js'
 import Multiselect from '@vueform/multiselect'
+import RecipeListItem from '@/components/RecipeListItem.vue'
 
 export default {
     name: 'recipe-list',
@@ -69,7 +52,8 @@ export default {
     components: {
         Pagination,
         LiveSearch,
-        Multiselect
+        Multiselect,
+        RecipeListItem
     },
     props: {
         page: {
@@ -89,18 +73,12 @@ export default {
         }
     },
     methods: {
-        toggleFavorite(recipe) {
-            this.store.toggleFavorite(recipe)
-        },
         loadRecipes() {
             this.store.getRecipes(this.from,this.to,this.url_search).then(result => {
                 let [recipes, total_count] = result
                 this.recipes = recipes
                 this.max_page = Math.ceil(total_count / this.per_page) || 1
             });
-        },
-        openRecipe(id) {
-            this.$router.push({ name: 'recipe', params: { id } })
         },
         runSearch(q) {
             this.$router.push({ name: 'recipe-list', query: { 'search': q } });
@@ -110,7 +88,6 @@ export default {
         }
     },
     created() {
-        this.PLACEHOLDER_IMG = PLACEHOLDER_IMG
         this.loadRecipes()
     },
     computed: {
@@ -134,26 +111,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .recipe-name {
-        font-family: "Rounded_Elegance";
-        padding: 0;
-        margin: $card-header-padding;
-
-        overflow-wrap: anywhere;
-        -webkit-line-clamp: 3;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        height: $body-line-height * $body-font-size * 3;
-    }
-
-    .fa-heart {
-        color: red;
-    }
-    .card-header-icon {
-        cursor: auto;
-    }
-
     @media screen and (max-width: 768px), print {
         .is-expanded-mobile {
             display: flex;
