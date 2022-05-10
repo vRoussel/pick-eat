@@ -29,7 +29,6 @@ export function insert_sorted(array, el, cmp) {
         }
         i = Math.floor((min + max) / 2);
     }
-    console.log(i)
     array.splice(i, 0, el);
 }
 
@@ -42,7 +41,6 @@ export function close_last_opened_modal() {
 }
 
 export function isOverflown(element) {
-    console.log(element)
     if (element == null)
         return false
     return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
