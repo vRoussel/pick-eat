@@ -1,24 +1,55 @@
 <template>
-    <div class="container my-4 px-4">
-        <live-search :initial_query="this.url_search" @search="runSearch" @clear="clearSearch"></live-search>
-        <div class="columns is-multiline mt-4">
-            <div class="column is-one-fifth-fullhd is-3-desktop is-4-tablet my-4" v-for="recipe in recipes" :key="recipe.id">
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="image is-square is-fullwidth">
-                                <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG" class="is-clickable" @click="openRecipe(recipe.id)"/>
-                        </figure>
+    <div class="container my-4">
+        <div class="columns is-desktop">
+            <div class="column is-one-fifth-fullhd is-3-desktop">
+                <live-search :initial_query="this.url_search" @search="runSearch" @clear="clearSearch"></live-search>
+                <div class="field">
+                    <label class="label">Ingrédients</label>
+                        <Multiselect mode="tags" :options="this.store.state.ingredients" label="name" searchable :strict="false" trackBy="name" object valueProp="id" ref="multiselect" :closeOnSelect="false"/>
+                </div>
+                <div class="field">
+                    <label class="label">Tags</label>
+                <Multiselect mode="tags" :options="this.store.state.tags" label="name" searchable :strict="false" trackBy="name" object valueProp="id" ref="multiselect" :closeOnSelect="false"/>
+                </div>
+                <fieldset class="block">
+                    <legend class="label">Saisons</legend>
+                    <div class="control" v-for="s in this.store.state.seasons" :key="s.id">
+                        <label class="checkbox">
+                            <input type="checkbox">
+                            {{ s.name }}
+                        </label>
                     </div>
-                    <header class="card-header">
-                        <p class="recipe-name card-header-title is-size-4-mobile is-size-5-tablet" v-tooltip="recipe.name">
-                            {{ recipe.name }}
-                        </p>
-                        <div class="card-header-icon" aria-label="favorite">
-                          <span class="icon">
-                            <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-size-4-mobile is-size-5-tablet is-clickable" @click="toggleFavorite(recipe)"></i>
-                          </span>
+                </fieldset>
+                <fieldset class="block">
+                    <legend class="label">Catégories</legend>
+                    <div class="control" v-for="c in this.store.state.categories" :key="c.id">
+                        <label class="checkbox">
+                            <input type="checkbox">
+                            {{ c.name }}
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="column columns is-multiline">
+                <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-square is-fullwidth">
+                                    <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG" class="is-clickable" @click="openRecipe(recipe.id)"/>
+                            </figure>
                         </div>
-                    </header>
+                        <header class="card-header">
+                            <p class="recipe-name card-header-title is-size-4-mobile
+                            is-size-5-tablet" v-tooltip="recipe.name">
+                                {{ recipe.name }}
+                            </p>
+                            <div class="card-header-icon" aria-label="favorite">
+                              <span class="icon">
+                                <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-size-4-mobile is-size-5-tablet is-clickable" @click="toggleFavorite(recipe)"></i>
+                              </span>
+                            </div>
+                        </header>
+                    </div>
                 </div>
             </div>
         </div>
@@ -30,13 +61,15 @@
 import Pagination from '@/components/Pagination.vue'
 import LiveSearch from '@/components/LiveSearch.vue'
 import {PLACEHOLDER_IMG} from '@/utils/utils.js'
+import Multiselect from '@vueform/multiselect'
 
 export default {
     name: 'recipe-list',
     inject: ["store"],
     components: {
         Pagination,
-        LiveSearch
+        LiveSearch,
+        Multiselect
     },
     props: {
         page: {
@@ -70,7 +103,6 @@ export default {
             this.$router.push({ name: 'recipe', params: { id } })
         },
         runSearch(q) {
-            console.log(q)
             this.$router.push({ name: 'recipe-list', query: { 'search': q } });
         },
         clearSearch() {
