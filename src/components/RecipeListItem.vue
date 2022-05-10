@@ -6,8 +6,8 @@
             </figure>
         </div>
         <header class="card-header">
-            <p class="recipe-name card-header-title is-size-4-mobile
-            is-size-5-tablet" v-tooltip="recipe.name">
+            <p ref="recipe_name" class="recipe-name card-header-title is-size-4-mobile
+            is-size-5-tablet" v-tooltip="overflown ? recipe.name : null">
                 {{ recipe.name }}
             </p>
             <div class="card-header-icon" aria-label="favorite">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {PLACEHOLDER_IMG} from '@/utils/utils.js'
+import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-list-item',
@@ -29,6 +29,11 @@ export default {
         recipe: {
             type: Object,
             default: null,
+        }
+    },
+    data: function() {
+        return {
+            overflown: false,
         }
     },
     methods: {
@@ -41,6 +46,15 @@ export default {
     },
     created() {
         this.PLACEHOLDER_IMG = PLACEHOLDER_IMG
+    },
+    mounted() {
+        //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined
+        const interval = setInterval(() => {
+            if (this.$refs.recipe_name) {
+                this.overflown = isOverflown(this.$refs.recipe_name)
+                clearInterval(interval)
+            }
+        }, 100)
     },
 }
 </script>
