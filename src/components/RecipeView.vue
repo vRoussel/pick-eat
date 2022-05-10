@@ -12,7 +12,7 @@
                 </figure>
             </div>
             <div class="column is-flex is-flex-direction-column is-justify-content-space-evenly" id="recipe-name-column">
-                <p class="recipe-name is-size-5-mobile is-size-2-tablet">{{ recipe.name }}</p>
+                <p ref="recipe_name" v-tooltip="overflown ? recipe.name : null" class="recipe-name is-size-5-mobile is-size-2-tablet">{{ recipe.name }}</p>
                 <season-icons class="is-size-4-mobile is-size-3-tablet" :seasons="this.recipe.seasons"></season-icons>
                 <p class="is-size-6-mobile is-size-5-tablet">
                 <span class="icon"><i class="time_icon fas fa-clock"></i></span> {{ recipe.prep_time_min }} min
@@ -60,7 +60,7 @@
 
 <script>
 import SeasonIcons from '@/components/SeasonIcons.vue'
-import {PLACEHOLDER_IMG} from '@/utils/utils.js'
+import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-view',
@@ -73,11 +73,16 @@ export default {
             type : Object,
         }
     },
+    data: function() {
+        return {
+            overflown: false,
+        }
+    },
     methods: {
         editRecipe() {
             this.$emit('edit')
             console.log('hello there1')
-        },
+        }
     },
     computed : {
         image() {
@@ -86,6 +91,15 @@ export default {
             else
                 return this.recipe.image.replace("/upload", "/upload/c_limit,h_512,w_512");
         }
+    },
+    mounted() {
+        //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined
+        const interval = setInterval(() => {
+            if (this.$refs.recipe_name) {
+                this.overflown = isOverflown(this.$refs.recipe_name)
+                clearInterval(interval)
+            }
+        }, 100)
     },
     emits: ['edit']
 }
@@ -107,10 +121,7 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
-    }
-
-    #recipe-name-column p.recipe-name:hover {
-        -webkit-line-clamp: none;
+        height: $body-line-height * $body-font-size * 2;
     }
 
     .fa-heart {

@@ -40,3 +40,10 @@ export function close_last_opened_modal() {
         modal_stack[l-1].close()
     }
 }
+
+export function isOverflown(element) {
+    console.log(element)
+    if (element == null)
+        return false
+    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
