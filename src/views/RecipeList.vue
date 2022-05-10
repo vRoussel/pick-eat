@@ -10,7 +10,7 @@
                         </figure>
                     </div>
                     <header class="card-header">
-                        <p class="recipe-name card-header-title is-size-4-mobile is-size-5-tablet">
+                        <p class="recipe-name card-header-title is-size-4-mobile is-size-5-tablet" v-tooltip="recipe.name">
                             {{ recipe.name }}
                         </p>
                         <div class="card-header-icon" aria-label="favorite">
@@ -112,10 +112,7 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
-    }
-
-    .card-header:hover p {
-        -webkit-line-clamp: none;
+        height: $body-line-height * $body-font-size * 3;
     }
 
     .fa-heart {
@@ -123,14 +120,6 @@ export default {
     }
     .card-header-icon {
         cursor: auto;
-    }
-    .card {
-        display:flex;
-        height: 100%;
-        flex-direction: column;
-    }
-    .card-header {
-        flex-grow: 1;
     }
 
     @media screen and (max-width: 768px), print {
