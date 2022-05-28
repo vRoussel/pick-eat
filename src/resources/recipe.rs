@@ -69,9 +69,9 @@ impl From<&tokio_postgres::row::Row> for FromDB {
             id: row.get("id"),
             name: row.get("name"),
             notes: row.get("notes"),
-            q_ingredients: row.get::<_, types::Json<_>>("ingredients").0,
-            categories: row.get::<_, types::Json<_>>("categories").0,
-            tags: row.get::<_, types::Json<_>>("tags").0,
+            q_ingredients: Vec::new(),
+            categories: Vec::new(),
+            tags: Vec::new(),
             prep_time_min: row.get("preparation_time_min"),
             cook_time_min: row.get("cooking_time_min"),
             image: row.get("image"),
@@ -79,7 +79,7 @@ impl From<&tokio_postgres::row::Row> for FromDB {
             instructions: row.get("instructions"),
             n_shares: row.get("n_shares"),
             is_favorite: row.get("is_favorite"),
-            seasons: row.get::<_, types::Json<_>>("seasons").0,
+            seasons: Vec::new(),
         }
     }
 }
@@ -358,105 +358,106 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
 
 pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
     let recipe_query = "
-        WITH r_seasons AS (
-            SELECT
-                s.id,
-                s.name
-            FROM
-                seasons AS s INNER JOIN recipes_seasons AS rs
-                ON s.id = rs.season_id
-            WHERE rs.recipe_id = $1
-        ),
-        r_tags AS (
-            SELECT
-                t.id,
-                t.name
-            FROM
-                tags AS t INNER JOIN recipes_tags AS rt
-                ON t.id = rt.tag_id
-            WHERE rt.recipe_id = $1
-        ),
-        r_categories AS (
-            SELECT
-                c.id,
-                c.name
-            FROM
-                categories AS c INNER JOIN recipes_categories AS rc
-                ON c.id = rc.category_id
-            WHERE rc.recipe_id = $1
-        ),
-        r_units AS (
-            SELECT
-                u.id,
-                u.short_name,
-                u.full_name
-            FROM
-                units AS u
-            WHERE u.id in (SELECT unit_id from recipes_ingredients where recipe_id = $1)
-        ),
-        r_ingredients AS (
-            SELECT
-                i.id,
-                i.name,
-                ri.quantity,
-                row_to_json(u) as unit
-            FROM
-                ingredients AS i INNER JOIN recipes_ingredients AS ri
-                ON i.id = ri.ingredient_id
-                LEFT JOIN (select * from r_units) as u
-                ON u.id = ri.unit_id
-            WHERE ri.recipe_id = $1
-        ),
-
-        r_seasons_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(s)), '[]'::json) AS seasons
-            FROM (SELECT * FROM r_seasons) AS s
-        ),
-        r_tags_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(t)), '[]'::json) AS tags
-            FROM (SELECT * FROM r_tags) AS t
-        ),
-        r_categories_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(c)), '[]'::json) AS categories
-            FROM (SELECT * FROM r_categories) AS c
-        ),
-        r_ingredients_json AS (
-            SELECT
-                COALESCE(json_agg(row_to_json(i)), '[]'::json) AS ingredients
-            FROM (SELECT * FROM r_ingredients) AS i
-        )
-
         SELECT
-            r.id,
-            r.name,
-            r.notes,
-            r.preparation_time_min,
-            r.cooking_time_min,
-            r.image,
-            r.publication_date,
-            r.instructions,
-            r.n_shares,
-            r.is_favorite,
-            seasons,
-            tags,
-            categories,
-            ingredients
-        FROM
-            recipes as r,
-            r_seasons_json,
-            r_tags_json,
-            r_categories_json,
-            r_ingredients_json
-        WHERE r.id = $1;
+            id,
+            name,
+            notes,
+            preparation_time_min,
+            cooking_time_min,
+            image,
+            publication_date,
+            instructions,
+            n_shares,
+            is_favorite
+        FROM recipes
+        WHERE id = $1
     ";
 
-    let maybe_recipe: Option<FromDB> = db_conn
+    let categories_query = "
+        SELECT
+            c.id,
+            c.name
+        FROM
+            categories as c,
+            recipes_categories as rc
+        WHERE
+            c.id = rc.category_id
+            AND rc.recipe_id = $1
+    ";
+
+    let tags_query = "
+        SELECT
+            t.id,
+            t.name
+        FROM
+            tags as t,
+            recipes_tags as rt
+        WHERE
+            t.id = rt.tag_id
+            AND rt.recipe_id = $1
+    ";
+
+    let seasons_query = "
+        SELECT
+            s.id,
+            s.name
+        FROM
+            seasons as s,
+            recipes_seasons as rs
+        WHERE
+            s.id = rs.season_id
+            AND rs.recipe_id = $1
+    ";
+
+    let ingredients_query = "
+        SELECT
+            i.id as id,
+            i.name as name,
+            ri.quantity as quantity,
+            u.id as unit_id,
+            u.full_name as unit_full_name,
+            u.short_name as unit_short_name
+        FROM
+            ingredients as i,
+            recipes_ingredients as ri
+            LEFT JOIN units as u
+            ON ri.unit_id = u.id
+        WHERE
+            i.id = ri.ingredient_id
+            AND ri.recipe_id = $1
+            ";
+
+    let mut maybe_recipe: Option<FromDB> = db_conn
         .query_opt(recipe_query, &[&id])
         .await
         .map(|opt| opt.map(|ref row| row.into()))?;
+
+    if let Some(ref mut recipe) = maybe_recipe {
+        let categories: Vec<category::FromDB> = db_conn
+            .query(categories_query, &[&id])
+            .await
+            .map(|rows| rows.iter().map(|r| r.into()).collect())?;
+
+        let tags: Vec<tag::FromDB> = db_conn
+            .query(tags_query, &[&id])
+            .await
+            .map(|rows| rows.iter().map(|r| r.into()).collect())?;
+
+        let seasons: Vec<season::FromDB> = db_conn
+            .query(seasons_query, &[&id])
+            .await
+            .map(|rows| rows.iter().map(|r| r.into()).collect())?;
+
+        let ingredients: Vec<QIngredient::Full> = db_conn
+            .query(ingredients_query, &[&id])
+            .await
+            .map(|rows| rows.iter().map(|r| r.into()).collect())?;
+
+        recipe.categories = categories;
+        recipe.tags = tags;
+        recipe.seasons = seasons;
+        recipe.q_ingredients = ingredients;
+    }
 
     Ok(maybe_recipe)
 }
