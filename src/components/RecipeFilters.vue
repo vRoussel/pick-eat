@@ -91,7 +91,7 @@ export default {
     data: function() {
         return {
             timer: null,
-            expanded: false,
+            expanded: this.on_mobile() ? false : true,
             filters: structuredClone(this.initial_filters)
         }
     },
@@ -122,6 +122,9 @@ export default {
             this.filters.tags = []
             this.filters.categories = []
             this.filters.seasons = []
+        },
+        on_mobile() {
+            return screen.width < 768;
         }
     },
     watch: {
