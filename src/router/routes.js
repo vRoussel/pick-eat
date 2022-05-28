@@ -2,6 +2,7 @@ import { createRouter, createWebHistory} from 'vue-router';
 import NewRecipe from '@/views/NewRecipe.vue';
 import RecipeList from '@/views/RecipeList.vue';
 import Recipe from '@/views/Recipe.vue';
+import {Filters} from '@/components/RecipeFilters.vue';
 
 const routes = [
     {
@@ -18,7 +19,13 @@ const routes = [
         component: RecipeList,
         props: route => ({
             page: parseInt(route.query.page) || 1,
-            url_search: route.query.search
+            url_filters: new Filters(
+                route.query.search,
+                route.query.i ? route.query.i.split(',') : [],
+                route.query.t ? route.query.t.split(',') : [],
+                route.query.c ? route.query.c.split(',') : [],
+                route.query.s ? route.query.s.split(',') : []
+            )
         }),
         meta: {
             title: 'Liste des recettes - PickEat'
@@ -46,7 +53,9 @@ const router = createRouter({
     routes,
     linkActiveClass: 'is-active',
     scrollBehavior: (to, from, savedPosition) => {
-        if (savedPosition) {
+        if (to.params.noscroll) {
+            return {}
+        } if (savedPosition) {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(savedPosition)
