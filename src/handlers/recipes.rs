@@ -5,7 +5,7 @@ use tokio_postgres::error::SqlState;
 
 use crate::database::Pool;
 use crate::query_params::{Range, RangeError};
-use crate::resources::{get_total_count, recipe};
+use crate::resources::recipe::{self, Filter};
 
 static MAX_PER_REQUEST: Option<i64> = Some(50);
 
@@ -22,6 +22,10 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub struct GetQueryParams {
     range: Range,
     search: Option<String>,
+    categories: Option<String>,
+    seasons: Option<String>,
+    ingredients: Option<String>,
+    tags: Option<String>,
 }
 
 #[get("/recipes")]
@@ -47,14 +51,38 @@ pub async fn get_all(
             .finish();
     }
 
-    let (recipes, total_count) =
-        match recipe::get_many(&db_conn, &params.range, &params.search).await {
-            Ok(v) => v,
-            Err(e) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-        };
+    let mut filters: Vec<Filter> = Vec::new();
+    if let Some(val) = &params.search {
+        filters.push(Filter::Search(val.to_string()));
+    }
+    if let Some(val) = &params.categories {
+        filters.push(Filter::Categories(
+            val.split(",").map(|x| x.parse().unwrap()).collect(),
+        ));
+    }
+    if let Some(val) = &params.seasons {
+        filters.push(Filter::Seasons(
+            val.split(",").map(|x| x.parse().unwrap()).collect(),
+        ));
+    }
+    if let Some(val) = &params.ingredients {
+        filters.push(Filter::Ingredients(
+            val.split(",").map(|x| x.parse().unwrap()).collect(),
+        ));
+    }
+    if let Some(val) = &params.tags {
+        filters.push(Filter::Tags(
+            val.split(",").map(|x| x.parse().unwrap()).collect(),
+        ));
+    }
+
+    let (recipes, total_count) = match recipe::get_many(&db_conn, &params.range, &filters).await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
 
     let fetched_count = recipes.len() as i64;
     let mut ret;

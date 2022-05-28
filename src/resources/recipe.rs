@@ -2,6 +2,7 @@ use super::ingredient::quantified as QIngredient;
 use super::{category, season, tag};
 use crate::query_params::Range;
 use crate::utils::*;
+use log::*;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::{error::Error, types, types::ToSql, Client};
 
@@ -54,6 +55,14 @@ pub struct Patched {
     pub(crate) is_favorite: bool,
 }
 
+pub enum Filter {
+    Search(String),
+    Categories(Vec<i32>),
+    Seasons(Vec<i32>),
+    Ingredients(Vec<i32>),
+    Tags(Vec<i32>),
+}
+
 impl From<&tokio_postgres::row::Row> for FromDB {
     fn from(row: &tokio_postgres::row::Row) -> Self {
         FromDB {
@@ -89,53 +98,155 @@ impl From<&tokio_postgres::row::Row> for FromDBLight {
 pub async fn get_many(
     db_conn: &Client,
     range: &Range,
-    search: &Option<String>,
+    filters: &[Filter],
 ) -> Result<(Vec<FromDBLight>, i64), Error> {
-    let query: String;
+    let mut query: String;
 
-    let params: Vec<&(dyn ToSql + Sync)>;
+    query = String::from(
+        "
+        {CTEs}
+        SELECT
+            id,
+            r.name,
+            r.image,
+            r.is_favorite,
+            count(*) OVER() AS total_count
+            {EXTRA_FIELDS}
+        FROM recipes AS r
+        {JOINS}
+        ORDER BY {SORTING_FIELD}
+        OFFSET $1
+        LIMIT $2
+    ",
+    );
+
     let offset = range.from - 1;
     let limit = range.to - range.from + 1;
+    let mut params: Vec<&(dyn ToSql + Sync)> = vec![&offset, &limit];
 
-    if let Some(ref s) = search {
-        query = String::from(
-            "
-            SELECT
-                r.id,
-                r.name,
-                r.image,
-                r.is_favorite,
-                count(*) OVER() AS total_count,
-                AVG(w.word <<-> unaccent(r.name)) AS rank
-            FROM
-                ( SELECT UNNEST(STRING_TO_ARRAY($1, ' ')) AS word ) AS w
-                CROSS JOIN
-                recipes AS r
-            GROUP BY r.id
-            HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.4
-            ORDER BY rank
-            OFFSET $2
-            LIMIT $3
-        ",
-        );
-        params = vec![s, &offset, &limit];
-    } else {
-        query = String::from(
-            "
-            SELECT
-                id,
-                r.name,
-                r.image,
-                r.is_favorite,
-                count(*) OVER() AS total_count
-            FROM recipes AS r
-            ORDER BY name
-            OFFSET $1
-            LIMIT $2
-        ",
-        );
-        params = vec![&offset, &limit];
-    };
+    let mut ctes = String::from("WITH dummy as (SELECT 1)");
+    let mut extra_fields = String::new();
+    let mut joins = String::new();
+    let mut sorting_field = String::from("name");
+
+    for f in filters {
+        match f {
+            Filter::Search(query) => {
+                params.push(query);
+                ctes.push_str(
+                    format!(
+                        "
+                    , search_filter as (
+                        SELECT
+                            r.id,
+                            AVG(w.word <<-> unaccent(r.name)) AS rank
+                        FROM
+                            ( SELECT UNNEST(STRING_TO_ARRAY(${}, ' ')) AS word ) AS w
+                            CROSS JOIN
+                            recipes AS r
+                        GROUP BY r.id
+                        HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.4
+                    )
+                ",
+                        params.len(),
+                    )
+                    .as_str(),
+                );
+                extra_fields.push_str(",sf.rank");
+                joins.push_str(" INNER JOIN search_filter as sf USING (id)");
+                sorting_field = String::from("sf.rank");
+            }
+            Filter::Categories(ids) => {
+                params.push(ids);
+                ctes.push_str(
+                    format!(
+                        "
+                    , categ_filter as (
+                        SELECT
+                            distinct(recipe_id) as id
+                        FROM
+                            recipes_categories
+                        WHERE
+                            category_id = any(${})
+                    )
+                ",
+                        params.len(),
+                    )
+                    .as_str(),
+                );
+                joins.push_str(" INNER JOIN categ_filter USING (id)");
+            }
+            Filter::Seasons(ids) => {
+                params.push(ids);
+                ctes.push_str(
+                    format!(
+                        "
+                    , season_filter as (
+                        SELECT
+                            distinct(recipe_id) as id
+                        FROM
+                            recipes_seasons
+                        WHERE
+                            season_id = any(${})
+                    )
+                ",
+                        params.len(),
+                    )
+                    .as_str(),
+                );
+                joins.push_str(" INNER JOIN season_filter USING (id)");
+            }
+            Filter::Ingredients(ids) => {
+                params.push(ids);
+                ctes.push_str(
+                    format!(
+                        "
+                    , ingr_filter as (
+                        SELECT
+                            distinct(recipe_id) as id
+                        FROM
+                            recipes_ingredients
+                        WHERE
+                            ingredient_id = any(${})
+                    )
+                ",
+                        params.len(),
+                    )
+                    .as_str(),
+                );
+                joins.push_str(" INNER JOIN ingr_filter USING (id)");
+            }
+            Filter::Tags(ids) => {
+                params.push(ids);
+                ctes.push_str(
+                    format!(
+                        "
+                    , tag_filter as (
+                        SELECT
+                            distinct(recipe_id) as id
+                        FROM
+                            recipes_tags
+                        WHERE
+                            tag_id = any(${})
+                    )
+                ",
+                        params.len(),
+                    )
+                    .as_str(),
+                );
+                joins.push_str(" INNER JOIN tag_filter USING (id)");
+            }
+            _ => (),
+        }
+    }
+
+    query = query
+        .replace("{CTEs}", ctes.as_str())
+        .replace("{EXTRA_FIELDS}", extra_fields.as_str())
+        .replace("{JOINS}", joins.as_str())
+        .replace("{SORTING_FIELD}", sorting_field.as_str());
+
+    trace!("{}", query);
 
     let rows = db_conn.query(&query, &params).await?;
     let total_count: i64 = rows.get(0).map(|r| r.get("total_count")).unwrap_or(0);
