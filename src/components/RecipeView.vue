@@ -81,7 +81,6 @@ export default {
     methods: {
         editRecipe() {
             this.$emit('edit')
-            console.log('hello there1')
         }
     },
     computed : {
