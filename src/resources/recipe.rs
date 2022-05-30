@@ -285,68 +285,61 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
 
     // Tags
     if !new_recipe.tag_ids.is_empty() {
-        let values_query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
-        let tags_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&new_id, &new_recipe.tag_ids];
+        let insert_tags_query = "
+
             INSERT INTO recipes_tags
             (tag_id, recipe_id)
-            VALUES {};
-        ",
-            values_query_params
-        );
-
-        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for tag_id in &new_recipe.tag_ids {
-            flat_values.extend_from_slice(&[tag_id, &new_id]);
-        }
-
-        transaction
-            .execute(tags_query.as_str(), &flat_values)
-            .await?;
+            SELECT tag_id, $1 FROM UNNEST($2::int[]) as tag_id;
+        ";
+        transaction.execute(insert_tags_query, &args).await?;
     }
 
     // Categories
     if !new_recipe.category_ids.is_empty() {
-        let values_query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
-        let categories_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&new_id, &new_recipe.category_ids];
+        let insert_categories_query = "
+
             INSERT INTO recipes_categories
             (category_id, recipe_id)
-            VALUES {};
-        ",
-            values_query_params
-        );
-
-        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for category_id in &new_recipe.category_ids {
-            flat_values.extend_from_slice(&[category_id, &new_id]);
-        }
-
-        transaction
-            .execute(categories_query.as_str(), &flat_values)
-            .await?;
+            SELECT category_id, $1 FROM UNNEST($2::int[]) as category_id;
+        ";
+        transaction.execute(insert_categories_query, &args).await?;
     }
-    //
+
+    // Seasons
+    if !new_recipe.season_ids.is_empty() {
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&new_id, &new_recipe.season_ids];
+        let insert_seasons_query = "
+
+            INSERT INTO recipes_seasons
+            (season_id, recipe_id)
+            SELECT season_id, $1 FROM UNNEST($2::int[]) as season_id;
+        ";
+        transaction.execute(insert_seasons_query, &args).await?;
+    }
+
     // Ingredients
     if !new_recipe.q_ingredients.is_empty() {
-        let values_query_params = gen_sql_query_params(new_recipe.q_ingredients.len(), 4);
-        let ingredients_query = format!(
-            "
+        let mut ingr_ids: Vec<_> = Vec::new();
+        let mut qtys: Vec<_> = Vec::new();
+        let mut unit_ids: Vec<_> = Vec::new();
+
+        new_recipe.q_ingredients.iter().for_each(|ref v| {
+            ingr_ids.push(&v.id);
+            qtys.push(&v.quantity);
+            unit_ids.push(&v.unit_id);
+        });
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&new_id, &ingr_ids, &qtys, &unit_ids];
+        let insert_ingredients_query = "
             INSERT INTO recipes_ingredients
             (recipe_id, ingredient_id, quantity, unit_id)
-            VALUES {};
-        ",
-            values_query_params
-        );
-
-        let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for ingr in &new_recipe.q_ingredients {
-            flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
-        }
-
-        transaction
-            .execute(ingredients_query.as_str(), &flat_values)
-            .await?;
+            SELECT $1, ingredient_id, quantity, unit_id
+            FROM
+                UNNEST($2::int[], $3::real[], $4::int[])
+                AS x(ingredient_id, quantity, unit_id)
+        ";
+        transaction.execute(insert_ingredients_query, &args).await?;
     }
 
     transaction
