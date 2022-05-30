@@ -37,7 +37,7 @@ pub struct FromDBLight {
 pub struct New {
     pub(crate) name: String,
     pub(crate) notes: String,
-    pub(crate) q_ingredient_ids: Vec<QIngredient::Ref>,
+    pub(crate) q_ingredients: Vec<QIngredient::Ref>,
     pub(crate) category_ids: Vec<i32>,
     pub(crate) tag_ids: Vec<i32>,
     pub(crate) prep_time_min: i16,
@@ -328,8 +328,8 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
     }
     //
     // Ingredients
-    if !new_recipe.q_ingredient_ids.is_empty() {
-        let values_query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
+    if !new_recipe.q_ingredients.is_empty() {
+        let values_query_params = gen_sql_query_params(new_recipe.q_ingredients.len(), 4);
         let ingredients_query = format!(
             "
             INSERT INTO recipes_ingredients
@@ -340,7 +340,7 @@ pub async fn add_one(db_conn: &mut Client, new_recipe: &New) -> Result<i32, Erro
         );
 
         let mut flat_values: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for ingr in &new_recipe.q_ingredient_ids {
+        for ingr in &new_recipe.q_ingredients {
             flat_values.extend_from_slice(&[&new_id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
         }
 
@@ -644,7 +644,7 @@ pub async fn modify_one(
     }
 
     // Ingredients
-    if new_recipe.q_ingredient_ids.is_empty() {
+    if new_recipe.q_ingredients.is_empty() {
         let remove_ingredients_query = "
             DELETE FROM recipes_ingredients
             WHERE recipe_id = $1;
@@ -653,7 +653,7 @@ pub async fn modify_one(
             .execute(remove_ingredients_query, &[&id])
             .await?;
     } else {
-        let query_params = gen_sql_query_params(new_recipe.q_ingredient_ids.len(), 4);
+        let query_params = gen_sql_query_params(new_recipe.q_ingredients.len(), 4);
         let insert_ingredients_query = format!(
             "
             INSERT INTO recipes_ingredients
@@ -665,14 +665,14 @@ pub async fn modify_one(
         );
 
         let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for ingr in &new_recipe.q_ingredient_ids {
+        for ingr in &new_recipe.q_ingredients {
             query_args.extend_from_slice(&[&id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
         }
         transaction
             .execute(insert_ingredients_query.as_str(), &query_args)
             .await?;
 
-        let query_params = gen_sql_query_params_from(new_recipe.q_ingredient_ids.len(), 1, 2);
+        let query_params = gen_sql_query_params_from(new_recipe.q_ingredients.len(), 1, 2);
         let remove_ingredients_query = format!(
             "
             DELETE FROM recipes_ingredients
@@ -683,7 +683,7 @@ pub async fn modify_one(
             query_params
         );
         let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
-        for ingr in &new_recipe.q_ingredient_ids {
+        for ingr in &new_recipe.q_ingredients {
             query_args.push(&ingr.id);
         }
         transaction
