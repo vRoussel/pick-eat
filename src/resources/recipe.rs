@@ -503,8 +503,6 @@ pub async fn modify_one(
         .await
         .map(|opt| opt.map(|_| ()))?; // OK(Some(row)) => Ok(Some(()))
 
-    //TODO this is ugly and should be more simple
-
     // Tags
     if new_recipe.tag_ids.is_empty() {
         let remove_tags_query = "
@@ -513,42 +511,23 @@ pub async fn modify_one(
         ";
         transaction.execute(remove_tags_query, &[&id]).await?;
     } else {
-        let query_params = gen_sql_query_params(new_recipe.tag_ids.len(), 2);
-        let insert_tags_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &new_recipe.tag_ids];
+        let insert_tags_query = "
+
             INSERT INTO recipes_tags
             (tag_id, recipe_id)
-            VALUES {}
+            SELECT tag_id, $1 FROM UNNEST($2::int[]) as tag_id
             ON CONFLICT DO NOTHING;
-        ",
-            query_params
-        );
+        ";
+        transaction.execute(insert_tags_query, &args).await?;
 
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for tag_id in &new_recipe.tag_ids {
-            query_args.extend_from_slice(&[tag_id, &id]);
-        }
-        transaction
-            .execute(insert_tags_query.as_str(), &query_args)
-            .await?;
-
-        let query_params = gen_sql_query_params_from(new_recipe.tag_ids.len(), 1, 2);
-        let remove_tags_query = format!(
-            "
+        let remove_tags_query = "
             DELETE FROM recipes_tags
             WHERE
                 recipe_id = $1
-                AND tag_id NOT IN ({});
-        ",
-            query_params
-        );
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
-        for tag_id in &new_recipe.tag_ids {
-            query_args.push(tag_id);
-        }
-        transaction
-            .execute(remove_tags_query.as_str(), &query_args)
-            .await?;
+                AND tag_id <> ALL($2);
+        ";
+        transaction.execute(remove_tags_query, &args).await?;
     }
 
     // Seasons
@@ -559,42 +538,23 @@ pub async fn modify_one(
         ";
         transaction.execute(remove_seasons_query, &[&id]).await?;
     } else {
-        let query_params = gen_sql_query_params(new_recipe.season_ids.len(), 2);
-        let insert_seasons_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &new_recipe.season_ids];
+        let insert_seasons_query = "
+
             INSERT INTO recipes_seasons
             (season_id, recipe_id)
-            VALUES {}
+            SELECT season_id, $1 FROM UNNEST($2::int[]) as season_id
             ON CONFLICT DO NOTHING;
-        ",
-            query_params
-        );
+        ";
+        transaction.execute(insert_seasons_query, &args).await?;
 
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for season_id in &new_recipe.season_ids {
-            query_args.extend_from_slice(&[season_id, &id]);
-        }
-        transaction
-            .execute(insert_seasons_query.as_str(), &query_args)
-            .await?;
-
-        let query_params = gen_sql_query_params_from(new_recipe.season_ids.len(), 1, 2);
-        let remove_seasons_query = format!(
-            "
+        let remove_seasons_query = "
             DELETE FROM recipes_seasons
             WHERE
                 recipe_id = $1
-                AND season_id NOT IN ({});
-        ",
-            query_params
-        );
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
-        for season_id in &new_recipe.season_ids {
-            query_args.push(season_id);
-        }
-        transaction
-            .execute(remove_seasons_query.as_str(), &query_args)
-            .await?;
+                AND season_id <> ALL($2);
+        ";
+        transaction.execute(remove_seasons_query, &args).await?;
     }
 
     // Categories
@@ -605,42 +565,23 @@ pub async fn modify_one(
         ";
         transaction.execute(remove_categories_query, &[&id]).await?;
     } else {
-        let query_params = gen_sql_query_params(new_recipe.category_ids.len(), 2);
-        let insert_categories_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &new_recipe.category_ids];
+        let insert_categories_query = "
+
             INSERT INTO recipes_categories
             (category_id, recipe_id)
-            VALUES {}
+            SELECT category_id, $1 FROM UNNEST($2::int[]) as category_id
             ON CONFLICT DO NOTHING;
-        ",
-            query_params
-        );
+        ";
+        transaction.execute(insert_categories_query, &args).await?;
 
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for category_id in &new_recipe.category_ids {
-            query_args.extend_from_slice(&[category_id, &id]);
-        }
-        transaction
-            .execute(insert_categories_query.as_str(), &query_args)
-            .await?;
-
-        let query_params = gen_sql_query_params_from(new_recipe.category_ids.len(), 1, 2);
-        let remove_categories_query = format!(
-            "
+        let remove_categories_query = "
             DELETE FROM recipes_categories
             WHERE
                 recipe_id = $1
-                AND category_id NOT IN ({});
-        ",
-            query_params
-        );
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
-        for category_id in &new_recipe.category_ids {
-            query_args.push(category_id);
-        }
-        transaction
-            .execute(remove_categories_query.as_str(), &query_args)
-            .await?;
+                AND category_id <> ALL($2);
+        ";
+        transaction.execute(remove_categories_query, &args).await?;
     }
 
     // Ingredients
@@ -653,42 +594,35 @@ pub async fn modify_one(
             .execute(remove_ingredients_query, &[&id])
             .await?;
     } else {
-        let query_params = gen_sql_query_params(new_recipe.q_ingredients.len(), 4);
-        let insert_ingredients_query = format!(
-            "
+        let mut ingr_ids: Vec<_> = Vec::new();
+        let mut qtys: Vec<_> = Vec::new();
+        let mut unit_ids: Vec<_> = Vec::new();
+
+        new_recipe.q_ingredients.iter().for_each(|ref v| {
+            ingr_ids.push(&v.id);
+            qtys.push(&v.quantity);
+            unit_ids.push(&v.unit_id);
+        });
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &ingr_ids, &qtys, &unit_ids];
+        let insert_ingredients_query = "
             INSERT INTO recipes_ingredients
             (recipe_id, ingredient_id, quantity, unit_id)
-            VALUES {}
+            SELECT $1, ingredient_id, quantity, unit_id
+            FROM
+                UNNEST($2::int[], $3::real[], $4::int[])
+                AS x(ingredient_id, quantity, unit_id)
             ON CONFLICT DO NOTHING;
-        ",
-            query_params
-        );
+        ";
+        transaction.execute(insert_ingredients_query, &args).await?;
 
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = Vec::new();
-        for ingr in &new_recipe.q_ingredients {
-            query_args.extend_from_slice(&[&id, &ingr.id, &ingr.quantity, &ingr.unit_id]);
-        }
-        transaction
-            .execute(insert_ingredients_query.as_str(), &query_args)
-            .await?;
-
-        let query_params = gen_sql_query_params_from(new_recipe.q_ingredients.len(), 1, 2);
-        let remove_ingredients_query = format!(
-            "
+        let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &ingr_ids];
+        let remove_ingredients_query = "
             DELETE FROM recipes_ingredients
             WHERE
                 recipe_id = $1
-                AND ingredient_id NOT IN ({});
-        ",
-            query_params
-        );
-        let mut query_args: Vec<&(dyn ToSql + Sync)> = vec![&id];
-        for ingr in &new_recipe.q_ingredients {
-            query_args.push(&ingr.id);
-        }
-        transaction
-            .execute(remove_ingredients_query.as_str(), &query_args)
-            .await?;
+                AND ingredient_id <> ALL($2);
+        ";
+        transaction.execute(remove_ingredients_query, &args).await?;
     }
 
     transaction
