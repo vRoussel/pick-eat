@@ -118,7 +118,7 @@ export default {
             const r = this.new_recipe;
             let recipe = {
                 "name": r.name,
-                "q_ingredient_ids": Array.from(r.ingredients.values()),
+                "q_ingredients": Array.from(r.ingredients.values()),
                 "category_ids": Array.from(r.categories),
                 "tag_ids": Array.from(r.tags),
                 "season_ids": Array.from(r.seasons),
@@ -130,7 +130,7 @@ export default {
                 "n_shares": r.shares,
                 "is_favorite": false
             }
-            for (var ingr of recipe.q_ingredient_ids) {
+            for (var ingr of recipe.q_ingredients) {
                 if (ingr.quantity == null)
                     ingr.unit_id = null;
             }
