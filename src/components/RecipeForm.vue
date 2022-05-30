@@ -68,7 +68,7 @@
             </div>
 
             <button class="button is-primary is-large is-fullwidth">{{ update_mode ? 'Modifier' : 'Ajouter' }}</button>
-            <button class="button is-light is-large is-fullwidth" v-if="update_mode">Annuler</button>
+            <button class="button is-light is-large is-fullwidth" v-if="update_mode" @click="cancel">Annuler</button>
         </form>
 </template>
 
@@ -165,6 +165,9 @@ export default {
                     })
 
             }
+        },
+        cancel() {
+            this.$emit('done')
         },
         openNewIngredientForm(input) {
             this.$refs.modal.openNewIngredientForm(input)
