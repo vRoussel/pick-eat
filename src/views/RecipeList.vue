@@ -4,7 +4,7 @@
             <div class="side column is-one-fifth-fullhd is-3-desktop is-4-tablet">
                 <recipe-filters :initial_filters="this.url_filters" @search="runSearch"></recipe-filters>
             </div>
-            <div class="column columns is-multiline">
+            <div class="column columns is-multiline is-flex is-align-content-flex-start">
                 <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
                     <recipe-list-item :recipe=recipe></recipe-list-item>
                 </div>
