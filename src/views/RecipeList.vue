@@ -84,6 +84,9 @@ export default {
         },
         max_page() {
             return Math.ceil(this.total_count / this.per_page) || 1
+        },
+        url_filters_json() {
+            return JSON.stringify(this.url_filters)
         }
     },
     watch: {
@@ -91,10 +94,10 @@ export default {
             //this.input_search = this.url_search
             this.loadRecipes()
         },
-        url_filters : function() {
+        url_filters_json : function() {
             this.loadRecipes()
         },
-    }
+    },
 }
 </script>
 

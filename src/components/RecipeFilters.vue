@@ -127,6 +127,11 @@ export default {
             return screen.width < 768;
         }
     },
+    computed: {
+        initial_filters_json() {
+            return JSON.stringify(this.initial_filters);
+        }
+    },
     watch: {
         'filters.search_query': function() {
             this.scheduleSearch(this.filters, 400)
@@ -143,11 +148,10 @@ export default {
         'filters.ingredients': function() {
             this.scheduleSearch(this.filters, 0)
         },
-        initial_filters: {
-            handler(val) {
-                this.filters = structuredClone(val)
-            },
-            deep: true
+        initial_filters_json: {
+            handler() {
+                this.filters = structuredClone(this.initial_filters)
+            }
         }
     },
     emits: ['search', 'toggle']
