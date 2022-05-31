@@ -4,7 +4,10 @@
             <div class="side column is-one-fifth-fullhd is-3-desktop is-4-tablet">
                 <recipe-filters :initial_filters="this.url_filters" @search="runSearch"></recipe-filters>
             </div>
-            <div class="column columns is-multiline is-flex is-align-content-flex-start">
+            <div class="column columns is-multiline is-align-content-flex-start">
+                <div class="column is-full is-mobile">
+                    <p class="is-size-4">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
+                </div>
                 <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
                     <recipe-list-item :recipe=recipe></recipe-list-item>
                 </div>
@@ -41,7 +44,7 @@ export default {
         return {
             recipes: [],
             per_page: 20,
-            max_page: 1,
+            total_count: 0,
         }
     },
     methods: {
@@ -49,7 +52,7 @@ export default {
             this.store.getRecipes(this.from,this.to,this.url_filters).then(result => {
                 let [recipes, total_count] = result
                 this.recipes = recipes
-                this.max_page = Math.ceil(total_count / this.per_page) || 1
+                this.total_count = total_count
             });
         },
         runSearch(filters) {
@@ -78,6 +81,9 @@ export default {
         },
         to() {
             return this.page * this.per_page
+        },
+        max_page() {
+            return Math.ceil(this.total_count / this.per_page) || 1
         }
     },
     watch: {
