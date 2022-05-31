@@ -60,7 +60,7 @@ export default {
     methods: {
         go_page(page) {
             if (page === null) return;
-            this.$router.push({ path: this.$route.path, query: { ...this.$route.query, [this.url_param]: page } });
+            this.$router.push({ query: { ...this.$route.query, "page": page}, params: {noscroll: false} });
         },
     },
 }
