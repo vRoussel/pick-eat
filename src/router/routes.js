@@ -52,7 +52,7 @@ const router = createRouter({
     routes,
     linkActiveClass: 'is-active',
     scrollBehavior: (to, from, savedPosition) => {
-        if (to.params.noscroll == true) {
+        if (to.params.noscroll == "true") {
             return {}
         } if (savedPosition) {
             return new Promise((resolve) => {
@@ -61,7 +61,11 @@ const router = createRouter({
                     }, 200)
             })
         } else {
-          return { left: 0, top: 0 };
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({left: 0,top: 0})
+                    }, 200)
+            })
         }
     }
 });
