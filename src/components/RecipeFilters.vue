@@ -2,7 +2,7 @@
 <div>
     <div class="field is-grouped is-grouped-centered">
             <div class="control has-icons-left has-icons-right is-expanded">
-                    <input @input="e => filters.search_query = e.target.value" class="input is-rounded" type="text" placeholder="Trouver une recette" :value="filters.search_query">
+                    <input @input="e => search_query = e.target.value" class="input is-rounded" type="text" placeholder="Trouver une recette" :value="search_query">
                     <span class="icon is-right" v-if="filters.search_query">
                        <i class="fas fa-times is-clickable" @click="clearSearch"></i>
                     </span>
@@ -21,7 +21,7 @@
     <div v-show="this.expanded">
         <div class="field">
             <label class="label">Ingrédients</label>
-                <Multiselect mode="tags" :options="this.store.state.ingredients" label="name" searchable :strict="false" trackBy="name" valueProp="id" ref="multiselect" :closeOnSelect="false" v-model="this.filters.ingredients"/>
+                <Multiselect mode="tags" :options="this.store.state.ingredients" label="name" searchable :strict="false" trackBy="name" valueProp="id" ref="multiselect" :closeOnSelect="false" v-model="this.ingredients"/>
         </div>
         <!--
         <div class="field">
@@ -33,7 +33,7 @@
             <legend class="label">Tags</legend>
             <div class="control" v-for="t in this.store.state.tags" :key="t.id">
                 <label class="checkbox">
-                    <input type="checkbox" v-model="this.filters.tags" :value="t.id">
+                    <input type="checkbox" v-model="this.tags" :value="t.id">
                     {{ t.name }}
                 </label>
             </div>
@@ -42,7 +42,7 @@
             <legend class="label">Saisons</legend>
             <div class="control" v-for="s in this.store.state.seasons" :key="s.id">
                 <label class="checkbox">
-                    <input type="checkbox" v-model="this.filters.seasons" :value="s.id">
+                    <input type="checkbox" v-model="this.seasons" :value="s.id">
                     {{ s.name }}
                 </label>
             </div>
@@ -51,7 +51,7 @@
             <legend class="label">Catégories</legend>
             <div class="control" v-for="c in this.store.state.categories" :key="c.id">
                 <label class="checkbox">
-                    <input type="checkbox" v-model="this.filters.categories" :id ="c.id" :value="c.id">
+                    <input type="checkbox" v-model="this.categories" :id ="c.id" :value="c.id">
                     {{ c.name }}
                 </label>
             </div>
@@ -92,69 +92,94 @@ export default {
         return {
             timer: null,
             expanded: this.on_mobile() ? false : true,
-            filters: structuredClone(this.initial_filters)
         }
     },
     props: {
-        initial_filters : {
+        filters : {
             type: Object,
-            default: new Filters()
         }
     },
     methods: {
-        scheduleSearch(filters, delay) {
+        updateFilters(filters, delay) {
             if (this.timer) {
                 clearTimeout(this.timer)
                 this.timer = null
             }
             this.timer = setTimeout(() => {
-                this.$emit('search', filters)
+                this.$emit('update:filters', filters)
             }, delay)
         },
         toggle() {
             this.expanded = !this.expanded
         },
         clearSearch() {
-            this.filters.search_query = null
+            this.search_query = null
         },
         clearFilters() {
-            this.filters.ingredients = []
-            this.filters.tags = []
-            this.filters.categories = []
-            this.filters.seasons = []
+            this.ingredients = []
+            this.tags = []
+            this.categories = []
+            this.seasons = []
         },
         on_mobile() {
             return screen.width < 768;
         }
     },
     computed: {
-        initial_filters_json() {
-            return JSON.stringify(this.initial_filters);
-        }
-    },
-    watch: {
-        'filters.search_query': function() {
-            this.scheduleSearch(this.filters, 400)
-        },
-        'filters.tags': function() {
-            this.scheduleSearch(this.filters, 0)
-        },
-        'filters.categories': function() {
-            this.scheduleSearch(this.filters, 0)
-        },
-        'filters.seasons': function() {
-            this.scheduleSearch(this.filters, 0)
-        },
-        'filters.ingredients': function() {
-            this.scheduleSearch(this.filters, 0)
-        },
-        initial_filters_json: {
-            handler() {
-                this.filters = structuredClone(this.initial_filters)
+        search_query: {
+            get: function() {
+                return this.filters.search_query;
+            },
+            set: function(val) {
+                let new_filters = {...this.filters, 'search_query': val};
+                if (val == "" || val == null)
+                    this.updateFilters(new_filters, 0);
+                else
+                    this.updateFilters(new_filters, 400);
             }
-        }
+        },
+        tags: {
+            get: function() {
+                console.log('get_tags')
+                return this.filters.tags;
+            },
+            set: function(val) {
+                console.log('set_tags')
+                let new_filters = {...this.filters, 'tags': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
+        categories: {
+            get: function() {
+                console.log('get_categs')
+                return this.filters.categories;
+            },
+            set: function(val) {
+                console.log('set_categs')
+                let new_filters = {...this.filters, 'categories': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
+        seasons: {
+            get: function() {
+                return this.filters.seasons;
+            },
+            set: function(val) {
+                let new_filters = {...this.filters, 'seasons': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
+        ingredients: {
+            get: function() {
+                return this.filters.ingredients;
+            },
+            set: function(val) {
+                let new_filters = {...this.filters, 'ingredients': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
     },
-    emits: ['search', 'toggle']
+    emits: ['toggle', 'update:filters']
 }
 </script>
 

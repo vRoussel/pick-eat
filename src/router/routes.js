@@ -2,7 +2,6 @@ import { createRouter, createWebHistory} from 'vue-router';
 import NewRecipe from '@/views/NewRecipe.vue';
 import RecipeList from '@/views/RecipeList.vue';
 import Recipe from '@/views/Recipe.vue';
-import {Filters} from '@/components/RecipeFilters.vue';
 
 const routes = [
     {
@@ -17,15 +16,6 @@ const routes = [
         name: 'recipe-list',
         path: '/recipes',
         component: RecipeList,
-        props: route => ({
-            url_filters: new Filters(
-                route.query.search,
-                route.query.i ? route.query.i.split(',') : [],
-                route.query.t ? route.query.t.split(',') : [],
-                route.query.c ? route.query.c.split(',') : [],
-                route.query.s ? route.query.s.split(',') : []
-            )
-        }),
         meta: {
             title: 'Liste des recettes - PickEat'
         }

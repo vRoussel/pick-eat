@@ -2,7 +2,7 @@
     <div class="container my-4 px-4">
         <div class="columns">
             <div class="side column is-one-fifth-fullhd is-3-desktop is-4-tablet">
-                <recipe-filters :initial_filters="this.url_filters" @search="runSearch"></recipe-filters>
+                <recipe-filters v-model:filters="filters"></recipe-filters>
             </div>
             <div class="column columns is-multiline is-align-content-flex-start">
                 <div class="column is-full is-mobile">
@@ -26,6 +26,7 @@
 import Pagination from '@/components/Pagination.vue'
 import RecipeFilters from '@/components/RecipeFilters.vue'
 import RecipeListItem from '@/components/RecipeListItem.vue'
+import {Filters} from '@/components/RecipeFilters.vue'
 
 export default {
     name: 'recipe-list',
@@ -44,7 +45,7 @@ export default {
     },
     methods: {
         loadRecipes() {
-            this.store.getRecipes(this.from,this.to,this.url_filters).then(result => {
+            this.store.getRecipes(this.from,this.to,this.filters).then(result => {
                 let [recipes, total_count] = result
                 this.recipes = recipes
                 this.total_count = total_count
@@ -52,22 +53,6 @@ export default {
         },
         on_mobile() {
             return screen.width < 768;
-        },
-        runSearch(filters) {
-            let query = {}
-            let f = filters
-            if (f.search_query)
-                query.search = f.search_query
-            if (f.ingredients.length > 0)
-                query.i = f.ingredients.join(',')
-            if (f.tags.length > 0)
-                query.t = f.tags.join(',')
-            if (f.categories.length > 0)
-                query.c = f.categories.join(',')
-            if (f.seasons.length > 0)
-                query.s = f.seasons.join(',')
-
-            this.$router.replace({ name: 'recipe-list', query: query, params: {noscroll: true} });
         }
     },
     created() {
@@ -83,9 +68,6 @@ export default {
         max_page() {
             return Math.ceil(this.total_count / this.per_page) || 1
         },
-        url_filters_json() {
-            return JSON.stringify(this.url_filters)
-        },
         page: {
             get: function () {
                 return parseInt(this.$route.query.page) || 1;
@@ -94,16 +76,45 @@ export default {
                 this.$router.push({ query: { ...this.$route.query, page: value } });
             },
         },
+        filters: {
+            get: function () {
+                console.log("get_filters")
+                let q = this.$route.query;
+                return new Filters(
+                     q.search,
+                     q.i ? q.i.split(',') : [],
+                     q.t ? q.t.split(',') : [],
+                     q.c ? q.c.split(',') : [],
+                     q.s ? q.s.split(',') : []
+                     );
+            },
+            set: function (f) {
+                console.log("set_filters")
+                let q = {}
+                if (f.search_query)
+                    q.search = f.search_query
+                if (f.ingredients.length > 0)
+                    q.i = f.ingredients.join(',')
+                if (f.tags.length > 0)
+                    q.t = f.tags.join(',')
+                if (f.categories.length > 0)
+                    q.c = f.categories.join(',')
+                if (f.seasons.length > 0)
+                    q.s = f.seasons.join(',')
+
+                this.$router.replace({ name: 'recipe-list', query: q, params: {noscroll: true} });
+            },
+        }
     },
     watch: {
         page: function() {
             //this.input_search = this.url_search
             this.loadRecipes()
         },
-        url_filters_json : function() {
+        filters : function() {
             this.loadRecipes()
         },
-    },
+    }
 }
 </script>
 
