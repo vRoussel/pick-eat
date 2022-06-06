@@ -33,7 +33,7 @@ export default {
         loadRecipe() {
             this.store.getOneRecipe(this.id).then(result => {
                 this.recipe = result
-                document.title = this.recipe.name + ' - PickEat'
+                this.$route.meta.title = this.recipe.name + ' - PickEat'
             });
         },
         editRecipe() {
