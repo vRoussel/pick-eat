@@ -20,13 +20,15 @@
   </div>
   </nav>
   <router-view v-slot="{ Component, route }">
+  <transition name="fade" mode="out-in">
     <keep-alive>
-          <component
-            :is="Component"
-            :key="route.meta.usePathKey ? route.path : undefined"
-          />
+        <component
+          :is="Component"
+          :key="route.path"
+        />
     </keep-alive>
-  </router-view>
+  </transition>
+</router-view>
 
 </template>
 
@@ -72,4 +74,14 @@ export default {
 @font-face {
   font-family: "Rounded_Elegance";
   src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");}
+
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: opacity 0.2s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+      opacity: 0;
+    }
 </style>
