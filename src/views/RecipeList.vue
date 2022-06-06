@@ -5,8 +5,8 @@
                 <recipe-filters v-model:filters="filters"></recipe-filters>
             </div>
             <div class="column columns is-multiline is-align-content-flex-start">
-                <div class="column is-full is-mobile">
-                    <p class="is-size-4">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
+                <div class="column is-full">
+                    <p class="is-size-4 is-size-5-mobile">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
                 </div>
                 <div class="column is-full" v-if="this.total_count > 0">
                     <pagination :hide_previous_next="on_mobile()" :current_page="page" :max_page="max_page" url_param="page" ></pagination>
