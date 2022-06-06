@@ -18,7 +18,6 @@ const routes = [
         path: '/recipes',
         component: RecipeList,
         props: route => ({
-            page: parseInt(route.query.page) || 1,
             url_filters: new Filters(
                 route.query.search,
                 route.query.i ? route.query.i.split(',') : [],

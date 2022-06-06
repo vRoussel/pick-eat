@@ -8,13 +8,18 @@
                 <div class="column is-full is-mobile">
                     <p class="is-size-4">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
                 </div>
+                <div class="column is-full" v-if="this.total_count > 0">
+                    <pagination :hide_previous_next="on_mobile()" :current_page="page" :max_page="max_page" url_param="page" ></pagination>
+                </div>
                 <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
                     <recipe-list-item :recipe=recipe></recipe-list-item>
+                </div>
+                <div class="column is-full" v-if="this.total_count > 0">
+                    <pagination :hide_previous_next="on_mobile()" :current_page="page" :max_page="max_page" url_param="page"></pagination>
                 </div>
             </div>
         </div>
     </div>
-    <pagination :current_page="page" :max_page="max_page" url_param="page"></pagination>
 </template>
 
 <script>
@@ -30,16 +35,6 @@ export default {
         RecipeFilters,
         RecipeListItem
     },
-    props: {
-        page: {
-            type: Number,
-            default: 1
-        },
-        url_filters: {
-            type: Object,
-            default: null
-        }
-    },
     data: function() {
         return {
             recipes: [],
@@ -54,6 +49,9 @@ export default {
                 this.recipes = recipes
                 this.total_count = total_count
             });
+        },
+        on_mobile() {
+            return screen.width < 768;
         },
         runSearch(filters) {
             let query = {}
@@ -87,7 +85,15 @@ export default {
         },
         url_filters_json() {
             return JSON.stringify(this.url_filters)
-        }
+        },
+        page: {
+            get: function () {
+                return parseInt(this.$route.query.page) || 1;
+            },
+            set: function (value) {
+                this.$router.push({ query: { ...this.$route.query, page: value } });
+            },
+        },
     },
     watch: {
         page: function() {
