@@ -1,7 +1,7 @@
 <template>
 <nav class="pagination" role="navigation" aria-label="pagination">
-  <a class="pagination-previous" :disabled="previous_page ? null : 1" @click="go_page(previous_page)">Précédent</a>
-  <a class="pagination-next" :disabled="next_page ? null : 1" @click="go_page(next_page)">Suivant</a>
+  <a class="pagination-previous" v-if="!hide_previous_next" :disabled="previous_page ? null : 1" @click="go_page(previous_page)">Précédent</a>
+  <a class="pagination-next" v-if="!hide_previous_next" :disabled="next_page ? null : 1" @click="go_page(next_page)">Suivant</a>
   <ul class="pagination-list">
     <li>
       <a class="pagination-link" :disabled="current_page < 3 ? 1 : null" @click="go_page(1)">1</a>
@@ -40,6 +40,9 @@ export default {
         },
         url_param: {
             type: String
+        },
+        hide_previous_next: {
+            type: Boolean
         }
 
     },
