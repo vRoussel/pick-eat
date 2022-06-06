@@ -2,7 +2,7 @@
    <div class="box" v-if="recipe">
         <div class="has-text-right">
             <span class="icon">
-              <i class="edit_icon fa fa-pencil-alt is-size-6-mobile is-size-5-tablet is-clickable" @click="editRecipe()"></i>
+              <i class="primary_icon fa fa-pencil-alt is-size-6-mobile is-size-5-tablet is-clickable" @click="editRecipe()"></i>
             </span>
         </div>
         <div class="columns is-mobile has-text-centered my-0">
@@ -15,9 +15,9 @@
                 <p ref="recipe_name" v-tooltip="overflown ? recipe.name : null" class="recipe-name is-size-5-mobile is-size-2-tablet">{{ recipe.name }}</p>
                 <season-icons class="is-size-4-mobile is-size-3-tablet" :seasons="this.recipe.seasons"></season-icons>
                 <p class="is-size-6-mobile is-size-5-tablet">
-                <span class="icon"><i class="time_icon fas fa-clock"></i></span> {{ recipe.prep_time_min }} min
+                <span class="icon"><i class="primary_icon fas fa-clock"></i></span> {{ recipe.prep_time_min }} min
                 <br/>
-                <span class="icon"><i class="time_icon fas fa-fire"></i></span> {{ recipe.cook_time_min }} min
+                <span class="icon"><i class="primary_icon fas fa-fire"></i></span> {{ recipe.cook_time_min }} min
                 </p>
             </div>
         </div>
@@ -27,10 +27,13 @@
             </span>
         </div>
         <div class="columns is-centered mt-0">
-            <div class="column is-4-tablet">
+            <div class="column is-5-tablet is-4-desktop">
                 <table class="table is-fullwidth">
                     <thead>
-                        <tr class="has-text-centered is-size-3-tablet is-size-5-mobile"><th colspan="2">Ingrédients</th></tr>
+                        <tr class="has-text-centered is-size-4-tablet is-size-5-mobile">
+                            <th v-if="recipe.n_shares > 0" colspan="2" rowspan="2">Ingrédients ({{ recipe.n_shares }} <span class="icon"><i class="fas fa-cookie-bite"></i></span>)</th>
+                            <th v-else colspan="2" rowspan="2">Ingrédients</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr v-for="ingr in recipe.q_ingredients" :key="ingr.id">
@@ -43,7 +46,7 @@
             <div class="column">
                 <table class="table">
                     <thead>
-                        <tr class="has-text-centered is-size-3-tablet is-size-5-mobile"><th colspan="2">Étapes</th></tr>
+                        <tr class="has-text-centered is-size-4-tablet is-size-5-mobile"><th colspan="2">Étapes</th></tr>
                     </thead>
                     <tbody>
                         <tr v-for="(step,index) in recipe.instructions" :key="index">
@@ -110,7 +113,7 @@ export default {
         font-weight: bold;
     }
 
-    th, .edit_icon, .time_icon, .instruction_index {
+    th, .primary_icon, .instruction_index {
         color: $primary !important;
     }
 
