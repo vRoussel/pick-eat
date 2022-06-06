@@ -103,10 +103,13 @@ const addRecipe = async function(recipe) {
     };
     console.debug(options.body);
     let ret = await fetch(`${API_ROOT}/recipes`, options)
-    if (ret.ok)
-        return ret
-    else
+    console.log(ret)
+    if (!ret.ok)
         throw ret
+
+    let location = ret.headers.get('location')
+    let id = parseInt(location.substring(1))
+    return {id: id}
 }
 
 const addTag = async function(tag) {

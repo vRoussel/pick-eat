@@ -1,6 +1,6 @@
 <template>
     <div class="container is-max-desktop my-4 px-4">
-        <recipe-form></recipe-form>
+        <recipe-form @done='afterInsert'></recipe-form>
     </div>
 </template>
 
@@ -12,5 +12,11 @@ export default {
     components: {
       RecipeForm,
     },
+    methods: {
+        afterInsert(recipe) {
+            let id = recipe.id
+            this.$router.push({ name: 'recipe', params: { id } })
+        }
+    }
 }
 </script>

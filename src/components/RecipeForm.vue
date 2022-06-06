@@ -137,14 +137,15 @@ export default {
 
             if (this.insert_mode) {
                 this.store.addRecipe(recipe)
-                    .then(() => {
+                    .then((recipe) => {
                         Swal.fire({
                           title: 'Recette ajoutée',
                           icon: 'success'
                         })
-                        this.$emit('done')
+                        this.$emit('done', recipe)
                     }) 
                     .catch((e) => {
+                        console.error(e)
                         Swal.fire({
                           title: 'Erreur',
                           text: e.statusText,
@@ -157,6 +158,7 @@ export default {
                         this.$emit('done')
                     }) 
                     .catch((e) => {
+                        console.error(e)
                         Swal.fire({
                           title: 'Erreur',
                           text: e.statusText,
