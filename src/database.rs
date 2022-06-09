@@ -14,9 +14,6 @@ struct DBconf {
     pub host: String,
     pub port: u32,
     pub password: Option<String>,
-    pub idle_timeout: Option<Duration>,
-    pub min_idle_conns: Option<u32>,
-    pub max_pool_size: u32,
 }
 
 pub async fn get_pool() -> Result<Pool, Box<dyn std::error::Error>> {
@@ -39,9 +36,6 @@ pub async fn get_pool() -> Result<Pool, Box<dyn std::error::Error>> {
     let manager = PostgresConnectionManager::new_from_stringlike(conn_str, NoTls).unwrap();
 
     bb8::Builder::new()
-        .max_size(db_conf.max_pool_size)
-        .min_idle(db_conf.min_idle_conns)
-        .idle_timeout(db_conf.idle_timeout)
         .build(manager)
         .await
         .map_err(|e| e.into())
