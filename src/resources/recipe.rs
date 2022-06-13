@@ -190,6 +190,13 @@ pub async fn get_many(
                             season_id = any(${})
                     )
                 ",
+                        //, season_filter as (
+                        //    SELECT
+                        //        recipe_id as id, array_agg(season_id) as sid
+                        //    FROM
+                        //        recipes_seasons
+                        //    GROUP BY id
+                        //    HAVING array_agg(season_id) @> ${}
                         params.len(),
                     )
                     .as_str(),
