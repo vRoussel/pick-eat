@@ -1,8 +1,18 @@
 tags
 todo
 
-#Added by cargo
-#
-#already existing elements are commented out
+#backend
 backend/target
 backend/**/*.rs.bk
+
+#frontend
+frontend/.DS_Store
+frontend/node_modules
+frontend//dist
+frontend/.env.local
+frontend/.env.*.local
+## Log files
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*

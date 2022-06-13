@@ -1,0 +1,47 @@
+export const PLACEHOLDER_IMG = require('@/assets/photo.png')
+
+function str_without_accents(str) {
+    return str.normalize('NFD').replace(/\p{Diacritic}/gu, "")
+}
+
+export function obj_with_searchable_name(obj, src_field_name) {
+    return {
+        ...obj,
+        searchable_name: obj[src_field_name] + '#' + str_without_accents(obj[src_field_name])
+    }
+}
+
+export function insert_sorted(array, el, cmp) {
+    let min = 0;
+    let max = array.length - 1;
+    let i = Math.floor((min + max) / 2);
+
+    if (cmp(el, array[max]) >= 0) {
+        array.push(el);
+        return;
+    }
+
+    while (min < max) {
+        if (cmp(el, array[i]) < 0) {
+            max = i;
+        } else {
+            min = i + 1;
+        }
+        i = Math.floor((min + max) / 2);
+    }
+    array.splice(i, 0, el);
+}
+
+export let modal_stack = []
+export function close_last_opened_modal() {
+    let l = modal_stack.length
+    if (l > 0) {
+        modal_stack[l-1].close()
+    }
+}
+
+export function isOverflown(element) {
+    if (element == null)
+        return false
+    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
