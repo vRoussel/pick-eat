@@ -28,7 +28,7 @@ async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
                     .configure(handlers::seasons::config),
             )
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
