@@ -3,16 +3,27 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,30" last-zoom="0.85" max-obj-count="12"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,0" last-zoom="0.85" max-obj-count="12"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
 	 layer-name-colors="#000000"
 	 layer-rect-colors="#95171c"
 	 show-layer-names="false" show-layer-rects="false">
-<role name="valentin"
- createdb="true"
- login="true">
+<role name="pickeat"
+ createrole="true"
+ login="true"
+ sql-disabled="true">
+</role>
+
+<role name="pickeat_model"
+ login="true"
+ sql-disabled="true">
+</role>
+
+<role name="pickeat_app"
+ login="true"
+ sql-disabled="true">
 </role>
 
 <database name="pick_eat" is-template="false" allow-conns="true">
@@ -23,7 +34,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="320" y="420"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -66,7 +77,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1480" y="280"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -85,7 +96,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="tags" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1480" y="100"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -104,7 +115,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="recipes_tags" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1000" y="100"/>
 	<column name="tag_id" not-null="true">
 		<type name="integer" length="0"/>
@@ -119,7 +130,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="ingredients" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1480" y="440"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -141,7 +152,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="recipes_ingredients" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1000" y="500"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
@@ -165,7 +176,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="recipes_categories" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1000" y="280"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
@@ -180,7 +191,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="units" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1480" y="620"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -205,7 +216,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="seasons" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1480" y="840"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
@@ -224,7 +235,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="recipes_seasons" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<position x="1000" y="840"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
@@ -255,7 +266,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		execution-cost="1"
 		row-amount="1">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<language name="sql"/>
 	<return-type>
 	<type name="text" length="0"/>
@@ -268,7 +279,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <opclass  name="gist_trgm_ops" index-type="gist" default="false" sql-disabled="true">
 	<schema name="public"/>
-	<role name="valentin"/>
+	<role name="pickeat"/>
 	<type name="smallint" length="0"/>
 	<element type="storage">
 		<type name="text" length="0"/>
@@ -377,7 +388,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_recipes_categories_recipes" type="relfk" layers="0"
 	 src-table="public.recipes_categories"
 	 dst-table="public.recipes" reference-fk="recipes_categories_fk_recipe_id"
-	 src-required="false" dst-required="true"/>
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="5.67255" y="-8.39148"/>
+	</label>
+</relationship>
 
 <relationship name="rel_recipes_categories_categories" type="relfk" layers="0"
 	 src-table="public.recipes_categories"

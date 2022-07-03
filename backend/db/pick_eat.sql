@@ -1,15 +1,27 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 1.0.0-alpha
--- PostgreSQL version: 14.0
+-- PostgreSQL version: 13.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
--- object: valentin | type: ROLE --
--- DROP ROLE IF EXISTS valentin;
-CREATE ROLE valentin WITH 
-	CREATEDB
-	LOGIN;
--- ddl-end --
-
+-- -- object: pickeat | type: ROLE --
+-- -- DROP ROLE IF EXISTS pickeat;
+-- CREATE ROLE pickeat WITH 
+-- 	CREATEROLE
+-- 	LOGIN;
+-- -- ddl-end --
+-- 
+-- -- object: pickeat_model | type: ROLE --
+-- -- DROP ROLE IF EXISTS pickeat_model;
+-- CREATE ROLE pickeat_model WITH 
+-- 	LOGIN;
+-- -- ddl-end --
+-- 
+-- -- object: pickeat_app | type: ROLE --
+-- -- DROP ROLE IF EXISTS pickeat_app;
+-- CREATE ROLE pickeat_app WITH 
+-- 	LOGIN;
+-- -- ddl-end --
+-- 
 
 -- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
@@ -40,7 +52,7 @@ CREATE TABLE public.recipes (
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 );
 -- ddl-end --
-ALTER TABLE public.recipes OWNER TO valentin;
+ALTER TABLE public.recipes OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.categories | type: TABLE --
@@ -52,7 +64,7 @@ CREATE TABLE public.categories (
 	CONSTRAINT categories_uq_name UNIQUE (name)
 );
 -- ddl-end --
-ALTER TABLE public.categories OWNER TO valentin;
+ALTER TABLE public.categories OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.tags | type: TABLE --
@@ -64,7 +76,7 @@ CREATE TABLE public.tags (
 	CONSTRAINT tags_uq_name UNIQUE (name)
 );
 -- ddl-end --
-ALTER TABLE public.tags OWNER TO valentin;
+ALTER TABLE public.tags OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.recipes_tags | type: TABLE --
@@ -75,7 +87,7 @@ CREATE TABLE public.recipes_tags (
 	CONSTRAINT recipes_tags_pk PRIMARY KEY (tag_id,recipe_id)
 );
 -- ddl-end --
-ALTER TABLE public.recipes_tags OWNER TO valentin;
+ALTER TABLE public.recipes_tags OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.ingredients | type: TABLE --
@@ -88,7 +100,7 @@ CREATE TABLE public.ingredients (
 	CONSTRAINT ingredients_uq_name UNIQUE (name)
 );
 -- ddl-end --
-ALTER TABLE public.ingredients OWNER TO valentin;
+ALTER TABLE public.ingredients OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.recipes_ingredients | type: TABLE --
@@ -102,7 +114,7 @@ CREATE TABLE public.recipes_ingredients (
 	CONSTRAINT recipes_ingredients_ck_qty CHECK (quantity > 0)
 );
 -- ddl-end --
-ALTER TABLE public.recipes_ingredients OWNER TO valentin;
+ALTER TABLE public.recipes_ingredients OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.recipes_categories | type: TABLE --
@@ -113,7 +125,7 @@ CREATE TABLE public.recipes_categories (
 	CONSTRAINT recipes_categories_pk PRIMARY KEY (recipe_id,category_id)
 );
 -- ddl-end --
-ALTER TABLE public.recipes_categories OWNER TO valentin;
+ALTER TABLE public.recipes_categories OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.units | type: TABLE --
@@ -127,7 +139,7 @@ CREATE TABLE public.units (
 	CONSTRAINT units_uq_short_name UNIQUE (short_name)
 );
 -- ddl-end --
-ALTER TABLE public.units OWNER TO valentin;
+ALTER TABLE public.units OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.seasons | type: TABLE --
@@ -139,7 +151,7 @@ CREATE TABLE public.seasons (
 	CONSTRAINT seasons_uq_name UNIQUE (name)
 );
 -- ddl-end --
-ALTER TABLE public.seasons OWNER TO valentin;
+ALTER TABLE public.seasons OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.recipes_seasons | type: TABLE --
@@ -150,7 +162,7 @@ CREATE TABLE public.recipes_seasons (
 	CONSTRAINT recipes_seasons_pk PRIMARY KEY (recipe_id,season_id)
 );
 -- ddl-end --
-ALTER TABLE public.recipes_seasons OWNER TO valentin;
+ALTER TABLE public.recipes_seasons OWNER TO pickeat;
 -- ddl-end --
 
 -- object: pg_trgm | type: EXTENSION --
@@ -179,7 +191,7 @@ CREATE FUNCTION public.sentence_case (s text)
 select upper(left($1, 1)) || lower(right($1, -1));
 $$;
 -- ddl-end --
-ALTER FUNCTION public.sentence_case(text) OWNER TO valentin;
+ALTER FUNCTION public.sentence_case(text) OWNER TO pickeat;
 -- ddl-end --
 
 -- -- object: public.gist_trgm_ops | type: OPERATOR CLASS --
@@ -188,7 +200,7 @@ ALTER FUNCTION public.sentence_case(text) OWNER TO valentin;
 --  USING gist AS
 -- 	STORAGE	text;
 -- -- ddl-end --
--- ALTER OPERATOR CLASS public.gist_trgm_ops USING gist OWNER TO valentin;
+-- ALTER OPERATOR CLASS public.gist_trgm_ops USING gist OWNER TO pickeat;
 -- -- ddl-end --
 -- 
 -- object: trgm_idx | type: INDEX --
