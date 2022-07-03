@@ -1,0 +1,55 @@
+- name: Install dependencies
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+    name:
+      - python3-psycopg2
+      - acl
+
+- include_tasks:
+    file: unix_users.yml
+
+- name: Wait for postgres to accept connections
+  become_user: postgres
+  community.postgresql.postgresql_ping:
+    login_unix_socket: "{{ pg_unix_socket }}"
+    login_user: postgres
+    login_db: postgres
+  register: postgres_status
+  until: postgres_status.is_available
+  retries: 10
+  delay: 5
+
+- include_tasks:
+    file: db_roles.yml
+    apply:
+      become_user: postgres
+
+- name: create DB
+  become_user: postgres
+  postgresql_db:
+    login_unix_socket: /var/run/postgresql
+    name: pickeat
+    owner: pickeat
+
+- include_tasks:
+    file: "{{ item }}"
+    apply:
+      become_user: postgres
+  loop:
+    - pg_hba.yml
+    - db_privs.yml
+
+# TODO this should be a handler
+- name: Reload PG conf
+  become_user: postgres
+  postgresql_query:
+    login_unix_socket: "{{ pg_unix_socket }}"
+    db: postgres
+    query: "SELECT pg_reload_conf()"
+    as_single_query: true
+
+- include_tasks:
+    file: db_model.yml
+    apply:
+      become_user: pickeat
