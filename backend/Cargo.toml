@@ -1,5 +1,5 @@
 [package]
-name = "pick-eat"
+name = "pickeat"
 version = "0.1.0"
 authors = ["Valentin.Roussel <valentin.rssl@gmail.com>"]
 edition = "2018"
