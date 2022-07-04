@@ -1,5 +1,6 @@
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
+use clap::Parser;
 use log::*;
 use simplelog::*;
 
@@ -66,11 +67,18 @@ fn setup_logging() {
     }
 }
 
+#[derive(Parser)]
+struct Cli {
+    #[clap(short = 'c', long = "conf")]
+    conf: std::path::PathBuf,
+}
+
 #[actix_rt::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     info!("Starting");
-    let db_pool = database::get_pool().await?;
+    let args = Cli::parse();
+    let db_pool = database::get_pool(&args.conf).await?;
     start_web_server(db_pool).await?;
     Ok(())
 }
