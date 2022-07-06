@@ -1,0 +1,10 @@
+[Unit]
+Description=Pickeat server
+
+[Service]
+Type=simple
+StandardOutput=journal
+ExecStart=/usr/local/bin/pickeat -c /etc/pickeat/pickeat.conf
+
+[Install]
+WantedBy=default.target

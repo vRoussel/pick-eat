@@ -16,3 +16,10 @@
   roles:
     - postgres
     - pickeat_db
+
+- name: Install pickeat server
+  hosts: backend
+  become: true
+  tags: app
+  roles:
+    - pickeat_server

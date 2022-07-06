@@ -1,0 +1,72 @@
+- name: Install pickeat binary
+  copy:
+    src: "to_deploy/backend/{{ ansible_architecture }}/pickeat"
+    dest: /usr/local/bin/pickeat
+    mode: '0544'
+    owner: pickeat
+    group: pickeat
+
+- name: Create pickeat conf directory
+  file:
+    path: /etc/pickeat/
+    state: directory
+    recurse: true
+    owner: pickeat
+    group: pickeat
+
+- name: Install pickeat conf
+  copy:
+    src: pickeat.conf
+    dest: /etc/pickeat/pickeat.conf
+    mode: '0440'
+    owner: pickeat
+    group: pickeat
+
+- name: lingering
+  block:
+    - name: Check if pickeat user is lingering
+      stat:
+        path: "/var/lib/systemd/linger/pickeat"
+      register: user_lingering
+
+    - name: Enable lingering if needed
+      command: "loginctl enable-linger pickeat"
+      when:
+        - not user_lingering.stat.exists
+
+- name: systemd
+  block:
+    - name: Create pickeat systemd directory
+      become_user: pickeat
+      file:
+        path: "$HOME/.config/systemd/user/"
+        state: directory
+        recurse: true
+
+    - name: Install pickeat systemd service
+      become_user: pickeat
+      copy:
+        src: pickeat.service
+        dest: "$HOME/.config/systemd/user/pickeat.service"
+        mode: '0440'
+
+    - name: set XDG_RUNTIME_DIR env var in /etc/profile
+      become_user: pickeat
+      lineinfile:
+        line: "export XDG_RUNTIME_DIR=\"/run/user/$UID\""
+        dest: "$HOME/.bashrc"
+
+    - getent:
+        database: passwd
+        key: pickeat
+
+    - name: Start pickeat systemd service
+      become_user: pickeat
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd']['pickeat'][1] }}"
+      systemd:
+        daemon_reload: true
+        enabled: true
+        scope: user
+        state: started
+        name: pickeat.service
