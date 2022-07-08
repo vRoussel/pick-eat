@@ -1,4 +1,3 @@
-use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use clap::Parser;
 use log::*;
@@ -17,7 +16,6 @@ async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .wrap(Cors::permissive().expose_headers(vec!["content-range"]))
             .app_data(mydata.clone())
             .service(
                 web::scope("/v1")
