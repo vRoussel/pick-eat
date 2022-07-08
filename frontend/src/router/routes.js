@@ -1,7 +1,15 @@
 import { createRouter, createWebHistory} from 'vue-router';
-import NewRecipe from '@/views/NewRecipe.vue';
-import RecipeList from '@/views/RecipeList.vue';
-import Recipe from '@/views/Recipe.vue';
+import { defineAsyncComponent } from 'vue'
+
+const NewRecipe = defineAsyncComponent(() =>
+  import('@/views/NewRecipe.vue')
+)
+const Recipe = defineAsyncComponent(() =>
+  import('@/views/Recipe.vue')
+)
+const RecipeList = defineAsyncComponent(() =>
+  import('@/views/RecipeList.vue')
+)
 
 const routes = [
     {
