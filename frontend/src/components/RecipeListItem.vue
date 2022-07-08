@@ -60,6 +60,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~bulma/sass/components/card.sass";
+@import "~bulma/sass/base/generic.sass";
     .recipe-name {
         font-family: "Rounded_Elegance";
         padding: 0;

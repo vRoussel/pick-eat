@@ -108,6 +108,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~bulma/sass/base/generic.sass";
     th, .recipe-name {
         font-family: "Rounded_Elegance";
         font-weight: bold;
