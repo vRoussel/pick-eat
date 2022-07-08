@@ -9,7 +9,7 @@ const state =  reactive ({
     units: []
 });
 
-const API_HOST = '192.168.1.60';
+const API_HOST = window.location.host
 const API_ROOT = `http://${API_HOST}/api/v1`
 
 const getRecipes = async function(from, to, filters) {
