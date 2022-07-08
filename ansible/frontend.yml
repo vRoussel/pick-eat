@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+
+- name: Install pickeat front
+  hosts: frontend
+  become: true
+  roles:
+    - pickeat_front

@@ -1,0 +1,31 @@
+- name: Install nginx
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+    name:
+      - nginx
+
+- name: Copy static files
+  copy:
+    src: to_deploy/frontend/
+    dest: /var/www/pickeat.local/
+    mode: '0444'
+
+- name: Create site in nginx conf
+  copy:
+    src: pickeat_nginx_site
+    dest: /etc/nginx/sites-available/pickeat.local
+    mode: '0444'
+
+- name: Enable site
+  file:
+    path: /etc/nginx/sites-enabled/pickeat.local
+    state: link
+    src: ../sites-available/pickeat.local
+
+
+- name: Reload nginx service
+  systemd:
+    enabled: true
+    state: reloaded
+    name: nginx.service
