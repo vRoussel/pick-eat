@@ -8,20 +8,20 @@ edition = "2018"
 
 [dependencies]
 actix-cors = "0.6.1"
-actix-web = "4.0.1"
+actix-web = "4.1.0"
 actix-rt = "2.7.0"
 bb8 = "0.8.0"
-bb8-postgres = "0.8.0"
+bb8-postgres = "0.8.1"
 chrono = { version = "0.4.19", features = ["serde"] }
-clap = { version = "3.0", features = ["derive"] }
-config = "0.12.0"
-log = "0.4.16"
-serde = "1.0.136"
-serde_json = "1.0.79"
-simplelog = "0.11.2"
-time = { version = "0.3.9", features = ["serde"] }
-tokio-postgres = { version = "0.7.5", features = ["with-time-0_3", "with-serde_json-1", "array-impls"] }
-tokio = "1.17.0"
+clap = { version = "3.2.8", features = ["derive"] }
+config = "0.13.1"
+log = "0.4.17"
+serde = "1.0.138"
+serde_json = "1.0.82"
+simplelog = "0.12.0"
+time = { version = "0.3.11", features = ["serde"] }
+tokio-postgres = { version = "0.7.6", features = ["with-time-0_3", "with-serde_json-1", "array-impls"] }
+tokio = "1.19.2"
 
 [profile.release]
 lto = "thin"
