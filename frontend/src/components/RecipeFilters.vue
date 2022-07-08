@@ -183,6 +183,7 @@ export default {
 }
 </script>
 
+<style src="@vueform/multiselect/themes/default.css"></style>
 <style lang="scss" scoped>
     #filter-icon {
         margin-bottom: 0.75rem;
