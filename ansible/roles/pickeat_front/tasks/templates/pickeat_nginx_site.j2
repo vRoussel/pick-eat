@@ -3,6 +3,7 @@ server {
 	server_name {{ pickeat_site_url }};
 
 	location / {
+        root /var/www/{{ pickeat_site_url }};
         try_files $uri $uri/ /index.html;
 	}
 
