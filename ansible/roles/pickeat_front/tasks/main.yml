@@ -8,20 +8,20 @@
 - name: Copy static files
   copy:
     src: to_deploy/frontend/
-    dest: /var/www/pickeat.local/
+    dest: "/var/www/{{ pickeat_site_url }}/"
     mode: '0444'
 
 - name: Create site in nginx conf
-  copy:
-    src: pickeat_nginx_site
-    dest: /etc/nginx/sites-available/pickeat.local
+  template:
+    src: pickeat_nginx_site.j2
+    dest: "/etc/nginx/sites-available/{{ pickeat_site_url }}"
     mode: '0444'
 
 - name: Enable site
   file:
-    path: /etc/nginx/sites-enabled/pickeat.local
+    path: "/etc/nginx/sites-enabled/{{ pickeat_site_url }}"
     state: link
-    src: ../sites-available/pickeat.local
+    src: "../sites-available/{{ pickeat_site_url }}"
 
 
 - name: Reload nginx service

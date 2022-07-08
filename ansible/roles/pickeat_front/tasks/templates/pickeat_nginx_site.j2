@@ -1,6 +1,6 @@
 server {
 	listen 80;
-	server_name pickeat.local;
+	server_name {{ pickeat_site_url }};
 
 	location / {
         try_files $uri $uri/ /index.html;
