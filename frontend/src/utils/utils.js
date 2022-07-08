@@ -12,6 +12,11 @@ export function obj_with_searchable_name(obj, src_field_name) {
 }
 
 export function insert_sorted(array, el, cmp) {
+    if (array.length == 0) {
+        array.push(el);
+        return;
+    }
+
     let min = 0;
     let max = array.length - 1;
     let i = Math.floor((min + max) / 2);
