@@ -68,5 +68,5 @@
         daemon_reload: true
         enabled: true
         scope: user
-        state: started
+        state: restarted
         name: pickeat.service
