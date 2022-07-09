@@ -52,7 +52,7 @@
         dest: "$HOME/.config/systemd/user/pickeat.service"
         mode: '0440'
 
-    - name: set XDG_RUNTIME_DIR env var in /etc/profile
+    - name: set XDG_RUNTIME_DIR env var in .bashrc
       become_user: pickeat
       lineinfile:
         line: "export XDG_RUNTIME_DIR=\"/run/user/$UID\""
