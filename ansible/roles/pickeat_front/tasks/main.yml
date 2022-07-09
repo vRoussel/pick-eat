@@ -10,22 +10,18 @@
     src: to_deploy/frontend/
     dest: "/var/www/{{ pickeat_site_url }}/"
     mode: '0444'
+  notify: Reload nginx service
 
 - name: Create site in nginx conf
   template:
     src: pickeat_nginx_site.j2
     dest: "/etc/nginx/sites-available/{{ pickeat_site_url }}"
     mode: '0444'
+  notify: Reload nginx service
 
 - name: Enable site
   file:
     path: "/etc/nginx/sites-enabled/{{ pickeat_site_url }}"
     state: link
     src: "../sites-available/{{ pickeat_site_url }}"
-
-
-- name: Reload nginx service
-  systemd:
-    enabled: true
-    state: reloaded
-    name: nginx.service
+  notify: Reload nginx service

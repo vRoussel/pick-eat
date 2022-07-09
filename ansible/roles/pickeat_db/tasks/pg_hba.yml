@@ -5,6 +5,7 @@
     databases: pickeat
     method: peer
     users: pickeat
+  notify: Reload postgres conf
 
 - name: Setup pg_hba (pickeat_model)
   postgresql_pg_hba:
@@ -14,6 +15,7 @@
     databases: pickeat
     method: scram-sha-256
     users: pickeat_model
+  notify: Reload postgres conf
 
 - name: Setup pg_hba (pickeat_app)
   postgresql_pg_hba:
@@ -23,8 +25,10 @@
     method: peer
     users: pickeat_app
     options: 'map=pickeat_app'
+  notify: Reload postgres conf
 
 - name: Setup pg_ident
   lineinfile:
     line: pickeat_app pickeat pickeat_app
     dest: "{{ pg_ident_path }}"
+  notify: Reload postgres conf

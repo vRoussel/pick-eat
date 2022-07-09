@@ -33,21 +33,14 @@
     owner: pickeat
 
 - include_tasks:
-    file: "{{ item }}"
+    file: pg_hba.yml
     apply:
       become_user: postgres
-  loop:
-    - pg_hba.yml
-    - db_privs.yml
 
-# TODO this should be a handler
-- name: Reload PG conf
-  become_user: postgres
-  postgresql_query:
-    login_unix_socket: "{{ pg_unix_socket }}"
-    db: postgres
-    query: "SELECT pg_reload_conf()"
-    as_single_query: true
+- include_tasks:
+    file: db_privs.yml
+    apply:
+      become_user: postgres
 
 - include_tasks:
     file: db_model.yml

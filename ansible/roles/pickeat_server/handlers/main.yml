@@ -1,0 +1,8 @@
+- name: Restart pickeat systemd service
+  become_user: pickeat
+  systemd:
+    daemon_reload: true
+    enabled: true
+    scope: user
+    state: restarted
+    name: pickeat.service

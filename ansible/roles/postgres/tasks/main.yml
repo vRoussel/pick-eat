@@ -46,6 +46,7 @@
       ['peer', 'md5']
       ) | list }}"
     when: fresh_install
+    notify: Reload postgres conf
 
   - name: Setup pg_hba for postgres user
     postgresql_pg_hba:
@@ -54,25 +55,21 @@
       databases: all
       method: peer
       users: postgres
+    notify: Reload postgres conf
 
   - name: use scram-sha-256 password encryption
     postgresql_set:
       <<: *db_dsn
       name: password_encryption
       value: scram-sha-256
+    notify: Reload postgres conf
 
   - name: listen on all addresses
     postgresql_set:
       <<: *db_dsn
       name: listen_addresses
       value: "*"
-
-  # TODO this should be a handler
-  - name: Restart PG
-    become_user: root
-    systemd:
-      name: postgresql
-      state: restarted
+    notify: Restart postgres
 
   - name: Wait for postgres to accept connections
     community.postgresql.postgresql_ping:

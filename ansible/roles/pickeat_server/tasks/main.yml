@@ -5,6 +5,7 @@
     mode: '0544'
     owner: pickeat
     group: pickeat
+  notify: Restart pickeat systemd service
 
 - name: Create pickeat conf directory
   file:
@@ -21,6 +22,7 @@
     mode: '0440'
     owner: pickeat
     group: pickeat
+  notify: Restart pickeat systemd service
 
 - name: lingering
   block:
@@ -55,18 +57,4 @@
       lineinfile:
         line: "export XDG_RUNTIME_DIR=\"/run/user/$UID\""
         dest: "$HOME/.bashrc"
-
-    - getent:
-        database: passwd
-        key: pickeat
-
-    - name: Start pickeat systemd service
-      become_user: pickeat
-      environment:
-        XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd']['pickeat'][1] }}"
-      systemd:
-        daemon_reload: true
-        enabled: true
-        scope: user
-        state: restarted
-        name: pickeat.service
+  notify: Restart pickeat systemd service
