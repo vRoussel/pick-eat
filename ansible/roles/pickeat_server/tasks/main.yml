@@ -1,4 +1,5 @@
 - name: Install pickeat binary
+  tags: app
   copy:
     src: "to_deploy/backend/{{ ansible_architecture }}/pickeat"
     dest: /usr/local/bin/pickeat

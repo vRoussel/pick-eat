@@ -6,10 +6,12 @@
       - nginx
 
 - name: Copy static files
-  copy:
+  tags: app
+  synchronize:
     src: to_deploy/frontend/
     dest: "/var/www/{{ pickeat_site_url }}/"
-    mode: '0444'
+    rsync_opts:
+    - "--chmod=F444"
   notify: Reload nginx service
 
 - name: Create site in nginx conf
