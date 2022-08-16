@@ -1,4 +1,4 @@
-export const PLACEHOLDER_IMG = require('@/assets/photo.png')
+export const PLACEHOLDER_IMG = require('@/assets/camera.svg')
 
 function str_without_accents(str) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, "")
