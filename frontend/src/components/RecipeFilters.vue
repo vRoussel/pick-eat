@@ -1,7 +1,7 @@
 <template>
 <div>
     <div class="flex gap-x-2">
-            <div class="form-control">
+            <div class="form-control md:hidden">
                 <button class="btn btn-accent btn-square" @click="toggle">
                 <span class="icon">
                   <ion-icon name="options" size="small"></ion-icon>
