@@ -1,22 +1,17 @@
 <template>
-    <div class="container my-4 px-4">
-        <div class="columns">
-            <div class="side column is-one-fifth-fullhd is-3-desktop is-4-tablet">
-                <recipe-filters v-model:filters="filters"></recipe-filters>
-            </div>
-            <div class="column columns is-multiline is-align-content-flex-start">
-                <div class="column is-full">
-                    <p class="is-size-4 is-size-5-mobile">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
-                </div>
-                <div class="column is-full" v-if="this.total_count > 0">
-                    <pagination :hide_previous_next="on_mobile()" :current_page="page" :max_page="max_page" url_param="page" ></pagination>
-                </div>
-                <div class="column is-3-fullhd is-4-desktop is-6-tablet mb-4" v-for="recipe in recipes" :key="recipe.id">
+    <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row items-start">
+        <recipe-filters class="min-w-[15rem] lg:min-w-[17rem]" v-model:filters="filters"></recipe-filters>
+        <div>
+        <!--
+            <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
+        -->
+            <div class="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+                <div v-for="recipe in recipes" :key="'r' + recipe.id">
                     <recipe-list-item :recipe=recipe></recipe-list-item>
                 </div>
-                <div class="column is-full" v-if="this.total_count > 0">
-                    <pagination :hide_previous_next="on_mobile()" :current_page="page" :max_page="max_page" url_param="page"></pagination>
-                </div>
+            </div>
+            <div class="max-w-fit mx-auto my-8" v-if="this.total_count > 0">
+                <pagination :current_page="page" :max_page="max_page" url_param="page"></pagination>
             </div>
         </div>
     </div>
@@ -39,7 +34,7 @@ export default {
     data: function() {
         return {
             recipes: [],
-            per_page: 20,
+            per_page: 12,
             total_count: 0,
         }
     },
@@ -117,12 +112,3 @@ export default {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-    @media screen and (max-width: 768px), print {
-        .is-expanded-mobile {
-            display: flex;
-            flex-grow: 1;
-        }
-    }
-</style>

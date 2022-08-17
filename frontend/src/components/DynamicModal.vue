@@ -1,46 +1,33 @@
-<template is-clipped>
+<template>
+<!--
     <div class="modal has-overflow" :class="{'is-active': active}">
         <div class="modal-background" @click="close"></div>
         <div class="modal-content columns is-centered is-mobile">
             <slot v-if="active"></slot>
         </div>
     </div>
+-->
+    <input type="checkbox" :id="modal_id" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box">
+            <slot></slot>
+            <div class="modal-action">
+              <label :for="modal_id" class="btn">{{ yes_button_text }}</label>
+              <label :for="modal_id" class="btn">{{ yes_button_text }}</label>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import {modal_stack} from '@/utils/utils.js'
-
 export default {
     name: 'dynamic-modal',
-    data: function() {
-        return {
-            active: false,
-        }
-    },
-    methods: {
-        open() {
-            this.active = true
-            modal_stack.push(this)
+    props: {
+        modal_id: {
+            required: true
         },
-        close() {
-            this.active = false
-            modal_stack.pop()
-        },
-    },
+        yes_button_text: null,
+        no_button_text: null,
+    }
 }
 </script>
-
-
-<style>
-.modal.has-overflow {
-  position: fixed !important;
-  overflow: auto !important;
-}
-.modal.has-overflow .modal-background {
-    position: fixed !important;
-}
-.modal.has-overflow .modal-content {
-    overflow: visible !important;
-}
-</style>
-

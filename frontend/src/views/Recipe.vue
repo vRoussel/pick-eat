@@ -1,8 +1,8 @@
 <template>
-        <div class="container is-max-desktop px-4 my-4">
-           <recipe-view v-if="mode === 'view'" :recipe='recipe' @edit="editRecipe"></recipe-view>
-           <recipe-form v-else :existing_recipe='recipe' @done='afterEdit'></recipe-form>
-        </div>
+    <div class="container px-4 my-4">
+       <recipe-view v-if="!edit" :recipe='recipe' @edit="editRecipe"></recipe-view>
+       <recipe-form v-else :existing_recipe='recipe' @done='afterEdit'></recipe-form>
+    </div>
 </template>
 
 <script>
@@ -18,12 +18,14 @@ export default {
     props: {
         id: {
             type: Number,
+        },
+        edit: {
+            type: Boolean
         }
     },
     data: function() {
         return {
-            recipe: null,
-            mode: 'view',
+            recipe: null
         }
     },
     methods: {
@@ -37,14 +39,14 @@ export default {
             });
         },
         editRecipe() {
-            this.mode = 'update'
+            this.$router.push({ query: { ...this.$route.query, edit: null} });
         },
         afterEdit() {
             this.loadRecipe()
-            this.mode = 'view'
+            this.$router.push({ query: { ...this.$route.query, edit: undefined} });
         }
     },
-    created() {
+    mounted() {
         this.loadRecipe()
     },
 }

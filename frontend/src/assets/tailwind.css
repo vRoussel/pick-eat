@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply normal-case;
+  font-weight: normal;
+}
+
+.table * {
+    @apply normal-case;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.input {
+    @apply input-accent;
+}
+
+.textarea {
+    @apply textarea-accent;
+}
+
+@import '~@vueform/multiselect/themes/tailwind.css';
+.multiselect {
+    @apply border-accent !important;
+}

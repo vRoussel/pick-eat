@@ -1,18 +1,18 @@
 <template>
-    <p >
-        <span class="icon" :class="dynClass(1)">
-          <i class="fas fa-seedling"></i>
+    <div class="flex">
+        <span class="icon">
+            <ion-icon name="flower" :class="dynClass(1)"></ion-icon>
         </span>
-        <span class="icon" :class="dynClass(2)">
-          <i class="fas fa-sun"></i>
+        <span class="icon">
+            <ion-icon name="sunny" :class="dynClass(2)"></ion-icon>
         </span>
-        <span class="icon" :class="dynClass(3)">
-          <i class="fas fa-leaf"></i>
+        <span class="icon">
+            <ion-icon name="leaf" :class="dynClass(3)"></ion-icon>
         </span>
-        <span class="icon" :class="dynClass(4)">
-          <i class="fas fa-snowflake"></i>
+        <span class="icon">
+            <ion-icon name="snow" :class="dynClass(4)"></ion-icon>
         </span>
-    </p>
+    </div>
 </template>
 
 <script>
@@ -26,10 +26,9 @@ export default {
     methods: {
         dynClass(id) {
             return {
-                active : this.has_season(id),
-                inactive : !this.has_season(id),
-                'mx-1' : screen.width <= 760,
-                'mx-3' : screen.width > 760,
+                "text-primary" : this.has_season(id),
+                "text-accent" : !this.has_season(id),
+                "opacity-30" : !this.has_season(id)
             }
         },
         has_season(id) {
@@ -43,14 +42,3 @@ export default {
     }
 }
 </script>
-
-<style lang="scss">
-    .inactive {
-        color: lightgrey
-    }
-    
-    .active {
-        color: $primary
-    }
-
-</style>

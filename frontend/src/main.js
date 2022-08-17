@@ -1,10 +1,10 @@
-import '@/assets/main.scss';
 import { createApp } from 'vue'
 import App from './App.vue'
 import FloatingVue from 'floating-vue'
 
 import router from './router/routes';
 import 'floating-vue/dist/style.css'
+import './assets/tailwind.css'
 
 FloatingVue.options.themes.tooltip.triggers = ['hover', 'click']
 

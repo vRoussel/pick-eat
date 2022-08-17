@@ -37,16 +37,12 @@ export function insert_sorted(array, el, cmp) {
     array.splice(i, 0, el);
 }
 
-export let modal_stack = []
-export function close_last_opened_modal() {
-    let l = modal_stack.length
-    if (l > 0) {
-        modal_stack[l-1].close()
-    }
-}
-
 export function isOverflown(element) {
     if (element == null)
         return false
     return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
+export function random_str(len) {
+    return (Math.random()+1).toString(36).substring(2,len+2)
 }

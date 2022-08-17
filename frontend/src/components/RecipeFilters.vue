@@ -1,69 +1,79 @@
 <template>
 <div>
-    <div class="field is-grouped is-grouped-centered">
-            <div class="control has-icons-left has-icons-right is-expanded">
-                    <input @input="e => search_query = e.target.value" class="input is-rounded" type="text" placeholder="Trouver une recette" :value="search_query">
-                    <span class="icon is-right" v-if="filters.search_query">
-                       <i class="fas fa-times is-clickable" @click="clearSearch"></i>
-                    </span>
-                    <span class="icon is-left">
-                       <i class="fas fa-search"></i>
-                    </span>
-            </div>
-            <div class="control">
-                <button class="button" @click="toggle">
+    <div class="flex gap-x-2">
+            <div class="form-control">
+                <button class="btn btn-accent btn-square" @click="toggle">
                 <span class="icon">
-                  <i class="fas fa-sliders-h"></i>
+                  <ion-icon name="options" size="small"></ion-icon>
                 </span>
                 </button>
+            </div>
+            <div class="form-control relative grow">
+                <div class="input-group">
+                    <span class="icon">
+                       <ion-icon name="search" size="small"></ion-icon>
+                    </span>
+                    <input @input="e => search_query = e.target.value" class="input w-full" type="search" placeholder="Trouver une recette" :value="search_query">
+                </div>
+                <span v-if="filters.search_query" class="icon cursor-pointer" @click="clearSearch">
+                   <ion-icon name="close" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
+               </span>
             </div>
     </div>
-    <div v-show="this.expanded">
-        <div class="field">
-            <label class="label">Ingrédients</label>
-                <Multiselect mode="tags" :options="this.store.state.ingredients" label="name" searchable :strict="false" trackBy="name" valueProp="id" ref="multiselect" :closeOnSelect="false" v-model="this.ingredients"/>
+    <div v-show="this.expanded" class="flex flex-col gap-y-4 mt-4">
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text text-lg">Ingrédients</span>
+            </label>
+            <Multiselect mode="tags" :options="this.store.state.ingredients" label="name" searchable :strict="false" trackBy="name" valueProp="id" ref="multiselect" :closeOnSelect="false" v-model="this.ingredients"/>
+        </div>
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text text-lg">Tags</span>
+            </label>
+            <Multiselect mode="tags" :options="this.store.state.tags" label="name" searchable :strict="false" trackBy="name" valueProp="id" ref="multiselect" :closeOnSelect="false" v-model="this.tags"/>
         </div>
         <!--
-        <div class="field">
-            <label class="label">Tags</label>
-        <Multiselect mode="tags" :options="this.store.state.tags" label="name" searchable :strict="false" trackBy="name" object valueProp="id" ref="multiselect" :closeOnSelect="false"/>
-        </div>
+        <fieldset>
+            <legend class="label">
+                <span class="label-text text-lg">Tags</span>
+            </legend>
+            <div class="form-control" v-for="t in this.store.state.tags" :key="t.id">
+                <label class="label cursor-pointer justify-start gap-x-4 py-1">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="this.tags" :value="t.id">
+                    <span class="label-text">{{ t.name }}</span>
+                </label>
+            </div>
+        </fieldset>
         -->
-        <fieldset class="block">
-            <legend class="label">Tags</legend>
-            <div class="control" v-for="t in this.store.state.tags" :key="t.id">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="this.tags" :value="t.id">
-                    {{ t.name }}
+        <fieldset>
+            <legend class="label">
+                <span class="label-text text-lg">Saisons</span>
+            </legend>
+            <div class="form-control" v-for="s in this.store.state.seasons" :key="s.id">
+                <label class="label cursor-pointer justify-start gap-x-4 py-1">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="this.seasons" :value="s.id">
+                    <span class="label-text">{{ s.name }}</span>
                 </label>
             </div>
         </fieldset>
-        <fieldset class="block">
-            <legend class="label">Saisons</legend>
-            <div class="control" v-for="s in this.store.state.seasons" :key="s.id">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="this.seasons" :value="s.id">
-                    {{ s.name }}
+        <fieldset>
+            <legend class="label">
+                <span class="label-text text-lg">Catégories</span>
+            </legend>
+            <div class="form-control" v-for="c in this.store.state.categories" :key="c.id">
+                <label class="label cursor-pointer justify-start gap-x-4 py-1">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="this.categories" :value="c.id">
+                    <span class="label-text">{{ c.name }}</span>
                 </label>
             </div>
         </fieldset>
-        <fieldset class="block">
-            <legend class="label">Catégories</legend>
-            <div class="control" v-for="c in this.store.state.categories" :key="c.id">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="this.categories" :id ="c.id" :value="c.id">
-                    {{ c.name }}
-                </label>
-            </div>
-        </fieldset>
-        <div class="field">
-            <div class="control">
-                <button class="button is-fullwidth" @click="clearFilters">
-                <span class="icon">
-                  <i class="fas fa-undo"></i>
-                </span>
-                </button>
-            </div>
+        <div class="form-control">
+            <button class="btn btn-accent" @click="clearFilters">
+            <span class="icon">
+              <ion-icon name="trash" size="small"></ion-icon>
+            </span>
+            </button>
         </div>
     </div>
 </div>
@@ -116,10 +126,7 @@ export default {
             this.search_query = null
         },
         clearFilters() {
-            this.ingredients = []
-            this.tags = []
-            this.categories = []
-            this.seasons = []
+            this.updateFilters(new Filters(), 0)
         },
         on_mobile() {
             return screen.width < 768;
@@ -182,10 +189,3 @@ export default {
     emits: ['toggle', 'update:filters']
 }
 </script>
-
-<style src="@vueform/multiselect/themes/default.css"></style>
-<style lang="scss" scoped>
-    #filter-icon {
-        margin-bottom: 0.75rem;
-    }
-</style>

@@ -1,15 +1,8 @@
 import { createRouter, createWebHistory} from 'vue-router';
-import { defineAsyncComponent } from 'vue'
 
-const NewRecipe = defineAsyncComponent(() =>
-  import('@/views/NewRecipe.vue')
-)
-const Recipe = defineAsyncComponent(() =>
-  import('@/views/Recipe.vue')
-)
-const RecipeList = defineAsyncComponent(() =>
-  import('@/views/RecipeList.vue')
-)
+import NewRecipe from '@/views/NewRecipe.vue'
+import Recipe from '@/views/Recipe.vue'
+import RecipeList from '@/views/RecipeList.vue'
 
 const routes = [
     {
@@ -32,7 +25,7 @@ const routes = [
         name: 'recipe',
         path: '/recipe/:id',
         component: Recipe,
-        props: route => ({ id: parseInt(route.params.id) }),
+        props: route => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
         meta: {
             title: 'Recette - PickEat'
         }
@@ -48,7 +41,7 @@ const router = createRouter({
     mode: "history",
     history: createWebHistory(),
     routes,
-    linkActiveClass: 'is-active',
+    linkActiveClass: 'active',
     scrollBehavior: (to, from, savedPosition) => {
         if (to.params.noscroll == "true") {
             return {}
