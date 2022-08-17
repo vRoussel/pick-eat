@@ -1,21 +1,24 @@
 <template>
-    <div class="buttons">
+    <div class="buttons flex gap-2 flex-wrap">
         <template v-for="el in choices" :key="el.id">
             <button type="button" :class="buttonClass(el)" @click="toggle(el)">{{ el.name }}</button>
         </template>
-        <button v-if="extendComponent" type="button" class="button is-circular is-primary is-outlined" @click="openModal">+</button>
+        <label v-if="extendModalComponent" :for="modal_id" class="btn rounded-full btn-primary btn-outline btn-sm">+</label>
     </div>
-    <dynamic-modal v-if="extendComponent" ref="modal">
-        <component :is="extendComponent" @done="closeModal" @created="created"></component>
-    </dynamic-modal>
+    <component :modal_id="modal_id" :is="extendModalComponent" @created="created"></component>
 </template>
 
 <script>
-import DynamicModal from '@/components/DynamicModal.vue'
+import {random_str} from '@/utils/utils.js'
+
 export default {
     name: 'toggle-buttons',
     components : {
-        DynamicModal
+    },
+    data: function() {
+        return {
+            modal_id: random_str(5)
+        }
     },
     props: {
         choices: {
@@ -27,17 +30,21 @@ export default {
         extendable: {
             type: Boolean
         },
-        extendComponent : {
+        extendModalComponent : {
             type: Object
         },
     },
-    emits: ['update:picked', 'addChoice'],
+    emits: ['update:picked'],
     methods: {
         buttonClass(el) {
             return {
-                "button": true,
-                "is-rounded": true,
-                "is-primary": this.picked.has(el.id)
+                "btn": true,
+                "btn-sm": true,
+                "rounded-full": true,
+                "btn-primary": this.picked.has(el.id),
+                "hover:btn-primary": true,
+                "border-gray-300": true,
+                "btn-outline": !this.picked.has(el.id),
             }
         },
         toggle(el) {
@@ -47,21 +54,9 @@ export default {
                 this.picked.add(el.id)
             this.$emit('update:picked', this.picked)
         },
-        openModal() {
-            this.$refs.modal.open()
-        },
-        closeModal() {
-            this.$refs.modal.close()
-        },
         created(new_choice) {
             this.toggle(new_choice)
         }
     },
 }
 </script>
-
-<style>
-.is-circular {
-    border-radius: 50%;
-}
-</style>

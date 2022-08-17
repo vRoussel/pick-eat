@@ -1,5 +1,5 @@
 <template>
-    <div class="container is-max-desktop my-4 px-4">
+    <div>
         <recipe-form @done='afterInsert'></recipe-form>
     </div>
 </template>

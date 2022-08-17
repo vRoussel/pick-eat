@@ -1,8 +1,10 @@
 <template>
-<figure class="image container is-256x256">
-    <img @click="imageWidget.open()" class="is-clickable" :src="image_preview">
-    <button @click="clear" v-if="image_url != ''" type="button" class="delete is-medium" style="position: absolute; top: 5px; right: 5px;"></button>
-</figure>
+    <div class="w-full h-full flex justify-center sm:justify-start my-3">
+        <div class="relative">
+            <img @click="imageWidget.open()" class="cursor-pointer m-auto rounded-lg w-64" :src="image_preview">
+            <button @click="clear" v-if="image_url != ''" class="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
+        </div>
+    </div>
 </template>
 
 <script>

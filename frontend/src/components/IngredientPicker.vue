@@ -1,30 +1,22 @@
 <template>
-    <div class="level is-mobile mb-2">
-        <div class="level-left">
-        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_ingredient_search" @click="open_ingr_modal">Ingrédient manquant ?</button>
-        <button type="button" class="button is-rounded is-primary is-outlined is-small level-item" @mousedown="save_unit_search" @click="open_unit_modal">Unité manquante ?</button>
-        </div>
+    <Multiselect @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="pick_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect" placeholder="Ajouter un ingrédient" openDirection="top"/>
+    <div class="flex gap-1 my-2">
+        <label for="modal_ingr" class="btn rounded-full btn-primary btn-outline btn-sm modal-button" @mousedown="save_ingredient_search">Ingrédient manquant ?</label>
+        <label for="modal_unit" class="btn rounded-full btn-primary btn-outline btn-sm modal-button" @mousedown="save_unit_search">Unité manquante ?</label>
     </div>
-    <Multiselect @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="pick_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect"/>
-    <div class="columns is-vcentered is-mobile" v-for="ingr in picked.values()" :key="ingr.id">
-        <ingredient-list-item @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @createUnit="save_unit_search(), open_unit_modal()" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
+    <div class="flex flex-col items-center mt-2 gap-y-5">
+        <ingredient-list-item v-for="ingr in picked.values()" :key="ingr.id" @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @createUnit="save_unit_search(), open_unit_modal()" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
     </div>
-    <dynamic-modal ref="modal_ingr">
-        <component :is="NewIngredient_" :input="ingredient_search" @done="close_ingr_modal" @created="add_ingr"></component>
-    </dynamic-modal>
-    <dynamic-modal ref="modal_unit">
-        <component :is="NewUnit_" :input="unit_search" @done="close_unit_modal" @created="set_current_unit"></component>
-    </dynamic-modal>
+    <new-ingredient-modal modal_id="modal_ingr" :input="ingredient_search" @created="add_ingr"/>
+    <new-unit-modal modal_id="modal_unit" :input="unit_search" @created="set_current_unit"/>
 </template>
 
 <script>
 import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
 import {obj_with_searchable_name} from '@/utils/utils.js'
-import DynamicModal from '@/components/DynamicModal.vue'
-import NewIngredient from '@/components/NewIngredient.vue'
-import NewUnit from '@/components/NewUnit.vue'
-import {shallowRef} from 'vue'
+import NewIngredientModal from '@/components/NewIngredientModal.vue'
+import NewUnitModal from '@/components/NewUnitModal.vue'
 
 export default {
     name: 'ingredient-picker',
@@ -32,7 +24,8 @@ export default {
     components : {
         Multiselect,
         IngredientListItem,
-        DynamicModal
+        NewIngredientModal,
+        NewUnitModal
     },
     props: {
         picked: {
@@ -44,9 +37,7 @@ export default {
             dummy: null,
             ingredient_search: null,
             unit_search: null,
-            current_unit_input: null,
-            NewIngredient_: shallowRef(NewIngredient),
-            NewUnit_: shallowRef(NewUnit)
+            current_unit_input: null
         }
     },
     computed: {
@@ -94,20 +85,9 @@ export default {
             if (this.current_unit_input !== undefined)
                 this.current_unit_input.select(unit)
         },
-        open_ingr_modal() {
-            this.$refs.modal_ingr.open()
-        },
-        close_ingr_modal() {
-            this.$refs.modal_ingr.close()
-        },
-        open_unit_modal() {
-            this.$refs.modal_unit.open()
-        },
-        close_unit_modal() {
-            this.$refs.modal_unit.close()
-        },
+        test() {
+            console.log("OKAYYYY")
+        }
     }
 }
 </script>
-
-<style src="@vueform/multiselect/themes/default.css"></style>

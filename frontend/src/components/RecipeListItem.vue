@@ -1,21 +1,18 @@
 <template>
-    <div class="card">
+    <div class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer" @click="openRecipe(recipe.id)">
         <div class="card-image">
-            <figure class="image is-square is-fullwidth">
-                    <img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG" class="is-clickable" @click="openRecipe(recipe.id)"/>
-            </figure>
+            <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG"/></figure>
         </div>
-        <header class="card-header">
-            <p ref="recipe_name" class="recipe-name card-header-title is-size-4-mobile
-            is-size-5-tablet" v-tooltip="overflown ? recipe.name : null">
+        <div class="card-body flex flex-row items-center">
+            <h2 ref="recipe_name" class="text-xl recipe-name grow" v-tooltip="overflown ? recipe.name : null">
                 {{ recipe.name }}
-            </p>
-            <div class="card-header-icon" aria-label="favorite">
-              <span class="icon">
-                <i :class="recipe.is_favorite ? 'fa' : 'far'" class="fa-heart is-size-4-mobile is-size-5-tablet is-clickable" @click="toggleFavorite(recipe)"></i>
+            </h2>
+            <div class="card-actions" aria-label="favorite">
+              <span class="icon text-xl">
+                <ion-icon :name="recipe.is_favorite ? 'heart' : 'heart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
               </span>
             </div>
-        </header>
+        </div>
     </div>
 </template>
 
@@ -59,26 +56,15 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import "~bulma/sass/components/card.sass";
-@import "~bulma/sass/base/generic.sass";
+<style scoped>
     .recipe-name {
         font-family: "Rounded_Elegance";
-        padding: 0;
-        margin: $card-header-padding;
 
         overflow-wrap: anywhere;
         -webkit-line-clamp: 3;
         display: -webkit-box;
         -webkit-box-orient: vertical;
+        -webkit-box-pack: center;
         overflow: hidden;
-        height: $body-line-height * $body-font-size * 3;
-    }
-
-    .fa-heart {
-        color: red;
-    }
-    .card-header-icon {
-        cursor: auto;
     }
 </style>

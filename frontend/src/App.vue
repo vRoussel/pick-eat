@@ -1,40 +1,41 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <router-link to="/recipes">
-      <img :src="require('@/assets/pickeat.png')" width="300">
-    </router-link>
-
-
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="mynavbar" @click="navbarIsOpen = !navbarIsOpen" v-bind:class="{'is-active': navbarIsOpen}">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div id="mynavbar" class="navbar-menu" v-bind:class="{'is-active': navbarIsOpen}">
-    <div class="navbar-start">
-        <router-link to="/recipes" class="navbar-item is-tab">Recettes</router-link>
-        <router-link to="/new-recipe" class="navbar-item is-tab">Nouvelle recette</router-link>
-    </div>
-  </div>
-  </nav>
+    <nav class="navbar bg-base-100 border-b border-primary">
+      <div class="navbar-start">
+        <div class="dropdown" ref="dd">
+          <label tabindex="0" class="btn btn-ghost sm:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+          </label>
+          <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+            <li><router-link @mouseup="unfocus" to="/recipes">Recettes</router-link></li>
+            <li><router-link @mouseup="unfocus" to="/new-recipe">Nouvelle recette</router-link></li>
+          </ul>
+        </div>
+        <router-link to="/recipes">
+          <img :src="require('@/assets/pickeat.png')" width="200">
+        </router-link>
+        <ul class="menu menu-horizontal p-0 hidden sm:flex">
+        <li class="shrink-0"><router-link to="/recipes">Recettes</router-link></li>
+        <li class="shrink-0"><router-link to="/new-recipe">Nouvelle recette</router-link></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <theme-toggle dark_theme="dark" light_theme="pickeat_light"/>
+      </div>
+    </nav>
   <router-view v-slot="{ Component, route }">
   <transition name="fade" mode="out-in">
-    <keep-alive>
         <component
           :is="Component"
           :key="route.path"
+          ref="main"
         />
-    </keep-alive>
   </transition>
 </router-view>
-
 </template>
 
 <script>
 import store from '@/store/store.js'
-import {close_last_opened_modal} from '@/utils/utils.js'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 export default {
   name: 'App',
@@ -42,6 +43,7 @@ export default {
     store,
   },
   components: {
+      ThemeToggle
   },
   data: function() {
     return {
@@ -52,12 +54,14 @@ export default {
     let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
     for (let ret of api_calls)
         ret.catch(error => console.error(error));
-
-    document.addEventListener.call(window, "keydown", e => {
-        if (e.key == 'Escape') {
-            close_last_opened_modal()
+  },
+  methods: {
+        unfocus(e) {
+            let targetEl = e.currentTarget;
+            setTimeout(function(){
+                targetEl.blur()
+            }, 0)
         }
-    });
   },
   watch: {
         $route: {
@@ -66,14 +70,15 @@ export default {
                 document.title = to.meta.title || 'Some Default Title';
             }
         },
-    }
+  }
 }
 </script>
 
 <style>
-@font-face {
-  font-family: "Rounded_Elegance";
-  src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");}
+    @font-face {
+      font-family: "Rounded_Elegance";
+      src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");
+    }
 
     .fade-enter-active,
     .fade-leave-active {
@@ -83,5 +88,10 @@ export default {
     .fade-enter-from,
     .fade-leave-to {
       opacity: 0;
+    }
+
+    @import '~@vueform/multiselect/themes/tailwind.css';
+    .multiselect-dropdown {
+        @apply !max-h-[40vh];
     }
 </style>

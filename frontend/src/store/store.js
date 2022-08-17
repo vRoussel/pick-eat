@@ -9,8 +9,9 @@ const state =  reactive ({
     units: []
 });
 
-const API_HOST = window.location.host
-const API_ROOT = `http://${API_HOST}/api/v1`
+const API_PROTO = window.location.protocol
+const API_HOST = window.location.hostname
+const API_ROOT = `${API_PROTO}//${API_HOST}/api/v1`
 
 const getRecipes = async function(from, to, filters) {
     let ret = null;
