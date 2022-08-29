@@ -1,7 +1,7 @@
 <template>
     <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row">
         <recipe-filters class="min-w-[13rem] xl:min-w-[16rem]" v-model:filters="filters"></recipe-filters>
-        <div>
+        <div v-if="this.total_count > 0">
         <!--
             <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
         -->
@@ -10,10 +10,11 @@
                     <recipe-list-item :recipe=recipe></recipe-list-item>
                 </div>
             </div>
-            <div class="max-w-fit mx-auto my-8" v-if="this.total_count > 0">
+            <div class="max-w-fit mx-auto my-8">
                 <pagination :current_page="page" :max_page="max_page" url_param="page"></pagination>
             </div>
         </div>
+        <p v-else class="text-xl"> Aucune recette trouvée :( </p>
     </div>
 </template>
 
