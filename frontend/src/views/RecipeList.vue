@@ -1,6 +1,6 @@
 <template>
     <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row">
-        <recipe-filters class="min-w-[15rem] lg:min-w-[17rem]" v-model:filters="filters"></recipe-filters>
+        <recipe-filters class="min-w-[13rem] xl:min-w-[16rem]" v-model:filters="filters"></recipe-filters>
         <div>
         <!--
             <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
