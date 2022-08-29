@@ -1,1 +1,3 @@
 pickeat_site_url: pickeat.internal
+ssl_certif: /etc/letsencrypt/live/vroussel.me/fullchain.pem;
+ssl_certif_key: /etc/letsencrypt/live/vroussel.me/privkey.pem;
