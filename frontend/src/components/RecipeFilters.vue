@@ -101,7 +101,7 @@ export default {
     data: function() {
         return {
             timer: null,
-            expanded: this.on_mobile() ? false : true,
+            expanded: !this.on_mobile()
         }
     },
     props: {
@@ -129,8 +129,13 @@ export default {
             this.updateFilters(new Filters(), 0)
         },
         on_mobile() {
-            return screen.width < 768;
+            return window.innerWidth <= 768;
         }
+    },
+    mounted() {
+        window.addEventListener('resize', () => {
+            this.expanded = !this.on_mobile()
+        })
     },
     computed: {
         search_query: {
@@ -184,7 +189,7 @@ export default {
                 let new_filters = {...this.filters, 'ingredients': val};
                 this.updateFilters(new_filters, 0);
             }
-        },
+        }
     },
     emits: ['toggle', 'update:filters']
 }
