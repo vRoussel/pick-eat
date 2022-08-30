@@ -14,7 +14,10 @@
                 <pagination :current_page="page" :max_page="max_page" url_param="page"></pagination>
             </div>
         </div>
-        <p v-else class="text-xl"> Aucune recette trouvée :( </p>
+        <div v-else>
+            <p class="text-xl mb-2"> Aucune recette trouvée :( </p>
+            <img :src="require('@/assets/homer_hungry.gif')">
+        </div>
     </div>
 </template>
 
