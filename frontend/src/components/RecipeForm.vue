@@ -129,7 +129,8 @@ export default {
                 seasons: new Set(),
                 ingredients: new Map(),
                 notes: "",
-                image_url: ""
+                image_url: "",
+                is_favorite: false
             },
             NewTagModal_: shallowRef(NewTagModal),
             NewCategoryModal_: shallowRef(NewCategoryModal),
@@ -150,7 +151,7 @@ export default {
                 "instructions": r.instructions.split(/\r?\n/),
                 "notes": r.notes,
                 "n_shares": r.shares,
-                "is_favorite": false
+                "is_favorite": r.is_favorite
             }
             for (var ingr of recipe.q_ingredients) {
                 if (ingr.quantity == null)
