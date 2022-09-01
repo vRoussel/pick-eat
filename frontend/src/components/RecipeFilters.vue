@@ -101,7 +101,8 @@ export default {
     data: function() {
         return {
             timer: null,
-            expanded: !this.on_mobile()
+            expanded: !this.on_mobile(),
+            innerWidth_cached: window.innerWidth
         }
     },
     props: {
@@ -134,7 +135,13 @@ export default {
     },
     mounted() {
         window.addEventListener('resize', () => {
-            this.expanded = !this.on_mobile()
+            let old_val = this.innerWidth_cached
+            let new_val = window.innerWidth
+            if (old_val <= 768 && new_val > 768)
+                this.expanded = true
+            else if (old_val > 768 && new_val <= 768)
+                this.expanded = false
+                this.innerWidth_cached = new_val
         })
     },
     computed: {
