@@ -605,13 +605,20 @@ pub async fn modify_one(
         });
         let args: Vec<&(dyn ToSql + Sync)> = vec![&id, &ingr_ids, &qtys, &unit_ids];
         let insert_ingredients_query = "
-            INSERT INTO recipes_ingredients
+            WITH input AS (
+                SELECT i_id, q, u_id
+                FROM
+                    UNNEST($2::int[], $3::real[], $4::int[])
+                    AS x(i_id, q, u_id)
+            )
+            INSERT INTO recipes_ingredients as ri
             (recipe_id, ingredient_id, quantity, unit_id)
-            SELECT $1, ingredient_id, quantity, unit_id
-            FROM
-                UNNEST($2::int[], $3::real[], $4::int[])
-                AS x(ingredient_id, quantity, unit_id)
-            ON CONFLICT DO NOTHING;
+            SELECT $1, i_id, q, u_id
+            FROM input
+            ON CONFLICT(recipe_id, ingredient_id) DO UPDATE
+                SET quantity = EXCLUDED.quantity, unit_id = EXCLUDED.unit_id
+                WHERE ri.recipe_id = $1 AND ri.ingredient_id = EXCLUDED.ingredient_id
+            ;
         ";
         transaction.execute(insert_ingredients_query, &args).await?;
 
