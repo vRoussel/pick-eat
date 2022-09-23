@@ -3,14 +3,16 @@
         <div class="card-image">
             <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG"/></figure>
         </div>
-        <div class="card-body flex flex-row items-center">
-            <h2 ref="recipe_name" class="text-xl recipe-name grow" v-tooltip="overflown ? recipe.name : null">
-                {{ recipe.name }}
-            </h2>
-            <div class="card-actions" aria-label="favorite">
-              <span class="icon text-xl">
+        <div class="card-body divide-y-2 divide-accent !pb-0">
+            <div class="card-actions">
+              <span class="icon">
                 <ion-icon :name="recipe.is_favorite ? 'heart' : 'heart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
               </span>
+            </div>
+            <div class="py-4">
+                <h2 ref="recipe_name" class="text-xl recipe-name grow text-center" v-tooltip="overflown ? recipe.name : null">
+                    {{ recipe.name }}
+                </h2>
             </div>
         </div>
     </div>
