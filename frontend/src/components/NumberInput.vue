@@ -3,7 +3,7 @@
         <button type="button" @click="decrement" class="bg-accent text-accent-content hover:bg-accent-focus h-full px-1 sm:px-2 rounded-l-md cursor-pointer outline-none">
           <span class="m-auto text-2xl font-thin">−</span>
         </button>
-        <input type="number" :placeholder="placeholder" class="input input-bordered rounded-none w-full h-full" :value="modelValue" @input="e => this.$emit('update:modelValue', parseInt(e.target.value))">
+        <input type="number" :placeholder="placeholder" class="input input-bordered rounded-none w-full h-full min-w-[50px]" :value="modelValue" @input="e => this.$emit('update:modelValue', parseInt(e.target.value))">
       <button type="button" @click="increment" class="bg-accent text-accent-content hover:bg-accent-focus h-full px-1 sm:px-2 rounded-r-md cursor-pointer">
         <span class="m-auto text-2xl font-thin">+</span>
       </button>
