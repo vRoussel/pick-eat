@@ -7,7 +7,7 @@
             </span>
         </div>
 -->
-<div v-if="recipe" class="flex flex-col w-full max-w-5xl mx-auto p-2 sm:p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative">
+<div v-if="recipe" class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative">
     <span class="icon absolute right-2 top-2 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
       <ion-icon class="text-primary cursor-pointer" name="create-outline" @click="editRecipe()"></ion-icon>
     </span>
@@ -25,7 +25,7 @@
             </p>
         </div>
     </div>
-    <div class="flex gap-2 flex-wrap justify-center">
+    <div class="flex gap-2 flex-wrap justify-center mt-3">
         <span class="badge badge-outline badge-primary badge-md sm:badge-lg" v-for="tag in recipe.tags" :key="tag.id">
             {{ tag.name }}
         </span>
