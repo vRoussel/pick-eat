@@ -87,7 +87,7 @@
                 <textarea v-model="new_recipe.notes" class="textarea textarea-bordered h-32"/>
             </div>
 
-            <button class="btn btn-primary w-full btn-lg">{{ update_mode ? 'Modifier' : 'Ajouter' }}</button>
+            <button class="btn btn-primary w-full btn-lg">{{ update_mode ? 'Valider' : 'Ajouter' }}</button>
             <button type="button" class="btn btn-accent w-full btn-lg" v-if="update_mode" @click="cancel">Annuler</button>
         </form>
 </template>
