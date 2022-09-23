@@ -10,10 +10,10 @@
             <li><router-link @mouseup="unfocus" to="/new-recipe">Nouvelle recette</router-link></li>
           </ul>
         </div>
-        <router-link to="/recipes">
+        <router-link class="min-w-[150px]" to="/recipes">
           <img :src="require('@/assets/pickeat.png')" width="200">
         </router-link>
-        <ul class="menu menu-horizontal p-0 hidden sm:flex">
+        <ul class="shrink-0 grow menu menu-horizontal p-0 hidden sm:flex">
         <li class="shrink-0"><router-link to="/recipes">Recettes</router-link></li>
         <li class="shrink-0"><router-link to="/new-recipe">Nouvelle recette</router-link></li>
         </ul>
