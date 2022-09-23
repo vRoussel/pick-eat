@@ -4,9 +4,12 @@
             <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG"/></figure>
         </div>
         <div class="card-body divide-y-2 divide-accent !pb-0">
-            <div class="card-actions">
+            <div class="card-actions justify-evenly">
               <span class="icon">
                 <ion-icon :name="recipe.is_favorite ? 'heart' : 'heart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
+              </span>
+              <span class="icon">
+                <ion-icon :name="inCart(recipe.id) ? 'cart' : 'cart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"></ion-icon>
               </span>
             </div>
             <div class="py-4">
@@ -23,7 +26,7 @@ import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-list-item',
-    inject: ["store"],
+    inject: ["store", "cart"],
     props: {
         recipe: {
             type: Object,
@@ -42,6 +45,18 @@ export default {
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
         },
+        inCart(id) {
+            return this.cart.containsId(id)
+        },
+        toggleCart(id) {
+            if (this.inCart(id)) {
+                this.cart.removeRecipeWithId(id)
+            } else {
+                this.store.getOneRecipe(id).then(result => {
+                    this.cart.addRecipe(result, result.n_shares)
+                })
+            }
+        }
     },
     created() {
         this.PLACEHOLDER_IMG = PLACEHOLDER_IMG

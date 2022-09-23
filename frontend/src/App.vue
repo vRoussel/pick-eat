@@ -18,7 +18,11 @@
         <li class="shrink-0"><router-link to="/new-recipe">Nouvelle recette</router-link></li>
         </ul>
       </div>
-      <div class="navbar-end">
+      <div class="navbar-end space-x-3">
+        <label for="modal_gl" class="indicator">
+            <ion-icon class="icon text-4xl cursor-pointer" name="cart-outline"></ion-icon>
+            <span v-if="nbItemsInCart() > 0" class="indicator-item badge badge-primary">{{ nbItemsInCart() }}</span>
+        </label>
         <theme-toggle dark_theme="dark" light_theme="pickeat_light"/>
       </div>
     </nav>
@@ -31,19 +35,24 @@
         />
   </transition>
 </router-view>
+<grocery-list-modal modal_id="modal_gl"/>
 </template>
 
 <script>
 import store from '@/store/store.js'
+import cart from '@/store/cart.js'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import GroceryListModal from '@/components/GroceryListModal.vue'
 
 export default {
   name: 'App',
   provide: {
     store,
+    cart
   },
   components: {
-      ThemeToggle
+      ThemeToggle,
+      GroceryListModal
   },
   data: function() {
     return {
@@ -61,6 +70,9 @@ export default {
             setTimeout(function(){
                 targetEl.blur()
             }, 0)
+        },
+        nbItemsInCart() {
+            return cart.recipeCount()
         }
   },
   watch: {
