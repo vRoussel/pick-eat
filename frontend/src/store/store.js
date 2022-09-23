@@ -11,12 +11,12 @@ const state =  reactive ({
     units: []
 });
 
-const internal = {
-    tags_by_id: {},
-    categories_by_id: {},
-    seasons_by_id: {},
-    ingredients_by_id: {},
-    units_by_id: {}
+const by_id = {
+    tags: {},
+    categories: {},
+    seasons: {},
+    ingredients: {},
+    units: {}
 }
 
 const API_PROTO = window.location.protocol
@@ -57,7 +57,7 @@ const getTags = async function() {
     let ret = await fetch(`${API_ROOT}/tags`)
     if (ret.ok) {
         state.tags = await ret.json()
-        internal.tags_by_id = new Map(state.tags.map(t => [t.id, t.name]))
+        by_id.tags = new Map(state.tags.map(t => [t.id, t.name]))
         return ret
     }
     else
@@ -68,7 +68,7 @@ const getCategories = async function() {
     let ret = await fetch(`${API_ROOT}/categories`)
     if (ret.ok) {
         state.categories = await ret.json()
-        internal.categories_by_id = new Map(state.categories.map(c => [c.id, c.name]))
+        by_id.categories = new Map(state.categories.map(c => [c.id, c.name]))
         return ret
     }
     else
@@ -79,7 +79,7 @@ const getSeasons = async function() {
     let ret = await fetch(`${API_ROOT}/seasons`)
     if (ret.ok) {
         state.seasons = await ret.json()
-        internal.seasons_by_id = new Map(state.seasons.map(s => [s.id, s.name]))
+        by_id.seasons = new Map(state.seasons.map(s => [s.id, s.name]))
         return ret
     }
     else
@@ -90,7 +90,7 @@ const getIngredients = async function() {
     let ret = await fetch(`${API_ROOT}/ingredients`)
     if (ret.ok) {
         state.ingredients = await ret.json()
-        internal.ingredients_by_id = new Map(state.ingredients.map(i => [i.id, i.name]))
+        by_id.ingredients = new Map(state.ingredients.map(i => [i.id, i.name]))
         return ret
     }
     else
@@ -101,7 +101,7 @@ const getUnits = async function() {
     let ret = await fetch(`${API_ROOT}/units`)
     if (ret.ok) {
         state.units = await ret.json()
-        internal.units_by_id = new Map(state.units.map(u => [u.id, u.short_name]))
+        by_id.units = new Map(state.units.map(u => [u.id, u.short_name]))
         return ret
     }
     else
@@ -109,19 +109,19 @@ const getUnits = async function() {
 }
 
 const getTagById = function(id) {
-    return internal.tags_by_id.get(id)
+    return by_id.tags.get(id)
 }
 
 const getIngredientById = function(id) {
-    return internal.ingredients_by_id.get(id)
+    return by_id.ingredients.get(id)
 }
 
 const getCategoryById = function(id) {
-    return internal.categories_by_id.get(id)
+    return by_id.categories.get(id)
 }
 
 const getUnitById = function(id) {
-    return internal.units_by_id.get(id)
+    return by_id.units.get(id)
 }
 
 const addRecipe = async function(recipe) {
@@ -165,7 +165,7 @@ const addTag = async function(tag) {
 
     let new_tag = await ret2.json()
     insert_sorted(state.tags, new_tag, (a,b) => a.name.localeCompare(b.name))
-    internal.tags_by_id.set(new_tag.id, new_tag.name)
+    by_id.tags.set(new_tag.id, new_tag.name)
     return new_tag
 }
 
@@ -190,7 +190,7 @@ const addCategory = async function(category) {
 
     let new_categ = await ret2.json()
     insert_sorted(state.categories, new_categ, (a,b) => a.name.localeCompare(b.name))
-    internal.categories_by_id.set(new_categ.id, new_categ.name)
+    by_id.categories.set(new_categ.id, new_categ.name)
     return new_categ
 }
 
@@ -215,7 +215,7 @@ const addIngredient = async function(ingredient) {
 
     let new_ingr = await ret2.json()
     insert_sorted(state.ingredients, new_ingr, (a,b) => a.name.localeCompare(b.name))
-    internal.ingredients_by_id.set(new_ingr.id, new_ingr.name)
+    by_id.ingredients.set(new_ingr.id, new_ingr.name)
     return new_ingr
 }
 
@@ -240,7 +240,7 @@ const addUnit = async function(unit) {
 
     let new_unit = await ret2.json()
     insert_sorted(state.units, new_unit, (a,b) => a.full_name.localeCompare(b.full_name))
-    internal.units_by_id.set(new_unit.id, new_unit.short_name)
+    by_id.units.set(new_unit.id, new_unit.short_name)
     return new_unit
 }
 
