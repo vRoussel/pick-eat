@@ -84,9 +84,6 @@ export default {
         set_current_unit(unit) {
             if (this.current_unit_input !== undefined)
                 this.current_unit_input.select(unit)
-        },
-        test() {
-            console.log("OKAYYYY")
         }
     }
 }
