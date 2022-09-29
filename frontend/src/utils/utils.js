@@ -38,9 +38,10 @@ export function insert_sorted(array, el, cmp) {
 }
 
 export function isOverflown(element) {
+    let tolerance = 5
     if (element == null)
         return false
-    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+    return element.clientHeight + tolerance < element.scrollHeight || element.clientWidth + tolerance < element.scrollWidth;
 }
 
 export function random_str(len) {
