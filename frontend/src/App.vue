@@ -20,7 +20,7 @@
       </div>
       <div class="navbar-end space-x-3">
         <label for="modal_gl" class="indicator">
-            <ion-icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" name="cart-outline"></ion-icon>
+            <ion-icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :src="require('@/assets/ionicons/cart-outline.svg')"></ion-icon>
             <span v-if="nbItemsInCart() > 0" class="indicator-item badge badge-primary">{{ nbItemsInCart() }}</span>
         </label>
         <theme-toggle dark_theme="dark" light_theme="pickeat_light"/>

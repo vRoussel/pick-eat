@@ -6,10 +6,10 @@
         <div class="card-body divide-y-2 divide-accent !pb-0">
             <div class="card-actions justify-evenly">
               <span class="icon">
-                <ion-icon :name="recipe.is_favorite ? 'heart' : 'heart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
+                <ion-icon :src="heart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
               </span>
               <span class="icon">
-                <ion-icon :name="inCart(recipe.id) ? 'cart' : 'cart-outline'" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"></ion-icon>
+                <ion-icon :src="cart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"></ion-icon>
               </span>
             </div>
             <div class="py-4">
@@ -56,6 +56,14 @@ export default {
                     this.cart.addRecipe(result, result.n_shares)
                 })
             }
+        }
+    },
+    computed: {
+        heart_svg() {
+            return this.recipe.is_favorite ? require('@/assets/ionicons/heart.svg') : require('@/assets/ionicons/heart-outline.svg')
+        },
+        cart_svg() {
+            return this.inCart(this.recipe.id) ? require('@/assets/ionicons/cart.svg') : require('@/assets/ionicons/cart-outline.svg')
         }
     },
     created() {

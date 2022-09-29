@@ -1,16 +1,16 @@
 <template>
     <div class="flex">
         <span class="icon">
-            <ion-icon name="flower" :class="dynClass(1)"></ion-icon>
+            <ion-icon :src="require('@/assets/ionicons/flower.svg')" :class="dynClass(1)"></ion-icon>
         </span>
         <span class="icon">
-            <ion-icon name="sunny" :class="dynClass(2)"></ion-icon>
+            <ion-icon :src="require('@/assets/ionicons/sunny.svg')" :class="dynClass(2)"></ion-icon>
         </span>
         <span class="icon">
-            <ion-icon name="leaf" :class="dynClass(3)"></ion-icon>
+            <ion-icon :src="require('@/assets/ionicons/leaf.svg')" :class="dynClass(3)"></ion-icon>
         </span>
         <span class="icon">
-            <ion-icon name="snow" :class="dynClass(4)"></ion-icon>
+            <ion-icon :src="require('@/assets/ionicons/snow.svg')" :class="dynClass(4)"></ion-icon>
         </span>
     </div>
 </template>

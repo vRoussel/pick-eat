@@ -4,19 +4,19 @@
             <div class="form-control md:hidden">
                 <button class="btn btn-accent btn-square" @click="toggle">
                 <span class="icon">
-                  <ion-icon name="options" size="small"></ion-icon>
+                  <ion-icon :src="require('@/assets/ionicons/options.svg')" size="small"></ion-icon>
                 </span>
                 </button>
             </div>
             <div class="form-control relative grow">
                 <div class="input-group">
                     <span class="icon">
-                       <ion-icon name="search" size="small"></ion-icon>
+                       <ion-icon :src="require('@/assets/ionicons/search.svg')" size="small"></ion-icon>
                     </span>
                     <input @input="e => search_query = e.target.value" class="input w-full" type="search" placeholder="Trouver une recette" :value="search_query">
                 </div>
                 <span v-if="filters.search_query" class="icon cursor-pointer" @click="clearSearch">
-                   <ion-icon name="close" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
+                   <ion-icon :src="require('@/assets/ionicons/close.svg')" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
                </span>
             </div>
     </div>
@@ -71,7 +71,7 @@
         <div class="form-control">
             <button class="btn btn-accent" @click="clearFilters">
             <span class="icon">
-              <ion-icon name="trash" size="small"></ion-icon>
+              <ion-icon :src="require('@/assets/ionicons/trash.svg')" size="small"></ion-icon>
             </span>
             </button>
         </div>
