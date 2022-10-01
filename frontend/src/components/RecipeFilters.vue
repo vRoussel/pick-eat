@@ -159,22 +159,18 @@ export default {
         },
         tags: {
             get: function() {
-                console.log('get_tags')
                 return this.filters.tags;
             },
             set: function(val) {
-                console.log('set_tags')
                 let new_filters = {...this.filters, 'tags': val};
                 this.updateFilters(new_filters, 0);
             }
         },
         categories: {
             get: function() {
-                console.log('get_categs')
                 return this.filters.categories;
             },
             set: function(val) {
-                console.log('set_categs')
                 let new_filters = {...this.filters, 'categories': val};
                 this.updateFilters(new_filters, 0);
             }

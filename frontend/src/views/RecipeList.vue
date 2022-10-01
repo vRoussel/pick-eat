@@ -77,7 +77,6 @@ export default {
         },
         filters: {
             get: function () {
-                console.log("get_filters")
                 let q = this.$route.query;
                 return new Filters(
                      q.search,
@@ -88,7 +87,6 @@ export default {
                      );
             },
             set: function (f) {
-                console.log("set_filters")
                 let q = {}
                 if (f.search_query)
                     q.search = f.search_query
