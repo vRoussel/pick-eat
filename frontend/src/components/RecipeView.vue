@@ -26,9 +26,9 @@
         </div>
     </div>
     <div class="flex gap-2 flex-wrap justify-center mt-3">
-        <span class="badge badge-outline badge-primary badge-md sm:badge-lg" v-for="tag in recipe.tags" :key="tag.id">
+        <router-link :to="'/recipes?t=' + tag.id" class="badge badge-outline badge-primary badge-md sm:badge-lg" v-for="tag in recipe.tags" :key="tag.id">
             {{ tag.name }}
-        </span>
+        </router-link>
     </div>
     <div class="flex flex-wrap sm:flex-nowrap gap-x-4 sm:gap-x-6 md:gap-x-8 items-start space-y-8 sm:space-y-0">
         <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
