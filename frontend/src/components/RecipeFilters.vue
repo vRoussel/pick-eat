@@ -4,19 +4,19 @@
             <div class="form-control md:hidden">
                 <button class="btn btn-accent btn-square" @click="toggle">
                 <span class="icon">
-                  <ion-icon :src="require('@/assets/ionicons/options.svg')" size="small"></ion-icon>
+                  <ion-icon :src="options_svg" size="small"></ion-icon>
                 </span>
                 </button>
             </div>
             <div class="form-control relative grow">
                 <div class="input-group">
                     <span class="icon">
-                       <ion-icon :src="require('@/assets/ionicons/search.svg')" size="small"></ion-icon>
+                       <ion-icon :src="search_svg" size="small"></ion-icon>
                     </span>
                     <input @input="e => search_query = e.target.value" class="input w-full" type="search" placeholder="Trouver une recette" :value="search_query">
                 </div>
                 <span v-if="filters.search_query" class="icon cursor-pointer" @click="clearSearch">
-                   <ion-icon :src="require('@/assets/ionicons/close.svg')" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
+                   <ion-icon :src="close_svg" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
                </span>
             </div>
     </div>
@@ -71,7 +71,7 @@
         <div class="form-control">
             <button class="btn btn-accent" @click="clearFilters">
             <span class="icon">
-              <ion-icon :src="require('@/assets/ionicons/trash.svg')" size="small"></ion-icon>
+              <ion-icon :src="trash_svg" size="small"></ion-icon>
             </span>
             </button>
         </div>
@@ -81,6 +81,11 @@
 
 <script>
 import Multiselect from '@vueform/multiselect'
+
+import options_svg from '@/assets/ionicons/options.svg'
+import search_svg from '@/assets/ionicons/search.svg'
+import close_svg from '@/assets/ionicons/close.svg'
+import trash_svg from '@/assets/ionicons/trash.svg'
 
 export class Filters {
     constructor (q=null, i=[], t=[], c=[], s=[]) {
@@ -102,7 +107,11 @@ export default {
         return {
             timer: null,
             expanded: !this.on_mobile(),
-            innerWidth_cached: window.innerWidth
+            innerWidth_cached: window.innerWidth,
+            options_svg: options_svg,
+            search_svg: search_svg,
+            close_svg: close_svg,
+            trash_svg: trash_svg
         }
     },
     props: {

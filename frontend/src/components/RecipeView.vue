@@ -9,7 +9,7 @@
 -->
 <div v-if="recipe" class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative">
     <span class="icon absolute right-2 top-2 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
-      <ion-icon class="text-primary cursor-pointer" :src="require('@/assets/ionicons/create-outline.svg')" @click="editRecipe()"></ion-icon>
+      <ion-icon class="text-primary cursor-pointer" :src="create_outline_svg" @click="editRecipe()"></ion-icon>
     </span>
     <div class="flex gap-2 sm:gap-x-4 md:gap-x-6">
         <div class="basis-1/2 sm:basis-2/5 md:basis-1/3">
@@ -19,9 +19,9 @@
             <p ref="recipe_name" v-tooltip="overflown ? recipe.name : null" class="recipe-name text-primary text-center text-lg sm:text-3xl md:text-4xl lg:text-5xl">{{ recipe.name }}</p>
             <season-icons :seasons="this.recipe.seasons" class="text-2xl md:text-3xl lg:text-4xl gap-x-1"></season-icons>
             <p>
-                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><ion-icon :src="require('@/assets/ionicons/time.svg')" class="text-primary"></ion-icon> {{ recipe.prep_time_min }} min</span>
+                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><ion-icon :src="time_svg" class="text-primary"></ion-icon> {{ recipe.prep_time_min }} min</span>
                 <br/>
-                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><ion-icon :src="require('@/assets/ionicons/flame.svg')" class="text-primary" ></ion-icon>{{ recipe.cook_time_min }} min</span>
+                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><ion-icon :src="flame_svg" class="text-primary" ></ion-icon>{{ recipe.cook_time_min }} min</span>
             </p>
         </div>
     </div>
@@ -34,7 +34,7 @@
         <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
             <thead>
                 <tr class="text-center">
-                    <th v-if="recipe.n_shares > 0" colspan="2" class="bg-transparent !text-primary"><span class="icon inline-flex items-center text-lg" >Ingrédients ({{ recipe.n_shares }} <ion-icon class="pl-0.5" :src="require('@/assets/ionicons/person.svg')"></ion-icon>)</span></th>
+                    <th v-if="recipe.n_shares > 0" colspan="2" class="bg-transparent !text-primary"><span class="icon inline-flex items-center text-lg" >Ingrédients ({{ recipe.n_shares }} <ion-icon class="pl-0.5" :src="person_svg"></ion-icon>)</span></th>
                     <th v-else colspan="2">Ingrédients</th>
                 </tr>
             </thead>
@@ -120,6 +120,11 @@
 import SeasonIcons from '@/components/SeasonIcons.vue'
 import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
 
+import create_outline_svg from '@/assets/ionicons/create-outline.svg'
+import time_svg from '@/assets/ionicons/time.svg'
+import flame_svg from '@/assets/ionicons/flame.svg'
+import person_svg from '@/assets/ionicons/person.svg'
+
 export default {
     name: 'recipe-view',
     components: {
@@ -134,6 +139,10 @@ export default {
     data: function() {
         return {
             overflown: false,
+            create_outline_svg: create_outline_svg,
+            time_svg: time_svg,
+            flame_svg: flame_svg,
+            person_svg: person_svg
         }
     },
     methods: {

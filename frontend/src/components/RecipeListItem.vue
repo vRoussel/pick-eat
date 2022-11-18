@@ -24,6 +24,11 @@
 <script>
 import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
 
+import heart_svg from '@/assets/ionicons/heart.svg'
+import heart_outline_svg from '@/assets/ionicons/heart_outline.svg'
+import cart_svg from '@/assets/ionicons/cart.svg'
+import cart_outline_svg from '@/assets/ionicons/cart_outline.svg'
+
 export default {
     name: 'recipe-list-item',
     inject: ["store", "cart"],
@@ -60,10 +65,10 @@ export default {
     },
     computed: {
         heart_svg() {
-            return this.recipe.is_favorite ? require('@/assets/ionicons/heart.svg') : require('@/assets/ionicons/heart-outline.svg')
+            return this.recipe.is_favorite ? heart_svg : heart_outline_svg
         },
         cart_svg() {
-            return this.inCart(this.recipe.id) ? require('@/assets/ionicons/cart.svg') : require('@/assets/ionicons/cart-outline.svg')
+            return this.inCart(this.recipe.id) ? cart_svg : cart_outline_svg
         }
     },
     created() {
