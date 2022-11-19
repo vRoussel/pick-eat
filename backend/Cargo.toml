@@ -7,21 +7,21 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-cors = "0.6.1"
-actix-web = "4.1.0"
+actix-cors = "0.6.4"
+actix-web = "4.2.1"
 actix-rt = "2.7.0"
 bb8 = "0.8.0"
 bb8-postgres = "0.8.1"
-chrono = { version = "0.4.19", features = ["serde"] }
-clap = { version = "3.2.8", features = ["derive"] }
-config = "0.13.1"
+chrono = { version = "0.4.23", features = ["serde"] }
+clap = { version = "4.0.26", features = ["derive"] }
+config = "0.13.2"
 log = "0.4.17"
-serde = "1.0.138"
-serde_json = "1.0.82"
+serde = "1.0.147"
+serde_json = "1.0.88"
 simplelog = "0.12.0"
-time = { version = "0.3.11", features = ["serde"] }
-tokio-postgres = { version = "0.7.6", features = ["with-time-0_3", "with-serde_json-1", "array-impls"] }
-tokio = "1.19.2"
+time = { version = "0.3.17", features = ["serde"] }
+tokio-postgres = { version = "0.7.7", features = ["with-time-0_3", "with-serde_json-1", "array-impls"] }
+tokio = "1.22.0"
 
 [profile.release]
 lto = "thin"
