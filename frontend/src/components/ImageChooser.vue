@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import {PLACEHOLDER_IMG} from '@/utils/utils.js'
 
 export default {
     name: 'image-chooser',
+    inject: ["icons"],
     props: {
         image_url: {
             type: String
@@ -26,7 +26,7 @@ export default {
     computed: {
         image_preview() {
             if (this.image_url === "")
-                return PLACEHOLDER_IMG
+                return this.icons.camera
             else
                 return this.image_url.replace("/upload", "/upload/c_limit,h_256,w_256");
         },

@@ -16,7 +16,7 @@
         </div>
         <div v-else>
             <p class="text-xl mb-2"> Aucune recette trouvée :( </p>
-            <img :src="homer_hungry_gif">
+            <img :src="no_recipe_gif">
         </div>
     </div>
 </template>
@@ -27,7 +27,7 @@ import RecipeFilters from '@/components/RecipeFilters.vue'
 import RecipeListItem from '@/components/RecipeListItem.vue'
 import {Filters} from '@/components/RecipeFilters.vue'
 
-import homer_hungry_gif from '@/assets/homer_hungry.gif'
+import no_recipe_gif from '@/assets/homer_hungry.gif'
 
 export default {
     name: 'recipe-list',
@@ -42,7 +42,7 @@ export default {
             recipes: [],
             per_page: 12,
             total_count: 0,
-            homer_hungry_gif: homer_hungry_gif
+            no_recipe_gif: no_recipe_gif
         }
     },
     methods: {

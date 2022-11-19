@@ -1,15 +1,15 @@
 <template>
     <div class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer" @click="openRecipe(recipe.id)">
         <div class="card-image">
-            <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || PLACEHOLDER_IMG"/></figure>
+            <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"/></figure>
         </div>
         <div class="card-body divide-y-2 divide-accent !pb-0">
             <div class="card-actions justify-evenly">
               <span class="icon">
-                <ion-icon :src="heart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"></ion-icon>
+                <Icon :icon="heart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"/>
               </span>
               <span class="icon">
-                <ion-icon :src="cart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"></ion-icon>
+                <Icon :icon="cart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"/>
               </span>
             </div>
             <div class="py-4">
@@ -22,16 +22,11 @@
 </template>
 
 <script>
-import {PLACEHOLDER_IMG, isOverflown} from '@/utils/utils.js'
-
-import heart_svg from '@/assets/ionicons/heart.svg'
-import heart_outline_svg from '@/assets/ionicons/heart_outline.svg'
-import cart_svg from '@/assets/ionicons/cart.svg'
-import cart_outline_svg from '@/assets/ionicons/cart_outline.svg'
+import {isOverflown} from '@/utils/utils.js'
 
 export default {
     name: 'recipe-list-item',
-    inject: ["store", "cart"],
+    inject: ["store", "cart", "icons"],
     props: {
         recipe: {
             type: Object,
@@ -65,14 +60,11 @@ export default {
     },
     computed: {
         heart_svg() {
-            return this.recipe.is_favorite ? heart_svg : heart_outline_svg
+            return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
         },
         cart_svg() {
-            return this.inCart(this.recipe.id) ? cart_svg : cart_outline_svg
+            return this.inCart(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
         }
-    },
-    created() {
-        this.PLACEHOLDER_IMG = PLACEHOLDER_IMG
     },
     mounted() {
         //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined

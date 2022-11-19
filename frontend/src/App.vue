@@ -13,14 +13,14 @@
         <router-link class="min-w-[150px]" to="/recipes">
           <img :src="pickeat_png" width="200">
         </router-link>
-        <ul class="shrink-0 grow menu menu-horizontal p-0 hidden sm:flex">
+        <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex">
         <li class="shrink-0"><router-link to="/recipes">Recettes</router-link></li>
         <li class="shrink-0"><router-link to="/new-recipe">Nouvelle recette</router-link></li>
         </ul>
       </div>
       <div class="navbar-end space-x-3">
         <label for="modal_gl" class="indicator">
-            <ion-icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :src="cart_outline_svg"></ion-icon>
+            <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline"/>
             <span v-if="nbItemsInCart() > 0" class="indicator-item badge badge-primary">{{ nbItemsInCart() }}</span>
         </label>
         <theme-toggle dark_theme="dark" light_theme="pickeat_light"/>
@@ -41,17 +41,18 @@
 <script>
 import store from '@/store/store.js'
 import cart from '@/store/cart.js'
+import icons from '@/utils/icons.js'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
 
 import pickeat_png from '@/assets/pickeat.png'
-import cart_outline_svg from '@/assets/ionicons/cart-outline.svg'
 
 export default {
   name: 'App',
   provide: {
     store,
-    cart
+    cart,
+    icons
   },
   components: {
       ThemeToggle,
@@ -61,7 +62,7 @@ export default {
     return {
         navbarIsOpen: false,
         pickeat_png: pickeat_png,
-        cart_outline_svg: cart_outline_svg
+        icons: icons
     }
   },
   created: function() {

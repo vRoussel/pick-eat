@@ -3,20 +3,20 @@
     <div class="flex gap-x-2">
             <div class="form-control md:hidden">
                 <button class="btn btn-accent btn-square" @click="toggle">
-                <span class="icon">
-                  <ion-icon :src="options_svg" size="small"></ion-icon>
+                <span class="icon text-xl">
+                    <Icon :icon="icons.options"/>
                 </span>
                 </button>
             </div>
             <div class="form-control relative grow">
                 <div class="input-group">
-                    <span class="icon">
-                       <ion-icon :src="search_svg" size="small"></ion-icon>
+                    <span class="icon text-xl">
+                        <Icon :icon="icons.search" :inline="true"/>
                     </span>
                     <input @input="e => search_query = e.target.value" class="input w-full" type="search" placeholder="Trouver une recette" :value="search_query">
                 </div>
                 <span v-if="filters.search_query" class="icon cursor-pointer" @click="clearSearch">
-                   <ion-icon :src="close_svg" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"></ion-icon>
+                    <Icon :icon="icons.close" class="absolute right-3 top-0 bottom-0 h-full" @click="clearSearch"/>
                </span>
             </div>
     </div>
@@ -70,8 +70,8 @@
         </fieldset>
         <div class="form-control">
             <button class="btn btn-accent" @click="clearFilters">
-            <span class="icon">
-              <ion-icon :src="trash_svg" size="small"></ion-icon>
+            <span class="icon text-xl">
+                <Icon :icon="icons.reset"/>
             </span>
             </button>
         </div>
@@ -81,11 +81,6 @@
 
 <script>
 import Multiselect from '@vueform/multiselect'
-
-import options_svg from '@/assets/ionicons/options.svg'
-import search_svg from '@/assets/ionicons/search.svg'
-import close_svg from '@/assets/ionicons/close.svg'
-import trash_svg from '@/assets/ionicons/trash.svg'
 
 export class Filters {
     constructor (q=null, i=[], t=[], c=[], s=[]) {
@@ -99,7 +94,7 @@ export class Filters {
 
 export default {
     name: 'recipe-filters',
-    inject: ["store"],
+    inject: ["store", "icons"],
     components: {
         Multiselect,
     },
@@ -108,10 +103,6 @@ export default {
             timer: null,
             expanded: !this.on_mobile(),
             innerWidth_cached: window.innerWidth,
-            options_svg: options_svg,
-            search_svg: search_svg,
-            close_svg: close_svg,
-            trash_svg: trash_svg
         }
     },
     props: {

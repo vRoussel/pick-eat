@@ -1,6 +1,3 @@
-import PLACEHOLDER_IMG from '@/assets/camera.svg'
-export {PLACEHOLDER_IMG}
-
 function str_without_accents(str) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, "")
 }
