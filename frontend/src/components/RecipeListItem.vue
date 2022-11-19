@@ -1,31 +1,46 @@
 <template>
-    <div class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer" @click="openRecipe(recipe.id)">
-        <div class="card-image">
-            <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"/></figure>
-        </div>
-        <div class="card-body divide-y-2 divide-accent !pb-0">
-            <div class="card-actions justify-evenly">
-              <span class="icon">
-                <Icon :icon="heart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-red-600" @click.stop="toggleFavorite(recipe)"/>
-              </span>
-              <span class="icon">
-                <Icon :icon="cart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-primary" @click.stop="toggleCart(recipe.id)"/>
-              </span>
-            </div>
-            <div class="py-4">
-                <h2 ref="recipe_name" class="text-xl recipe-name grow text-center" v-tooltip="overflown ? recipe.name : null">
-                    {{ recipe.name }}
-                </h2>
-            </div>
-        </div>
+  <div
+    class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer"
+    @click="openRecipe(recipe.id)"
+  >
+    <div class="card-image">
+      <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"></figure>
     </div>
+    <div class="card-body divide-y-2 divide-accent !pb-0">
+      <div class="card-actions justify-evenly">
+        <span class="icon">
+          <Icon
+            :icon="heart_svg"
+            class="transition ease-in-out hover:scale-125 text-2xl text-red-600"
+            @click.stop="toggleFavorite(recipe)"
+          />
+        </span>
+        <span class="icon">
+          <Icon
+            :icon="cart_svg"
+            class="transition ease-in-out hover:scale-125 text-2xl text-primary"
+            @click.stop="toggleCart(recipe.id)"
+          />
+        </span>
+      </div>
+      <div class="py-4">
+        <h2
+          ref="recipe_name"
+          v-tooltip="overflown ? recipe.name : null"
+          class="text-xl recipe-name grow text-center"
+        >
+          {{ recipe.name }}
+        </h2>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import {isOverflown} from '@/utils/utils.js'
 
 export default {
-    name: 'recipe-list-item',
+    name: 'RecipeListItem',
     inject: ["store", "cart", "icons"],
     props: {
         recipe: {
@@ -37,6 +52,23 @@ export default {
         return {
             overflown: false,
         }
+    },
+    computed: {
+        heart_svg() {
+            return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
+        },
+        cart_svg() {
+            return this.inCart(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
+        }
+    },
+    mounted() {
+        //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined
+        const interval = setInterval(() => {
+            if (this.$refs.recipe_name) {
+                this.overflown = isOverflown(this.$refs.recipe_name)
+                clearInterval(interval)
+            }
+        }, 100)
     },
     methods: {
         toggleFavorite(recipe) {
@@ -57,23 +89,6 @@ export default {
                 })
             }
         }
-    },
-    computed: {
-        heart_svg() {
-            return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
-        },
-        cart_svg() {
-            return this.inCart(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
-        }
-    },
-    mounted() {
-        //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined
-        const interval = setInterval(() => {
-            if (this.$refs.recipe_name) {
-                this.overflown = isOverflown(this.$refs.recipe_name)
-                clearInterval(interval)
-            }
-        }, 100)
     },
 }
 </script>

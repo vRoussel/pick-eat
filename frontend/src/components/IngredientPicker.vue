@@ -1,14 +1,54 @@
 <template>
-    <Multiselect @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()" class="mb-4" mode="multiple" :options="ingr_remaining" label="name" searchable @select="pick_ingr" trackBy="searchable_name" object valueProp="id" v-model="dummy" ref="multiselect" placeholder="Ajouter un ingrédient" openDirection="top"/>
-    <div class="flex gap-1 my-2">
-        <label for="modal_ingr" class="btn rounded-full btn-primary btn-outline btn-sm modal-button" @mousedown="save_ingredient_search">Ingrédient manquant ?</label>
-        <label for="modal_unit" class="btn rounded-full btn-primary btn-outline btn-sm modal-button" @mousedown="save_unit_search">Unité manquante ?</label>
-    </div>
-    <div class="flex flex-col items-center mt-2 gap-y-5">
-        <ingredient-list-item v-for="ingr in picked.values()" :key="ingr.id" @delete="del_ingr(ingr.id)" v-model:quantity="ingr.quantity" :id="ingr.id" v-model:unit_id="ingr.unit_id" @createUnit="save_unit_search(), open_unit_modal()" @unit-input-selected="save_current_unit_input"></ingredient-list-item>
-    </div>
-    <new-ingredient-modal modal_id="modal_ingr" :input="ingredient_search" @created="add_ingr"/>
-    <new-unit-modal modal_id="modal_unit" :input="unit_search" @created="set_current_unit"/>
+  <Multiselect
+    ref="multiselect"
+    v-model="dummy"
+    class="mb-4"
+    mode="multiple"
+    :options="ingr_remaining"
+    label="name"
+    searchable
+    track-by="searchable_name"
+    object
+    value-prop="id"
+    placeholder="Ajouter un ingrédient"
+    open-direction="top"
+    @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
+    @select="pick_ingr"
+  />
+  <div class="flex gap-1 my-2">
+    <label
+      for="modal_ingr"
+      class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+      @mousedown="save_ingredient_search"
+    >Ingrédient manquant ?</label>
+    <label
+      for="modal_unit"
+      class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+      @mousedown="save_unit_search"
+    >Unité manquante ?</label>
+  </div>
+  <div class="flex flex-col items-center mt-2 gap-y-5">
+    <ingredient-list-item
+      v-for="ingr in picked.values()"
+      :id="ingr.id"
+      :key="ingr.id"
+      v-model:quantity="ingr.quantity"
+      v-model:unit_id="ingr.unit_id"
+      @delete="del_ingr(ingr.id)"
+      @createUnit="save_unit_search(), open_unit_modal()"
+      @unit-input-selected="save_current_unit_input"
+    />
+  </div>
+  <new-ingredient-modal
+    modal_id="modal_ingr"
+    :input="ingredient_search"
+    @created="add_ingr"
+  />
+  <new-unit-modal
+    modal_id="modal_unit"
+    :input="unit_search"
+    @created="set_current_unit"
+  />
 </template>
 
 <script>
@@ -19,19 +59,20 @@ import NewIngredientModal from '@/components/NewIngredientModal.vue'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
 export default {
-    name: 'ingredient-picker',
-    inject: ["store"],
+    name: 'IngredientPicker',
     components : {
         Multiselect,
         IngredientListItem,
         NewIngredientModal,
         NewUnitModal
     },
+    inject: ["store"],
     props: {
         picked: {
             type: Map
         }
     },
+    emits: ['update:picked', 'createIngredient', 'createUnit'],
     data: function() {
         return {
             dummy: null,
@@ -50,7 +91,6 @@ export default {
                 .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
     },
-    emits: ['update:picked', 'createIngredient', 'createUnit'],
     methods: {
         pick_ingr(ingr) {
             this.add_ingr(ingr)

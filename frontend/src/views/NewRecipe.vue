@@ -1,14 +1,14 @@
 <template>
-    <div>
-        <recipe-form @done='afterInsert'></recipe-form>
-    </div>
+  <div>
+    <recipe-form @done="afterInsert" />
+  </div>
 </template>
 
 <script>
 import RecipeForm from '@/components/RecipeForm.vue'
 
 export default {
-    name: 'new-recipe',
+    name: 'NewRecipe',
     components: {
       RecipeForm,
     },

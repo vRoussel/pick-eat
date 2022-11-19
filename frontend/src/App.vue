@@ -1,41 +1,104 @@
 <template>
-    <nav class="navbar bg-base-100 border-b border-primary">
-      <div class="navbar-start">
-        <div class="dropdown" ref="dd">
-          <label tabindex="0" class="btn btn-ghost sm:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
-          </label>
-          <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-            <li><router-link @mouseup="unfocus" to="/recipes">Recettes</router-link></li>
-            <li><router-link @mouseup="unfocus" to="/new-recipe">Nouvelle recette</router-link></li>
-          </ul>
-        </div>
-        <router-link class="min-w-[150px]" to="/recipes">
-          <img :src="pickeat_png" width="200">
-        </router-link>
-        <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex">
-        <li class="shrink-0"><router-link to="/recipes">Recettes</router-link></li>
-        <li class="shrink-0"><router-link to="/new-recipe">Nouvelle recette</router-link></li>
+  <nav class="navbar bg-base-100 border-b border-primary">
+    <div class="navbar-start">
+      <div
+        ref="dd"
+        class="dropdown"
+      >
+        <label
+          tabindex="0"
+          class="btn btn-ghost sm:hidden"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h8m-8 6h16"
+          /></svg>
+        </label>
+        <ul
+          tabindex="0"
+          class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          <li>
+            <router-link
+              to="/recipes"
+              @mouseup="unfocus"
+            >
+              Recettes
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/new-recipe"
+              @mouseup="unfocus"
+            >
+              Nouvelle recette
+            </router-link>
+          </li>
         </ul>
       </div>
-      <div class="navbar-end space-x-3">
-        <label for="modal_gl" class="indicator">
-            <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline"/>
-            <span v-if="nbItemsInCart() > 0" class="indicator-item badge badge-primary">{{ nbItemsInCart() }}</span>
-        </label>
-        <theme-toggle dark_theme="dark" light_theme="pickeat_light"/>
-      </div>
-    </nav>
-  <router-view v-slot="{ Component, route }">
-  <transition name="fade" mode="out-in">
-        <component
-          :is="Component"
-          :key="route.path"
-          ref="main"
+      <router-link
+        class="min-w-[150px]"
+        to="/recipes"
+      >
+        <img
+          :src="pickeat_png"
+          width="200"
+        >
+      </router-link>
+      <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex">
+        <li class="shrink-0">
+          <router-link to="/recipes">
+            Recettes
+          </router-link>
+        </li>
+        <li class="shrink-0">
+          <router-link to="/new-recipe">
+            Nouvelle recette
+          </router-link>
+        </li>
+      </ul>
+    </div>
+    <div class="navbar-end space-x-3">
+      <label
+        for="modal_gl"
+        class="indicator"
+      >
+        <Icon
+          class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
+          :icon="icons.cart_outline"
         />
-  </transition>
-</router-view>
-<grocery-list-modal modal_id="modal_gl"/>
+        <span
+          v-if="nbItemsInCart() > 0"
+          class="indicator-item badge badge-primary"
+        >{{ nbItemsInCart() }}</span>
+      </label>
+      <theme-toggle
+        dark_theme="dark"
+        light_theme="pickeat_light"
+      />
+    </div>
+  </nav>
+  <router-view v-slot="{ Component, route }">
+    <transition
+      name="fade"
+      mode="out-in"
+    >
+      <component
+        :is="Component"
+        :key="route.path"
+        ref="main"
+      />
+    </transition>
+  </router-view>
+  <grocery-list-modal modal_id="modal_gl" />
 </template>
 
 <script>
@@ -49,14 +112,14 @@ import pickeat_png from '@/assets/pickeat.png'
 
 export default {
   name: 'App',
+  components: {
+      ThemeToggle,
+      GroceryListModal
+  },
   provide: {
     store,
     cart,
     icons
-  },
-  components: {
-      ThemeToggle,
-      GroceryListModal
   },
   data: function() {
     return {
@@ -64,6 +127,14 @@ export default {
         pickeat_png: pickeat_png,
         icons: icons
     }
+  },
+  watch: {
+        $route: {
+            immediate: true,
+            handler(to) {
+                document.title = to.meta.title || 'Some Default Title';
+            }
+        },
   },
   created: function() {
     let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
@@ -80,14 +151,6 @@ export default {
         nbItemsInCart() {
             return cart.recipeCount()
         }
-  },
-  watch: {
-        $route: {
-            immediate: true,
-            handler(to) {
-                document.title = to.meta.title || 'Some Default Title';
-            }
-        },
   }
 }
 </script>

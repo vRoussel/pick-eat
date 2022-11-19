@@ -1,5 +1,5 @@
 <template>
-<!--
+  <!--
    <div class="box" v-if="recipe">
         <div class="has-text-right">
             <span class="icon">
@@ -7,57 +7,121 @@
             </span>
         </div>
 -->
-<div v-if="recipe" class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative">
+  <div
+    v-if="recipe"
+    class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative"
+  >
     <span class="icon absolute right-2 top-2 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
-      <Icon class="text-primary cursor-pointer" :icon="icons.pencil" @click="editRecipe()"/>
+      <Icon
+        class="text-primary cursor-pointer"
+        :icon="icons.pencil"
+        @click="editRecipe()"
+      />
     </span>
     <div class="flex gap-2 sm:gap-x-4 md:gap-x-6">
-        <div class="basis-1/2 sm:basis-2/5 md:basis-1/3">
-            <img :src="image" class="rounded-xl"/>
-        </div>
-        <div class="flex flex-col basis-1/2 justify-evenly items-center mx-auto">
-            <p ref="recipe_name" v-tooltip="overflown ? recipe.name : null" class="recipe-name text-primary text-center text-lg sm:text-3xl md:text-4xl lg:text-5xl">{{ recipe.name }}</p>
-            <season-icons :seasons="this.recipe.seasons" class="text-2xl md:text-3xl lg:text-4xl gap-x-1"></season-icons>
-            <p>
-                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon :icon="icons.knife" class="text-primary"/> {{ recipe.prep_time_min }} min</span>
-                <br/>
-                <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon :icon="icons.cooking_pot" class="text-primary"/>{{ recipe.cook_time_min }} min</span>
-            </p>
-        </div>
+      <div class="basis-1/2 sm:basis-2/5 md:basis-1/3">
+        <img
+          :src="image"
+          class="rounded-xl"
+        >
+      </div>
+      <div class="flex flex-col basis-1/2 justify-evenly items-center mx-auto">
+        <p
+          ref="recipe_name"
+          v-tooltip="overflown ? recipe.name : null"
+          class="recipe-name text-primary text-center text-lg sm:text-3xl md:text-4xl lg:text-5xl"
+        >
+          {{ recipe.name }}
+        </p>
+        <season-icons
+          :seasons="recipe.seasons"
+          class="text-2xl md:text-3xl lg:text-4xl gap-x-1"
+        />
+        <p>
+          <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon
+            :icon="icons.knife"
+            class="text-primary"
+          /> {{ recipe.prep_time_min }} min</span>
+          <br>
+          <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon
+            :icon="icons.cooking_pot"
+            class="text-primary"
+          />{{ recipe.cook_time_min }} min</span>
+        </p>
+      </div>
     </div>
     <div class="flex gap-2 flex-wrap justify-center mt-3">
-        <router-link :to="'/recipes?t=' + tag.id" class="badge badge-outline badge-primary badge-md sm:badge-lg" v-for="tag in recipe.tags" :key="tag.id">
-            {{ tag.name }}
-        </router-link>
+      <router-link
+        v-for="tag in recipe.tags"
+        :key="tag.id"
+        :to="'/recipes?t=' + tag.id"
+        class="badge badge-outline badge-primary badge-md sm:badge-lg"
+      >
+        {{ tag.name }}
+      </router-link>
     </div>
     <div class="flex flex-wrap sm:flex-nowrap gap-x-4 sm:gap-x-6 md:gap-x-8 items-start space-y-8 sm:space-y-0">
-        <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
-            <thead>
-                <tr class="text-center">
-                    <th v-if="recipe.n_shares > 0" colspan="2" class="bg-transparent !text-primary"><span class="icon inline-flex items-center text-lg" >Ingrédients ({{ recipe.n_shares }} <Icon class="pl-0.5" :icon="icons.person"/>)</span></th>
-                    <th v-else colspan="2">Ingrédients</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="ingr in recipe.q_ingredients" :key="ingr.id">
-                    <td class="!text-right">{{ ingr.quantity }} {{ ingr.unit ? ingr.unit.short_name : "" }}</td>
-                    <td>{{ ingr.name }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="table table-compact grow">
-            <thead class="border-primary">
-                <tr class="text-center"><th class="bg-transparent !text-primary font-bold text-lg" colspan="2">Étapes</th></tr>
-            </thead>
-            <tbody>
-                <tr class="border-0" v-for="(step,index) in recipe.instructions" :key="index">
-                    <td class="text-primary border-0 font-bold">{{ index + 1 }}</td>
-                    <td class="whitespace-pre-wrap border-0 !align-middle">{{ step }}</td>
-                </tr>
-            </tbody>
-        </table>
+      <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
+        <thead>
+          <tr class="text-center">
+            <th
+              v-if="recipe.n_shares > 0"
+              colspan="2"
+              class="bg-transparent !text-primary"
+            >
+              <span class="icon inline-flex items-center text-lg">Ingrédients ({{ recipe.n_shares }} <Icon
+                class="pl-0.5"
+                :icon="icons.person"
+              />)</span>
+            </th>
+            <th
+              v-else
+              colspan="2"
+            >
+              Ingrédients
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="ingr in recipe.q_ingredients"
+            :key="ingr.id"
+          >
+            <td class="!text-right">
+              {{ ingr.quantity }} {{ ingr.unit ? ingr.unit.short_name : "" }}
+            </td>
+            <td>{{ ingr.name }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-compact grow">
+        <thead class="border-primary">
+          <tr class="text-center">
+            <th
+              class="bg-transparent !text-primary font-bold text-lg"
+              colspan="2"
+            >
+              Étapes
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(step,index) in recipe.instructions"
+            :key="index"
+            class="border-0"
+          >
+            <td class="text-primary border-0 font-bold">
+              {{ index + 1 }}
+            </td>
+            <td class="whitespace-pre-wrap border-0 !align-middle">
+              {{ step }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-</div>
+  </div>
 <!--
         <div class="columns is-mobile has-text-centered my-0">
             <div class="column is-6-mobile is-4-tablet">
@@ -121,7 +185,7 @@ import SeasonIcons from '@/components/SeasonIcons.vue'
 import {isOverflown} from '@/utils/utils.js'
 
 export default {
-    name: 'recipe-view',
+    name: 'RecipeView',
     components: {
         SeasonIcons,
     },
@@ -131,14 +195,10 @@ export default {
             type : Object,
         }
     },
+    emits: ['edit'],
     data: function() {
         return {
             overflown: false,
-        }
-    },
-    methods: {
-        editRecipe() {
-            this.$emit('edit')
         }
     },
     computed : {
@@ -158,7 +218,11 @@ export default {
             }
         }, 100)
     },
-    emits: ['edit']
+    methods: {
+        editRecipe() {
+            this.$emit('edit')
+        }
+    }
 }
 </script>
 

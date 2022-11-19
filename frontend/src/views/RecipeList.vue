@@ -1,24 +1,39 @@
 <template>
-    <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row">
-        <recipe-filters class="min-w-[13rem] xl:min-w-[16rem]" v-model:filters="filters"></recipe-filters>
-        <div v-if="this.total_count > 0" class="w-full">
-        <!--
+  <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row">
+    <recipe-filters
+      v-model:filters="filters"
+      class="min-w-[13rem] xl:min-w-[16rem]"
+    />
+    <div
+      v-if="total_count > 0"
+      class="w-full"
+    >
+      <!--
             <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
         -->
-            <div class="p-4 gap-x-4 gap-y-6 lg:p-6 lg:gap-x-6 lg:gap-y-9 shadow-md shadow-accent rounded-md grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                <div v-for="recipe in recipes" :key="'r' + recipe.id">
-                    <recipe-list-item :recipe=recipe></recipe-list-item>
-                </div>
-            </div>
-            <div class="max-w-fit mx-auto my-8">
-                <pagination :current_page="page" :max_page="max_page" url_param="page"></pagination>
-            </div>
+      <div class="p-4 gap-x-4 gap-y-6 lg:p-6 lg:gap-x-6 lg:gap-y-9 shadow-md shadow-accent rounded-md grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        <div
+          v-for="recipe in recipes"
+          :key="'r' + recipe.id"
+        >
+          <recipe-list-item :recipe="recipe" />
         </div>
-        <div v-else>
-            <p class="text-xl mb-2"> Aucune recette trouvée :( </p>
-            <img :src="no_recipe_gif">
-        </div>
+      </div>
+      <div class="max-w-fit mx-auto my-8">
+        <pagination
+          :current_page="page"
+          :max_page="max_page"
+          url_param="page"
+        />
+      </div>
     </div>
+    <div v-else>
+      <p class="text-xl mb-2">
+        Aucune recette trouvée :(
+      </p>
+      <img :src="no_recipe_gif">
+    </div>
+  </div>
 </template>
 
 <script>
@@ -30,13 +45,13 @@ import {Filters} from '@/components/RecipeFilters.vue'
 import no_recipe_gif from '@/assets/homer_hungry.gif'
 
 export default {
-    name: 'recipe-list',
-    inject: ["store"],
+    name: 'RecipeList',
     components: {
         Pagination,
         RecipeFilters,
         RecipeListItem
     },
+    inject: ["store"],
     data: function() {
         return {
             recipes: [],
@@ -44,21 +59,6 @@ export default {
             total_count: 0,
             no_recipe_gif: no_recipe_gif
         }
-    },
-    methods: {
-        loadRecipes() {
-            this.store.getRecipes(this.from,this.to,this.filters).then(result => {
-                let [recipes, total_count] = result
-                this.recipes = recipes
-                this.total_count = total_count
-            });
-        },
-        on_mobile() {
-            return screen.width < 768;
-        }
-    },
-    created() {
-        this.loadRecipes()
     },
     computed: {
         from() {
@@ -114,6 +114,21 @@ export default {
         filters : function() {
             this.loadRecipes()
         },
+    },
+    created() {
+        this.loadRecipes()
+    },
+    methods: {
+        loadRecipes() {
+            this.store.getRecipes(this.from,this.to,this.filters).then(result => {
+                let [recipes, total_count] = result
+                this.recipes = recipes
+                this.total_count = total_count
+            });
+        },
+        on_mobile() {
+            return screen.width < 768;
+        }
     }
 }
 </script>

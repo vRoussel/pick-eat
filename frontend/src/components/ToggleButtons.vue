@@ -1,24 +1,36 @@
 <template>
-    <div class="buttons flex gap-2 flex-wrap">
-        <template v-for="el in choices" :key="el.id">
-            <button type="button" :class="buttonClass(el)" @click="toggle(el)">{{ el.name }}</button>
-        </template>
-        <label v-if="extendModalComponent" :for="modal_id" class="btn rounded-full btn-primary btn-outline btn-sm">+</label>
-    </div>
-    <component :modal_id="modal_id" :is="extendModalComponent" @created="created"></component>
+  <div class="buttons flex gap-2 flex-wrap">
+    <template
+      v-for="el in choices"
+      :key="el.id"
+    >
+      <button
+        type="button"
+        :class="buttonClass(el)"
+        @click="toggle(el)"
+      >
+        {{ el.name }}
+      </button>
+    </template>
+    <label
+      v-if="extendModalComponent"
+      :for="modal_id"
+      class="btn rounded-full btn-primary btn-outline btn-sm"
+    >+</label>
+  </div>
+  <component
+    :is="extendModalComponent"
+    :modal_id="modal_id"
+    @created="created"
+  />
 </template>
 
 <script>
 import {random_str} from '@/utils/utils.js'
 
 export default {
-    name: 'toggle-buttons',
+    name: 'ToggleButtons',
     components : {
-    },
-    data: function() {
-        return {
-            modal_id: random_str(5)
-        }
     },
     props: {
         choices: {
@@ -35,6 +47,11 @@ export default {
         },
     },
     emits: ['update:picked'],
+    data: function() {
+        return {
+            modal_id: random_str(5)
+        }
+    },
     methods: {
         buttonClass(el) {
             return {

@@ -1,60 +1,103 @@
 <template>
-    <input v-model="modal_opened" type="checkbox" :id="modal_id" class="modal-toggle" />
-    <div class="modal" @click.self="this.modal_opened=false" @keyup.esc.stop="this.modal_opened=false" tabindex="-1">
-        <div class="modal-box relative overflow-y-scroll max-w-md">
-            <div v-if="this.cart.content.size > 0" class="space-y-4">
-                <div class="tabs tabs-boxed">
-                    <a class="tab grow" :class='{"tab-active": this.tab == 0}' @click="this.tab = 0">Ingrédients</a>
-                    <a class="tab grow" :class='{"tab-active": this.tab == 1}' @click="this.tab = 1">Recettes</a>
-                </div>
-                <table v-if="this.tab == 0" class="table leading-none table-zebra mx-auto pt-4">
-                <tbody>
-                        <tr v-for="[ingr_id, qu] in list" :key="ingr_id">
-                        <td class="text-right">
-                            {{ this.store.getIngredientById(ingr_id) }}
-                        </td>
-                        <td> x </td>
-                        <td>
-                            <span v-for="([unit_id, qtys], idx) in qu.q" :key="unit_id">
-                                <span v-if="idx > 0"> + </span>
-                                {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ this.store.getUnitById(unit_id) }}
-                            </span>
-                            <span v-if="qu.u.length > 0">
-                                <span v-if="qu.q.size > 0"> + </span>
-                                <span v-tooltip="qu.u.map(x => x.r_name).join(', ')">...</span>
-                            </span>
-                        </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div v-if="this.tab == 1" class="flex flex-col items-center space-y-4">
-                    <div v-for="[r_id, val] in this.cart.content" :key="r_id" class="flex items-center gap-x-4 w-full">
-                        <grocery-list-item :recipe_id="r_id" :recipe_name="val.recipe.name" :shares="val.shares"/>
-                    </div>
-                </div>
-            </div>
-            <p v-else>Ajoutez au moins une recette dans votre panier pour afficher la liste de courses.</p>
+  <input
+    :id="modal_id"
+    v-model="modal_opened"
+    type="checkbox"
+    class="modal-toggle"
+  >
+  <div
+    class="modal"
+    tabindex="-1"
+    @click.self="modal_opened=false"
+    @keyup.esc.stop="modal_opened=false"
+  >
+    <div class="modal-box relative overflow-y-scroll max-w-md">
+      <div
+        v-if="cart.content.size > 0"
+        class="space-y-4"
+      >
+        <div class="tabs tabs-boxed">
+          <a
+            class="tab grow"
+            :class="{&quot;tab-active&quot;: tab == 0}"
+            @click="tab = 0"
+          >Ingrédients</a>
+          <a
+            class="tab grow"
+            :class="{&quot;tab-active&quot;: tab == 1}"
+            @click="tab = 1"
+          >Recettes</a>
         </div>
+        <table
+          v-if="tab == 0"
+          class="table leading-none table-zebra mx-auto pt-4"
+        >
+          <tbody>
+            <tr
+              v-for="[ingr_id, qu] in list"
+              :key="ingr_id"
+            >
+              <td class="text-right">
+                {{ store.getIngredientById(ingr_id) }}
+              </td>
+              <td> x </td>
+              <td>
+                <span
+                  v-for="([unit_id, qtys], idx) in qu.q"
+                  :key="unit_id"
+                >
+                  <span v-if="idx > 0"> + </span>
+                  {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ store.getUnitById(unit_id) }}
+                </span>
+                <span v-if="qu.u.length > 0">
+                  <span v-if="qu.q.size > 0"> + </span>
+                  <span v-tooltip="qu.u.map(x => x.r_name).join(', ')">...</span>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div
+          v-if="tab == 1"
+          class="flex flex-col items-center space-y-4"
+        >
+          <div
+            v-for="[r_id, val] in cart.content"
+            :key="r_id"
+            class="flex items-center gap-x-4 w-full"
+          >
+            <grocery-list-item
+              :recipe_id="r_id"
+              :recipe_name="val.recipe.name"
+              :shares="val.shares"
+            />
+          </div>
+        </div>
+      </div>
+      <p v-else>
+        Ajoutez au moins une recette dans votre panier pour afficher la liste de courses.
+      </p>
     </div>
+  </div>
 </template>
 
 <script>
 import GroceryListItem from '@/components/GroceryListItem.vue'
 export default {
-    name: 'grocery-list-modal',
-    inject: ["store", "cart"],
+    name: 'GroceryListModal',
     components : {
         GroceryListItem
+    },
+    inject: ["store", "cart"],
+    props: {
+        modal_id: {
+            required: true
+        }
     },
     data: function() {
         return {
             modal_opened: false,
             tab: 0
-        }
-    },
-    props: {
-        modal_id: {
-            required: true
         }
     },
     computed: {

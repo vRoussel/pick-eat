@@ -1,95 +1,144 @@
 <template>
-        <form @submit.prevent="sendRecipe" id="recipe-form" autocomplete="off" class="space-y-4 flex flex-col items-center max-w-4xl mx-auto my-4">
+  <form
+    id="recipe-form"
+    autocomplete="off"
+    class="space-y-4 flex flex-col items-center max-w-4xl mx-auto my-4"
+    @submit.prevent="sendRecipe"
+  >
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Nom</span>
+      </label>
+      <input
+        v-model="new_recipe.name"
+        type="text"
+        class="input input-bordered w-full"
+      >
+    </div>
+    <div class="flex flex-wrap sm:flex-nowrap items-stretch justify-between w-full gap-y-5 gap-x-5">
+      <div class="form-control grow sm:grow-0">
+        <image-chooser v-model:image_url="new_recipe.image_url" />
+      </div>
+      <div class="flex flex-col justify-evenly grow">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Temps de préparation</span>
+          </label>
+          <label class="input-group">
+            <input
+              v-model="new_recipe.prep_time"
+              type="number"
+              class="input input-bordered w-full"
+            >
+            <span class="bg-accent text-accent-content">minutes</span>
+          </label>
+        </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Nom</span>
-                </label>
-                <input v-model="new_recipe.name" type="text" class="input input-bordered w-full" />
-            </div>
-            <div class="flex flex-wrap sm:flex-nowrap items-stretch justify-between w-full gap-y-5 gap-x-5">
-                <div class="form-control grow sm:grow-0">
-                    <image-chooser v-model:image_url="this.new_recipe.image_url"></image-chooser>
-                </div>
-                <div class="flex flex-col justify-evenly grow">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Temps de préparation</span>
-                        </label>
-                        <label class="input-group">
-                            <input v-model="new_recipe.prep_time" type="number" class="input input-bordered w-full"/>
-                            <span class="bg-accent text-accent-content">minutes</span>
-                        </label>
-                    </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Temps de cuisson</span>
+          </label>
+          <label class="input-group">
+            <input
+              v-model="new_recipe.cook_time"
+              type="number"
+              class="input input-bordered w-full"
+            >
+            <span class="bg-accent text-accent-content">minutes</span>
+          </label>
+        </div>
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Temps de cuisson</span>
-                        </label>
-                        <label class="input-group">
-                            <input v-model="new_recipe.cook_time" type="number" class="input input-bordered w-full"/>
-                            <span class="bg-accent text-accent-content">minutes</span>
-                        </label>
-                    </div>
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Parts</span>
+          </label>
+          <number-input
+            v-model="new_recipe.shares"
+            :min="0"
+          />
+        </div>
+      </div>
+    </div>
 
-                    <div class="form-control w-full">
-                        <label class="label">
-                            <span class="label-text">Parts</span>
-                        </label>
-                        <number-input v-model="new_recipe.shares" :min="0"/>
-                    </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Étapes</span>
+      </label>
+      <textarea
+        v-model="new_recipe.instructions"
+        class="textarea textarea-bordered h-40"
+        placeholder="Une étape par ligne"
+      />
+    </div>
 
-                </div>
-            </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Catégories</span>
+      </label>
+      <toggle-buttons
+        v-model:picked="new_recipe.categories"
+        :choices="store.state.categories"
+        extendable
+        :extend-modal-component="NewCategoryModal_"
+      />
+    </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Étapes</span>
-                </label>
-                <textarea v-model="new_recipe.instructions" class="textarea textarea-bordered h-40" placeholder="Une étape par ligne"/>
-            </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Tags</span>
+      </label>
+      <toggle-buttons
+        v-model:picked="new_recipe.tags"
+        :choices="store.state.tags"
+        extendable
+        :extend-modal-component="NewTagModal_"
+      />
+    </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Catégories</span>
-                </label>
-            <toggle-buttons :choices="store.state.categories" v-model:picked="new_recipe.categories" extendable :extendModalComponent="NewCategoryModal_">
-            </toggle-buttons>
-            </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Saisons</span>
+      </label>
+      <toggle-buttons
+        v-model:picked="new_recipe.seasons"
+        :choices="store.state.seasons"
+      />
+    </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Tags</span>
-                </label>
-            <toggle-buttons :choices="store.state.tags" v-model:picked="new_recipe.tags" extendable :extendModalComponent="NewTagModal_">
-            </toggle-buttons>
-            </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Ingrédients</span>
+      </label>
+      <ingredient-picker
+        ref="ingredients"
+        v-model:picked="new_recipe.ingredients"
+        @createIngredient="openNewIngredientForm"
+        @createUnit="openNewUnitForm"
+      />
+    </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Saisons</span>
-                </label>
-            <toggle-buttons :choices="store.state.seasons" v-model:picked="new_recipe.seasons">
-            </toggle-buttons>
-            </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Notes</span>
+      </label>
+      <textarea
+        v-model="new_recipe.notes"
+        class="textarea textarea-bordered h-32"
+      />
+    </div>
 
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Ingrédients</span>
-                </label>
-                <ingredient-picker v-model:picked="new_recipe.ingredients" @createIngredient="openNewIngredientForm" @createUnit="openNewUnitForm" ref="ingredients"> </ingredient-picker>
-            </div>
-
-            <div class="form-control w-full">
-                <label class="label">
-                    <span class="label-text">Notes</span>
-                </label>
-                <textarea v-model="new_recipe.notes" class="textarea textarea-bordered h-32"/>
-            </div>
-
-            <button class="btn btn-primary w-full btn-lg">{{ update_mode ? 'Valider' : 'Ajouter' }}</button>
-            <button type="button" class="btn btn-accent w-full btn-lg" v-if="update_mode" @click="cancel">Annuler</button>
-        </form>
+    <button class="btn btn-primary w-full btn-lg">
+      {{ update_mode ? 'Valider' : 'Ajouter' }}
+    </button>
+    <button
+      v-if="update_mode"
+      type="button"
+      class="btn btn-accent w-full btn-lg"
+      @click="cancel"
+    >
+      Annuler
+    </button>
+  </form>
 </template>
 
 <script>
@@ -103,19 +152,20 @@ import Swal from 'sweetalert2'
 import {shallowRef} from 'vue'
 
 export default {
-    name: 'recipe-form',
-    inject: ["store"],
+    name: 'RecipeForm',
     components: {
       ToggleButtons,
       IngredientPicker,
       ImageChooser,
       NumberInput,
     },
+    inject: ["store"],
     props: {
         existing_recipe: {
             type: Object
         }
     },
+    emits: ['done'],
     data: function() {
         return {
             new_recipe: {
@@ -135,6 +185,22 @@ export default {
             NewTagModal_: shallowRef(NewTagModal),
             NewCategoryModal_: shallowRef(NewCategoryModal),
         }
+    },
+    computed: {
+        update_mode() {
+            return this.existing_recipe != null
+        },
+        insert_mode() {
+            return !this.update_mode
+        },
+    },
+    watch: {
+        existing_recipe: function() {
+            this.fillForm()
+        }
+    },
+    mounted() {
+        this.fillForm()
     },
     methods: {
         sendRecipe() {
@@ -225,24 +291,7 @@ export default {
                 }
             }
         }
-    },
-    computed: {
-        update_mode() {
-            return this.existing_recipe != null
-        },
-        insert_mode() {
-            return !this.update_mode
-        },
-    },
-    mounted() {
-        this.fillForm()
-    },
-    watch: {
-        existing_recipe: function() {
-            this.fillForm()
-        }
-    },
-    emits: ['done']
+    }
 }
 </script>
 
