@@ -1,3 +1,5 @@
+@import '@vueform/multiselect/themes/tailwind.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,7 +32,16 @@ input[type=number] {
     @apply textarea-accent;
 }
 
-@import '~@vueform/multiselect/themes/tailwind.css';
 .multiselect {
+    @apply !bg-base-100;
     @apply border-accent !important;
 }
+
+.multiselect * {
+    @apply !bg-base-100;
+}
+
+.multiselect-dropdown {
+    @apply !max-h-[40vh];
+}
+

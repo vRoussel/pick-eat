@@ -93,7 +93,6 @@ export default {
 </script>
 
 <style>
-    @import '@vueform/multiselect/themes/tailwind.css';
     @font-face {
       font-family: "Rounded_Elegance";
       src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");
@@ -107,17 +106,5 @@ export default {
     .fade-enter-from,
     .fade-leave-to {
       opacity: 0;
-    }
-
-    .multiselect-dropdown {
-        @apply !max-h-[40vh];
-    }
-
-    .multiselect {
-        @apply !bg-base-100;
-    }
-
-    .multiselect * {
-        @apply !bg-base-100;
     }
 </style>
