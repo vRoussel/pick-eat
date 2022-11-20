@@ -40,6 +40,7 @@
         <p>
           <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon
             :icon="icons.knife"
+            :rotate="3"
             class="text-primary"
           /> {{ recipe.prep_time_min }} min</span>
           <br>
