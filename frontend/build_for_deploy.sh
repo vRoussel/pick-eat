@@ -1,1 +1,1 @@
-npm run build -- --dest ../ansible/to_deploy/frontend
+npm run build -- --outDir ../ansible/to_deploy/frontend --emptyOutDir
