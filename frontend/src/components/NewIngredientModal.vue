@@ -73,13 +73,15 @@ import Multiselect from '@vueform/multiselect'
 import {obj_with_searchable_name} from '@/utils/utils.js'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'NewIngredientModal',
     components: {
         Multiselect,
         NewUnitModal
     },
-    inject: ["store"],
     props: {
         modal_id: {
             required: true
@@ -96,8 +98,9 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useApiStore),
         searchableUnits() {
-            return this.store.state.units.map(unit => obj_with_searchable_name(unit, "full_name"))
+            return this.apiStore.units.map(unit => obj_with_searchable_name(unit, "full_name"))
         }
     },
     watch: {
@@ -121,7 +124,7 @@ export default {
                 "name": this.name,
                 "default_unit_id": this.default_unit
             }
-            this.store.addIngredient(ingredient)
+            this.apiStore.sendNewIngredient(ingredient)
                 .catch((e) => console.error(e))
                 .then((new_ingr) => {
                     this.$emit('created', new_ingr)

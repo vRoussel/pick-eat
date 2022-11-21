@@ -41,13 +41,15 @@ import Multiselect from '@vueform/multiselect'
 import NumberInput from '@/components/NumberInput.vue'
 import {obj_with_searchable_name} from '@/utils/utils.js'
 
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'IngredientListItem',
     components : {
         Multiselect,
         NumberInput
     },
-    inject: ["store"],
     props: {
         id: Number,
         quantity: Number,
@@ -55,6 +57,7 @@ export default {
     },
     emits: ['update:quantity', 'update:unit_id', 'delete', 'createUnit', 'unit-input-selected'],
     computed: {
+        ...mapStores(useApiStore),
         ingredient_unit: {
             get() {
                 return this.unit_id
@@ -74,10 +77,10 @@ export default {
 
         },
         ingredient_name() {
-            return this.store.state.ingredients.find(ingr => ingr.id === this.id).name
+            return this.apiStore.getIngredientById(this.id).name
         },
         searchable_units() {
-            return this.store.state.units.map(unit => obj_with_searchable_name(unit, "full_name"))
+            return this.apiStore.units.map(unit => obj_with_searchable_name(unit, "full_name"))
         },
     },
     methods: {

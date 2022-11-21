@@ -16,13 +16,16 @@
 <script>
 import RecipeForm from '@/components/RecipeForm.vue'
 import RecipeView from '@/components/RecipeView.vue'
+
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'Recipe',
     components: {
       RecipeForm,
       RecipeView,
     },
-    inject: ["store"],
     props: {
         id: {
             type: Number,
@@ -36,15 +39,15 @@ export default {
             recipe: null
         }
     },
+    computed: {
+        ...mapStores(useApiStore),
+    },
     mounted() {
         this.loadRecipe()
     },
     methods: {
-        toggleFavorite(recipe) {
-            this.store.toggleFavorite(recipe)
-        },
         loadRecipe() {
-            this.store.getOneRecipe(this.id).then(result => {
+            this.apiStore.getRecipeById(this.id).then(result => {
                 this.recipe = result
                 document.title = this.recipe.name + ' - Pickeat'
             });

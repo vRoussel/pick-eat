@@ -3,9 +3,7 @@
     class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer"
     @click="openRecipe(recipe.id)"
   >
-    <div class="card-image">
-      <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"></figure>
-    </div>
+    <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"></figure>
     <div class="card-body divide-y-2 divide-accent !pb-0">
       <div class="card-actions justify-evenly">
         <span class="icon">
@@ -38,10 +36,13 @@
 
 <script>
 import {isOverflown} from '@/utils/utils.js'
+import { mapStores } from 'pinia'
+import { useCartStore } from '@/store/cart.js'
+import { useApiStore } from '@/store/api.js'
 
 export default {
     name: 'RecipeListItem',
-    inject: ["store", "cart", "icons"],
+    inject: ["icons"],
     props: {
         recipe: {
             type: Object,
@@ -54,11 +55,12 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useCartStore, useApiStore),
         heart_svg() {
             return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
         },
         cart_svg() {
-            return this.inCart(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
+            return this.cartStore.hasRecipe(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
         }
     },
     mounted() {
@@ -72,20 +74,17 @@ export default {
     },
     methods: {
         toggleFavorite(recipe) {
-            this.store.toggleFavorite(recipe)
+            this.apiStore.toggleFavorite(recipe)
         },
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
         },
-        inCart(id) {
-            return this.cart.containsId(id)
-        },
         toggleCart(id) {
-            if (this.inCart(id)) {
-                this.cart.removeRecipeWithId(id)
+            if (this.cartStore.hasRecipe(id)) {
+                this.cartStore.removeRecipe(id)
             } else {
-                this.store.getOneRecipe(id).then(result => {
-                    this.cart.addRecipe(result, result.n_shares)
+                this.apiStore.getRecipeById(id).then(recipe => {
+                    this.cartStore.addRecipe(recipe, recipe.n_shares)
                 })
             }
         }

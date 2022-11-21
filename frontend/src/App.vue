@@ -76,9 +76,9 @@
           :icon="icons.cart_outline"
         />
         <span
-          v-if="nbItemsInCart() > 0"
+          v-if="cartStore.recipeCount > 0"
           class="indicator-item badge badge-primary"
-        >{{ nbItemsInCart() }}</span>
+        >{{ cartStore.recipeCount }}</span>
       </label>
       <theme-toggle
         dark_theme="dark"
@@ -102,11 +102,12 @@
 </template>
 
 <script>
-import store from '@/store/store.js'
-import cart from '@/store/cart.js'
 import icons from '@/utils/icons.js'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
+import { mapStores } from 'pinia'
+import { useCartStore } from '@/store/cart.js'
+import { useApiStore } from '@/store/api.js'
 
 import pickeat_png from '@/assets/pickeat.png'
 
@@ -117,8 +118,6 @@ export default {
       GroceryListModal
   },
   provide: {
-    store,
-    cart,
     icons
   },
   data: function() {
@@ -127,6 +126,9 @@ export default {
         pickeat_png: pickeat_png,
         icons: icons
     }
+  },
+  computed: {
+    ...mapStores(useCartStore, useApiStore)
   },
   watch: {
         $route: {
@@ -137,7 +139,13 @@ export default {
         },
   },
   created: function() {
-    let api_calls = [store.getTags(), store.getCategories(), store.getIngredients(), store.getUnits(), store.getSeasons()]
+    let api_calls = [
+        this.apiStore.fetchTags(),
+        this.apiStore.fetchCategories(),
+        this.apiStore.fetchIngredients(),
+        this.apiStore.fetchUnits(),
+        this.apiStore.fetchSeasons()
+    ]
     for (let ret of api_calls)
         ret.catch(error => console.error(error));
   },
@@ -147,9 +155,6 @@ export default {
             setTimeout(function(){
                 targetEl.blur()
             }, 0)
-        },
-        nbItemsInCart() {
-            return cart.recipeCount()
         }
   }
 }

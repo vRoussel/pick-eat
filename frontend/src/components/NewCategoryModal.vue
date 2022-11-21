@@ -43,13 +43,18 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'NewCategoryModal',
-    inject: ["store"],
     props: {
         modal_id: {
             required: true
         }
+    },
+    computed: {
+        ...mapStores(useApiStore),
     },
     emits: ['closed', 'created'],
     data: function() {
@@ -73,7 +78,7 @@ export default {
             let category = {
                 "name": this.name,
             }
-            this.store.addCategory(category)
+            this.apiStore.sendNewCategory(category)
                 .catch((e) => console.error(e))
                 .then((new_categ) => {
                     this.$emit('created', new_categ)

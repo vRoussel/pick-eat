@@ -58,6 +58,9 @@ import {obj_with_searchable_name} from '@/utils/utils.js'
 import NewIngredientModal from '@/components/NewIngredientModal.vue'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'IngredientPicker',
     components : {
@@ -66,7 +69,6 @@ export default {
         NewIngredientModal,
         NewUnitModal
     },
-    inject: ["store"],
     props: {
         picked: {
             type: Map
@@ -82,11 +84,12 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useApiStore),
         picked_obj() {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return this.store.state.ingredients
+            return this.apiStore.ingredients
                 .filter(ingr => !this.picked.has(ingr.id))
                 .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
@@ -122,7 +125,7 @@ export default {
             this.current_unit_input = elem
         },
         set_current_unit(unit) {
-            if (this.current_unit_input !== undefined)
+            if (this.current_unit_input !== null)
                 this.current_unit_input.select(unit)
         }
     }

@@ -190,7 +190,7 @@ export default {
     components: {
         SeasonIcons,
     },
-    inject: ["store", "icons"],
+    inject: ["icons"],
     props: {
         recipe: {
             type : Object,

@@ -42,6 +42,9 @@ import RecipeFilters from '@/components/RecipeFilters.vue'
 import RecipeListItem from '@/components/RecipeListItem.vue'
 import {Filters} from '@/components/RecipeFilters.vue'
 
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 import no_recipe_gif from '@/assets/homer_hungry.gif'
 
 export default {
@@ -51,7 +54,6 @@ export default {
         RecipeFilters,
         RecipeListItem
     },
-    inject: ["store"],
     data: function() {
         return {
             recipes: [],
@@ -61,6 +63,7 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useApiStore),
         from() {
             return (this.page - 1 ) * this.per_page + 1
         },
@@ -120,7 +123,7 @@ export default {
     },
     methods: {
         loadRecipes() {
-            this.store.getRecipes(this.from,this.to,this.filters).then(result => {
+            this.apiStore.getRecipes(this.from,this.to,this.filters).then(result => {
                 let [recipes, total_count] = result
                 this.recipes = recipes
                 this.total_count = total_count

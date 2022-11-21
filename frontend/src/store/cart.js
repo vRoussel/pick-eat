@@ -1,32 +1,32 @@
-import { reactive, readonly } from 'vue'
+import {defineStore } from 'pinia'
 
-const cart = () => {
-    const content = reactive(new Map())
+export const useCartStore = defineStore('cart', {
+    state: () => {
+        return {
+            content: new Map()
+        }
+    },
+    getters : {
+        recipeCount(state){
+            return state.content.size
+        }
+    },
+    actions: {
+        addRecipe(recipe, shares) {
+            this.content.set(recipe.id, { 'recipe': recipe, 'shares': shares })
+        },
 
-    const containsId = (r_id) => { return content.has(r_id)
-    }
-    const addRecipe = (recipe, shares) => {
-        content.set(recipe.id, { 'recipe': recipe, 'shares': shares })
-        console.log(content)
-    }
-    const removeRecipeWithId = (r_id) => {
-        content.delete(r_id)
-    }
-    const recipeCount = () => {
-        return content.size
-    }
-    const updateShares = (r_id, shares) => {
-        content.get(r_id).shares = shares
-    }
+        removeRecipe(r_id) {
+            this.content.delete(r_id)
+        },
 
-    return {
-        content: readonly(content),
-        containsId,
-        addRecipe,
-        removeRecipeWithId,
-        recipeCount,
-        updateShares
-    }
-}
+        hasRecipe(r_id) {
+            return this.content.has(r_id)
+        },
 
-export default cart();
+        updateRecipeShares(r_id, shares) {
+            this.content.get(r_id).shares = shares
+        }
+
+    }
+})

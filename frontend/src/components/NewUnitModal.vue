@@ -56,9 +56,11 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'NewUnitModal',
-    inject: ["store"],
     props: {
         modal_id: {
             required: true
@@ -72,6 +74,9 @@ export default {
             short_name: null,
             modal_opened: false
         }
+    },
+    computed: {
+        ...mapStores(useApiStore),
     },
     watch: {
         input: function() {
@@ -93,7 +98,7 @@ export default {
                 "full_name": this.full_name,
                 "short_name": this.short_name,
             }
-            this.store.addUnit(unit)
+            this.apiStore.sendNewUnit(unit)
                 .catch((e) => console.error(e))
                 .then((new_unit) => {
                     this.$emit('created', new_unit)

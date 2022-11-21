@@ -13,7 +13,7 @@
   >
     <div class="modal-box relative overflow-y-scroll max-w-md">
       <div
-        v-if="cart.content.size > 0"
+        v-if="cartStore.recipeCount > 0"
         class="space-y-4"
       >
         <div class="tabs tabs-boxed">
@@ -38,7 +38,7 @@
               :key="ingr_id"
             >
               <td class="text-right">
-                {{ store.getIngredientById(ingr_id) }}
+                {{ apiStore.getIngredientById(ingr_id).name }}
               </td>
               <td> x </td>
               <td>
@@ -47,7 +47,7 @@
                   :key="unit_id"
                 >
                   <span v-if="idx > 0"> + </span>
-                  {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ store.getUnitById(unit_id) }}
+                  {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ unit_id == null ? '' : apiStore.getUnitById(unit_id).short_name }}
                 </span>
                 <span v-if="qu.u.length > 0">
                   <span v-if="qu.q.size > 0"> + </span>
@@ -62,7 +62,7 @@
           class="flex flex-col items-center space-y-4"
         >
           <div
-            v-for="[r_id, val] in cart.content"
+            v-for="[r_id, val] in cartStore.content"
             :key="r_id"
             class="flex items-center gap-x-4 w-full"
           >
@@ -83,12 +83,16 @@
 
 <script>
 import GroceryListItem from '@/components/GroceryListItem.vue'
+
+import { mapStores } from 'pinia'
+import { useCartStore } from '@/store/cart.js'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'GroceryListModal',
     components : {
         GroceryListItem
     },
-    inject: ["store", "cart"],
     props: {
         modal_id: {
             required: true
@@ -101,6 +105,7 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useCartStore, useApiStore),
         /*
         {
             ingr_id => {
@@ -122,7 +127,7 @@ export default {
         */
         list() {
             let list = new Map()
-            for (const val of this.cart.content.values()) {
+            for (const val of this.cartStore.content.values()) {
                 let recipe_id = val.recipe.id
                 let recipe_name = val.recipe.name
                 let ingredients = val.recipe.q_ingredients

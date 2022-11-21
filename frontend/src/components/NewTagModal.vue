@@ -43,9 +43,11 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'NewTagModal',
-    inject: ["store"],
     props: {
         modal_id: {
             required: true
@@ -57,6 +59,9 @@ export default {
             name: null,
             modal_opened: false
         }
+    },
+    computed: {
+        ...mapStores(useApiStore),
     },
     watch: {
         modal_opened(val) {
@@ -73,7 +78,7 @@ export default {
             let tag = {
                 "name": this.name,
             }
-            this.store.addTag(tag)
+            this.apiStore.sendNewTag(tag)
                 .catch((e) => console.error(e))
                 .then((new_tag) => {
                     this.$emit('created', new_tag)

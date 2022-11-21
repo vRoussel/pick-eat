@@ -77,7 +77,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.categories"
-        :choices="store.state.categories"
+        :choices="apiStore.categories"
         extendable
         :extend-modal-component="NewCategoryModal_"
       />
@@ -89,7 +89,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.tags"
-        :choices="store.state.tags"
+        :choices="apiStore.tags"
         extendable
         :extend-modal-component="NewTagModal_"
       />
@@ -101,7 +101,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.seasons"
-        :choices="store.state.seasons"
+        :choices="apiStore.seasons"
       />
     </div>
 
@@ -151,6 +151,9 @@ import NumberInput from '@/components/NumberInput.vue'
 import Swal from 'sweetalert2'
 import {shallowRef} from 'vue'
 
+import { mapStores } from 'pinia'
+import { useApiStore } from '@/store/api.js'
+
 export default {
     name: 'RecipeForm',
     components: {
@@ -159,7 +162,6 @@ export default {
       ImageChooser,
       NumberInput,
     },
-    inject: ["store"],
     props: {
         existing_recipe: {
             type: Object
@@ -187,6 +189,7 @@ export default {
         }
     },
     computed: {
+        ...mapStores(useApiStore),
         update_mode() {
             return this.existing_recipe != null
         },
@@ -225,7 +228,7 @@ export default {
             }
 
             if (this.insert_mode) {
-                this.store.addRecipe(recipe)
+                this.apiStore.sendNewRecipe(recipe)
                     .then((recipe) => {
                         Swal.fire({
                           title: 'Recette ajoutée',
@@ -242,7 +245,7 @@ export default {
                         })
                     })
             } else {
-                this.store.updateRecipe(this.existing_recipe.id, recipe)
+                this.apiStore.updateRecipe(this.existing_recipe.id, recipe)
                     .then(() => {
                         this.$emit('done')
                     }) 
