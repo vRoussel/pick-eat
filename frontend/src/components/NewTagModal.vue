@@ -1,15 +1,10 @@
 <template>
-  <input
-    :id="modal_id"
-    v-model="modal_opened"
-    type="checkbox"
-    class="modal-toggle"
-  >
   <div
     class="modal"
+    :class="{'modal-open': opened}"
     tabindex="-1"
-    @click.self="modal_opened=false"
-    @keyup.esc.stop="modal_opened=false"
+    @click.self="close"
+    @keyup.esc.stop="close"
   >
     <div class="modal-box relative overflow-visible">
       <form
@@ -32,11 +27,9 @@
         </div>
       </form>
       <div class="modal-action">
-        <label
-          :for="modal_id"
+        <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
-          @click="sendTag"
-        >Ajouter</label>
+        >Ajouter</button>
       </div>
     </div>
   </div>
@@ -48,30 +41,15 @@ import { useApiStore } from '@/store/api.js'
 
 export default {
     name: 'NewTagModal',
-    props: {
-        modal_id: {
-            required: true
-        }
-    },
     emits: ['closed', 'created'],
     data: function() {
         return {
             name: null,
-            modal_opened: false
+            opened: false,
         }
     },
     computed: {
         ...mapStores(useApiStore),
-    },
-    watch: {
-        modal_opened(val) {
-            if (val) {
-                this.$refs.tagName.focus()
-            } else {
-                this.name = ""
-                this.$emit('closed')
-            }
-        }
     },
     methods: {
         sendTag() {
@@ -82,9 +60,18 @@ export default {
                 .catch((e) => console.error(e))
                 .then((new_tag) => {
                     this.$emit('created', new_tag)
-                    this.modal_opened = false
+                    this.close()
                 })
         },
+        open() {
+            this.opened = true
+            setTimeout(() => this.$refs.tagName.focus(), 50)
+        },
+        close() {
+            this.opened = false
+            this.name = ""
+            this.$emit('closed')
+        }
     }
 }
 </script>

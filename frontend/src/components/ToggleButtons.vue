@@ -12,22 +12,21 @@
         {{ el.name }}
       </button>
     </template>
-    <label
+    <button
       v-if="extendModalComponent"
-      :for="modal_id"
       class="btn rounded-full btn-primary btn-outline btn-sm"
-    >+</label>
+      @click="this.$refs.modal.open()"
+      type="button"
+    >+</button>
   </div>
   <component
     :is="extendModalComponent"
-    :modal_id="modal_id"
+    ref="modal"
     @created="created"
   />
 </template>
 
 <script>
-import {random_str} from '@/utils/utils.js'
-
 export default {
     name: 'ToggleButtons',
     components : {
@@ -47,11 +46,6 @@ export default {
         },
     },
     emits: ['update:picked'],
-    data: function() {
-        return {
-            modal_id: random_str(5)
-        }
-    },
     methods: {
         buttonClass(el) {
             return {

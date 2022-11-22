@@ -16,16 +16,18 @@
     @select="pick_ingr"
   />
   <div class="flex gap-1 my-2">
-    <label
-      for="modal_ingr"
+    <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
       @mousedown="save_ingredient_search"
-    >Ingrédient manquant ?</label>
-    <label
-      for="modal_unit"
+      @click="open_ingr_modal"
+      type="button"
+    >Ingrédient manquant ?</button>
+    <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
       @mousedown="save_unit_search"
-    >Unité manquante ?</label>
+      @click="open_unit_modal"
+      type="button"
+    >Unité manquante ?</button>
   </div>
   <div class="flex flex-col items-center mt-2 gap-y-5">
     <ingredient-list-item
@@ -40,14 +42,14 @@
     />
   </div>
   <new-ingredient-modal
-    modal_id="modal_ingr"
     :input="ingredient_search"
     @created="add_ingr"
+    ref="ingr_modal"
   />
   <new-unit-modal
-    modal_id="modal_unit"
     :input="unit_search"
     @created="set_current_unit"
+    ref="unit_modal"
   />
 </template>
 
@@ -80,7 +82,7 @@ export default {
             dummy: null,
             ingredient_search: null,
             unit_search: null,
-            current_unit_input: null
+            current_unit_input: null,
         }
     },
     computed: {
@@ -127,6 +129,12 @@ export default {
         set_current_unit(unit) {
             if (this.current_unit_input !== null)
                 this.current_unit_input.select(unit)
+        },
+        open_ingr_modal() {
+            this.$refs.ingr_modal.open()
+        },
+        open_unit_modal() {
+            this.$refs.unit_modal.open()
         }
     }
 }

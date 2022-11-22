@@ -67,9 +67,10 @@
       </ul>
     </div>
     <div class="navbar-end space-x-3">
-      <label
-        for="modal_gl"
+      <button
         class="indicator"
+        @click="this.$refs.grocery_list_modal.open()"
+        type="button"
       >
         <Icon
           class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
@@ -79,7 +80,7 @@
           v-if="cartStore.recipeCount > 0"
           class="indicator-item badge badge-primary"
         >{{ cartStore.recipeCount }}</span>
-      </label>
+      </button>
       <theme-toggle
         dark_theme="dark"
         light_theme="pickeat_light"
@@ -98,7 +99,7 @@
       />
     </transition>
   </router-view>
-  <grocery-list-modal modal_id="modal_gl" />
+  <grocery-list-modal ref="grocery_list_modal" />
 </template>
 
 <script>

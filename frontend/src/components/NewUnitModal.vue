@@ -1,15 +1,10 @@
 <template>
-  <input
-    :id="modal_id"
-    v-model="modal_opened"
-    type="checkbox"
-    class="modal-toggle"
-  >
   <div
     class="modal"
+    :class="{'modal-open': opened}"
     tabindex="-1"
-    @click.self="modal_opened=false"
-    @keyup.esc.stop="modal_opened=false"
+    @click.self="close"
+    @keyup.esc.stop="close"
   >
     <div class="modal-box relative overflow-visible">
       <form
@@ -45,11 +40,9 @@
         </div>
       </form>
       <div class="modal-action">
-        <label
-          :for="modal_id"
+        <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
-          @click="sendUnit"
-        >Ajouter</label>
+        >Ajouter</button>
       </div>
     </div>
   </div>
@@ -62,9 +55,6 @@ import { useApiStore } from '@/store/api.js'
 export default {
     name: 'NewUnitModal',
     props: {
-        modal_id: {
-            required: true
-        },
         input: null
     },
     emits: ['closed', 'created'],
@@ -72,7 +62,7 @@ export default {
         return {
             full_name: this.input,
             short_name: null,
-            modal_opened: false
+            opened: false
         }
     },
     computed: {
@@ -81,15 +71,6 @@ export default {
     watch: {
         input: function() {
             this.full_name = this.input;
-        },
-        modal_opened(val) {
-            if (val) {
-                this.$refs.unitName.focus()
-            } else {
-                this.full_name = null
-                this.short_name = null
-                this.$emit('closed')
-            }
         }
     },
     methods: {
@@ -102,8 +83,18 @@ export default {
                 .catch((e) => console.error(e))
                 .then((new_unit) => {
                     this.$emit('created', new_unit)
-                    this.modal_opened = false
+                    this.close()
                 })
+        },
+        open() {
+            this.opened = true
+            setTimeout(() => this.$refs.unitName.focus(), 50)
+        },
+        close() {
+            this.opened = false
+                this.full_name = null
+                this.short_name = null
+            this.$emit('closed')
         }
     }
 }

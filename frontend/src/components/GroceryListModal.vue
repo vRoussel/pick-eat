@@ -1,15 +1,10 @@
 <template>
-  <input
-    :id="modal_id"
-    v-model="modal_opened"
-    type="checkbox"
-    class="modal-toggle"
-  >
   <div
     class="modal"
+    :class="{'modal-open': opened}"
     tabindex="-1"
-    @click.self="modal_opened=false"
-    @keyup.esc.stop="modal_opened=false"
+    @click.self="close"
+    @keyup.esc.stop="close"
   >
     <div class="modal-box relative overflow-y-scroll max-w-md">
       <div
@@ -93,14 +88,9 @@ export default {
     components : {
         GroceryListItem
     },
-    props: {
-        modal_id: {
-            required: true
-        }
-    },
     data: function() {
         return {
-            modal_opened: false,
+            opened: false,
             tab: 0
         }
     },
@@ -153,12 +143,14 @@ export default {
             return list
         }
     },
-    watch: {
-        modal_opened(val) {
-            if (val) {
-                this.tab = 0
-            }
+    methods: {
+        open() {
+            this.opened = true
+            this.tab = 0
+        },
+        close() {
+            this.opened = false
         }
-    },
+    }
 }
 </script>

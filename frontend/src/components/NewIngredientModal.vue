@@ -1,15 +1,10 @@
 <template>
-  <input
-    :id="modal_id"
-    v-model="modal_opened"
-    type="checkbox"
-    class="modal-toggle"
-  >
   <div
     class="modal"
+    :class="{'modal-open': opened}"
     tabindex="-1"
-    @click.self="modal_opened=false"
-    @keyup.esc.stop="modal_opened=false"
+    @click.self="close"
+    @keyup.esc.stop="close"
   >
     <div class="modal-box relative overflow-visible">
       <form
@@ -33,11 +28,12 @@
         <div class="form-control w-full">
           <label class="label">
             <span class="label-text">Unité par défaut</span>
-            <label
-              for="modal_unit2"
+            <button
               class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
               @mousedown="save_unit_search"
-            >Unité manquante ?</label>
+              @click="open_unit_modal"
+              type="button"
+            >Unité manquante ?</button>
           </label>
           <multiselect
             ref="multiselect"
@@ -47,24 +43,22 @@
             searchable
             track-by="searchable_name"
             value-prop="id"
-            @keydown.ctrl.enter.prevent="save_unit_search(), open_modal()"
+            @keydown.ctrl.enter.prevent="save_unit_search(), open_unit_modal()"
           />
         </div>
       </form>
       <div class="modal-action">
-        <label
-          :for="modal_id"
+        <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
-          @click="sendIngredient"
-        >Ajouter</label>
+        >Ajouter</button>
       </div>
     </div>
   </div>
   <new-unit-modal
-    modal_id="modal_unit2"
     :input="unit_search"
     @created="set_unit"
     @closed="$refs.ingrName.focus()"
+    ref="unit_modal_inner"
   />
 </template>
 
@@ -83,9 +77,6 @@ export default {
         NewUnitModal
     },
     props: {
-        modal_id: {
-            required: true
-        },
         input: null
     },
     emits: ['closed', 'created'],
@@ -94,7 +85,7 @@ export default {
             name: null,
             default_unit: null,
             unit_search: null,
-            modal_opened: false
+            opened: false
         }
     },
     computed: {
@@ -106,16 +97,6 @@ export default {
     watch: {
         input: function() {
             this.name = this.input;
-        },
-        modal_opened(val) {
-            if (val) {
-                this.$refs.ingrName.focus()
-            } else {
-                this.name = null
-                this.default_unit = null
-                this.unit_search = null
-                this.$emit('closed')
-            }
         }
     },
     methods: {
@@ -128,7 +109,7 @@ export default {
                 .catch((e) => console.error(e))
                 .then((new_ingr) => {
                     this.$emit('created', new_ingr)
-                    this.modal_opened = false
+                    this.close()
                 })
         },
         save_unit_search() {
@@ -137,6 +118,20 @@ export default {
         set_unit(unit) {
             this.default_unit = unit.id
         },
+        open() {
+            this.opened = true
+            setTimeout(() => this.$refs.ingrName.focus(), 50)
+        },
+        close() {
+            this.opened = false
+            this.name = null
+            this.default_unit = null
+            this.unit_search = null
+            this.$emit('closed')
+        },
+        open_unit_modal() {
+            this.$refs.unit_modal_inner.open()
+        }
     }
 }
 </script>
