@@ -1,12 +1,12 @@
 <template>
   <div
-    class="modal"
+    class="modal cursor-pointer"
     :class="{'modal-open': opened}"
     tabindex="-1"
     @click.self="close"
     @keyup.esc.stop="close"
   >
-    <div class="modal-box relative overflow-y-scroll max-w-md">
+    <div class="modal-box relative overflow-y-scroll max-w-md cursor-default">
       <div
         v-if="cartStore.recipeCount > 0"
         class="space-y-4"

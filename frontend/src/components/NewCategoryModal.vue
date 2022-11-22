@@ -1,12 +1,12 @@
 <template>
   <div
-    class="modal"
+    class="modal cursor-pointer"
     :class="{'modal-open': opened}"
     tabindex="-1"
     @click.self="close"
     @keyup.esc.stop="close"
   >
-    <div class="modal-box relative overflow-visible">
+    <div class="modal-box relative overflow-visible cursor-default">
       <form
         autocomplete="off"
         @submit.prevent="sendCategory"
