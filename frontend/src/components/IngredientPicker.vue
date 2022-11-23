@@ -7,7 +7,8 @@
     :options="ingr_remaining"
     label="name"
     searchable
-    track-by="searchable_name"
+    track-by="name"
+    :strict="false"
     object
     value-prop="id"
     placeholder="Ajouter un ingrédient"
@@ -56,7 +57,6 @@
 <script>
 import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
-import {obj_with_searchable_name} from '@/utils/utils.js'
 import NewIngredientModal from '@/components/NewIngredientModal.vue'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
@@ -93,7 +93,6 @@ export default {
         ingr_remaining() {
             return this.apiStore.ingredients
                 .filter(ingr => !this.picked.has(ingr.id))
-                .map(ingr => obj_with_searchable_name(ingr, "name"))
         },
     },
     methods: {

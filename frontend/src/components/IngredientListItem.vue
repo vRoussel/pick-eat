@@ -23,10 +23,11 @@
         ref="multiselect"
         v-model="ingredient_unit"
         class="basis-5/12 sm:basis-1/3 flex-grow"
-        :options="searchable_units"
+        :options="apiStore.units"
+        :strict="false"
         label="full_name"
         searchable
-        track-by="searchable_name"
+        track-by="full_name"
         value-prop="id"
         placeholder="Unité"
         @keydown.ctrl.enter.prevent="create_unit()"
@@ -39,7 +40,6 @@
 <script>
 import Multiselect from '@vueform/multiselect'
 import NumberInput from '@/components/NumberInput.vue'
-import {obj_with_searchable_name} from '@/utils/utils.js'
 
 import { mapStores } from 'pinia'
 import { useApiStore } from '@/store/api.js'
@@ -78,9 +78,6 @@ export default {
         },
         ingredient_name() {
             return this.apiStore.getIngredientById(this.id).name
-        },
-        searchable_units() {
-            return this.apiStore.units.map(unit => obj_with_searchable_name(unit, "full_name"))
         },
     },
     methods: {

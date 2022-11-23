@@ -38,10 +38,11 @@
           <multiselect
             ref="multiselect"
             v-model="default_unit"
-            :options="searchableUnits"
+            :options="apiStore.units"
+            :strict="false"
             label="full_name"
             searchable
-            track-by="searchable_name"
+            track-by="full_name"
             value-prop="id"
             @keydown.ctrl.enter.prevent="save_unit_search(), open_unit_modal()"
           />
@@ -64,7 +65,6 @@
 
 <script>
 import Multiselect from '@vueform/multiselect'
-import {obj_with_searchable_name} from '@/utils/utils.js'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
 import { mapStores } from 'pinia'
@@ -90,9 +90,6 @@ export default {
     },
     computed: {
         ...mapStores(useApiStore),
-        searchableUnits() {
-            return this.apiStore.units.map(unit => obj_with_searchable_name(unit, "full_name"))
-        }
     },
     watch: {
         input: function() {
