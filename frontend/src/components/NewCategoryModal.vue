@@ -29,6 +29,8 @@
       <div class="modal-action">
         <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
+          type="button"
+          @click="sendCategory"
         >Ajouter</button>
       </div>
     </div>
@@ -57,7 +59,6 @@ export default {
                 "name": this.name,
             }
             this.apiStore.sendNewCategory(category)
-                .catch((e) => console.error(e))
                 .then((new_categ) => {
                     this.$emit('created', new_categ)
                     this.close()

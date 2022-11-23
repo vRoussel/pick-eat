@@ -26,7 +26,7 @@
           >
         </div>
         <div class="form-control w-full">
-          <label class="label">
+          <label for="" class="label">
             <span class="label-text">Unité par défaut</span>
             <button
               class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
@@ -51,6 +51,8 @@
       <div class="modal-action">
         <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
+          type="button"
+          @click="sendIngredient"
         >Ajouter</button>
       </div>
     </div>
@@ -103,7 +105,6 @@ export default {
                 "default_unit_id": this.default_unit
             }
             this.apiStore.sendNewIngredient(ingredient)
-                .catch((e) => console.error(e))
                 .then((new_ingr) => {
                     this.$emit('created', new_ingr)
                     this.close()

@@ -42,6 +42,8 @@
       <div class="modal-action">
         <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
+          type="button"
+          @click="sendUnit"
         >Ajouter</button>
       </div>
     </div>
@@ -80,7 +82,6 @@ export default {
                 "short_name": this.short_name,
             }
             this.apiStore.sendNewUnit(unit)
-                .catch((e) => console.error(e))
                 .then((new_unit) => {
                     this.$emit('created', new_unit)
                     this.close()
