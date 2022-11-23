@@ -6,6 +6,20 @@ const API_PROTO = window.location.protocol
 const API_HOST = window.location.hostname
 const API_ROOT = `${API_PROTO}//${API_HOST}/api/v1`
 
+
+async function sendNewThing(post, endpoint) {
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8'
+    }
+
+    let resp = await axios.post(`${API_ROOT}${endpoint}`, post, { 'headers': headers })
+    let location = resp.headers['location']
+
+    let resp2 = await axios.get(`${API_ROOT}${endpoint}${location}`)
+    return resp2.data
+}
+
 export const useApiStore = defineStore('api', {
     state: () => {
         return {
@@ -112,95 +126,38 @@ export const useApiStore = defineStore('api', {
             return resp.data
         },
 
-
-
         async sendNewTag(tag) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/tags`, tag, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/tags${location}`)
-            let new_tag = resp2.data
+            let new_tag = await sendNewThing(tag, '/tags')
             insert_sorted(this.tags, new_tag, (a,b) => a.name.localeCompare(b.name))
             return new_tag
         },
 
         async sendNewCategory(category) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/categories`, category, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/categories${location}`)
-            let new_categ = resp2.data
+            let new_categ = await sendNewThing(category, '/categories')
             insert_sorted(this.categories, new_categ, (a,b) => a.name.localeCompare(b.name))
             return new_categ
         },
 
         async sendNewSeason(season) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/seasons`, season, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/seasons${location}`)
-            let new_season = resp2.data
+            let new_season = await sendNewThing(season, '/seasons')
             insert_sorted(this.seasons, new_season, (a,b) => a.name.localeCompare(b.name))
             return new_season
         },
 
         async sendNewIngredient(ingredient) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/ingredients`, ingredient, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/ingredients${location}`)
-            let new_ingredient = resp2.data
+            let new_ingredient = await sendNewThing(ingredient, '/ingredients')
             insert_sorted(this.ingredients, new_ingredient, (a,b) => a.name.localeCompare(b.name))
             return new_ingredient
         },
 
         async sendNewUnit(unit) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/units`, unit, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/units${location}`)
-            let new_unit = resp2.data
+            let new_unit = await sendNewThing(unit, '/units')
             insert_sorted(this.units, new_unit, (a,b) => a.full_name.localeCompare(b.full_name))
             return new_unit
         },
 
         async sendNewRecipe(recipe) {
-            let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-
-            let resp = await axios.post(`${API_ROOT}/recipes`, recipe, { 'headers': headers })
-            let location = resp.headers['location']
-
-            let resp2 = await axios.get(`${API_ROOT}/recipes${location}`)
-            let new_recipe = resp2.data
-            return new_recipe
+            return sendNewThing(recipe, '/recipes')
         },
 
 
