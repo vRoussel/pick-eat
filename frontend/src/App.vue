@@ -139,16 +139,14 @@ export default {
             }
         },
   },
-  created: function() {
-    let api_calls = [
+  created: async function() {
+    await Promise.all([
         this.apiStore.fetchTags(),
         this.apiStore.fetchCategories(),
         this.apiStore.fetchIngredients(),
         this.apiStore.fetchUnits(),
         this.apiStore.fetchSeasons()
-    ]
-    for (let ret of api_calls)
-        ret.catch(error => console.error(error));
+    ])
   },
   methods: {
         unfocus(e) {
