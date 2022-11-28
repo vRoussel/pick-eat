@@ -151,13 +151,13 @@ import Multiselect from '@vueform/multiselect'
 import { mapStores } from 'pinia'
 import { useApiStore } from '@/store/api.js'
 
-export class Filters {
-    constructor (q=null, i=[], t=[], c=[], s=[]) {
-        this.search_query = q,
-        this.ingredients = i,
-        this.tags = t,
-        this.categories = c,
-        this.seasons = s
+export function Filters(q=null, i=[], t=[], c=[], s=[]) {
+    return {
+        search_query : q,
+        ingredients : i,
+        tags : t,
+        categories : c,
+        seasons : s
     }
 }
 
@@ -170,6 +170,7 @@ export default {
     props: {
         filters : {
             type: Object,
+            required: true
         }
     },
     emits: ['toggle', 'update:filters'],
@@ -259,7 +260,7 @@ export default {
             this.search_query = null
         },
         clearFilters() {
-            this.updateFilters(new Filters(), 0)
+            this.updateFilters(Filters(), 0)
         },
         on_mobile() {
             return window.innerWidth <= 768;

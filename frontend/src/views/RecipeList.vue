@@ -84,7 +84,7 @@ export default {
         filters: {
             get: function () {
                 let q = this.$route.query;
-                return new Filters(
+                return Filters(
                      q.search,
                      q.i ? q.i.split(',') : [],
                      q.t ? q.t.split(',') : [],
