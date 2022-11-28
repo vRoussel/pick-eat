@@ -83,10 +83,11 @@ export default {
         }
 
     },
+    emits: ['update:current_page'],
     methods: {
         go_page(page) {
             if (page === null) return;
-            this.$router.push({ query: { ...this.$route.query, "page": page}, params: {noscroll: false} });
+            this.$emit('update:current_page', page);
         },
         page(position) {
             if (this.current_page < this.min_page + this.page_offset)

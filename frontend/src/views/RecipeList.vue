@@ -21,7 +21,7 @@
       </div>
       <div class="max-w-fit mx-auto my-8">
         <pagination
-          :current_page="page"
+          v-model:current_page="page"
           :max_page="max_page"
           url_param="page"
         />
