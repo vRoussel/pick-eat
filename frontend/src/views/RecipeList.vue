@@ -111,7 +111,8 @@ export default {
     watch: {
         '$route.query': {
             handler : function() {
-                this.loadRecipes()
+                if (this.$route.name == "recipe-list")
+                    this.loadRecipes()
             }
         }
     },
