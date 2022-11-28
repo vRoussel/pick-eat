@@ -111,8 +111,10 @@ export default {
     watch: {
         '$route.query': {
             handler : function() {
-                if (this.$route.name == "recipe-list")
+                if (this.$route.name == "recipe-list" && this.saved_query == null) {
                     this.loadRecipes()
+                    this.last_query = this.$route.query
+                }
             }
         }
     },
@@ -130,6 +132,13 @@ export default {
         on_mobile() {
             return screen.width < 768;
         }
+    },
+    deactivated() {
+        this.saved_query = this.last_query
+    },
+    activated() {
+        this.$router.replace({ query: this.saved_query });
+        this.saved_query = null
     }
 }
 </script>

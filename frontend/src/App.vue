@@ -92,11 +92,13 @@
       name="fade"
       mode="out-in"
     >
-      <component
-        :is="Component"
-        :key="route.path"
-        ref="main"
-      />
+      <KeepAlive>
+        <component
+          :is="Component"
+          :key="route.path"
+          ref="main"
+        />
+      </KeepAlive>
     </transition>
   </router-view>
   <grocery-list-modal ref="grocery_list_modal" />
