@@ -173,7 +173,7 @@ export default {
             required: true
         }
     },
-    emits: ['toggle', 'update:filters'],
+    emits: ['update:filters'],
     data: function() {
         return {
             timer: null,

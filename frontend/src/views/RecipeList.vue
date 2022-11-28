@@ -23,7 +23,6 @@
         <pagination
           v-model:current_page="page"
           :max_page="max_page"
-          url_param="page"
         />
       </div>
     </div>
