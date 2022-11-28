@@ -109,13 +109,11 @@ export default {
         }
     },
     watch: {
-        page: function() {
-            //this.input_search = this.url_search
-            this.loadRecipes()
-        },
-        filters : function() {
-            this.loadRecipes()
-        },
+        '$route.query': {
+            handler : function() {
+                this.loadRecipes()
+            }
+        }
     },
     created() {
         this.loadRecipes()
