@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,0" last-zoom="0.85" max-obj-count="12"
+<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.85" max-obj-count="12"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -26,7 +26,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
  sql-disabled="true">
 </role>
 
-<database name="pick_eat" is-template="false" allow-conns="true">
+<database name="pickeat" is-template="false" allow-conns="true">
 </database>
 
 <schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
@@ -71,7 +71,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 	<constraint name="recipes_ck_times" type="ck-constr" table="public.recipes">
-			<expression><![CDATA[preparation_time_min >= 0 AND cooking_time_min >= 0]]></expression>
+			<expression> <![CDATA[preparation_time_min >= 0 AND cooking_time_min >= 0]]> </expression>
 	</constraint>
 </table>
 
@@ -170,7 +170,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<columns names="recipe_id,ingredient_id" ref-type="src-columns"/>
 	</constraint>
 	<constraint name="recipes_ingredients_ck_qty" type="ck-constr" table="public.recipes_ingredients">
-			<expression><![CDATA[quantity > 0]]></expression>
+			<expression> <![CDATA[quantity > 0]]> </expression>
 	</constraint>
 </table>
 
@@ -274,7 +274,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<parameter name="s">
 		<type name="text" length="0"/>
 	</parameter>
-	<definition><![CDATA[select upper(left($1, 1)) || lower(right($1, -1));]]></definition>
+	<definition> <![CDATA[select upper(left($1, 1)) || lower(right($1, -1));]]> </definition>
 </function>
 
 <opclass  name="gist_trgm_ops" index-type="gist" default="false" sql-disabled="true">

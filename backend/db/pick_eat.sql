@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.0-alpha
+-- pgModeler version: 1.0.0-beta1
 -- PostgreSQL version: 13.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
@@ -26,9 +26,9 @@
 -- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
 -- 
--- object: pick_eat | type: DATABASE --
--- DROP DATABASE IF EXISTS pick_eat;
-CREATE DATABASE pick_eat;
+-- object: pickeat | type: DATABASE --
+-- DROP DATABASE IF EXISTS pickeat;
+CREATE DATABASE pickeat;
 -- ddl-end --
 
 
