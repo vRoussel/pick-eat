@@ -2,16 +2,14 @@ use actix_web::{middleware::Logger, web, App, HttpServer};
 use clap::Parser;
 use log::*;
 use simplelog::*;
+use sqlx::postgres::PgPool;
 
 mod database;
 mod handlers;
 mod query_params;
 mod resources;
-mod utils;
 
-use database::Pool;
-
-async fn start_web_server(db_pool: Pool) -> std::io::Result<()> {
+async fn start_web_server(db_pool: PgPool) -> std::io::Result<()> {
     let mydata = web::Data::new(db_pool);
     HttpServer::new(move || {
         App::new()

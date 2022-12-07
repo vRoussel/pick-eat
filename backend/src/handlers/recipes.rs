@@ -1,11 +1,13 @@
+use super::db_error_to_http_response;
 use actix_web::{delete, get, http, patch, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
-use tokio_postgres::error::SqlState;
+use sqlx::postgres::PgPool;
+use sqlx::Error;
 
-use crate::database::Pool;
 use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
+use crate::resources::{get_total_count, isolate_transaction};
 
 static MAX_PER_REQUEST: Option<i64> = Some(50);
 
@@ -31,14 +33,29 @@ pub struct GetQueryParams {
 #[get("/recipes")]
 pub async fn get_all(
     params: web::Query<GetQueryParams>,
-    db_pool: web::Data<Pool>,
+    db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let db_conn = db_pool.get().await.unwrap();
+    let mut db_conn = db_pool.begin().await.unwrap();
+
+    // Make sure we ignore changes that occur between our
+    // 2 requests (get_total_count and get_recipes)
+    if let Err(e) = isolate_transaction(&mut db_conn).await {
+        error!("{}", e);
+        return HttpResponse::InternalServerError().finish();
+    }
+    // TODO begin and get_total_count here
+    let total_count: i64 = match get_total_count(&mut db_conn, "recipes").await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
 
     let accept_range = format!("recipe {}", MAX_PER_REQUEST.unwrap_or(0));
 
-    if let Err(e) = params.range.validate(MAX_PER_REQUEST) {
-        let content_range = format!("{}-{}/{}", 0, 0, "*");
+    if let Err(e) = params.range.validate(MAX_PER_REQUEST, total_count) {
+        let content_range = format!("{}-{}/{}", 0, 0, total_count);
         let mut ret = match e {
             RangeError::OutOfBounds => HttpResponse::NoContent(),
             RangeError::TooWide => HttpResponse::BadRequest(),
@@ -76,16 +93,19 @@ pub async fn get_all(
         ));
     }
 
-    let (recipes, total_count) = match recipe::get_many(&db_conn, &params.range, &filters).await {
+    let recipes = match recipe::get_many(&mut db_conn, &params.range, &filters).await {
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);
             return HttpResponse::InternalServerError().finish();
         }
     };
+    if let Err(e) = db_conn.rollback().await {
+        error!("{}", e);
+        return HttpResponse::InternalServerError().finish();
+    }
 
     let fetched_count = recipes.len() as i64;
-    let mut ret;
     let (first_fetched, last_fetched);
 
     if fetched_count == 0 {
@@ -96,6 +116,7 @@ pub async fn get_all(
         last_fetched = first_fetched + fetched_count - 1;
     }
 
+    let mut ret;
     if fetched_count < total_count && fetched_count > 0 {
         ret = HttpResponse::PartialContent();
     } else {
@@ -112,22 +133,22 @@ pub async fn get_all(
 #[post("/recipes")]
 pub async fn add_one(
     new_recipe: web::Json<recipe::New>,
-    db_pool: web::Data<Pool>,
+    db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let mut db_conn = db_pool.get().await.unwrap();
+    let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_recipe);
     let new_id = match recipe::add_one(&mut db_conn, &new_recipe).await {
         Ok(v) => v,
-        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
-            return HttpResponse::Conflict().finish()
-        }
-        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION) => {
-            return HttpResponse::UnprocessableEntity().finish()
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
+        Err(e) => match e {
+            Error::Database(db_error) => {
+                error!("{}", db_error);
+                return db_error_to_http_response(&*db_error);
+            }
+            _ => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        },
     };
 
     HttpResponse::Created()
@@ -136,10 +157,10 @@ pub async fn add_one(
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
-    let db_conn = db_pool.get().await.unwrap();
+pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let recipe = match recipe::get_one(&db_conn, id.into_inner()).await {
+    let recipe = match recipe::get_one(&mut db_conn, id.into_inner()).await {
         Ok(Some(v)) => v,
         Ok(None) => {
             return HttpResponse::NotFound().finish();
@@ -158,24 +179,24 @@ pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Respo
 pub async fn modify_one(
     id: web::Path<i32>,
     new_recipe: web::Json<recipe::New>,
-    db_pool: web::Data<Pool>,
+    db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let mut db_conn = db_pool.get().await.unwrap();
+    let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_recipe);
 
     match recipe::modify_one(&mut db_conn, id.into_inner(), &new_recipe).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
-        Err(ref e) if e.code() == Some(&SqlState::UNIQUE_VIOLATION) => {
-            return HttpResponse::Conflict().finish()
-        }
-        Err(ref e) if e.code() == Some(&SqlState::FOREIGN_KEY_VIOLATION) => {
-            return HttpResponse::UnprocessableEntity().finish()
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
+        Err(e) => match e {
+            Error::Database(db_error) => {
+                error!("{}", db_error);
+                return db_error_to_http_response(&*db_error);
+            }
+            _ => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        },
     }
     HttpResponse::Ok().finish()
 }
@@ -184,9 +205,9 @@ pub async fn modify_one(
 pub async fn patch_one(
     id: web::Path<i32>,
     patched_recipe: web::Json<recipe::Patched>,
-    db_pool: web::Data<Pool>,
+    db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let mut db_conn = db_pool.get().await.unwrap();
+    let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", patched_recipe);
 
     match recipe::patch_one(&mut db_conn, id.into_inner(), &patched_recipe).await {
@@ -201,10 +222,10 @@ pub async fn patch_one(
 }
 
 #[delete("/recipes/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
-    let db_conn = db_pool.get().await.unwrap();
+pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
 
-    match recipe::delete_one(&db_conn, id.into_inner()).await {
+    match recipe::delete_one(&mut db_conn, id.into_inner()).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {

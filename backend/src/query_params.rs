@@ -48,7 +48,11 @@ impl<'de> Deserialize<'de> for Range {
 }
 
 impl Range {
-    pub fn validate(&self, max_range_size: Option<i64>) -> Result<(), RangeError> {
+    pub fn validate(
+        &self,
+        max_range_size: Option<i64>,
+        total_count: i64,
+    ) -> Result<(), RangeError> {
         //TODO < 0 not working
         if self.from < 0 || self.to < 0 || self.to < self.from {
             return Err(RangeError::Invalid);
@@ -57,6 +61,10 @@ impl Range {
         let range_size = self.to - self.from + 1;
         if max_range_size.is_some() && range_size > max_range_size.unwrap() {
             return Err(RangeError::TooWide);
+        }
+
+        if self.from > total_count {
+            return Err(RangeError::OutOfBounds);
         }
 
         Ok(())

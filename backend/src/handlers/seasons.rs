@@ -1,17 +1,17 @@
-use crate::database::Pool;
 use crate::resources::season;
 use actix_web::{get, web, HttpResponse, Responder};
 use log::*;
+use sqlx::postgres::PgPool;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all).service(get_one);
 }
 
 #[get("/seasons")]
-pub async fn get_all(db_pool: web::Data<Pool>) -> impl Responder {
-    let db_conn = db_pool.get().await.unwrap();
+pub async fn get_all(db_pool: web::Data<PgPool>) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let seasonss = match season::get_all(&db_conn).await {
+    let seasonss = match season::get_all(&mut db_conn).await {
         Ok(v) => v,
         Err(e) => {
             error!("{}", e);
@@ -24,10 +24,10 @@ pub async fn get_all(db_pool: web::Data<Pool>) -> impl Responder {
 }
 
 #[get("/seasons/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<Pool>) -> impl Responder {
-    let db_conn = db_pool.get().await.unwrap();
+pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let season = match season::get_one(&db_conn, id.into_inner()).await {
+    let season = match season::get_one(&mut db_conn, id.into_inner()).await {
         Ok(Some(v)) => v,
         Ok(None) => {
             return HttpResponse::NotFound().finish();

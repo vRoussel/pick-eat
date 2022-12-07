@@ -1,49 +1,44 @@
 use serde::{Deserialize, Serialize};
-use tokio_postgres::{error::Error, Client};
+use sqlx::postgres::PgConnection;
+use sqlx::{query_as, Error};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FromDB {
-    pub(crate) id: i32,
-    pub(crate) name: String,
+    id: i32,
+    name: String,
 }
 
-impl From<&tokio_postgres::row::Row> for FromDB {
-    fn from(row: &tokio_postgres::row::Row) -> Self {
-        FromDB {
-            id: row.get("id"),
-            name: row.get("name"),
-        }
-    }
-}
-
-pub async fn get_all(db_conn: &Client) -> Result<Vec<FromDB>, Error> {
-    let seasons_query = String::from(
+pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
+    let rows: Vec<FromDB> = query_as!(
+        FromDB,
         "
-        SELECT
-            id,
-            name
-        FROM seasons
-        ORDER BY id
-    ",
-    );
+            SELECT
+                id,
+                name
+            FROM seasons
+            ORDER BY id
+        ",
+    )
+    .fetch_all(db_conn)
+    .await?;
 
-    db_conn
-        .query(seasons_query.as_str(), &[])
-        .await
-        .map(|rows| rows.iter().map(|r| r.into()).collect())
+    Ok(rows)
 }
 
-pub async fn get_one(db_conn: &Client, id: i32) -> Result<Option<FromDB>, Error> {
-    let query = "
-        SELECT
-            id,
-            name
-        FROM seasons
-        WHERE id = $1
-    ";
+pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        "
+            SELECT
+                id,
+                name
+            FROM seasons
+            WHERE id = $1
+        ",
+        id
+    )
+    .fetch_optional(db_conn)
+    .await?;
 
-    db_conn
-        .query_opt(query, &[&id])
-        .await
-        .map(|opt| opt.map(|ref row| row.into()))
+    Ok(row)
 }
