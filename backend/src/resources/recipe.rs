@@ -475,17 +475,7 @@ pub async fn modify_one(
     }
 
     // Tags
-    if new_recipe.tag_ids.is_empty() {
-        query!(
-            "
-                DELETE FROM recipes_tags
-                WHERE recipe_id = $1;
-            ",
-            id
-        )
-        .execute(&mut transaction)
-        .await?;
-    } else {
+    if !new_recipe.tag_ids.is_empty() {
         query!(
             "
                 INSERT INTO recipes_tags
@@ -498,33 +488,23 @@ pub async fn modify_one(
         )
         .execute(&mut transaction)
         .await?;
+    }
 
-        query!(
-            "
+    query!(
+        "
                 DELETE FROM recipes_tags
                 WHERE
                     recipe_id = $1
                     AND tag_id <> ALL($2);
             ",
-            id,
-            &new_recipe.tag_ids
-        )
-        .execute(&mut transaction)
-        .await?;
-    }
+        id,
+        &new_recipe.tag_ids
+    )
+    .execute(&mut transaction)
+    .await?;
 
     // Seasons
-    if new_recipe.season_ids.is_empty() {
-        query!(
-            "
-                DELETE FROM recipes_seasons
-                WHERE recipe_id = $1;
-            ",
-            id
-        )
-        .execute(&mut transaction)
-        .await?;
-    } else {
+    if !new_recipe.season_ids.is_empty() {
         query!(
             "
                 INSERT INTO recipes_seasons
@@ -537,33 +517,23 @@ pub async fn modify_one(
         )
         .execute(&mut transaction)
         .await?;
+    }
 
-        query!(
-            "
+    query!(
+        "
                 DELETE FROM recipes_seasons
                 WHERE
                     recipe_id = $1
                     AND season_id <> ALL($2);
             ",
-            id,
-            &new_recipe.season_ids
-        )
-        .execute(&mut transaction)
-        .await?;
-    }
+        id,
+        &new_recipe.season_ids
+    )
+    .execute(&mut transaction)
+    .await?;
 
     // Categories
-    if new_recipe.category_ids.is_empty() {
-        query!(
-            "
-                DELETE FROM recipes_categories
-                WHERE recipe_id = $1;
-            ",
-            id
-        )
-        .execute(&mut transaction)
-        .await?;
-    } else {
+    if !new_recipe.category_ids.is_empty() {
         query!(
             "
                 INSERT INTO recipes_categories
@@ -576,42 +546,33 @@ pub async fn modify_one(
         )
         .execute(&mut transaction)
         .await?;
+    }
 
-        query!(
-            "
+    query!(
+        "
                 DELETE FROM recipes_categories
                 WHERE
                     recipe_id = $1
                     AND category_id <> ALL($2);
             ",
-            id,
-            &new_recipe.category_ids
-        )
-        .execute(&mut transaction)
-        .await?;
-    }
+        id,
+        &new_recipe.category_ids
+    )
+    .execute(&mut transaction)
+    .await?;
 
     // Ingredients
-    if new_recipe.q_ingredients.is_empty() {
-        query!(
-            "
-                DELETE FROM recipes_ingredients
-                WHERE recipe_id = $1;
-            ",
-            id
-        )
-        .execute(&mut transaction)
-        .await?;
-    } else {
-        let mut ingr_ids: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
-        let mut qtys: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
-        let mut unit_ids: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
+    let mut ingr_ids: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
+    let mut qtys: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
+    let mut unit_ids: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
 
-        new_recipe.q_ingredients.iter().for_each(|ref v| {
-            ingr_ids.push(v.id);
-            qtys.push(v.quantity);
-            unit_ids.push(v.unit_id);
-        });
+    new_recipe.q_ingredients.iter().for_each(|ref v| {
+        ingr_ids.push(v.id);
+        qtys.push(v.quantity);
+        unit_ids.push(v.unit_id);
+    });
+
+    if !new_recipe.q_ingredients.is_empty() {
         query_unchecked!(
             "
                 WITH input AS (
@@ -636,20 +597,20 @@ pub async fn modify_one(
         )
         .execute(&mut transaction)
         .await?;
+    }
 
-        query!(
-            "
+    query!(
+        "
                 DELETE FROM recipes_ingredients
                 WHERE
                     recipe_id = $1
                     AND ingredient_id <> ALL($2);
             ",
-            id,
-            &ingr_ids
-        )
-        .execute(&mut transaction)
-        .await?;
-    }
+        id,
+        &ingr_ids
+    )
+    .execute(&mut transaction)
+    .await?;
     transaction.commit().await?;
 
     Ok(Some(()))
