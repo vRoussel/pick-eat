@@ -1,5 +1,4 @@
-use super::ingredient::quantified as QIngredient;
-use super::{category, season, tag};
+use super::{category, ingredient, qingredient, season, tag};
 use crate::query_params::Range;
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -11,7 +10,7 @@ pub struct FromDB {
     id: i32,
     name: String,
     notes: String,
-    q_ingredients: Vec<QIngredient::Full>,
+    q_ingredients: Vec<qingredient::FromDB>,
     categories: Vec<category::FromDB>,
     tags: Vec<tag::FromDB>,
     prep_time_min: i16,
@@ -37,9 +36,9 @@ pub struct FromDBLight {
 pub struct New {
     name: String,
     notes: String,
-    q_ingredients: Vec<QIngredient::Ref>,
     category_ids: Vec<i32>,
     tag_ids: Vec<i32>,
+    q_ingredients: Vec<qingredient::Ref>,
     prep_time_min: i16,
     cook_time_min: i16,
     image: String,

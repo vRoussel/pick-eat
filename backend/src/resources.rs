@@ -1,5 +1,6 @@
 pub mod category;
 pub mod ingredient;
+pub mod qingredient;
 pub mod recipe;
 pub mod season;
 pub mod tag;

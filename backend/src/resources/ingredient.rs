@@ -19,26 +19,6 @@ pub struct New {
     default_unit_id: Option<i32>,
 }
 
-pub mod quantified {
-    use super::unit;
-    use serde::{Deserialize, Serialize};
-
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct Full {
-        id: i32,
-        name: String,
-        quantity: Option<f32>,
-        unit: Option<unit::FromDB>,
-    }
-
-    #[derive(Debug, Deserialize)]
-    #[serde(deny_unknown_fields)]
-    pub struct Ref {
-        pub(crate) id: i32,
-        pub(crate) quantity: Option<f32>,
-        pub(crate) unit_id: Option<i32>,
-    }
-}
 
 pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
     let rows: Vec<FromDB> = query_as!(
