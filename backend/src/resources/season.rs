@@ -8,6 +8,8 @@ pub struct FromDB {
     name: String,
 }
 
+pub type Ref = i32;
+
 pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
     let rows: Vec<FromDB> = query_as!(
         FromDB,

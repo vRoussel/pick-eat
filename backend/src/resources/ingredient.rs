@@ -19,6 +19,7 @@ pub struct New {
     default_unit_id: Option<i32>,
 }
 
+pub type Ref = i32;
 
 pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
     let rows: Vec<FromDB> = query_as!(

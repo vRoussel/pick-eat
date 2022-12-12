@@ -36,15 +36,15 @@ pub struct FromDBLight {
 pub struct New {
     name: String,
     notes: String,
-    category_ids: Vec<i32>,
-    tag_ids: Vec<i32>,
     q_ingredients: Vec<qingredient::Ref>,
+    category_ids: Vec<category::Ref>,
+    tag_ids: Vec<tag::Ref>,
     prep_time_min: i16,
     cook_time_min: i16,
     image: String,
     instructions: Vec<String>,
     n_shares: i16,
-    season_ids: Vec<i32>,
+    season_ids: Vec<season::Ref>,
     is_favorite: bool,
 }
 
@@ -56,10 +56,10 @@ pub struct Patched {
 
 pub enum Filter {
     Search(String),
-    Categories(Vec<i32>),
-    Seasons(Vec<i32>),
-    Ingredients(Vec<i32>),
-    Tags(Vec<i32>),
+    Categories(Vec<category::Ref>),
+    Seasons(Vec<season::Ref>),
+    Ingredients(Vec<ingredient::Ref>),
+    Tags(Vec<tag::Ref>),
 }
 
 impl FromRow<'_, PgRow> for FromDB {
