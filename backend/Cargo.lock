@@ -20,21 +20,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "actix-cors"
-version = "0.6.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b340e9cfa5b08690aae90fb61beb44e9b06f44fe3d0f93781aaa58cfba86245e"
-dependencies = [
- "actix-utils",
- "actix-web",
- "derive_more",
- "futures-util",
- "log",
- "once_cell",
- "smallvec",
-]
-
-[[package]]
 name = "actix-http"
 version = "3.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -100,7 +85,6 @@ version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ea16c295198e958ef31930a6ef37d0fb64e9ca3b6116e6b93a8bdae96ee1000"
 dependencies = [
- "actix-macros",
  "futures-core",
  "tokio",
 ]
@@ -1255,8 +1239,6 @@ dependencies = [
 name = "pickeat"
 version = "0.1.0"
 dependencies = [
- "actix-cors",
- "actix-rt",
  "actix-web",
  "chrono",
  "clap",

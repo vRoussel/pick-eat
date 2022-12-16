@@ -69,7 +69,7 @@ struct Cli {
     conf: std::path::PathBuf,
 }
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     info!("Starting");
