@@ -1,3 +1,4 @@
+pub mod account;
 pub mod category;
 pub mod ingredient;
 pub mod qingredient;

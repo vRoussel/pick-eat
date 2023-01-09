@@ -1,3 +1,7 @@
+use actix_identity::IdentityMiddleware;
+use actix_session::config::CookieContentSecurity;
+use actix_session::{storage::RedisSessionStore, Session, SessionMiddleware};
+use actix_web::cookie::Key;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use clap::Parser;
 use conf::{parse_conf, Conf};
@@ -13,9 +17,26 @@ mod resources;
 
 async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
     let db_pool_data = web::Data::new(db_pool);
+    let secret_key = Key::from(conf.sessions.cookie_secret.as_bytes());
+
+    let redis_conn_str = format!(
+        "redis://:{}@{}:{}",
+        conf.redis.password.unwrap_or_default(),
+        conf.redis.host,
+        conf.redis.port.unwrap_or(6379).to_string(),
+    );
+    let redis_store = RedisSessionStore::new(redis_conn_str).await.unwrap();
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
+            .wrap(IdentityMiddleware::default())
+            .wrap(
+                // create cookie based session middleware
+                SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                    .cookie_content_security(CookieContentSecurity::Signed)
+                    .cookie_secure(false)
+                    .build(),
+            )
             .app_data(db_pool_data.clone())
             .service(
                 web::scope("/v1")
@@ -24,7 +45,9 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
                     .configure(handlers::tags::config)
                     .configure(handlers::categories::config)
                     .configure(handlers::units::config) //            .configure(resources::search::config)
-                    .configure(handlers::seasons::config),
+                    .configure(handlers::seasons::config)
+                    .configure(handlers::accounts::config)
+                    .configure(handlers::sessions::config),
             )
     })
     .bind("127.0.0.1:8080")?
