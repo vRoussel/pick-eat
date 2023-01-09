@@ -1,20 +1,22 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use clap::Parser;
+use conf::{parse_conf, Conf};
 use log::*;
 use simplelog::*;
 use sqlx::postgres::PgPool;
 
+mod conf;
 mod database;
 mod handlers;
 mod query_params;
 mod resources;
 
-async fn start_web_server(db_pool: PgPool) -> std::io::Result<()> {
-    let mydata = web::Data::new(db_pool);
+async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
+    let db_pool_data = web::Data::new(db_pool);
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(mydata.clone())
+            .app_data(db_pool_data.clone())
             .service(
                 web::scope("/v1")
                     .configure(handlers::recipes::config)
@@ -74,7 +76,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     info!("Starting");
     let args = Cli::parse();
-    let db_pool = database::get_pool(&args.conf).await?;
-    start_web_server(db_pool).await?;
+    let conf = parse_conf(&args.conf);
+    let db_pool = database::get_pool(&conf.database).await?;
+    start_web_server(db_pool, conf).await?;
     Ok(())
 }
