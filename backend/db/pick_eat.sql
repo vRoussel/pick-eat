@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 1.0.0-beta1
--- PostgreSQL version: 13.0
+-- PostgreSQL version: 14.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
@@ -48,6 +48,7 @@ CREATE TABLE public.recipes (
 	instructions text[] NOT NULL,
 	n_shares smallint NOT NULL,
 	is_favorite boolean NOT NULL DEFAULT false,
+	author_id integer NOT NULL,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 );
@@ -210,6 +211,29 @@ USING gist
 (
 	name public.gist_trgm_ops
 );
+-- ddl-end --
+
+-- object: public.accounts | type: TABLE --
+-- DROP TABLE IF EXISTS public.accounts CASCADE;
+CREATE TABLE public.accounts (
+	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	display_name text NOT NULL,
+	creation_date date DEFAULT CURRENT_DATE,
+	email text NOT NULL,
+	password text NOT NULL,
+	CONSTRAINT accounts_pk PRIMARY KEY (id),
+	CONSTRAINT accounts_uq_display_name UNIQUE (display_name),
+	CONSTRAINT accounts_uq_email UNIQUE (email)
+);
+-- ddl-end --
+ALTER TABLE public.accounts OWNER TO pickeat;
+-- ddl-end --
+
+-- object: recipes_fk_author_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fk_author_id CASCADE;
+ALTER TABLE public.recipes ADD CONSTRAINT recipes_fk_author_id FOREIGN KEY (author_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --

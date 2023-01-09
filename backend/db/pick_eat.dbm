@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.85" max-obj-count="12"
+<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="13"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -32,10 +32,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
+<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="13" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="320" y="420"/>
+	<position x="320" y="540"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -67,6 +67,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="is_favorite" not-null="true" default-value="false">
 		<type name="boolean" length="0"/>
 	</column>
+	<column name="author_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
 	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -78,7 +81,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1480" y="280"/>
+	<position x="1480" y="400"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -97,7 +100,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="tags" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1480" y="100"/>
+	<position x="1480" y="220"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -116,7 +119,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_tags" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1000" y="100"/>
+	<position x="1000" y="220"/>
 	<column name="tag_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -131,7 +134,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="ingredients" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1480" y="440"/>
+	<position x="1480" y="560"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -153,7 +156,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_ingredients" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1000" y="500"/>
+	<position x="1000" y="620"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -177,7 +180,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_categories" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1000" y="280"/>
+	<position x="1000" y="400"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -192,7 +195,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="units" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1480" y="620"/>
+	<position x="1480" y="740"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -217,7 +220,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="seasons" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1480" y="840"/>
+	<position x="1480" y="960"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -236,7 +239,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_seasons" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1000" y="840"/>
+	<position x="1000" y="960"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -294,6 +297,43 @@ CAUTION: Do not modify this file unless you know what you are doing.
 			<opclass  signature="public.gist_trgm_ops USING gist"/>
 		</idxelement>
 </index>
+
+<table name="accounts" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="320" y="300"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="display_name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="creation_date" default-value="CURRENT_DATE">
+		<type name="date" length="0"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="accounts_pk" type="pk-constr" table="public.accounts">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="accounts_uq_display_name" type="uq-constr" table="public.accounts">
+		<columns names="display_name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="accounts_uq_email" type="uq-constr" table="public.accounts">
+		<columns names="email" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="recipes_fk_author_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.accounts" table="public.recipes">
+	<columns names="author_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
 
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
@@ -408,5 +448,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-table="public.recipes_seasons"
 	 dst-table="public.recipes" reference-fk="recipes_seasons_fk_recipe_id"
 	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_accounts" type="relfk" layers="0"
+	 src-table="public.recipes"
+	 dst-table="public.accounts" reference-fk="recipes_fk_author_id"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 </dbmodel>
