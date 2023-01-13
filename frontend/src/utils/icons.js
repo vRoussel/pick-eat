@@ -11,6 +11,7 @@ import cooking_pot from '@iconify-icons/ph/cooking-pot-fill';
 import knife from '@iconify-icons/ri/knife-fill';
 import person from '@iconify-icons/mdi/account';
 import camera from '@/assets/camera.svg';
+import menu from '@iconify-icons/mdi/menu';
 
 import flower from '@iconify-icons/ph/flower-fill';
 import sun from '@iconify-icons/ph/sun-fill';
@@ -34,5 +35,6 @@ export default {
     "cooking_pot": cooking_pot,
     "knife": knife,
     "person": person,
-    "camera": camera
+    "camera": camera,
+    "menu": menu
 }
