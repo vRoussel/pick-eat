@@ -34,11 +34,13 @@ input[type=number] {
 
 .multiselect {
     @apply !bg-base-100;
+    @apply !text-base-content;
     @apply border-accent !important;
 }
 
 .multiselect * {
     @apply !bg-base-100;
+    @apply !text-base-content;
 }
 
 .multiselect-dropdown {
