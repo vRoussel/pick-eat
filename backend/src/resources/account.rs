@@ -150,6 +150,26 @@ pub async fn check_credentials(
     Ok(row.id)
 }
 
+pub async fn check_password(
+    db_conn: &mut PgConnection,
+    id: i32,
+    password: &str,
+) -> Result<(), CheckCredentialsError> {
+    let row = query!(
+        "
+            SELECT password FROM accounts WHERE id = $1
+        ",
+        id
+    )
+    .fetch_one(db_conn)
+    .await?;
+
+    let hash = PasswordHash::new(&row.password)?;
+    Argon2::default().verify_password(password.as_bytes(), &hash)?;
+
+    Ok(())
+}
+
 pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
     let row: Option<FromDB> = query_as!(
         FromDB,
