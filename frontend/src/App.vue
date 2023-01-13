@@ -77,6 +77,15 @@
         dark_theme="dark"
         light_theme="pickeat_light"
       />
+      <button
+        @click="this.$router.push(name='account')"
+        type="button"
+      >
+        <Icon
+          class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
+          :icon="icons.account"
+        />
+      </button>
     </div>
   </nav>
   <router-view v-slot="{ Component, route }">
