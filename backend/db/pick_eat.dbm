@@ -309,7 +309,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="display_name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="creation_date" default-value="CURRENT_DATE">
+	<column name="creation_date" not-null="true" default-value="CURRENT_DATE">
 		<type name="date" length="0"/>
 	</column>
 	<column name="email" not-null="true">

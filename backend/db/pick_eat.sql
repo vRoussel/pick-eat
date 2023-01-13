@@ -218,7 +218,7 @@ USING gist
 CREATE TABLE public.accounts (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	display_name text NOT NULL,
-	creation_date date DEFAULT CURRENT_DATE,
+	creation_date date NOT NULL DEFAULT CURRENT_DATE,
 	email text NOT NULL,
 	password text NOT NULL,
 	CONSTRAINT accounts_pk PRIMARY KEY (id),
