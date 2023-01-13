@@ -65,7 +65,7 @@ export default {
                 this.email = null
                 this.password = null
                 this.name = null
-            }).catch(() => {})
+            })
         }
     }
 }
