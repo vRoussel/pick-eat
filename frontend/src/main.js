@@ -8,13 +8,17 @@ import './assets/tailwind.css'
 import { Icon } from '@iconify/vue/dist/offline';
 import { createPinia } from 'pinia'
 
+import { useAuthStore } from '@/store/auth.js'
 
 FloatingVue.options.themes.tooltip.triggers = ['hover', 'click']
 const pinia = createPinia()
+const authStore = useAuthStore(pinia);
 
-createApp(App)
-    .use(router)
-    .use(FloatingVue)
-    .use(pinia)
-    .component("Icon", Icon)
-    .mount('#app');
+authStore.load_account().finally(() => {
+    createApp(App)
+        .use(router)
+        .use(FloatingVue)
+        .use(pinia)
+        .component("Icon", Icon)
+        .mount('#app');
+})

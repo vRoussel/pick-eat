@@ -151,11 +151,7 @@ export default {
         this.apiStore.fetchIngredients(),
         this.apiStore.fetchUnits(),
         this.apiStore.fetchSeasons(),
-        this.authStore.load_account()
     ])
-    if (this.authStore.is_logged_in && this.$route.name == 'login') {
-        this.$router.replace('/account')
-    }
   },
   methods: {
         unfocus(e) {
