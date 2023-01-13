@@ -48,7 +48,7 @@ export default {
       ...mapStores(useAuthStore)
     },
     methods: {
-        async login() {
+        login() {
             this.authStore.login(this.email, this.password).then(() => {
                 this.$router.push(this.authStore.return_url || '/account')
                 this.authStore.return_url = null
