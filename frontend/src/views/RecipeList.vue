@@ -104,7 +104,8 @@ export default {
                 if (f.seasons.length > 0)
                     q.s = f.seasons.join(',')
 
-                this.$router.push({ name: 'recipe-list', query: q, params: {noscroll: true} });
+                q.ns = null
+                this.$router.push({ name: 'recipe-list', query: q });
             },
         }
     },
