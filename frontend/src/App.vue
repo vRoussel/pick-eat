@@ -3,12 +3,12 @@
     <div class="navbar-start">
       <div
         ref="dd"
-        class="dropdown"
+        class="dropdown sm:hidden"
+        @click="close_dropdown_if_opened"
       >
         <label
           tabindex="0"
-          class="btn btn-ghost sm:hidden"
-        >
+          class="btn btn-ghost">
           <Icon
             class="icon text-2xl"
             :icon="icons.menu"
@@ -119,7 +119,8 @@ export default {
     return {
         navbarIsOpen: false,
         pickeat_png: pickeat_png,
-        icons: icons
+        icons: icons,
+        dropdown_main_opened: false
     }
   },
   computed: {
@@ -148,7 +149,15 @@ export default {
             setTimeout(function(){
                 targetEl.blur()
             }, 0)
-        }
+        },
+        close_dropdown_if_opened() {
+            if (this.dropdown_main_opened) {
+                setTimeout(function(){
+                    document.activeElement.blur()
+                }, 0)
+            }
+            this.dropdown_main_opened = !this.dropdown_main_opened
+}
   }
 }
 </script>
