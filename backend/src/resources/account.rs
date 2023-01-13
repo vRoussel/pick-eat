@@ -5,7 +5,7 @@ use argon2::{
     Argon2,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgConnection;
+use sqlx::{postgres::PgConnection, Connection};
 use sqlx::{query, query_as, Error};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,6 +21,15 @@ pub struct New {
     email: String,
     password: String,
     display_name: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Update {
+    new_email: String,
+    pub old_password: String,
+    new_password: Option<String>,
+    new_display_name: String,
 }
 
 pub type Ref = i32;
@@ -158,4 +167,60 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
     .await?;
 
     Ok(row)
+}
+
+pub async fn modify_one(
+    db_conn: &mut PgConnection,
+    id: i32,
+    account: &Update,
+) -> Result<Option<()>, InsertAccountError> {
+    let mut transaction = db_conn.begin().await?;
+
+    let mut n_rows: u64 = query!(
+        "
+            UPDATE accounts SET
+                display_name = $1,
+                email = $2
+            WHERE id = $3
+        ",
+        account.new_display_name,
+        account.new_email,
+        id
+    )
+    .execute(&mut transaction)
+    .await?
+    .rows_affected();
+
+    if let Some(new_password) = &account.new_password {
+        let salt = SaltString::generate(&mut OsRng);
+
+        // Argon2 with default params (Argon2id v19)
+        let argon2 = Argon2::default();
+
+        // Hash password to PHC string ($argon2id$v=19$...)
+        let password_hash = argon2
+            .hash_password(new_password.as_bytes(), &salt)?
+            .to_string();
+
+        n_rows += query!(
+            "
+                UPDATE accounts SET
+                password = $1
+                WHERE id = $2
+            ",
+            password_hash,
+            id
+        )
+        .execute(&mut transaction)
+        .await?
+        .rows_affected();
+    };
+
+    transaction.commit().await?;
+
+    if n_rows > 0 {
+        Ok(Some(()))
+    } else {
+        Ok(None)
+    }
 }
