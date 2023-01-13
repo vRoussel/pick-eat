@@ -3,6 +3,9 @@ import { createRouter, createWebHistory} from 'vue-router';
 import NewRecipe from '@/views/NewRecipe.vue'
 import Recipe from '@/views/Recipe.vue'
 import RecipeList from '@/views/RecipeList.vue'
+import Login from '@/views/Login.vue'
+import Account from '@/views/Account.vue'
+import Register from '@/views/Register.vue'
 
 const routes = [
     {
@@ -28,6 +31,30 @@ const routes = [
         props: route => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
         meta: {
             title: 'Recette - PickEat'
+        }
+    },
+    {
+        name: 'register',
+        path: '/register',
+        component: Register,
+        meta: {
+            title: 'Inscription - PickEat'
+        }
+    },
+    {
+        name: 'login',
+        path: '/login',
+        component: Login,
+        meta: {
+            title: 'Connection - PickEat'
+        }
+    },
+    {
+        name: 'account',
+        path: '/account',
+        component: Account,
+        meta: {
+            title: 'Mon Compte - PickEat'
         }
     },
     {
