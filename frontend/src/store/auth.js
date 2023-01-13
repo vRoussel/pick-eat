@@ -64,5 +64,20 @@ export const useAuthStore = defineStore('auth', {
             await axios.delete(`${API_ROOT}/accounts/me`, { 'headers': headers })
             await this.logout()
         },
+        async update_account(old_password, new_email, new_password, new_display_name) {
+            let post = {
+                'new_email': new_email,
+                'new_password': new_password,
+                'new_display_name': new_display_name,
+                'old_password': old_password
+            }
+            let headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+
+            await axios.put(`${API_ROOT}/accounts/me`, post, { 'headers': headers })
+            await this.load_account()
+        },
     }
 })
