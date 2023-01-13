@@ -8,6 +8,13 @@ use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgConnection;
 use sqlx::{query, query_as, Error};
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FromDB {
+    display_name: String,
+    email: String,
+    creation_date: time::Date,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
@@ -132,4 +139,23 @@ pub async fn check_credentials(
     Argon2::default().verify_password(password.as_bytes(), &hash)?;
 
     Ok(row.id)
+}
+
+pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        "
+            SELECT
+                email,
+                display_name,
+                creation_date
+            FROM accounts
+            WHERE id = $1
+        ",
+        id
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
 }
