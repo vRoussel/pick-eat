@@ -6,6 +6,7 @@ import RecipeList from '@/views/RecipeList.vue'
 import Login from '@/views/Login.vue'
 import Account from '@/views/Account.vue'
 import Register from '@/views/Register.vue'
+import { useAuthStore } from '@/store/auth.js'
 
 const routes = [
     {
@@ -85,6 +86,18 @@ const router = createRouter({
                     }, 200)
             })
         }
+    }
+});
+
+router.beforeEach(async (to) => {
+    // redirect to login page if not logged in and trying to access a restricted page
+    const publicPages = ['/register', '/login', '/recipes'];
+    const authRequired = !publicPages.includes(to.path);
+    const auth = useAuthStore();
+
+    if (authRequired && !auth.is_logged_in) {
+        auth.return_url = to.fullPath;
+        return '/login';
     }
 });
 
