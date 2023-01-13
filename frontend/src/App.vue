@@ -112,6 +112,7 @@ import GroceryListModal from '@/components/GroceryListModal.vue'
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
 import { useApiStore } from '@/store/api.js'
+import { useAuthStore } from '@/store/auth.js'
 
 import pickeat_png from '@/assets/pickeat.png'
 
@@ -133,7 +134,7 @@ export default {
     }
   },
   computed: {
-    ...mapStores(useCartStore, useApiStore)
+    ...mapStores(useCartStore, useApiStore, useAuthStore)
   },
   watch: {
         $route: {
@@ -144,13 +145,17 @@ export default {
         },
   },
   created: async function() {
-    await Promise.all([
+    await Promise.allSettled([
         this.apiStore.fetchTags(),
         this.apiStore.fetchCategories(),
         this.apiStore.fetchIngredients(),
         this.apiStore.fetchUnits(),
-        this.apiStore.fetchSeasons()
+        this.apiStore.fetchSeasons(),
+        this.authStore.load_account()
     ])
+    if (this.authStore.is_logged_in && this.$route.name == 'login') {
+        this.$router.replace('/account')
+    }
   },
   methods: {
         unfocus(e) {
