@@ -2,7 +2,7 @@
   <form
     id="recipe-form"
     autocomplete="off"
-    class="space-y-4 flex flex-col items-center max-w-4xl mx-auto my-4"
+    class="space-y-4 flex flex-col items-center max-w-4xl mx-4 sm:mx-8 my-4"
     @submit.prevent="sendRecipe"
   >
     <div class="form-control w-full">
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import ToggleButtons from '@/components/ToggleButtons.vue'
+import ToggleButtons from '@/components/ToggleButtons.vue' 
 import IngredientPicker from '@/components/IngredientPicker.vue'
 import ImageChooser from '@/components/ImageChooser.vue'
 import NewTagModal from '@/components/NewTagModal.vue'
