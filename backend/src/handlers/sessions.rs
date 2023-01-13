@@ -31,11 +31,7 @@ pub async fn login(
 }
 
 #[delete("/sessions/current")]
-pub async fn logout(user: Option<Identity>) -> impl Responder {
-    if let Some(user) = user {
-        user.logout();
-        HttpResponse::NoContent().finish()
-    } else {
-        HttpResponse::NotFound().finish()
-    }
+pub async fn logout(user: Identity) -> impl Responder {
+    user.logout();
+    HttpResponse::NoContent().finish()
 }
