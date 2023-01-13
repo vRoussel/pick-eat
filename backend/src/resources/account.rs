@@ -25,36 +25,36 @@ pub struct New {
 
 pub type Ref = i32;
 
-pub enum AddAccountError {
+pub enum InsertAccountError {
     HashError(argon2::password_hash::Error),
     DBError(sqlx::Error),
 }
 
-impl Display for AddAccountError {
+impl Display for InsertAccountError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            AddAccountError::HashError(e) => write!(f, "{}", e),
-            AddAccountError::DBError(e) => write!(f, "{}", e),
+            InsertAccountError::HashError(e) => write!(f, "{}", e),
+            InsertAccountError::DBError(e) => write!(f, "{}", e),
         }
     }
 }
 
-impl From<argon2::password_hash::Error> for AddAccountError {
+impl From<argon2::password_hash::Error> for InsertAccountError {
     fn from(e: argon2::password_hash::Error) -> Self {
-        AddAccountError::HashError(e)
+        InsertAccountError::HashError(e)
     }
 }
 
-impl From<sqlx::Error> for AddAccountError {
+impl From<sqlx::Error> for InsertAccountError {
     fn from(e: sqlx::Error) -> Self {
-        AddAccountError::DBError(e)
+        InsertAccountError::DBError(e)
     }
 }
 
 pub async fn add_one(
     db_conn: &mut PgConnection,
     new_account: &New,
-) -> Result<i32, AddAccountError> {
+) -> Result<i32, InsertAccountError> {
     let salt = SaltString::generate(&mut OsRng);
 
     // Argon2 with default params (Argon2id v19)

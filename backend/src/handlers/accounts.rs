@@ -6,7 +6,7 @@ use sqlx::postgres::PgPool;
 use sqlx::Error;
 
 use crate::resources::account;
-use crate::resources::account::AddAccountError;
+use crate::resources::account::InsertAccountError;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(add_one)
@@ -24,7 +24,7 @@ pub async fn add_one(
     let new_id = match account::add_one(&mut db_conn, &account).await {
         Ok(v) => v,
         Err(e) => match e {
-            AddAccountError::DBError(Error::Database(db_error)) => {
+            InsertAccountError::DBError(Error::Database(db_error)) => {
                 error!("{}", db_error);
                 return db_error_to_http_response(&*db_error);
             }
