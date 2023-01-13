@@ -54,6 +54,7 @@ const routes = [
         name: 'account',
         path: '/account',
         component: Account,
+        props: route => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
         meta: {
             title: 'Mon Compte - PickEat'
         }
