@@ -9,7 +9,7 @@ use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
 use crate::resources::{get_total_count, isolate_transaction};
 
-static MAX_PER_REQUEST: Option<i64> = Some(50);
+static MAX_PER_REQUEST: i64 = 50;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all)
@@ -52,9 +52,9 @@ pub async fn get_all(
         }
     };
 
-    let accept_range = format!("recipe {}", MAX_PER_REQUEST.unwrap_or(0));
+    let accept_range = format!("recipe {}", MAX_PER_REQUEST);
 
-    if let Err(e) = params.range.validate(MAX_PER_REQUEST, total_count) {
+    if let Err(e) = params.range.validate(Some(MAX_PER_REQUEST), total_count) {
         let content_range = format!("{}-{}/{}", 0, 0, total_count);
         let mut ret = match e {
             RangeError::OutOfBounds => HttpResponse::NoContent(),
