@@ -43,7 +43,6 @@ pub async fn get_all(
         error!("{}", e);
         return HttpResponse::InternalServerError().finish();
     }
-    // TODO begin and get_total_count here
     let total_count: i64 = match get_total_count(&mut db_conn, "recipes").await {
         Ok(v) => v,
         Err(e) => {
