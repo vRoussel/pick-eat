@@ -54,7 +54,10 @@ pub async fn get_all(
 
     let accept_range = format!("recipe {}", MAX_PER_REQUEST);
 
-    if let Err(e) = params.range.validate(Some(MAX_PER_REQUEST), total_count) {
+    if let Err(e) = params
+        .range
+        .validate(Some(MAX_PER_REQUEST), Some(total_count))
+    {
         let content_range = format!("{}-{}/{}", 0, 0, total_count);
         let mut ret = match e {
             RangeError::OutOfBounds => HttpResponse::NoContent(),

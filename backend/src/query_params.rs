@@ -51,7 +51,7 @@ impl Range {
     pub fn validate(
         &self,
         max_range_size: Option<i64>,
-        total_count: i64,
+        total_count: Option<i64>,
     ) -> Result<(), RangeError> {
         //TODO < 0 not working
         if self.from < 0 || self.to < 0 || self.to < self.from {
@@ -63,7 +63,7 @@ impl Range {
             return Err(RangeError::TooWide);
         }
 
-        if self.from > total_count {
+        if total_count.is_some() && self.from > total_count.unwrap() {
             return Err(RangeError::OutOfBounds);
         }
 
