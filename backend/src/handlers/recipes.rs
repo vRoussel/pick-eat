@@ -1,4 +1,5 @@
 use super::db_error_to_http_response;
+use actix_identity::Identity;
 use actix_web::{delete, get, http, patch, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
@@ -140,10 +141,23 @@ pub async fn get_all(
 pub async fn add_one(
     new_recipe: web::Json<recipe::New>,
     db_pool: web::Data<PgPool>,
+    user: Identity,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
+    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
+        Ok(Ok(id)) => id,
+        Ok(Err(e)) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
     trace!("{:#?}", new_recipe);
-    let new_id = match recipe::add_one(&mut db_conn, &new_recipe).await {
+    let new_id = match recipe::add_one(&mut db_conn, &new_recipe, user_id).await {
         Ok(v) => v,
         Err(e) => match e {
             Error::Database(db_error) => {

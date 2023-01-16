@@ -247,13 +247,17 @@ pub async fn get_many(
     Ok((recipes, total_count))
 }
 
-pub async fn add_one(db_conn: &mut PgConnection, new_recipe: &New) -> Result<i32, Error> {
+pub async fn add_one(
+    db_conn: &mut PgConnection,
+    new_recipe: &New,
+    user_id: i32,
+) -> Result<i32, Error> {
     let mut transaction = db_conn.begin().await?;
     let new_id: i32 = query!(
         "
             INSERT INTO recipes
-            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares)
-            VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7)
+            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, author_id)
+            VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7, $8)
             RETURNING id;
         ",
         new_recipe.name,
@@ -263,6 +267,7 @@ pub async fn add_one(db_conn: &mut PgConnection, new_recipe: &New) -> Result<i32
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
+        user_id
     )
     .fetch_one(&mut transaction)
     .await?
