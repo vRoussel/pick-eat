@@ -96,13 +96,14 @@ pub async fn get_all(
         ));
     }
 
-    let recipes = match recipe::get_many(&mut db_conn, &params.range, &filters).await {
-        Ok(v) => v,
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
+    let (recipes, total_count_filtered) =
+        match recipe::get_many(&mut db_conn, &params.range, &filters).await {
+            Ok(v) => v,
+            Err(e) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        };
     if let Err(e) = db_conn.rollback().await {
         error!("{}", e);
         return HttpResponse::InternalServerError().finish();
@@ -120,12 +121,15 @@ pub async fn get_all(
     }
 
     let mut ret;
-    if fetched_count < total_count && fetched_count > 0 {
+    if fetched_count < total_count_filtered && fetched_count > 0 {
         ret = HttpResponse::PartialContent();
     } else {
         ret = HttpResponse::Ok();
     }
-    let content_range = format!("{}-{}/{}", first_fetched, last_fetched, total_count);
+    let content_range = format!(
+        "{}-{}/{}",
+        first_fetched, last_fetched, total_count_filtered
+    );
 
     trace!("{}", serde_json::to_string_pretty(&recipes).unwrap());
     ret.insert_header((http::header::CONTENT_RANGE, content_range))

@@ -91,7 +91,7 @@ pub async fn get_many(
     db_conn: &mut PgConnection,
     range: &Range,
     filters: &[Filter],
-) -> Result<Vec<FromDBLight>, Error> {
+) -> Result<(Vec<FromDBLight>, i64), Error> {
     let mut builder = sqlx::QueryBuilder::new("");
     let mut joins = String::new();
     let mut sorting_field = String::from("name");
@@ -235,8 +235,16 @@ pub async fn get_many(
 
     trace!("{}", builder.sql());
 
-    let rows: Vec<FromDBLight> = builder.build_query_as().fetch_all(db_conn).await?;
-    Ok(rows)
+    let rows: Vec<PgRow> = builder.build().fetch_all(db_conn).await?;
+    if rows.is_empty() {
+        return Ok((vec![], 0));
+    }
+    let total_count: i64 = rows.iter().peekable().peek().unwrap().get("total_count");
+    let recipes: Vec<FromDBLight> = rows
+        .into_iter()
+        .map(|r| FromDBLight::from_row(&r))
+        .collect::<Result<_, _>>()?;
+    Ok((recipes, total_count))
 }
 
 pub async fn add_one(db_conn: &mut PgConnection, new_recipe: &New) -> Result<i32, Error> {
