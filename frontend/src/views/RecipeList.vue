@@ -1,8 +1,8 @@
 <template>
-  <div class="flex my-4 mx-8 lg:mx-16 gap-x-8 gap-y-8 flex-col md:flex-row">
+  <div class="flex my-4 mx-4 lg:mx-8 gap-x-8 gap-y-8 flex-col md:flex-row">
     <recipe-filters
       v-model:filters="filters"
-      class="min-w-[13rem] xl:min-w-[16rem]"
+      class="md:min-w-[16rem] md:max-w-[16rem]"
     />
     <div
       v-if="total_count > 0"
