@@ -124,6 +124,7 @@ export default {
     },
     created() {
         this.loadRecipes()
+        this.last_query = this.$route.query
     },
     methods: {
         loadRecipes() {
@@ -141,8 +142,11 @@ export default {
         this.saved_query = this.last_query
     },
     activated() {
-        this.$router.replace({ query: this.saved_query });
-        this.saved_query = null
+        if (this.saved_query != null) {
+            let q = this.saved_query
+            this.saved_query = null
+            this.$router.replace({ query: q });
+        }
     }
 }
 </script>
