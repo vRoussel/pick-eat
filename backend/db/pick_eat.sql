@@ -47,7 +47,6 @@ CREATE TABLE public.recipes (
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
 	n_shares smallint NOT NULL,
-	is_favorite boolean NOT NULL DEFAULT false,
 	author_id integer NOT NULL,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
@@ -229,6 +228,17 @@ CREATE TABLE public.accounts (
 ALTER TABLE public.accounts OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.accounts_fav_recipes | type: TABLE --
+-- DROP TABLE IF EXISTS public.accounts_fav_recipes CASCADE;
+CREATE TABLE public.accounts_fav_recipes (
+	account_id integer NOT NULL,
+	recipe_id integer NOT NULL,
+	CONSTRAINT accounts_fav_recipes_pk PRIMARY KEY (account_id,recipe_id)
+);
+-- ddl-end --
+ALTER TABLE public.accounts_fav_recipes OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_fk_author_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fk_author_id CASCADE;
 ALTER TABLE public.recipes ADD CONSTRAINT recipes_fk_author_id FOREIGN KEY (author_id)
@@ -303,6 +313,20 @@ ON DELETE NO ACTION ON UPDATE CASCADE;
 -- ALTER TABLE public.recipes_seasons DROP CONSTRAINT IF EXISTS recipes_seasons_fk_recipe_id CASCADE;
 ALTER TABLE public.recipes_seasons ADD CONSTRAINT recipes_seasons_fk_recipe_id FOREIGN KEY (recipe_id)
 REFERENCES public.recipes (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: accounts_fav_recipes_fk_account_id | type: CONSTRAINT --
+-- ALTER TABLE public.accounts_fav_recipes DROP CONSTRAINT IF EXISTS accounts_fav_recipes_fk_account_id CASCADE;
+ALTER TABLE public.accounts_fav_recipes ADD CONSTRAINT accounts_fav_recipes_fk_account_id FOREIGN KEY (account_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: accounts_fav_recipes_fk_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.accounts_fav_recipes DROP CONSTRAINT IF EXISTS accounts_fav_recipes_fk_recipe_id CASCADE;
+ALTER TABLE public.accounts_fav_recipes ADD CONSTRAINT accounts_fav_recipes_fk_recipe_id FOREIGN KEY (recipe_id)
+REFERENCES public.recipes (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
