@@ -113,6 +113,8 @@ export default {
     watch: {
         '$route.query': {
             handler : function() {
+                // If saved_query exists, it means it hasn't been restore yet
+                // It will be soon so there's no point to call loadRecipes before that
                 if (this.$route.name == "recipe-list" && this.saved_query == null) {
                     this.loadRecipes()
                     this.last_query = this.$route.query
