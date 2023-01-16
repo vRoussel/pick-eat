@@ -263,7 +263,7 @@ export default {
             this.updateFilters(Filters(), 0)
         },
         on_mobile() {
-            return window.innerWidth <= 768;
+            return window.innerWidth < 768;
         }
     }
 }
