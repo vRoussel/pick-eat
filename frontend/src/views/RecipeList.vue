@@ -77,7 +77,7 @@ export default {
                 return parseInt(this.$route.query.page) || 1;
             },
             set: function (value) {
-                this.$router.push({ query: { ...this.$route.query, page: value } });
+                this.$router.push({ query: { ...this.$route.query, page: value, ns: undefined } });
             },
         },
         filters: {
@@ -104,6 +104,7 @@ export default {
                 if (f.seasons.length > 0)
                     q.s = f.seasons.join(',')
 
+                // Avoid scrolling to top if we are changing filters
                 q.ns = null
                 this.$router.push({ name: 'recipe-list', query: q });
             },
