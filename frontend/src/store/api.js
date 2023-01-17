@@ -177,11 +177,14 @@ export const useApiStore = defineStore('api', {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8'
             }
-            let body = { 'is_favorite': recipe.is_favorite }
-
-            return axios.patch(`${API_ROOT}/recipes/${recipe.id}`, body, { 'headers': headers }).catch((e) => {
+            let f = null
+            if (recipe.is_favorite) {
+                f = axios.put
+            } else {
+                f= axios.delete
+            }
+            return f(`${API_ROOT}/accounts/me/favorites/${recipe.id}`, { 'headers': headers }).catch(() => {
                 recipe.is_favorite = !recipe.is_favorite
-                throw e
             })
         }
     }

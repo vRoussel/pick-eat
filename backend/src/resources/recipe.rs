@@ -45,13 +45,6 @@ pub struct New {
     instructions: Vec<String>,
     n_shares: i16,
     season_ids: Vec<season::Ref>,
-    is_favorite: bool,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Patched {
-    is_favorite: bool,
 }
 
 pub enum Filter {
@@ -91,6 +84,7 @@ pub async fn get_many(
     db_conn: &mut PgConnection,
     range: &Range,
     filters: &[Filter],
+    account_id: Option<i32>,
 ) -> Result<(Vec<FromDBLight>, i64), Error> {
     let mut builder = sqlx::QueryBuilder::new("");
     let mut joins = String::new();
@@ -208,11 +202,14 @@ pub async fn get_many(
                 id,
                 r.name,
                 r.image,
-                r.is_favorite,
+                fav IS NOT null as is_favorite,
                 count(*) OVER() AS total_count
             FROM recipes AS r
-            ",
+            LEFT JOIN accounts_fav_recipes fav
+            ON r.id = fav.recipe_id AND fav.account_id = ",
         )
+        .push_bind(account_id)
+        .push(" \n")
         .push(joins)
         .push(
             "
@@ -354,7 +351,11 @@ pub async fn add_one(
     Ok(new_id)
 }
 
-pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
+pub async fn get_one(
+    db_conn: &mut PgConnection,
+    id: i32,
+    account_id: Option<i32>,
+) -> Result<Option<FromDB>, Error> {
     let recipe: Option<FromDB> = query_as(
         r#"
             WITH r_seasons AS (
@@ -428,7 +429,7 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
                 r.publication_date,
                 r.instructions,
                 r.n_shares,
-                r.is_favorite,
+                fav IS NOT null as is_favorite,
                 tags,
                 categories,
                 ingredients,
@@ -439,9 +440,12 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
                 r_categories,
                 r_ingredients,
                 r_seasons
-            WHERE r.id = $1
+                LEFT JOIN accounts_fav_recipes fav
+                ON r.id = fav.recipe_id AND fav.account_id = $1,
+            WHERE r.id = $2
         "#,
     )
+    .bind(account_id)
     .bind(id)
     .fetch_optional(db_conn)
     .await?;
@@ -464,9 +468,8 @@ pub async fn modify_one(
                 cooking_time_min = $4,
                 image = $5,
                 instructions = $6,
-                n_shares = $7,
-                is_favorite = $8
-            WHERE id = $9
+                n_shares = $7
+            WHERE id = $8
         ",
         new_recipe.name,
         new_recipe.notes,
@@ -475,7 +478,6 @@ pub async fn modify_one(
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
-        new_recipe.is_favorite,
         id
     )
     .execute(&mut transaction)
@@ -625,25 +627,6 @@ pub async fn modify_one(
     .await?;
     transaction.commit().await?;
 
-    Ok(Some(()))
-}
-
-pub async fn patch_one(
-    db_conn: &mut PgConnection,
-    id: i32,
-    patched_recipe: &Patched,
-) -> Result<Option<()>, Error> {
-    query!(
-        "
-            UPDATE recipes
-            SET is_favorite = $1
-            WHERE id = $2
-        ",
-        patched_recipe.is_favorite,
-        id
-    )
-    .execute(db_conn)
-    .await?;
     Ok(Some(()))
 }
 

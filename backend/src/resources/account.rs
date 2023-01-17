@@ -244,3 +244,41 @@ pub async fn modify_one(
         Ok(None)
     }
 }
+
+pub async fn add_fav_recipe(
+    db_conn: &mut PgConnection,
+    account_id: i32,
+    recipe_id: i32,
+) -> Result<Option<()>, Error> {
+    query!(
+        "
+            INSERT INTO accounts_fav_recipes (account_id, recipe_id)
+            VALUES ($1, $2)
+        ",
+        account_id,
+        recipe_id
+    )
+    .execute(db_conn)
+    .await?;
+    Ok(Some(()))
+}
+
+pub async fn remove_fav_recipe(
+    db_conn: &mut PgConnection,
+    account_id: i32,
+    recipe_id: i32,
+) -> Result<Option<()>, Error> {
+    query!(
+        "
+            DELETE FROM accounts_fav_recipes
+            WHERE
+                account_id = $1 AND
+                recipe_id = $2
+        ",
+        account_id,
+        recipe_id
+    )
+    .execute(db_conn)
+    .await?;
+    Ok(Some(()))
+}

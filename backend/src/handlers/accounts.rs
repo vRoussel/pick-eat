@@ -13,7 +13,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(delete_one)
         .service(delete_me)
         .service(get_current)
-        .service(modify_current);
+        .service(modify_current)
+        .service(add_fav_recipe)
+        .service(remove_fav_recipe);
 }
 
 #[post("/accounts")]
@@ -147,5 +149,67 @@ pub async fn modify_current(
         },
     };
 
+    HttpResponse::Ok().finish()
+}
+
+#[put("/accounts/me/favorites/{recipe_id}")]
+pub async fn add_fav_recipe(
+    user: Identity,
+    recipe_id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
+
+    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
+        Ok(Ok(id)) => id,
+        Ok(Err(e)) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
+    match account::add_fav_recipe(&mut db_conn, user_id, *recipe_id).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    }
+    HttpResponse::Ok().finish()
+}
+
+#[delete("/accounts/me/favorites/{recipe_id}")]
+pub async fn remove_fav_recipe(
+    user: Identity,
+    recipe_id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
+
+    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
+        Ok(Ok(id)) => id,
+        Ok(Err(e)) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
+    match account::remove_fav_recipe(&mut db_conn, user_id, *recipe_id).await {
+        Ok(Some(_)) => (),
+        Ok(None) => return HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    }
     HttpResponse::Ok().finish()
 }

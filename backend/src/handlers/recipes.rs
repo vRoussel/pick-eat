@@ -1,6 +1,6 @@
 use super::db_error_to_http_response;
 use actix_identity::Identity;
-use actix_web::{delete, get, http, patch, post, put, web, HttpResponse, Responder};
+use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
@@ -17,7 +17,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(add_one)
         .service(get_one)
         .service(modify_one)
-        .service(patch_one)
         .service(delete_one);
 }
 
@@ -35,8 +34,24 @@ pub struct GetQueryParams {
 pub async fn get_all(
     params: web::Query<GetQueryParams>,
     db_pool: web::Data<PgPool>,
+    user: Option<Identity>,
 ) -> impl Responder {
     let mut db_conn = db_pool.begin().await.unwrap();
+
+    let user_id: Option<i32> = match user {
+        Some(u) => match u.id().map(|id_str| id_str.parse()) {
+            Ok(Ok(id)) => Some(id),
+            Ok(Err(e)) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+            Err(e) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        },
+        None => None,
+    };
 
     // Make sure we ignore changes that occur between our
     // 2 requests (get_total_count and get_recipes)
@@ -97,7 +112,7 @@ pub async fn get_all(
     }
 
     let (recipes, total_count_filtered) =
-        match recipe::get_many(&mut db_conn, &params.range, &filters).await {
+        match recipe::get_many(&mut db_conn, &params.range, &filters, user_id).await {
             Ok(v) => v,
             Err(e) => {
                 error!("{}", e);
@@ -177,10 +192,29 @@ pub async fn add_one(
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn get_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    user: Option<Identity>,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let recipe = match recipe::get_one(&mut db_conn, id.into_inner()).await {
+    let user_id: Option<i32> = match user {
+        Some(u) => match u.id().map(|id_str| id_str.parse()) {
+            Ok(Ok(id)) => Some(id),
+            Ok(Err(e)) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+            Err(e) => {
+                error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            }
+        },
+        None => None,
+    };
+
+    let recipe = match recipe::get_one(&mut db_conn, id.into_inner(), user_id).await {
         Ok(Some(v)) => v,
         Ok(None) => {
             return HttpResponse::NotFound().finish();
@@ -217,26 +251,6 @@ pub async fn modify_one(
                 return HttpResponse::InternalServerError().finish();
             }
         },
-    }
-    HttpResponse::Ok().finish()
-}
-
-#[patch("/recipes/{id}")]
-pub async fn patch_one(
-    id: web::Path<i32>,
-    patched_recipe: web::Json<recipe::Patched>,
-    db_pool: web::Data<PgPool>,
-) -> impl Responder {
-    let mut db_conn = db_pool.acquire().await.unwrap();
-    trace!("{:#?}", patched_recipe);
-
-    match recipe::patch_one(&mut db_conn, id.into_inner(), &patched_recipe).await {
-        Ok(Some(_)) => (),
-        Ok(None) => return HttpResponse::NotFound().finish(),
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
     }
     HttpResponse::Ok().finish()
 }
