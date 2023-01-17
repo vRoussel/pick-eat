@@ -140,11 +140,11 @@ export default {
     deactivated() {
         this.saved_query = this.last_query
     },
-    activated() {
+    async activated() {
         if (this.saved_query != null) {
-            let q = this.saved_query
+            await this.$router.replace({ query: this.saved_query });
+            this.loadRecipes()
             this.saved_query = null
-            this.$router.replace({ query: q });
         }
     }
 }
