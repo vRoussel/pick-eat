@@ -117,14 +117,12 @@ export default {
                 // It will be soon so there's no point to call loadRecipes before that
                 if (this.$route.name == "recipe-list" && this.saved_query == null) {
                     this.loadRecipes()
-                    this.last_query = this.$route.query
                 }
             }
         }
     },
     created() {
         this.loadRecipes()
-        this.last_query = this.$route.query
     },
     methods: {
         loadRecipes() {
@@ -133,6 +131,7 @@ export default {
                 this.recipes = recipes
                 this.total_count = total_count
             });
+            this.last_query = this.$route.query
         },
         on_mobile() {
             return screen.width < 768;
