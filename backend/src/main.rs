@@ -58,11 +58,11 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
 fn setup_logging() {
     let pickeat_log_config = ConfigBuilder::new()
         .set_location_level(LevelFilter::Error)
-        .add_filter_allow_str("pick_eat")
+        .add_filter_allow_str("pickeat")
         .build();
 
     let others_log_config = ConfigBuilder::new()
-        .add_filter_ignore_str("pick_eat")
+        .add_filter_ignore_str("pickeat")
         .build();
 
     let init_log = CombinedLogger::init(vec![
