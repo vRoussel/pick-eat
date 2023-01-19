@@ -216,7 +216,7 @@ export default {
                 "prep_time_min": r.prep_time,
                 "cook_time_min": r.cook_time,
                 "image": r.image_url,
-                "instructions": r.instructions.split(/\r?\n/),
+                "instructions": r.instructions.split(/\r?\n/).filter(i => i),
                 "notes": r.notes,
                 "n_shares": r.shares,
             }
