@@ -34,7 +34,8 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
                 // create cookie based session middleware
                 SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
                     .cookie_content_security(CookieContentSecurity::Signed)
-                    .cookie_secure(false)
+                    .cookie_same_site(actix_web::cookie::SameSite::Strict)
+                    .cookie_secure(true)
                     .build(),
             )
             .app_data(db_pool_data.clone())
