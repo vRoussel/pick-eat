@@ -61,7 +61,7 @@ import NewIngredientModal from '@/components/NewIngredientModal.vue'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'IngredientPicker',
@@ -86,12 +86,12 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
         picked_obj() {
             return Object.fromEntries(this.picked);
         },
         ingr_remaining() {
-            return this.apiStore.ingredients
+            return this.foodStore.ingredients
                 .filter(ingr => !this.picked.has(ingr.id))
         },
     },

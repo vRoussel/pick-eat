@@ -77,7 +77,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.categories"
-        :choices="apiStore.categories"
+        :choices="foodStore.categories"
         extendable
         :extend-modal-component="NewCategoryModal_"
       />
@@ -89,7 +89,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.tags"
-        :choices="apiStore.tags"
+        :choices="foodStore.tags"
         extendable
         :extend-modal-component="NewTagModal_"
       />
@@ -101,7 +101,7 @@
       </label>
       <toggle-buttons
         v-model:picked="new_recipe.seasons"
-        :choices="apiStore.seasons"
+        :choices="foodStore.seasons"
       />
     </div>
 
@@ -152,7 +152,7 @@ import Swal from 'sweetalert2'
 import {shallowRef} from 'vue'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'RecipeForm',
@@ -188,7 +188,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
         update_mode() {
             return this.existing_recipe != null
         },
@@ -226,7 +226,7 @@ export default {
             }
 
             if (this.insert_mode) {
-                this.apiStore.sendNewRecipe(recipe)
+                this.foodStore.sendNewRecipe(recipe)
                     .then((recipe) => {
                         Swal.fire({
                           title: 'Recette ajoutée',
@@ -243,7 +243,7 @@ export default {
                         })
                     })
             } else {
-                this.apiStore.updateRecipe(this.existing_recipe.id, recipe)
+                this.foodStore.updateRecipe(this.existing_recipe.id, recipe)
                     .then(() => {
                         this.$emit('done')
                     }) 

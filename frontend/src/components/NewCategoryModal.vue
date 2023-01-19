@@ -39,12 +39,12 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'NewCategoryModal',
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
     },
     emits: ['closed', 'created'],
     data: function() {
@@ -58,7 +58,7 @@ export default {
             let category = {
                 "name": this.name,
             }
-            this.apiStore.sendNewCategory(category)
+            this.foodStore.sendNewCategory(category)
                 .then((new_categ) => {
                     this.$emit('created', new_categ)
                     this.close()

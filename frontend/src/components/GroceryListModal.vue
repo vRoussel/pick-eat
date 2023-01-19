@@ -33,7 +33,7 @@
               :key="ingr_id"
             >
               <td class="text-right">
-                {{ apiStore.getIngredientById(ingr_id).name }}
+                {{ foodStore.getIngredientById(ingr_id).name }}
               </td>
               <td> x </td>
               <td>
@@ -42,7 +42,7 @@
                   :key="unit_id"
                 >
                   <span v-if="idx > 0"> + </span>
-                  {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ unit_id == null ? '' : apiStore.getUnitById(unit_id).short_name }}
+                  {{ qtys.reduce((s,q) => s + q.qty, 0) }} {{ unit_id == null ? '' : foodStore.getUnitById(unit_id).short_name }}
                 </span>
                 <span v-if="qu.u.length > 0">
                   <span v-if="qu.q.size > 0"> + </span>
@@ -81,7 +81,7 @@ import GroceryListItem from '@/components/GroceryListItem.vue'
 
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'GroceryListModal',
@@ -95,7 +95,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useCartStore, useApiStore),
+        ...mapStores(useCartStore, useFoodStore),
         /*
         {
             ingr_id => {

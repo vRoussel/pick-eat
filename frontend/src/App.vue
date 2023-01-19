@@ -111,7 +111,7 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 import { useAuthStore } from '@/store/auth.js'
 
 import pickeat_png from '@/assets/pickeat.png'
@@ -134,7 +134,7 @@ export default {
     }
   },
   computed: {
-    ...mapStores(useCartStore, useApiStore, useAuthStore)
+    ...mapStores(useCartStore, useFoodStore, useAuthStore)
   },
   watch: {
         $route: {
@@ -146,12 +146,12 @@ export default {
   },
   created: async function() {
     await Promise.allSettled([
-        this.apiStore.fetchTags(),
-        this.apiStore.fetchCategories(),
-        this.apiStore.fetchIngredients(),
-        this.apiStore.fetchUnits(),
-        this.apiStore.fetchSeasons(),
-        this.apiStore.fetchAccountsWithRecipes()
+        this.foodStore.fetchTags(),
+        this.foodStore.fetchCategories(),
+        this.foodStore.fetchIngredients(),
+        this.foodStore.fetchUnits(),
+        this.foodStore.fetchSeasons(),
+        this.foodStore.fetchAccountsWithRecipes()
     ])
   },
   methods: {

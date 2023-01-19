@@ -52,7 +52,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'NewUnitModal',
@@ -68,7 +68,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
     },
     watch: {
         input: function() {
@@ -81,7 +81,7 @@ export default {
                 "full_name": this.full_name,
                 "short_name": this.short_name,
             }
-            this.apiStore.sendNewUnit(unit)
+            this.foodStore.sendNewUnit(unit)
                 .then((new_unit) => {
                     this.$emit('created', new_unit)
                     this.close()

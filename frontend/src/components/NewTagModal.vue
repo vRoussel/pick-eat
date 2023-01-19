@@ -39,7 +39,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'NewTagModal',
@@ -51,14 +51,14 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
     },
     methods: {
         sendTag() {
             let tag = {
                 "name": this.name,
             }
-            this.apiStore.sendNewTag(tag)
+            this.foodStore.sendNewTag(tag)
                 .then((new_tag) => {
                     this.$emit('created', new_tag)
                     this.close()

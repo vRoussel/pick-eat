@@ -38,7 +38,7 @@
           <multiselect
             ref="multiselect"
             v-model="default_unit"
-            :options="apiStore.units"
+            :options="foodStore.units"
             :strict="false"
             label="full_name"
             searchable
@@ -70,7 +70,7 @@ import Multiselect from '@vueform/multiselect'
 import NewUnitModal from '@/components/NewUnitModal.vue'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'NewIngredientModal',
@@ -91,7 +91,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
     },
     watch: {
         input: function() {
@@ -104,7 +104,7 @@ export default {
                 "name": this.name,
                 "default_unit_id": this.default_unit
             }
-            this.apiStore.sendNewIngredient(ingredient)
+            this.foodStore.sendNewIngredient(ingredient)
                 .then((new_ingr) => {
                     this.$emit('created', new_ingr)
                     this.close()

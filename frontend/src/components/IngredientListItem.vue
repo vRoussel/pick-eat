@@ -23,7 +23,7 @@
         ref="multiselect"
         v-model="ingredient_unit"
         class="basis-5/12 sm:basis-1/3 flex-grow"
-        :options="apiStore.units"
+        :options="foodStore.units"
         :strict="false"
         label="full_name"
         searchable
@@ -42,7 +42,7 @@ import Multiselect from '@vueform/multiselect'
 import NumberInput from '@/components/NumberInput.vue'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'IngredientListItem',
@@ -57,7 +57,7 @@ export default {
     },
     emits: ['update:quantity', 'update:unit_id', 'delete', 'createUnit', 'unit-input-selected'],
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
         ingredient_unit: {
             get() {
                 return this.unit_id
@@ -77,7 +77,7 @@ export default {
 
         },
         ingredient_name() {
-            return this.apiStore.getIngredientById(this.id).name
+            return this.foodStore.getIngredientById(this.id).name
         },
     },
     methods: {

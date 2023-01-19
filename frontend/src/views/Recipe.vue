@@ -18,7 +18,7 @@ import RecipeForm from '@/components/RecipeForm.vue'
 import RecipeView from '@/components/RecipeView.vue'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'Recipe',
@@ -40,14 +40,14 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
     },
     mounted() {
         this.loadRecipe()
     },
     methods: {
         loadRecipe() {
-            this.apiStore.getRecipeById(this.id).then(result => {
+            this.foodStore.getRecipeById(this.id).then(result => {
                 this.recipe = result
                 document.title = this.recipe.name + ' - Pickeat'
             });

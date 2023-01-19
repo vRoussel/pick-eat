@@ -52,7 +52,7 @@
           ref="multiselect"
           v-model="ingredients"
           mode="tags"
-          :options="apiStore.ingredients"
+          :options="foodStore.ingredients"
           label="name"
           searchable
           :strict="false"
@@ -69,7 +69,7 @@
           ref="multiselect"
           v-model="tags"
           mode="tags"
-          :options="apiStore.tags"
+          :options="foodStore.tags"
           label="name"
           searchable
           :strict="false"
@@ -96,7 +96,7 @@
           <span class="label-text text-lg">Saisons</span>
         </legend>
         <div
-          v-for="s in apiStore.seasons"
+          v-for="s in foodStore.seasons"
           :key="s.id"
           class="form-control"
         >
@@ -116,7 +116,7 @@
           <span class="label-text text-lg">Catégories</span>
         </legend>
         <div
-          v-for="c in apiStore.categories"
+          v-for="c in foodStore.categories"
           :key="c.id"
           class="form-control"
         >
@@ -139,7 +139,7 @@
           ref="multiselect"
           v-model="account"
           mode="single"
-          :options="apiStore.accounts_with_recipes"
+          :options="foodStore.accounts_with_recipes"
           label="display_name"
           searchable
           :strict="false"
@@ -166,7 +166,7 @@
 import Multiselect from '@vueform/multiselect'
 
 import { mapStores } from 'pinia'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export function Filters(q=null, i=[], t=[], c=[], s=[], a=null) {
     return {
@@ -200,7 +200,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useApiStore),
+        ...mapStores(useFoodStore),
         search_query: {
             get: function() {
                 return this.filters.search_query;

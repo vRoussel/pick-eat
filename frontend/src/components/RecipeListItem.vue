@@ -38,7 +38,7 @@
 import {isOverflown} from '@/utils/utils.js'
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
-import { useApiStore } from '@/store/api.js'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'RecipeListItem',
@@ -55,7 +55,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useCartStore, useApiStore),
+        ...mapStores(useCartStore, useFoodStore),
         heart_svg() {
             return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
         },
@@ -74,7 +74,7 @@ export default {
     },
     methods: {
         toggleFavorite(recipe) {
-            this.apiStore.toggleFavorite(recipe)
+            this.foodStore.toggleFavorite(recipe)
         },
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
@@ -83,7 +83,7 @@ export default {
             if (this.cartStore.hasRecipe(id)) {
                 this.cartStore.removeRecipe(id)
             } else {
-                this.apiStore.getRecipeById(id).then(recipe => {
+                this.foodStore.getRecipeById(id).then(recipe => {
                     this.cartStore.addRecipe(recipe, recipe.n_shares)
                 })
             }

@@ -6,7 +6,6 @@ const API_PROTO = window.location.protocol
 const API_HOST = window.location.hostname
 const API_ROOT = `${API_PROTO}//${API_HOST}/api/v1`
 
-
 async function sendNewThing(post, endpoint) {
     let headers = {
         'Accept': 'application/json',
@@ -20,7 +19,7 @@ async function sendNewThing(post, endpoint) {
     return resp2.data
 }
 
-export const useApiStore = defineStore('api', {
+export const useFoodStore = defineStore('food', {
     state: () => {
         return {
             tags: [],
