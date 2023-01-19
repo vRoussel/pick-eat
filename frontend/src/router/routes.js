@@ -22,7 +22,8 @@ const routes = [
         path: '/recipes',
         component: RecipeList,
         meta: {
-            title: 'Liste des recettes - PickEat'
+            title: 'Liste des recettes - PickEat',
+            public: true
         }
     },
     {
@@ -31,7 +32,8 @@ const routes = [
         component: Recipe,
         props: route => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
         meta: {
-            title: 'Recette - PickEat'
+            title: 'Recette - PickEat',
+            public: true
         }
     },
     {
@@ -39,7 +41,8 @@ const routes = [
         path: '/register',
         component: Register,
         meta: {
-            title: 'Inscription - PickEat'
+            title: 'Inscription - PickEat',
+            public: true
         }
     },
     {
@@ -47,7 +50,8 @@ const routes = [
         path: '/login',
         component: Login,
         meta: {
-            title: 'Connection - PickEat'
+            title: 'Connection - PickEat',
+            public: true
         }
     },
     {
@@ -93,8 +97,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
     // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/register', '/login', '/recipes'];
-    const authRequired = !publicPages.includes(to.path);
+    const authRequired = !to.meta.public;
     const auth = useAuthStore();
 
     if (to.path == "/login" && auth.is_logged_in) {
