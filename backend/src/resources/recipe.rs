@@ -441,12 +441,12 @@ pub async fn get_one(
                 r_ingredients,
                 r_seasons
                 LEFT JOIN accounts_fav_recipes fav
-                ON r.id = fav.recipe_id AND fav.account_id = $1,
-            WHERE r.id = $2
+                    ON r.id = fav.recipe_id AND fav.account_id = $2
+            WHERE r.id = $1
         "#,
     )
-    .bind(account_id)
     .bind(id)
+    .bind(account_id)
     .fetch_optional(db_conn)
     .await?;
     Ok(recipe)
