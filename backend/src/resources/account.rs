@@ -9,7 +9,7 @@ use sqlx::{postgres::PgConnection, Connection};
 use sqlx::{query, query_as, Error};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct FromDB {
+pub struct FromDBPrivate {
     display_name: String,
     email: String,
     creation_date: time::Date,
@@ -170,9 +170,9 @@ pub async fn check_password(
     Ok(())
 }
 
-pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
-    let row: Option<FromDB> = query_as!(
-        FromDB,
+pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDBPrivate>, Error> {
+    let row: Option<FromDBPrivate> = query_as!(
+        FromDBPrivate,
         "
             SELECT
                 email,
