@@ -25,7 +25,7 @@
           class="rounded-xl"
         >
       </div>
-      <div class="flex flex-col basis-1/2 justify-evenly items-center mx-auto">
+      <div class="flex flex-col basis-1/2 justify-around items-center mx-auto">
         <p
           ref="recipe_name"
           v-tooltip="overflown ? recipe.name : null"
@@ -51,7 +51,7 @@
         </p>
       </div>
     </div>
-    <div class="flex gap-2 flex-wrap justify-center mt-3">
+    <div class="flex gap-2 flex-wrap justify-center mb-2 sm:mb-4">
       <router-link
         v-for="tag in recipe.tags"
         :key="tag.id"
