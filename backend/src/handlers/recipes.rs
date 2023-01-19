@@ -28,6 +28,7 @@ pub struct GetQueryParams {
     seasons: Option<String>,
     ingredients: Option<String>,
     tags: Option<String>,
+    account: Option<i32>,
 }
 
 #[get("/recipes")]
@@ -109,6 +110,9 @@ pub async fn get_all(
         filters.push(Filter::Tags(
             val.split(",").map(|x| x.parse().unwrap()).collect(),
         ));
+    }
+    if let Some(val) = &params.account {
+        filters.push(Filter::Account(*val));
     }
 
     let (recipes, total_count_filtered) =

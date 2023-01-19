@@ -54,6 +54,7 @@ pub enum Filter {
     Seasons(Vec<season::Ref>),
     Ingredients(Vec<ingredient::Ref>),
     Tags(Vec<tag::Ref>),
+    Account(i32),
 }
 
 impl FromRow<'_, PgRow> for FromDB {
@@ -194,6 +195,23 @@ pub async fn get_many(
                     .push_bind(ids)
                     .push("))");
                 joins.push_str(" INNER JOIN tag_filter USING (id)");
+            }
+            Filter::Account(id) => {
+                builder
+                    .push(
+                        "
+                        , account_filter as (
+                            SELECT
+                                distinct(id) as id
+                            FROM
+                                recipes
+                            WHERE
+                                author_id = 
+                        ",
+                    )
+                    .push_bind(id)
+                    .push(")");
+                joins.push_str(" INNER JOIN account_filter USING (id)");
             }
         };
     }

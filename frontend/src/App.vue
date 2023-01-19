@@ -151,6 +151,7 @@ export default {
         this.apiStore.fetchIngredients(),
         this.apiStore.fetchUnits(),
         this.apiStore.fetchSeasons(),
+        this.apiStore.fetchAccountsWithRecipes()
     ])
   },
   methods: {

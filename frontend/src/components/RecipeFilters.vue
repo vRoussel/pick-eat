@@ -132,6 +132,23 @@
         </div>
       </fieldset>
       <div class="form-control">
+        <label class="label">
+          <span class="label-text text-lg">Auteur</span>
+        </label>
+        <Multiselect
+          ref="multiselect"
+          v-model="account"
+          mode="single"
+          :options="apiStore.accounts_with_recipes"
+          label="display_name"
+          searchable
+          :strict="false"
+          track-by="display_name"
+          value-prop="id"
+          :close-on-select="true"
+        />
+      </div>
+      <div class="form-control">
         <button
           class="btn btn-accent"
           @click="clearFilters"
@@ -151,13 +168,14 @@ import Multiselect from '@vueform/multiselect'
 import { mapStores } from 'pinia'
 import { useApiStore } from '@/store/api.js'
 
-export function Filters(q=null, i=[], t=[], c=[], s=[]) {
+export function Filters(q=null, i=[], t=[], c=[], s=[], a=null) {
     return {
         search_query : q,
         ingredients : i,
         tags : t,
         categories : c,
-        seasons : s
+        seasons : s,
+        account : a
     }
 }
 
@@ -230,7 +248,16 @@ export default {
                 let new_filters = {...this.filters, 'ingredients': val};
                 this.updateFilters(new_filters, 0);
             }
-        }
+        },
+        account: {
+            get: function() {
+                return this.filters.account;
+            },
+            set: function(val) {
+                let new_filters = {...this.filters, 'account': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
     },
     mounted() {
         window.addEventListener('resize', () => {

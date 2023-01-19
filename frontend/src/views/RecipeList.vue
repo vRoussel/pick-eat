@@ -88,7 +88,8 @@ export default {
                      q.i ? q.i.split(',') : [],
                      q.t ? q.t.split(',') : [],
                      q.c ? q.c.split(',') : [],
-                     q.s ? q.s.split(',') : []
+                     q.s ? q.s.split(',') : [],
+                     q.a
                      );
             },
             set: function (f) {
@@ -103,6 +104,8 @@ export default {
                     q.c = f.categories.join(',')
                 if (f.seasons.length > 0)
                     q.s = f.seasons.join(',')
+                if (f.account)
+                    q.a = f.account
 
                 // Avoid scrolling to top if we are changing filters
                 q.ns = null
