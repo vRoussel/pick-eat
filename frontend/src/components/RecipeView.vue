@@ -95,7 +95,11 @@
           </tr>
         </tbody>
       </table>
-      <table class="table table-compact grow">
+      <table class="table table-compact table-fixed grow w-full">
+      <colgroup>
+        <col class="w-8" />
+        <col/>
+      </colgroup>
         <thead class="border-primary">
           <tr class="text-center">
             <th
@@ -112,10 +116,10 @@
             :key="index"
             class="border-0"
           >
-            <td class="text-primary border-0 font-bold">
+            <td class="text-primary border-0 font-bold w-8">
               {{ index + 1 }}
             </td>
-            <td class="whitespace-pre-wrap border-0 !align-middle">
+            <td class="whitespace-pre-wrap break-words border-0 !align-middle">
               {{ step }}
             </td>
           </tr>
