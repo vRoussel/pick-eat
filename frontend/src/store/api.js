@@ -27,7 +27,8 @@ export const useApiStore = defineStore('api', {
             categories: [],
             seasons: [],
             ingredients: [],
-            units: []
+            units: [],
+            accounts_with_recipes: []
         }
     },
     getters: {
@@ -78,6 +79,12 @@ export const useApiStore = defineStore('api', {
             })
         },
 
+        async fetchAccountsWithRecipes() {
+            return axios.get(`${API_ROOT}/accounts?withrecipes=true`).then(resp => {
+                this.accounts_with_recipes = resp.data
+            })
+        },
+
         async getRecipes(from, to, filters) {
             let f = filters;
             let url = `${API_ROOT}/recipes`
@@ -94,6 +101,8 @@ export const useApiStore = defineStore('api', {
                 params.categories = f.categories.join(',')
             if (f.seasons.length > 0)
                 params.seasons = f.seasons.join(',')
+            if (f.account)
+                params.account = f.account
             let resp = await axios.get(url, { 'params': params })
             let total_count = parseInt(resp.headers['content-range'].split('/')[1])
             return [resp.data, total_count]

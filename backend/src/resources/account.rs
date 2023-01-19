@@ -197,6 +197,23 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
     Ok(row)
 }
 
+pub async fn get_all_with_recipes(db_conn: &mut PgConnection) -> Result<Vec<FromDBPublic>, Error> {
+    let rows: Vec<FromDBPublic> = query_as!(
+        FromDBPublic,
+        "
+            SELECT
+                distinct(author_id) as id,
+                display_name
+            FROM recipes r
+            INNER JOIN accounts a on r.author_id = a.id
+        ",
+    )
+    .fetch_all(db_conn)
+    .await?;
+
+    Ok(rows)
+}
+
 pub async fn modify_one(
     db_conn: &mut PgConnection,
     id: i32,

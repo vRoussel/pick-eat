@@ -2,6 +2,7 @@ use super::db_error_to_http_response;
 use actix_identity::Identity;
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
+use serde::Deserialize;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
@@ -13,6 +14,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(delete_one)
         .service(delete_me)
         .service(get_current)
+        .service(get_all)
         .service(modify_current)
         .service(add_fav_recipe)
         .service(remove_fav_recipe);
@@ -108,6 +110,33 @@ pub async fn get_current(user: Identity, db_pool: web::Data<PgPool>) -> impl Res
         }
     };
     HttpResponse::Ok().json(account)
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GetAllQueryParams {
+    withrecipes: bool,
+}
+
+#[get("/accounts")]
+pub async fn get_all(
+    params: web::Query<GetAllQueryParams>,
+    db_pool: web::Data<PgPool>,
+) -> impl Responder {
+    let mut db_conn = db_pool.acquire().await.unwrap();
+    if !params.withrecipes {
+        return HttpResponse::BadRequest().finish();
+    }
+
+    let accounts = match account::get_all_with_recipes(&mut db_conn).await {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
+    trace!("{}", serde_json::to_string_pretty(&accounts).unwrap());
+    HttpResponse::Ok().json(accounts)
 }
 
 #[put("/accounts/me")]
