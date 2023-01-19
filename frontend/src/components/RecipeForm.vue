@@ -182,7 +182,6 @@ export default {
                 ingredients: new Map(),
                 notes: "",
                 image_url: "",
-                is_favorite: false
             },
             NewTagModal_: shallowRef(NewTagModal),
             NewCategoryModal_: shallowRef(NewCategoryModal),
@@ -220,7 +219,6 @@ export default {
                 "instructions": r.instructions.split(/\r?\n/),
                 "notes": r.notes,
                 "n_shares": r.shares,
-                "is_favorite": r.is_favorite
             }
             for (var ingr of recipe.q_ingredients) {
                 if (ingr.quantity == null)
@@ -290,7 +288,6 @@ export default {
                     instructions: other.instructions.join('\n'),
                     notes: other.notes,
                     shares: other.n_shares,
-                    is_favorite: other.is_favorite,
                 }
             }
         }
