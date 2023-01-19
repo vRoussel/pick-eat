@@ -78,7 +78,7 @@
         light_theme="pickeat_light"
       />
       <button
-        @click="this.$router.push(name='account')"
+        @click="this.$router.push({ name: 'account' })"
         type="button"
       >
         <Icon
