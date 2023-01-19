@@ -55,11 +55,14 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
     .await
 }
 
-fn setup_logging() {
-    let pickeat_log_config = ConfigBuilder::new()
-        .set_location_level(LevelFilter::Error)
-        .add_filter_allow_str("pickeat")
-        .build();
+fn setup_logging(verbose: u8) {
+    let log_level = match verbose {
+        0 => LevelFilter::Info,
+        1 => LevelFilter::Debug,
+        _ => LevelFilter::Trace,
+    };
+
+    let pickeat_log_config = ConfigBuilder::new().add_filter_allow_str("pickeat").build();
 
     let others_log_config = ConfigBuilder::new()
         .add_filter_ignore_str("pickeat")
@@ -67,7 +70,7 @@ fn setup_logging() {
 
     let init_log = CombinedLogger::init(vec![
         TermLogger::new(
-            LevelFilter::Trace,
+            log_level,
             pickeat_log_config.clone(),
             TerminalMode::Mixed,
             ColorChoice::Auto,
@@ -81,7 +84,7 @@ fn setup_logging() {
     ]);
     if let Err(_) = init_log {
         CombinedLogger::init(vec![
-            SimpleLogger::new(LevelFilter::Trace, pickeat_log_config.clone()),
+            SimpleLogger::new(log_level, pickeat_log_config.clone()),
             SimpleLogger::new(LevelFilter::Warn, others_log_config.clone()),
         ])
         .expect("Could not setup logging");
@@ -90,15 +93,17 @@ fn setup_logging() {
 
 #[derive(Parser)]
 struct Cli {
-    #[clap(short = 'c', long = "conf")]
+    #[clap(short, long)]
     conf: std::path::PathBuf,
+    #[clap(short, long, action = clap::ArgAction::Count)]
+    verbose: u8,
 }
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    setup_logging();
-    info!("Starting");
     let args = Cli::parse();
+    setup_logging(args.verbose);
+    info!("Starting");
     let conf = parse_conf(&args.conf);
     let db_pool = database::get_pool(&conf.database).await?;
     start_web_server(db_pool, conf).await?;
