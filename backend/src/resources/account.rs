@@ -16,6 +16,12 @@ pub struct FromDBPrivate {
     creation_date: time::Date,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FromDBPublic {
+    pub id: i32,
+    pub display_name: String,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {

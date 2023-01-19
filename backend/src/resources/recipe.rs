@@ -1,4 +1,4 @@
-use super::{category, ingredient, qingredient, season, tag};
+use super::{account, category, ingredient, qingredient, season, tag};
 use crate::query_params::Range;
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -21,6 +21,7 @@ pub struct FromDB {
     n_shares: i16,
     is_favorite: bool,
     seasons: Vec<season::FromDB>,
+    author: account::FromDBPublic,
 }
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
@@ -61,6 +62,10 @@ impl FromRow<'_, PgRow> for FromDB {
         let _categories: sqlx::types::Json<_> = row.get("categories");
         let _ingredients: sqlx::types::Json<_> = row.get("ingredients");
         let _seasons: sqlx::types::Json<_> = row.get("seasons");
+        let _author = account::FromDBPublic {
+            id: row.get("author_id"),
+            display_name: row.get("author_name"),
+        };
         Ok(FromDB {
             id: row.get("id"),
             name: row.get("name"),
@@ -76,6 +81,7 @@ impl FromRow<'_, PgRow> for FromDB {
             n_shares: row.get("n_shares"),
             is_favorite: row.get("is_favorite"),
             seasons: _seasons.0,
+            author: _author,
         })
     }
 }
@@ -430,18 +436,22 @@ pub async fn get_one(
                 r.instructions,
                 r.n_shares,
                 fav IS NOT null as is_favorite,
+                accounts.id as author_id,
+                accounts.display_name as author_name,
                 tags,
                 categories,
                 ingredients,
                 seasons
             FROM
-                recipes r,
-                r_tags,
-                r_categories,
-                r_ingredients,
-                r_seasons
+                recipes r
+                CROSS JOIN r_tags
+                CROSS JOIN r_categories
+                CROSS JOIN r_ingredients
+                CROSS JOIN r_seasons
                 LEFT JOIN accounts_fav_recipes fav
                     ON r.id = fav.recipe_id AND fav.account_id = $2
+                INNER JOIN accounts
+                    ON accounts.id = r.author_id
             WHERE r.id = $1
         "#,
     )

@@ -49,6 +49,7 @@
             class="text-primary"
           />{{ recipe.cook_time_min }} min</span>
         </p>
+        <p class="text-sm italic">Ajoutée par <router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">{{ recipe.author.display_name }}</router-link></p>
       </div>
     </div>
     <div class="flex gap-2 flex-wrap justify-center mb-2 sm:mb-4">
