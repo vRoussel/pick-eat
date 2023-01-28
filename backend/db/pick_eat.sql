@@ -239,6 +239,125 @@ CREATE TABLE public.accounts_fav_recipes (
 ALTER TABLE public.accounts_fav_recipes OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.get_ingredients_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_ingredients_json(integer) CASCADE;
+CREATE FUNCTION public.get_ingredients_json (IN recipe_id_in integer)
+	RETURNS json
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT coalesce(json_agg(result), '[]'::json) FROM
+    (
+        SELECT
+            i.id,
+            i.name,
+            ri.quantity,
+            CASE WHEN ri.unit_id is null THEN
+                null
+            ELSE
+                json_build_object(
+                    'id', u.id,
+                    'full_name', u.full_name,
+                    'short_name', u.short_name
+                )
+            END as "unit"
+        FROM
+            ingredients AS i INNER JOIN recipes_ingredients AS ri
+            ON i.id = ri.ingredient_id
+            LEFT JOIN units as u
+            ON u.id = ri.unit_id
+        WHERE ri.recipe_id = recipe_id_in
+    ) as result
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_ingredients_json(integer) OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_tags_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_tags_json(integer) CASCADE;
+CREATE FUNCTION public.get_tags_json (IN recipe_id_in integer)
+	RETURNS json
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		t.id,
+    		t.name
+    FROM
+    		tags AS t INNER JOIN recipes_tags AS rt
+    		ON t.id = rt.tag_id
+    WHERE rt.recipe_id = recipe_id_in
+) as result
+
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_tags_json(integer) OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_categories_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_categories_json(integer) CASCADE;
+CREATE FUNCTION public.get_categories_json (IN recipe_id_in integer)
+	RETURNS json
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		c.id,
+    		c.name
+    FROM
+    		categories AS c INNER JOIN recipes_categories AS rc
+    		ON c.id = rc.category_id
+    WHERE rc.recipe_id = recipe_id_in
+) as result
+
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_categories_json(integer) OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_seasons_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_seasons_json(integer) CASCADE;
+CREATE FUNCTION public.get_seasons_json (IN recipe_id_in integer)
+	RETURNS json
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		s.id,
+    		s.name
+    FROM
+    		seasons AS s INNER JOIN recipes_seasons AS rs
+    		ON s.id = rs.season_id
+    WHERE rs.recipe_id = recipe_id_in
+) as result
+
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_seasons_json(integer) OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_fk_author_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fk_author_id CASCADE;
 ALTER TABLE public.recipes ADD CONSTRAINT recipes_fk_author_id FOREIGN KEY (author_id)

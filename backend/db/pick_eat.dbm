@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="15"
+<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,171" last-zoom="0.7" max-obj-count="15"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -35,7 +35,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="800" y="520"/>
+	<position x="320" y="540"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -78,7 +78,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1920" y="400"/>
+	<position x="1480" y="400"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -97,7 +97,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="tags" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1920" y="220"/>
+	<position x="1480" y="220"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -116,7 +116,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_tags" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1440" y="220"/>
+	<position x="1000" y="220"/>
 	<column name="tag_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -131,7 +131,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="ingredients" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1920" y="560"/>
+	<position x="1480" y="560"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -153,7 +153,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_ingredients" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1440" y="620"/>
+	<position x="1000" y="620"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -177,7 +177,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_categories" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1440" y="400"/>
+	<position x="1000" y="400"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -192,7 +192,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="units" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1920" y="740"/>
+	<position x="1480" y="740"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -217,7 +217,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="seasons" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1920" y="960"/>
+	<position x="1480" y="960"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -236,7 +236,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="recipes_seasons" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="1440" y="960"/>
+	<position x="1000" y="960"/>
 	<column name="recipe_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -298,7 +298,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="accounts" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="520" y="180"/>
+	<position x="320" y="300"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -329,7 +329,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="accounts_fav_recipes" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="260" y="620"/>
+	<position x="320" y="940"/>
 	<column name="account_id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -340,6 +340,141 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<columns names="account_id,recipe_id" ref-type="src-columns"/>
 	</constraint>
 </table>
+
+<function name="get_ingredients_json"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="STABLE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL SAFE"
+		execution-cost="1"
+		row-amount="1">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<language name="sql"/>
+	<return-type>
+	<type name="json" length="0"/>
+	</return-type>
+	<parameter name="recipe_id_in" in="true">
+		<type name="integer" length="0"/>
+	</parameter>
+	<definition> <![CDATA[SELECT coalesce(json_agg(result), '[]'::json) FROM
+    (
+        SELECT
+            i.id,
+            i.name,
+            ri.quantity,
+            CASE WHEN ri.unit_id is null THEN
+                null
+            ELSE
+                json_build_object(
+                    'id', u.id,
+                    'full_name', u.full_name,
+                    'short_name', u.short_name
+                )
+            END as "unit"
+        FROM
+            ingredients AS i INNER JOIN recipes_ingredients AS ri
+            ON i.id = ri.ingredient_id
+            LEFT JOIN units as u
+            ON u.id = ri.unit_id
+        WHERE ri.recipe_id = recipe_id_in
+    ) as result]]> </definition>
+</function>
+
+<function name="get_tags_json"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="STABLE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL SAFE"
+		execution-cost="1"
+		row-amount="1">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<language name="sql"/>
+	<return-type>
+	<type name="json" length="0"/>
+	</return-type>
+	<parameter name="recipe_id_in" in="true">
+		<type name="integer" length="0"/>
+	</parameter>
+	<definition> <![CDATA[SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		t.id,
+    		t.name
+    FROM
+    		tags AS t INNER JOIN recipes_tags AS rt
+    		ON t.id = rt.tag_id
+    WHERE rt.recipe_id = recipe_id_in
+) as result
+]]> </definition>
+</function>
+
+<function name="get_categories_json"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="STABLE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL SAFE"
+		execution-cost="1"
+		row-amount="1">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<language name="sql"/>
+	<return-type>
+	<type name="json" length="0"/>
+	</return-type>
+	<parameter name="recipe_id_in" in="true">
+		<type name="integer" length="0"/>
+	</parameter>
+	<definition> <![CDATA[SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		c.id,
+    		c.name
+    FROM
+    		categories AS c INNER JOIN recipes_categories AS rc
+    		ON c.id = rc.category_id
+    WHERE rc.recipe_id = recipe_id_in
+) as result
+]]> </definition>
+</function>
+
+<function name="get_seasons_json"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="STABLE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL SAFE"
+		execution-cost="1"
+		row-amount="1">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<language name="sql"/>
+	<return-type>
+	<type name="json" length="0"/>
+	</return-type>
+	<parameter name="recipe_id_in" in="true">
+		<type name="integer" length="0"/>
+	</parameter>
+	<definition> <![CDATA[SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		s.id,
+    		s.name
+    FROM
+    		seasons AS s INNER JOIN recipes_seasons AS rs
+    		ON s.id = rs.season_id
+    WHERE rs.recipe_id = recipe_id_in
+) as result
+]]> </definition>
+</function>
 
 <constraint name="recipes_fk_author_id" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.accounts" table="public.recipes">
