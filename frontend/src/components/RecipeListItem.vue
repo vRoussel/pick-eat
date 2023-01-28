@@ -17,7 +17,7 @@
           <Icon
             :icon="cart_svg"
             class="transition ease-in-out hover:scale-125 text-2xl text-primary"
-            @click.stop="toggleCart(recipe.id)"
+            @click.stop="toggleCart(recipe)"
           />
         </span>
       </div>
@@ -79,13 +79,11 @@ export default {
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
         },
-        toggleCart(id) {
-            if (this.cartStore.hasRecipe(id)) {
-                this.cartStore.removeRecipe(id)
+        toggleCart(recipe) {
+            if (this.cartStore.hasRecipe(recipe.id)) {
+                this.cartStore.removeRecipe(recipe.id)
             } else {
-                this.foodStore.getRecipeById(id).then(recipe => {
-                    this.cartStore.addRecipe(recipe, recipe.n_shares)
-                })
+                this.cartStore.addRecipe(recipe, recipe.n_shares)
             }
         }
     },

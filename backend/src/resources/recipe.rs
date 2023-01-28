@@ -24,11 +24,13 @@ pub struct FromDB {
     author: account::FromDBPublic,
 }
 
-#[derive(Debug, Serialize, sqlx::FromRow)]
+#[derive(Debug, Serialize)]
 pub struct FromDBLight {
     id: i32,
     name: String,
+    q_ingredients: Vec<qingredient::FromDB>,
     image: String,
+    n_shares: i16,
     is_favorite: bool,
 }
 
@@ -83,6 +85,20 @@ impl FromRow<'_, PgRow> for FromDB {
             is_favorite: row.get("is_favorite"),
             seasons: _seasons.0,
             author: _author,
+        })
+    }
+}
+
+impl FromRow<'_, PgRow> for FromDBLight {
+    fn from_row(row: &PgRow) -> sqlx::Result<Self> {
+        let _ingredients: sqlx::types::Json<_> = row.get("ingredients");
+        Ok(FromDBLight {
+            id: row.get("id"),
+            name: row.get("name"),
+            q_ingredients: _ingredients.0,
+            image: row.get("image"),
+            n_shares: row.get("n_shares"),
+            is_favorite: row.get("is_favorite"),
         })
     }
 }
@@ -227,10 +243,12 @@ pub async fn get_many(
                 r.name,
                 r.image,
                 fav IS NOT null as is_favorite,
+                get_ingredients_json(id) as ingredients,
+                n_shares,
                 count(*) OVER() AS total_count
             FROM recipes AS r
             LEFT JOIN accounts_fav_recipes fav
-            ON r.id = fav.recipe_id AND fav.account_id = ",
+                ON r.id = fav.recipe_id AND fav.account_id = ",
         )
         .push_bind(account_id)
         .push(" \n")
