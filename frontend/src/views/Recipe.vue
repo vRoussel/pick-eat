@@ -57,7 +57,7 @@ export default {
         },
         afterEdit() {
             this.loadRecipe()
-            this.$router.push({ query: { ...this.$route.query, edit: undefined} });
+            this.$router.go(-1)
         }
     },
 }
