@@ -6,6 +6,8 @@
 
 <script>
 import RecipeForm from '@/components/RecipeForm.vue'
+import { mapStores } from 'pinia'
+import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'NewRecipe',
@@ -17,6 +19,12 @@ export default {
             let id = recipe.id
             this.$router.push({ name: 'recipe', params: { id } })
         }
+    },
+    computed: {
+      ...mapStores(useFoodStore)
+    },
+    activated() {
+        this.foodStore.fetchAll()
     }
 }
 </script>
