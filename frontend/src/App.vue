@@ -166,7 +166,7 @@ export default {
                 }, 0)
             }
             this.dropdown_main_opened = !this.dropdown_main_opened
-}
+        }
   }
 }
 </script>
