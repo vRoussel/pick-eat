@@ -93,7 +93,7 @@
       name="fade"
       mode="out-in"
     >
-      <KeepAlive>
+      <KeepAlive include="NewRecipe,RecipeList">
         <component
           :is="Component"
           :key="route.path"
