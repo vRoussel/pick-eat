@@ -144,15 +144,8 @@ export default {
             }
         },
   },
-  created: async function() {
-    await Promise.allSettled([
-        this.foodStore.fetchTags(),
-        this.foodStore.fetchCategories(),
-        this.foodStore.fetchIngredients(),
-        this.foodStore.fetchUnits(),
-        this.foodStore.fetchSeasons(),
-        this.foodStore.fetchAccountsWithRecipes()
-    ])
+  created: function() {
+      this.foodStore.fetchAll()
   },
   methods: {
         unfocus(e) {

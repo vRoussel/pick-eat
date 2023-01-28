@@ -84,6 +84,17 @@ export const useFoodStore = defineStore('food', {
             })
         },
 
+        async fetchAll() {
+            await Promise.allSettled([
+                this.fetchTags(),
+                this.fetchCategories(),
+                this.fetchIngredients(),
+                this.fetchUnits(),
+                this.fetchSeasons(),
+                this.fetchAccountsWithRecipes()
+            ])
+        },
+
         async getRecipes(from, to, filters) {
             let f = filters;
             let url = `${API_ROOT}/recipes`
