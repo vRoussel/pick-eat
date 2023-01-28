@@ -19,6 +19,10 @@ async function sendNewThing(post, endpoint) {
     return resp2.data
 }
 
+let seeds = [7,11,13,17,19,23,29,31,37,42];
+let random_seed = seeds[Math.floor(Math.random() * seeds.length)];
+
+
 export const useFoodStore = defineStore('food', {
     state: () => {
         return {
@@ -99,7 +103,9 @@ export const useFoodStore = defineStore('food', {
             let f = filters;
             let url = `${API_ROOT}/recipes`
             let params = {
-                'range': `${from}-${to}`
+                'range': `${from}-${to}`,
+                'sort': 'random',
+                'seed': random_seed
             }
             if (f.search_query)
                 params.search = f.search_query

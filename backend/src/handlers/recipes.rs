@@ -2,7 +2,8 @@ use super::db_error_to_http_response;
 use actix_identity::Identity;
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use serde_json;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
@@ -29,6 +30,8 @@ pub struct GetQueryParams {
     ingredients: Option<String>,
     tags: Option<String>,
     account: Option<i32>,
+    sort: String,
+    seed: Option<i32>,
 }
 
 #[get("/recipes")]
@@ -87,6 +90,14 @@ pub async fn get_all(
             .finish();
     }
 
+    let sort_method = match params.sort.as_str() {
+        "random" => match params.seed {
+            Some(s) => recipe::SortMethod::Random { seed: s },
+            _ => return HttpResponse::BadRequest().finish(),
+        },
+        _ => return HttpResponse::BadRequest().finish(),
+    };
+
     let mut filters: Vec<Filter> = Vec::new();
     if let Some(val) = &params.search {
         filters.push(Filter::Search(val.to_string()));
@@ -115,14 +126,21 @@ pub async fn get_all(
         filters.push(Filter::Account(*val));
     }
 
-    let (recipes, total_count_filtered) =
-        match recipe::get_many(&mut db_conn, &params.range, &filters, user_id).await {
-            Ok(v) => v,
-            Err(e) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-        };
+    let (recipes, total_count_filtered) = match recipe::get_many(
+        &mut db_conn,
+        &params.range,
+        &filters,
+        &sort_method,
+        user_id,
+    )
+    .await
+    {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
     if let Err(e) = db_conn.rollback().await {
         error!("{}", e);
         return HttpResponse::InternalServerError().finish();

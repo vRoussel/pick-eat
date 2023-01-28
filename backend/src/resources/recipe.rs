@@ -59,6 +59,10 @@ pub enum Filter {
     Account(i32),
 }
 
+pub enum SortMethod {
+    Random { seed: i32 },
+}
+
 impl FromRow<'_, PgRow> for FromDB {
     fn from_row(row: &PgRow) -> sqlx::Result<Self> {
         let _tags: sqlx::types::Json<_> = row.get("tags");
@@ -107,11 +111,12 @@ pub async fn get_many(
     db_conn: &mut PgConnection,
     range: &Range,
     filters: &[Filter],
+    sort_method: &SortMethod,
     account_id: Option<i32>,
 ) -> Result<(Vec<FromDBLight>, i64), Error> {
     let mut builder = sqlx::QueryBuilder::new("");
     let mut joins = String::new();
-    let mut sorting_field = String::from("name");
+    let mut sorting_fields: Vec<String> = Vec::new();
 
     builder.push("WITH dummy as (SELECT 1)");
 
@@ -142,7 +147,7 @@ pub async fn get_many(
                         ",
                     );
                 joins.push_str(" INNER JOIN search_filter as sf USING (id)");
-                sorting_field = String::from("sf.rank");
+                sorting_fields.push(String::from("sf.rank"));
             }
             Filter::Categories(ids) => {
                 builder
@@ -232,6 +237,15 @@ pub async fn get_many(
         };
     }
 
+    match sort_method {
+        SortMethod::Random { seed } => {
+            sorting_fields.push(format!(
+                "(extract(epoch from publication_date)+id) % {}",
+                seed
+            ));
+        }
+    };
+
     let offset = range.from - 1;
     let limit = range.to - range.from + 1;
 
@@ -257,7 +271,7 @@ pub async fn get_many(
             "
         ORDER BY ",
         )
-        .push(sorting_field)
+        .push(sorting_fields.join(", "))
         .push(" OFFSET ")
         .push_bind(offset)
         .push(" LIMIT ")
