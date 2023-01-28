@@ -147,6 +147,11 @@ export default {
   created: function() {
       this.foodStore.fetchAll()
   },
+  mounted: function () {
+      window.setInterval(() => {
+          this.foodStore.fetchAll()
+      }, 5 * 60 * 1000)
+  },
   methods: {
         unfocus(e) {
             let targetEl = e.currentTarget;
