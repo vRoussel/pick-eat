@@ -91,6 +91,26 @@
         -->
       <fieldset>
         <legend class="label">
+          <span class="label-text text-lg">Régimes alimentaires</span>
+        </legend>
+        <div
+          v-for="d in foodStore.diets"
+          :key="d.id"
+          class="form-control"
+        >
+          <label class="label cursor-pointer justify-start gap-x-4 py-1">
+            <input
+              v-model="diets"
+              type="checkbox"
+              class="checkbox checkbox-sm"
+              :value="d.id"
+            >
+            <span class="label-text">{{ d.name }}</span>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend class="label">
           <span class="label-text text-lg">Saisons</span>
         </legend>
         <div
@@ -165,14 +185,15 @@ import Multiselect from '@vueform/multiselect'
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
 
-export function Filters(q=null, i=[], t=[], c=[], s=[], a=null) {
+export function Filters(q=null, i=[], t=[], c=[], s=[], a=null, d=[]) {
     return {
         search_query : q,
         ingredients : i,
         tags : t,
         categories : c,
         seasons : s,
-        account : a
+        account : a,
+        diets: d
     }
 }
 
@@ -252,6 +273,15 @@ export default {
             },
             set: function(val) {
                 let new_filters = {...this.filters, 'account': val};
+                this.updateFilters(new_filters, 0);
+            }
+        },
+        diets: {
+            get: function() {
+                return this.filters.diets;
+            },
+            set: function(val) {
+                let new_filters = {...this.filters, 'diets': val};
                 this.updateFilters(new_filters, 0);
             }
         },

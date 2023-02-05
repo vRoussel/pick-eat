@@ -60,6 +60,7 @@ pub enum Filter {
     Ingredients(Vec<ingredient::Ref>),
     Tags(Vec<tag::Ref>),
     Account(i32),
+    Diets(Vec<diet::Ref>),
 }
 
 pub enum SortMethod {
@@ -240,6 +241,23 @@ pub async fn get_many(
                     .push_bind(id)
                     .push(")");
                 joins.push_str(" INNER JOIN account_filter USING (id)");
+            }
+            Filter::Diets(ids) => {
+                builder
+                    .push(
+                        "
+                        , diet_filter as (
+                            SELECT
+                                distinct(recipe_id) as id
+                            FROM
+                                recipes_diets
+                            WHERE
+                                diet_id = any(
+                        ",
+                    )
+                    .push_bind(ids)
+                    .push("))");
+                joins.push_str(" INNER JOIN diet_filter USING (id)");
             }
         };
     }

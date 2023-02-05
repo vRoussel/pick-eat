@@ -30,6 +30,7 @@ pub struct GetQueryParams {
     ingredients: Option<String>,
     tags: Option<String>,
     account: Option<i32>,
+    diets: Option<String>,
     sort: String,
     seed: Option<i32>,
 }
@@ -124,6 +125,11 @@ pub async fn get_all(
     }
     if let Some(val) = &params.account {
         filters.push(Filter::Account(*val));
+    }
+    if let Some(val) = &params.diets {
+        filters.push(Filter::Diets(
+            val.split(",").map(|x| x.parse().unwrap()).collect(),
+        ));
     }
 
     let (recipes, total_count_filtered) = match recipe::get_many(

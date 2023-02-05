@@ -130,6 +130,8 @@ export const useFoodStore = defineStore('food', {
                 params.seasons = f.seasons.join(',')
             if (f.account)
                 params.account = f.account
+            if (f.diets.length > 0)
+                params.diets = f.diets.join(',')
             let resp = await axios.get(url, { 'params': params })
             let total_count = parseInt(resp.headers['content-range'].split('/')[1])
             return [resp.data, total_count]
