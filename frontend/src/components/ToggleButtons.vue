@@ -47,13 +47,18 @@ export default {
         },
     },
     emits: ['update:picked'],
+    computed: {
+        _picked() {
+            return new Set(this.picked)
+        }
+    },
     methods: {
         toggle(id) {
-            if (this.picked.has(id))
-                this.picked.delete(id)
+            if (this._picked.has(id))
+                this._picked.delete(id)
             else
-                this.picked.add(id)
-            this.$emit('update:picked', this.picked)
+                this._picked.add(id)
+            this.$emit('update:picked', this._picked)
         },
         created(new_choice) {
             this.toggle(new_choice)
