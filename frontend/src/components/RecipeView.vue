@@ -9,27 +9,27 @@
 -->
   <div
     v-if="recipe"
-    class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-4 sm:gap-y-6 shadow-secondary shadow-md rounded-xl relative"
+    class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-8 border border-primary rounded-xl relative"
   >
-    <span class="icon absolute right-2 top-2 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
+    <span class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
       <Icon
         class="text-primary cursor-pointer"
         :icon="icons.pencil"
         @click="editRecipe()"
       />
     </span>
-    <div class="flex gap-2 sm:gap-x-4 md:gap-x-6">
-      <div class="basis-1/2 sm:basis-2/5 md:basis-1/3">
+    <div class="flex flex-wrap sm:flex-nowrap gap-y-6 gap-x-4 md:gap-x-6">
+      <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2">
         <img
           :src="image"
           class="rounded-xl"
         >
       </div>
-      <div class="flex flex-col basis-1/2 justify-around items-center mx-auto">
+      <div class="flex flex-col basis-full gap-y-2 sm:basis-1/2 justify-around items-center mx-auto">
         <p
           ref="recipe_name"
           v-tooltip="overflown ? recipe.name : null"
-          class="recipe-name text-primary text-center text-lg sm:text-3xl md:text-4xl lg:text-5xl"
+          class="recipe-name text-primary text-center font-bold text-xl sm:text-3xl md:text-4xl lg:text-5xl"
         >
           {{ recipe.name }}
         </p>
@@ -37,19 +37,18 @@
           :seasons="recipe.seasons"
           class="text-2xl md:text-3xl lg:text-4xl gap-x-1"
         />
-        <p>
-          <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon
+        <p class="space-x-4">
+          <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
             :icon="icons.knife"
             :rotate="3"
             class="text-primary"
           /> {{ recipe.prep_time_min }} min</span>
-          <br>
-          <span class="icon inline-flex items-center gap-x-1 text-base sm:text-lg md:text-xl lg:text-2xl"><Icon
+          <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
             :icon="icons.cooking_pot"
             class="text-primary"
           />{{ recipe.cook_time_min }} min</span>
         </p>
-        <p class="text-sm italic">Ajoutée par <router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">{{ recipe.author.display_name }}</router-link></p>
+        <p class="text-xs sm:text-sm italic">Ajoutée par <router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">{{ recipe.author.display_name }}</router-link></p>
       </div>
     </div>
     <div class="flex gap-2 flex-wrap justify-center mb-2 sm:mb-4">
@@ -67,20 +66,14 @@
         <thead>
           <tr class="text-center">
             <th
-              v-if="recipe.n_shares > 0"
               colspan="2"
-              class="bg-transparent !text-primary"
+              class="text-primary-content !bg-primary text-lg"
             >
-              <span class="icon inline-flex items-center text-lg">Ingrédients ({{ recipe.n_shares }} <Icon
+              <span v-if="recipe.n_shares > 0" class="icon inline-flex items-center">Ingrédients ({{ recipe.n_shares }} <Icon
                 class="pl-0.5"
                 :icon="icons.person"
               />)</span>
-            </th>
-            <th
-              v-else
-              colspan="2"
-            >
-              Ingrédients
+              <span v-else>Ingrédients</span>
             </th>
           </tr>
         </thead>
@@ -88,6 +81,7 @@
           <tr
             v-for="ingr in recipe.q_ingredients"
             :key="ingr.id"
+            class="border-b"
           >
             <td class="!text-right">
               {{ ingr.quantity }} {{ ingr.unit ? ingr.unit.short_name : "" }}
@@ -101,10 +95,10 @@
         <col class="w-8" />
         <col/>
       </colgroup>
-        <thead class="border-primary">
-          <tr class="text-center">
+        <thead>
+          <tr class="text-center border-b border-primary">
             <th
-              class="bg-transparent !text-primary font-bold text-lg"
+              class="bg-transparent !text-primary text-lg"
               colspan="2"
             >
               Étapes
@@ -218,7 +212,7 @@ export default {
     mounted() {
         //https://jefrydco.id/en/blog/safe-access-vue-refs-undefined
         const interval = setInterval(() => {
-            if (this.$refs.recipe_name) {
+            if (this.recipe) {
                 this.overflown = isOverflown(this.$refs.recipe_name)
                 clearInterval(interval)
             }
@@ -235,7 +229,6 @@ export default {
 <style scoped>
     th, .recipe-name {
         font-family: "Rounded_Elegance";
-        font-weight: bold;
     }
 
     .recipe-name {
