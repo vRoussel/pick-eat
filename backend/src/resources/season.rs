@@ -6,6 +6,7 @@ use sqlx::{query_as, Error};
 pub struct FromDB {
     id: i32,
     name: String,
+    label: Option<String>,
 }
 
 pub type Ref = i32;
@@ -16,7 +17,8 @@ pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
         "
             SELECT
                 id,
-                name
+                name,
+                label
             FROM seasons
             ORDER BY id
         ",
@@ -33,7 +35,8 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
         "
             SELECT
                 id,
-                name
+                name,
+                label
             FROM seasons
             WHERE id = $1
         ",

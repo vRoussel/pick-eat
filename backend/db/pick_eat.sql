@@ -147,8 +147,10 @@ ALTER TABLE public.units OWNER TO pickeat;
 CREATE TABLE public.seasons (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
+	label text,
 	CONSTRAINT seasons_pk PRIMARY KEY (id),
-	CONSTRAINT seasons_uq_name UNIQUE (name)
+	CONSTRAINT seasons_uq_name UNIQUE (name),
+	CONSTRAINT seasons_uq_label UNIQUE (label)
 );
 -- ddl-end --
 ALTER TABLE public.seasons OWNER TO pickeat;
@@ -346,7 +348,8 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
 (
 	SELECT
 		s.id,
-    		s.name
+    		s.name,
+		s.label
     FROM
     		seasons AS s INNER JOIN recipes_seasons AS rs
     		ON s.id = rs.season_id

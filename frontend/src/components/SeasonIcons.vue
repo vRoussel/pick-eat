@@ -4,28 +4,28 @@
       <Icon
         :icon="icons.flower"
         :inline="true"
-        :class="dynClass(1)"
+        :class="dynClass('spring')"
       />
     </span>
     <span class="icon">
       <Icon
         :icon="icons.sun"
         :inline="true"
-        :class="dynClass(2)"
+        :class="dynClass('summer')"
       />
     </span>
     <span class="icon">
       <Icon
         :icon="icons.leaf"
         :inline="true"
-        :class="dynClass(3)"
+        :class="dynClass('fall')"
       />
     </span>
     <span class="icon">
       <Icon
         :icon="icons.snowflake"
         :inline="true"
-        :class="dynClass(4)"
+        :class="dynClass('winter')"
       />
     </span>
   </div>
@@ -41,20 +41,20 @@ export default {
         },
     },
     computed: {
-        season_ids() {
-            return this.seasons.map(r => r.id)
+        season_labels() {
+            return this.seasons.map(r => r.label)
         },
     },
     methods: {
-        dynClass(id) {
+        dynClass(label) {
             return {
-                "text-primary" : this.has_season(id),
-                "text-accent" : !this.has_season(id),
-                "opacity-30" : !this.has_season(id)
+                "text-primary" : this.has_season(label),
+                "text-accent" : !this.has_season(label),
+                "opacity-30" : !this.has_season(label)
             }
         },
-        has_season(id) {
-            return this.season_ids.includes(id)
+        has_season(label) {
+            return this.season_labels.includes(label)
         },
     }
 }

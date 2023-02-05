@@ -214,7 +214,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="seasons" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="seasons" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
 	<position x="1480" y="960"/>
@@ -225,11 +225,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
+	<column name="label">
+		<type name="text" length="0"/>
+	</column>
 	<constraint name="seasons_pk" type="pk-constr" table="public.seasons">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 	<constraint name="seasons_uq_name" type="uq-constr" table="public.seasons">
 		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="seasons_uq_label" type="uq-constr" table="public.seasons">
+		<columns names="label" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -467,7 +473,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 (
 	SELECT
 		s.id,
-    		s.name
+    		s.name,
+		s.label
     FROM
     		seasons AS s INNER JOIN recipes_seasons AS rs
     		ON s.id = rs.season_id
