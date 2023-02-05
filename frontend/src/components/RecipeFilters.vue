@@ -49,7 +49,6 @@
           <span class="label-text text-lg">Ingrédients</span>
         </label>
         <Multiselect
-          ref="multiselect"
           v-model="ingredients"
           mode="tags"
           :options="foodStore.ingredients"
@@ -66,7 +65,6 @@
           <span class="label-text text-lg">Tags</span>
         </label>
         <Multiselect
-          ref="multiselect"
           v-model="tags"
           mode="tags"
           :options="foodStore.tags"
@@ -136,7 +134,6 @@
           <span class="label-text text-lg">Auteur</span>
         </label>
         <Multiselect
-          ref="multiselect"
           v-model="account"
           mode="single"
           :options="foodStore.accounts_with_recipes"
