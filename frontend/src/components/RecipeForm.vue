@@ -15,11 +15,8 @@
         class="input input-bordered w-full"
       >
     </div>
-    <div class="flex flex-wrap sm:flex-nowrap items-stretch justify-between w-full gap-y-5 gap-x-5">
-      <div class="form-control grow sm:grow-0">
-        <image-chooser v-model:image_url="image_url" />
-      </div>
-      <div class="flex flex-col justify-evenly grow">
+    <div class="flex flex-wrap sm:flex-nowrap w-full gap-y-5 gap-x-5">
+      <div class="flex flex-col justify-around justify-self-start grow sm:grow-0 basis-4/12">
         <div class="form-control">
           <label class="label">
             <span class="label-text">Temps de préparation</span>
@@ -30,7 +27,7 @@
               type="number"
               class="input input-bordered w-full"
             >
-            <span class="bg-accent text-accent-content">minutes</span>
+            <span class="bg-base-200 text-accent-content">minutes</span>
           </label>
         </div>
 
@@ -44,7 +41,7 @@
               type="number"
               class="input input-bordered w-full"
             >
-            <span class="bg-accent text-accent-content">minutes</span>
+            <span class="bg-base-200 text-accent-content">minutes</span>
           </label>
         </div>
 
@@ -57,6 +54,9 @@
             :min="0"
           />
         </div>
+      </div>
+      <div class="form-control grow order-first sm:order-none justify-self-center">
+        <image-chooser v-model:image_url="image_url" />
       </div>
     </div>
 
