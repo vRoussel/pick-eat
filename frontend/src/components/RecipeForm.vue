@@ -2,7 +2,7 @@
   <form
     id="recipe-form"
     autocomplete="off"
-    class="space-y-4 flex flex-col items-center max-w-4xl mx-auto px-2 my-4"
+    class="space-y-4 flex flex-col items-center max-w-3xl mx-auto px-2 my-4"
     @submit.prevent="sendRecipe"
   >
     <div class="form-control w-full">
