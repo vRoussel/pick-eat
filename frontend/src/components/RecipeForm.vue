@@ -210,6 +210,18 @@ export default {
     watch: {
         existing_recipe: function() {
             this.fillForm()
+        },
+        diets: {
+            handler(new_val, old_val) {
+                let added_vegan = !old_val.has(2) && new_val.has(2)
+                let removed_vege = old_val.has(1) && !new_val.has(1)
+                if (added_vegan) {
+                    new_val.add(1)
+                }
+                else if (removed_vege) {
+                    new_val.delete(2)
+                }
+            }
         }
     },
     mounted() {
