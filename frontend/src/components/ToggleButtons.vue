@@ -4,13 +4,12 @@
       v-for="el in choices"
       :key="el.id"
     >
-      <button
-        type="button"
-        :class="buttonClass(el)"
-        @click="toggle(el)"
+      <toggle-button
+        :state="this.picked.has(el.id)"
+        @update:state="this.toggle(el.id)"
       >
         {{ el.name }}
-      </button>
+      </toggle-button>
     </template>
     <button
       v-if="extendModalComponent"
@@ -27,9 +26,11 @@
 </template>
 
 <script>
+import ToggleButton from '@/components/ToggleButton.vue'
 export default {
     name: 'ToggleButtons',
     components : {
+        ToggleButton
     },
     props: {
         choices: {
@@ -47,22 +48,11 @@ export default {
     },
     emits: ['update:picked'],
     methods: {
-        buttonClass(el) {
-            return {
-                "btn": true,
-                "btn-sm": true,
-                "rounded-full": true,
-                "btn-primary": this.picked.has(el.id),
-                "hover:btn-primary": true,
-                "border-gray-300": true,
-                "btn-outline": !this.picked.has(el.id),
-            }
-        },
-        toggle(el) {
-            if (this.picked.has(el.id))
-                this.picked.delete(el.id)
+        toggle(id) {
+            if (this.picked.has(id))
+                this.picked.delete(id)
             else
-                this.picked.add(el.id)
+                this.picked.add(id)
             this.$emit('update:picked', this.picked)
         },
         created(new_choice) {
