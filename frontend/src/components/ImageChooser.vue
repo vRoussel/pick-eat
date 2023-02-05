@@ -1,8 +1,7 @@
 <template>
-  <div class="w-full h-full flex justify-center sm:justify-start my-3">
-    <div class="relative">
+    <div class="relative w-fit mx-auto">
       <img
-        class="cursor-pointer m-auto rounded-lg w-64"
+        class="cursor-pointer m-auto rounded-lg w-80"
         :src="image_preview"
         @click="imageWidget.open()"
       >
@@ -14,7 +13,6 @@
         ✕
       </button>
     </div>
-  </div>
 </template>
 
 <script>
@@ -38,7 +36,7 @@ export default {
             if (this.image_url === "")
                 return this.icons.camera
             else
-                return this.image_url.replace("/upload", "/upload/c_limit,h_256,w_256");
+                return this.image_url.replace("/upload", "/upload/c_limit,h_512,w_512");
         },
     },
     methods: {
