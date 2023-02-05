@@ -3,7 +3,19 @@
     class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer"
     @click="openRecipe(recipe.id)"
   >
-    <figure><img :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"></figure>
+    <figure class="relative">
+        <img class="rounded-t-xl" :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera">
+    </figure>
+    <Icon
+      v-if="this.is_vegan"
+      :icon="this.icons.vegan"
+      class="text-3xl absolute text-primary  right-2 top-2 bg-primary-content rounded-full ring-primary ring-2"
+    />
+    <Icon
+      v-else-if="this.is_vege"
+      :icon="this.icons.vege"
+      class="text-3xl absolute text-primary right-2 top-2 bg-primary-content rounded-full ring-primary ring-2"
+    />
     <div class="card-body divide-y-2 divide-accent !pb-0">
       <div class="card-actions justify-evenly">
         <span class="icon">
@@ -61,6 +73,12 @@ export default {
         },
         cart_svg() {
             return this.cartStore.hasRecipe(this.recipe.id) ? this.icons.cart : this.icons.cart_outline
+        },
+        is_vege() {
+            return this.recipe.diets.find(d => d.label == 'vegetarian')
+        },
+        is_vegan() {
+            return this.recipe.diets.find(d => d.label == 'vegan')
         }
     },
     mounted() {
