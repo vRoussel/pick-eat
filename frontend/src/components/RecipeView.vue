@@ -48,6 +48,18 @@
             class="text-primary"
           />{{ recipe.cook_time_min }} min</span>
         </p>
+        <p v-if="this.is_vegan">
+          <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
+            :icon="icons.vegan"
+            class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+          /> Vegan</span>
+        </p>
+        <p v-else-if="this.is_vege">
+          <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
+            :icon="icons.vege"
+            class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+          /> Végétarien</span>
+        </p>
         <p class="text-xs sm:text-sm italic">Ajoutée par <router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">{{ recipe.author.display_name }}</router-link></p>
       </div>
     </div>
@@ -207,6 +219,12 @@ export default {
                 return this.icons.camera
             else
                 return this.recipe.image.replace("/upload", "/upload/c_limit,h_512,w_512");
+        },
+        is_vege() {
+            return this.recipe.diets.find(d => d.label == 'vegetarian')
+        },
+        is_vegan() {
+            return this.recipe.diets.find(d => d.label == 'vegan')
         }
     },
     mounted() {

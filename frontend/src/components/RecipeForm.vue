@@ -107,6 +107,16 @@
 
     <div class="form-control w-full">
       <label class="label">
+        <span class="label-text">Régimes alimentaires</span>
+      </label>
+      <toggle-buttons
+        v-model:picked="diets"
+        :choices="foodStore.diets"
+      />
+    </div>
+
+    <div class="form-control w-full">
+      <label class="label">
         <span class="label-text">Ingrédients</span>
       </label>
       <ingredient-picker
@@ -179,6 +189,7 @@ export default {
             tags: new Set(),
             seasons: new Set(),
             ingredients: new Map(),
+            diets: new Set(),
             notes: "",
             image_url: "",
             meta: {
@@ -212,6 +223,7 @@ export default {
                 "category_ids": Array.from(this.categories),
                 "tag_ids": Array.from(this.tags),
                 "season_ids": Array.from(this.seasons),
+                "diet_ids": Array.from(this.diets),
                 "prep_time_min": this.prep_time,
                 "cook_time_min": this.cook_time,
                 "image": this.image_url,
@@ -281,6 +293,7 @@ export default {
                 this.categories = new Set(other.categories.map( c => c.id))
                 this.tags = new Set(other.tags.map( t => t.id))
                 this.seasons = new Set(other.seasons.map( s => s.id))
+                this.diets = new Set(other.diets.map( d => d.id))
                 this.prep_time = other.prep_time_min
                 this.cook_time = other.cook_time_min
                 this.image_url = other.image

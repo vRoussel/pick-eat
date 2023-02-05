@@ -13,6 +13,8 @@ import person from '@iconify-icons/mdi/account';
 import camera from '@/assets/camera.svg';
 import account from '@iconify-icons/mdi/account';
 import menu from '@iconify-icons/mdi/menu';
+import vegan from '@iconify-icons/iconoir/vegan';
+import vege from '@iconify-icons/iconoir/vegan';
 
 import flower from '@iconify-icons/ph/flower-fill';
 import sun from '@iconify-icons/ph/sun-fill';
@@ -38,5 +40,7 @@ export default {
     "person": person,
     "camera": camera,
     "account": account,
-    "menu": menu
+    "menu": menu,
+    "vegan": vegan,
+    "vege": vege
 }

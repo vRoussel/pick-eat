@@ -1,5 +1,6 @@
 pub mod account;
 pub mod category;
+pub mod diet;
 pub mod ingredient;
 pub mod qingredient;
 pub mod recipe;

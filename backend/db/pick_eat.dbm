@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,171" last-zoom="0.7" max-obj-count="15"
+<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="18"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -31,49 +31,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
-
-<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
-	<schema name="public"/>
-	<role name="pickeat"/>
-	<position x="320" y="540"/>
-	<column name="id" not-null="true"
-	 identity-type="ALWAYS">
-		<type name="integer" length="0"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<column name="notes" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<column name="preparation_time_min" not-null="true">
-		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
-	</column>
-	<column name="cooking_time_min" not-null="true">
-		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
-	</column>
-	<column name="image" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<column name="publication_date" not-null="true" default-value="CURRENT_DATE">
-		<type name="date" length="0"/>
-	</column>
-	<column name="instructions" not-null="true">
-		<type name="text" length="0" dimension="1"/>
-	</column>
-	<column name="n_shares" not-null="true">
-		<type name="smallint" length="0"/>
-	</column>
-	<column name="author_id" not-null="true">
-		<type name="integer" length="0"/>
-	</column>
-	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="recipes_ck_times" type="ck-constr" table="public.recipes">
-			<expression> <![CDATA[preparation_time_min >= 0 AND cooking_time_min >= 0]]> </expression>
-	</constraint>
-</table>
 
 <table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
@@ -292,15 +249,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</element>
 </opclass>
 
-<index name="trgm_idx" table="public.recipes"
-	 concurrent="false" unique="false" fast-update="false" buffering="false"
-	 index-type="gist" factor="0">
-		<idxelement use-sorting="false">
-			<column name="name"/>
-			<opclass  signature="public.gist_trgm_ops USING gist"/>
-		</idxelement>
-</index>
-
 <table name="accounts" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
@@ -344,6 +292,49 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<constraint name="accounts_fav_recipes_pk" type="pk-constr" table="public.accounts_fav_recipes">
 		<columns names="account_id,recipe_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="320" y="540"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="notes" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="preparation_time_min" not-null="true">
+		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
+	</column>
+	<column name="cooking_time_min" not-null="true">
+		<type name="smallint" length="0" interval-type="HOUR TO MINUTE"/>
+	</column>
+	<column name="image" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="publication_date" not-null="true" default-value="CURRENT_DATE">
+		<type name="date" length="0"/>
+	</column>
+	<column name="instructions" not-null="true">
+		<type name="text" length="0" dimension="1"/>
+	</column>
+	<column name="n_shares" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="author_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="recipes_ck_times" type="ck-constr" table="public.recipes">
+			<expression> <![CDATA[preparation_time_min >= 0 AND cooking_time_min >= 0]]> </expression>
 	</constraint>
 </table>
 
@@ -483,11 +474,86 @@ CAUTION: Do not modify this file unless you know what you are doing.
 ]]> </definition>
 </function>
 
-<constraint name="recipes_fk_author_id" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.accounts" table="public.recipes">
-	<columns names="author_id" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
+<index name="trgm_idx" table="public.recipes"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="gist" factor="0">
+		<idxelement use-sorting="false">
+			<column name="name"/>
+			<opclass  signature="public.gist_trgm_ops USING gist"/>
+		</idxelement>
+</index>
+
+<table name="diets" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="1480" y="0"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="label">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="diets_pk" type="pk-constr" table="public.diets">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="diets_uq_name" type="uq-constr" table="public.diets">
+		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="diets_uq_label" type="uq-constr" table="public.diets">
+		<columns names="label" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="recipes_diets" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="1000" y="40"/>
+	<column name="recipe_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="diet_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="recipes_diets_pk" type="pk-constr" table="public.recipes_diets">
+		<columns names="recipe_id,diet_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<function name="get_diets_json"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="STABLE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL SAFE"
+		execution-cost="1"
+		row-amount="1">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<language name="sql"/>
+	<return-type>
+	<type name="json" length="0"/>
+	</return-type>
+	<parameter name="recipe_id_in" in="true">
+		<type name="integer" length="0"/>
+	</parameter>
+	<definition> <![CDATA[SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		d.id,
+    		d.name,
+		d.label
+    FROM
+    		diets AS d INNER JOIN recipes_diets AS rd
+    		ON d.id = rd.diet_id
+    WHERE rd.recipe_id = recipe_id_in
+) as result
+]]> </definition>
+</function>
 
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
@@ -538,7 +604,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <constraint name="recipes_seasons_fk_season_id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.seasons" table="public.recipes_seasons">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.seasons" table="public.recipes_seasons">
 	<columns names="season_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -558,6 +624,24 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <constraint name="accounts_fav_recipes_fk_recipe_id" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.accounts_fav_recipes">
 	<columns names="recipe_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_fk_author_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="NO ACTION" ref-table="public.accounts" table="public.recipes">
+	<columns names="author_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_diets_fk_recipe_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.recipes" table="public.recipes_diets">
+	<columns names="recipe_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="recipes_diets_fk_diet_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.diets" table="public.recipes_diets">
+	<columns names="diet_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -632,6 +716,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_accounts_fav_recipes_recipes" type="relfk" layers="0"
 	 src-table="public.accounts_fav_recipes"
 	 dst-table="public.recipes" reference-fk="accounts_fav_recipes_fk_recipe_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_recipes_diets_recipes" type="relfk" layers="0"
+	 src-table="public.recipes_diets"
+	 dst-table="public.recipes" reference-fk="recipes_diets_fk_recipe_id"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="-21.5518" y="-4.3624"/>
+	</label>
+</relationship>
+
+<relationship name="rel_recipes_diets_diets" type="relfk" layers="0"
+	 src-table="public.recipes_diets"
+	 dst-table="public.diets" reference-fk="recipes_diets_fk_diet_id"
 	 src-required="false" dst-required="true"/>
 
 </dbmodel>

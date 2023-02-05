@@ -47,6 +47,7 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
                     .configure(handlers::categories::config)
                     .configure(handlers::units::config) //            .configure(resources::search::config)
                     .configure(handlers::seasons::config)
+                    .configure(handlers::diets::config)
                     .configure(handlers::accounts::config)
                     .configure(handlers::sessions::config),
             )

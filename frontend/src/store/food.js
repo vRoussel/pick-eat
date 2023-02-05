@@ -31,6 +31,7 @@ export const useFoodStore = defineStore('food', {
             seasons: [],
             ingredients: [],
             units: [],
+            diets: [],
             accounts_with_recipes: []
         }
     },
@@ -49,6 +50,9 @@ export const useFoodStore = defineStore('food', {
         },
         unitsById(state) {
             return new Map(state.units.map(u => [u.id, u]))
+        },
+        dietsById(state) {
+            return new Map(state.diets.map(d => [d.id, d]))
         }
     },
     actions: {
@@ -82,6 +86,12 @@ export const useFoodStore = defineStore('food', {
             })
         },
 
+        async fetchDiets() {
+            return axios.get(`${API_ROOT}/diets`).then(resp => {
+                this.diets = resp.data
+            })
+        },
+
         async fetchAccountsWithRecipes() {
             return axios.get(`${API_ROOT}/accounts?withrecipes=true`).then(resp => {
                 this.accounts_with_recipes = resp.data
@@ -95,6 +105,7 @@ export const useFoodStore = defineStore('food', {
                 this.fetchIngredients(),
                 this.fetchUnits(),
                 this.fetchSeasons(),
+                this.fetchDiets(),
                 this.fetchAccountsWithRecipes()
             ])
         },
@@ -146,6 +157,10 @@ export const useFoodStore = defineStore('food', {
             return this.seasonsById.get(id)
         },
 
+        getDietById(id) {
+            return this.dietsById.get(id)
+        },
+
         async getRecipeById(id) {
             let resp = await axios.get(`${API_ROOT}/recipes/${id}`)
             return resp.data
@@ -167,6 +182,12 @@ export const useFoodStore = defineStore('food', {
             let new_season = await sendNewThing(season, '/seasons')
             insert_sorted(this.seasons, new_season, (a,b) => a.name.localeCompare(b.name))
             return new_season
+        },
+
+        async sendNewDiet(diet) {
+            let new_diet = await sendNewThing(diet, '/diets')
+            insert_sorted(this.diets, new_diet, (a,b) => a.name.localeCompare(b.name))
+            return new_diet
         },
 
         async sendNewIngredient(ingredient) {

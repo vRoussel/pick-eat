@@ -1,5 +1,6 @@
 pub mod accounts;
 pub mod categories;
+pub mod diets;
 pub mod ingredients;
 pub mod recipes;
 pub mod seasons;

@@ -35,26 +35,6 @@ CREATE DATABASE pickeat;
 SET check_function_bodies = false;
 -- ddl-end --
 
--- object: public.recipes | type: TABLE --
--- DROP TABLE IF EXISTS public.recipes CASCADE;
-CREATE TABLE public.recipes (
-	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
-	name text NOT NULL,
-	notes text NOT NULL,
-	preparation_time_min smallint NOT NULL,
-	cooking_time_min smallint NOT NULL,
-	image text NOT NULL,
-	publication_date date NOT NULL DEFAULT CURRENT_DATE,
-	instructions text[] NOT NULL,
-	n_shares smallint NOT NULL,
-	author_id integer NOT NULL,
-	CONSTRAINT recipes_pk PRIMARY KEY (id),
-	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
-);
--- ddl-end --
-ALTER TABLE public.recipes OWNER TO pickeat;
--- ddl-end --
-
 -- object: public.categories | type: TABLE --
 -- DROP TABLE IF EXISTS public.categories CASCADE;
 CREATE TABLE public.categories (
@@ -205,15 +185,6 @@ ALTER FUNCTION public.sentence_case(text) OWNER TO pickeat;
 -- ALTER OPERATOR CLASS public.gist_trgm_ops USING gist OWNER TO pickeat;
 -- -- ddl-end --
 -- 
--- object: trgm_idx | type: INDEX --
--- DROP INDEX IF EXISTS public.trgm_idx CASCADE;
-CREATE INDEX trgm_idx ON public.recipes
-USING gist
-(
-	name public.gist_trgm_ops
-);
--- ddl-end --
-
 -- object: public.accounts | type: TABLE --
 -- DROP TABLE IF EXISTS public.accounts CASCADE;
 CREATE TABLE public.accounts (
@@ -239,6 +210,26 @@ CREATE TABLE public.accounts_fav_recipes (
 );
 -- ddl-end --
 ALTER TABLE public.accounts_fav_recipes OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.recipes | type: TABLE --
+-- DROP TABLE IF EXISTS public.recipes CASCADE;
+CREATE TABLE public.recipes (
+	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	name text NOT NULL,
+	notes text NOT NULL,
+	preparation_time_min smallint NOT NULL,
+	cooking_time_min smallint NOT NULL,
+	image text NOT NULL,
+	publication_date date NOT NULL DEFAULT CURRENT_DATE,
+	instructions text[] NOT NULL,
+	n_shares smallint NOT NULL,
+	author_id integer NOT NULL,
+	CONSTRAINT recipes_pk PRIMARY KEY (id),
+	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
+);
+-- ddl-end --
+ALTER TABLE public.recipes OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.get_ingredients_json | type: FUNCTION --
@@ -361,11 +352,66 @@ $$;
 ALTER FUNCTION public.get_seasons_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: recipes_fk_author_id | type: CONSTRAINT --
--- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fk_author_id CASCADE;
-ALTER TABLE public.recipes ADD CONSTRAINT recipes_fk_author_id FOREIGN KEY (author_id)
-REFERENCES public.accounts (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE CASCADE;
+-- object: trgm_idx | type: INDEX --
+-- DROP INDEX IF EXISTS public.trgm_idx CASCADE;
+CREATE INDEX trgm_idx ON public.recipes
+USING gist
+(
+	name public.gist_trgm_ops
+);
+-- ddl-end --
+
+-- object: public.diets | type: TABLE --
+-- DROP TABLE IF EXISTS public.diets CASCADE;
+CREATE TABLE public.diets (
+	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	name text NOT NULL,
+	label text,
+	CONSTRAINT diets_pk PRIMARY KEY (id),
+	CONSTRAINT diets_uq_name UNIQUE (name),
+	CONSTRAINT diets_uq_label UNIQUE (label)
+);
+-- ddl-end --
+ALTER TABLE public.diets OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.recipes_diets | type: TABLE --
+-- DROP TABLE IF EXISTS public.recipes_diets CASCADE;
+CREATE TABLE public.recipes_diets (
+	recipe_id integer NOT NULL,
+	diet_id integer NOT NULL,
+	CONSTRAINT recipes_diets_pk PRIMARY KEY (recipe_id,diet_id)
+);
+-- ddl-end --
+ALTER TABLE public.recipes_diets OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_diets_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_diets_json(integer) CASCADE;
+CREATE FUNCTION public.get_diets_json (IN recipe_id_in integer)
+	RETURNS json
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT coalesce(json_agg(result), '[]'::json) FROM
+(
+	SELECT
+		d.id,
+    		d.name,
+		d.label
+    FROM
+    		diets AS d INNER JOIN recipes_diets AS rd
+    		ON d.id = rd.diet_id
+    WHERE rd.recipe_id = recipe_id_in
+) as result
+
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_diets_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
@@ -428,7 +474,7 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.recipes_seasons DROP CONSTRAINT IF EXISTS recipes_seasons_fk_season_id CASCADE;
 ALTER TABLE public.recipes_seasons ADD CONSTRAINT recipes_seasons_fk_season_id FOREIGN KEY (season_id)
 REFERENCES public.seasons (id) MATCH FULL
-ON DELETE NO ACTION ON UPDATE CASCADE;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: recipes_seasons_fk_recipe_id | type: CONSTRAINT --
@@ -449,6 +495,27 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.accounts_fav_recipes DROP CONSTRAINT IF EXISTS accounts_fav_recipes_fk_recipe_id CASCADE;
 ALTER TABLE public.accounts_fav_recipes ADD CONSTRAINT accounts_fav_recipes_fk_recipe_id FOREIGN KEY (recipe_id)
 REFERENCES public.recipes (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_fk_author_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_fk_author_id CASCADE;
+ALTER TABLE public.recipes ADD CONSTRAINT recipes_fk_author_id FOREIGN KEY (author_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_diets_fk_recipe_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_diets DROP CONSTRAINT IF EXISTS recipes_diets_fk_recipe_id CASCADE;
+ALTER TABLE public.recipes_diets ADD CONSTRAINT recipes_diets_fk_recipe_id FOREIGN KEY (recipe_id)
+REFERENCES public.recipes (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: recipes_diets_fk_diet_id | type: CONSTRAINT --
+-- ALTER TABLE public.recipes_diets DROP CONSTRAINT IF EXISTS recipes_diets_fk_diet_id CASCADE;
+ALTER TABLE public.recipes_diets ADD CONSTRAINT recipes_diets_fk_diet_id FOREIGN KEY (diet_id)
+REFERENCES public.diets (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 

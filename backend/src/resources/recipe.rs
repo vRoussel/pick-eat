@@ -1,4 +1,4 @@
-use super::{account, category, ingredient, qingredient, season, tag};
+use super::{account, category, diet, ingredient, qingredient, season, tag};
 use crate::query_params::Range;
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -22,6 +22,7 @@ pub struct FromDB {
     is_favorite: bool,
     seasons: Vec<season::FromDB>,
     author: account::FromDBPublic,
+    diets: Vec<diet::FromDB>,
 }
 
 #[derive(Debug, Serialize)]
@@ -32,6 +33,7 @@ pub struct FromDBLight {
     image: String,
     n_shares: i16,
     is_favorite: bool,
+    diets: Vec<diet::FromDB>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,6 +50,7 @@ pub struct New {
     instructions: Vec<String>,
     n_shares: i16,
     season_ids: Vec<season::Ref>,
+    diet_ids: Vec<diet::Ref>,
 }
 
 pub enum Filter {
@@ -69,6 +72,7 @@ impl FromRow<'_, PgRow> for FromDB {
         let _categories: sqlx::types::Json<_> = row.get("categories");
         let _ingredients: sqlx::types::Json<_> = row.get("ingredients");
         let _seasons: sqlx::types::Json<_> = row.get("seasons");
+        let _diets: sqlx::types::Json<_> = row.get("diets");
         let _author = account::FromDBPublic {
             id: row.get("author_id"),
             display_name: row.get("author_name"),
@@ -89,6 +93,7 @@ impl FromRow<'_, PgRow> for FromDB {
             is_favorite: row.get("is_favorite"),
             seasons: _seasons.0,
             author: _author,
+            diets: _diets.0,
         })
     }
 }
@@ -96,6 +101,7 @@ impl FromRow<'_, PgRow> for FromDB {
 impl FromRow<'_, PgRow> for FromDBLight {
     fn from_row(row: &PgRow) -> sqlx::Result<Self> {
         let _ingredients: sqlx::types::Json<_> = row.get("ingredients");
+        let _diets: sqlx::types::Json<_> = row.get("diets");
         Ok(FromDBLight {
             id: row.get("id"),
             name: row.get("name"),
@@ -103,6 +109,7 @@ impl FromRow<'_, PgRow> for FromDBLight {
             image: row.get("image"),
             n_shares: row.get("n_shares"),
             is_favorite: row.get("is_favorite"),
+            diets: _diets.0,
         })
     }
 }
@@ -258,6 +265,7 @@ pub async fn get_many(
                 r.image,
                 fav IS NOT null as is_favorite,
                 get_ingredients_json(id) as ingredients,
+                get_diets_json(id) as diets,
                 n_shares,
                 count(*) OVER() AS total_count
             FROM recipes AS r
@@ -371,6 +379,21 @@ pub async fn add_one(
         .await?;
     }
 
+    // Diets
+    if !new_recipe.diet_ids.is_empty() {
+        query!(
+            "
+                INSERT INTO recipes_diets
+                (diet_id, recipe_id)
+                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id;
+            ",
+            new_id,
+            &new_recipe.diet_ids
+        )
+        .execute(&mut transaction)
+        .await?;
+    }
+
     // Ingredients
     if !new_recipe.q_ingredients.is_empty() {
         let mut ingr_ids: Vec<_> = Vec::with_capacity(new_recipe.q_ingredients.len());
@@ -430,7 +453,8 @@ pub async fn get_one(
                 get_categories_json(r.id) as categories,
                 get_ingredients_json(r.id) as ingredients,
                 get_tags_json(r.id) as tags,
-                get_seasons_json(r.id) as seasons
+                get_seasons_json(r.id) as seasons,
+                get_diets_json(r.id) as diets
             FROM
                 recipes r
                 LEFT JOIN accounts_fav_recipes fav
@@ -566,6 +590,35 @@ pub async fn modify_one(
             ",
         id,
         &new_recipe.category_ids
+    )
+    .execute(&mut transaction)
+    .await?;
+
+    // Diets
+    if !new_recipe.diet_ids.is_empty() {
+        query!(
+            "
+                INSERT INTO recipes_diets
+                (diet_id, recipe_id)
+                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id
+                ON CONFLICT DO NOTHING;
+            ",
+            id,
+            &new_recipe.diet_ids
+        )
+        .execute(&mut transaction)
+        .await?;
+    }
+
+    query!(
+        "
+                DELETE FROM recipes_diets
+                WHERE
+                    recipe_id = $1
+                    AND diet_id <> ALL($2);
+            ",
+        id,
+        &new_recipe.diet_ids
     )
     .execute(&mut transaction)
     .await?;
