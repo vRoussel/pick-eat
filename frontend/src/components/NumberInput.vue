@@ -1,26 +1,28 @@
 <template>
-  <div class="flex flex-row h-10 w-full rounded-lg bg-transparent">
-    <button
-      type="button"
-      class="bg-accent text-accent-content hover:bg-accent-focus h-full px-1 sm:px-2 rounded-l-md cursor-pointer outline-none"
-      @click="decrement"
-    >
-      <span class="m-auto text-2xl font-thin">−</span>
-    </button>
-    <input
-      type="number"
-      :placeholder="placeholder"
-      class="input input-bordered rounded-none w-full h-full min-w-[50px]"
-      :value="modelValue"
-      @input="e => $emit('update:modelValue', parseInt(e.target.value))"
-    >
-    <button
-      type="button"
-      class="bg-accent text-accent-content hover:bg-accent-focus h-full px-1 sm:px-2 rounded-r-md cursor-pointer"
-      @click="increment"
-    >
-      <span class="m-auto text-2xl font-thin">+</span>
-    </button>
+    <div class="w-32 h-[42px]">
+      <div class="flex flex-row h-full w-full rounded-lg bg-transparent">
+        <button
+          type="button"
+          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l"
+          @click="decrement"
+        >
+          <span class="m-auto text-2xl font-thin">−</span>
+        </button>
+        <input
+          type="number"
+          :placeholder="placeholder"
+          class="input input-bordered rounded-none w-full h-full min-w-[50px]"
+          :value="modelValue"
+          @input="e => $emit('update:modelValue', parseInt(e.target.value))"
+        >
+        <button
+          type="button"
+          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r"
+          @click="increment"
+        >
+          <span class="m-auto text-2xl font-thin">+</span>
+        </button>
+      </div>
   </div>
 </template>
 
