@@ -9,27 +9,27 @@
 -->
   <div
     v-if="recipe"
-    class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 gap-y-8 border border-primary rounded-xl relative"
+    class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl relative"
   >
-    <span class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
+    <span v-if="this.allowed_to_modify" class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
       <Icon
         class="text-primary cursor-pointer"
         :icon="icons.pencil"
         @click="editRecipe()"
       />
     </span>
-    <div class="flex flex-wrap sm:flex-nowrap gap-y-6 gap-x-4 md:gap-x-6">
-      <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2">
+    <div class="flex flex-wrap sm:flex-nowrap gap-y-12 gap-x-4 md:gap-x-6">
+      <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2 sm:p-0">
         <img
           :src="image"
           class="rounded-xl"
         >
       </div>
-      <div class="flex flex-col basis-full gap-y-2 sm:basis-1/2 justify-around items-center mx-auto">
+      <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
         <p
           ref="recipe_name"
           v-tooltip="overflown ? recipe.name : null"
-          class="recipe-name text-primary text-center font-bold text-xl sm:text-3xl md:text-4xl lg:text-5xl"
+          class="recipe-name text-primary text-center font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
         >
           {{ recipe.name }}
         </p>
@@ -60,10 +60,13 @@
             class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl"
           /> Végétarien</span>
         </p>
-        <p class="text-xs sm:text-sm italic">Ajoutée par <router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">{{ recipe.author.display_name }}</router-link></p>
+        <p class="text-xs sm:text-sm italic text-center">
+            Ajoutée par {{ recipe.author.display_name }}
+            <br><router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">voir toutes ses recettes</router-link>
+        </p>
       </div>
     </div>
-    <div class="flex gap-2 flex-wrap justify-center mb-2 sm:mb-4">
+    <div class="flex gap-2 flex-wrap justify-center">
       <router-link
         v-for="tag in recipe.tags"
         :key="tag.id"
@@ -73,7 +76,7 @@
         {{ tag.name }}
       </router-link>
     </div>
-    <div class="flex flex-wrap sm:flex-nowrap gap-x-4 sm:gap-x-6 md:gap-x-8 items-start space-y-8 sm:space-y-0">
+    <div class="flex flex-wrap sm:flex-nowrap gap-x-4 sm:gap-x-6 md:gap-x-8 items-start gap-y-12">
       <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
         <thead>
           <tr class="text-center">
@@ -93,7 +96,7 @@
           <tr
             v-for="ingr in recipe.q_ingredients"
             :key="ingr.id"
-            class="border-b"
+            class="border-b border-base-200"
           >
             <td class="!text-right">
               {{ ingr.quantity }} {{ ingr.unit ? ingr.unit.short_name : "" }}
