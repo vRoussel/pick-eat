@@ -193,6 +193,7 @@ CREATE TABLE public.accounts (
 	creation_date date NOT NULL DEFAULT CURRENT_DATE,
 	email text NOT NULL,
 	password text NOT NULL,
+	is_admin bool NOT NULL DEFAULT false,
 	CONSTRAINT accounts_pk PRIMARY KEY (id),
 	CONSTRAINT accounts_uq_display_name UNIQUE (display_name),
 	CONSTRAINT accounts_uq_email UNIQUE (email)

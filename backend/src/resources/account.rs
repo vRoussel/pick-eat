@@ -10,10 +10,11 @@ use sqlx::{query, query_as, Error};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FromDBPrivate {
-    id: i32,
+    pub id: i32,
     display_name: String,
     email: String,
     creation_date: time::Date,
+    pub is_admin: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -185,7 +186,8 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
                 id,
                 email,
                 display_name,
-                creation_date
+                creation_date,
+                is_admin
             FROM accounts
             WHERE id = $1
         ",
