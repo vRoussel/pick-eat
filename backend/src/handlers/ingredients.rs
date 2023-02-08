@@ -4,6 +4,7 @@ use log::*;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
+use crate::handlers::User;
 use crate::resources::ingredient;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -34,9 +35,10 @@ pub async fn get_all(db_pool: web::Data<PgPool>) -> impl Responder {
 pub async fn add_one(
     new_ingredient: web::Json<ingredient::New>,
     db_pool: web::Data<PgPool>,
+    user: User,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
-    trace!("{:#?}", new_ingredient);
+
     let new_id = match ingredient::add_one(&mut db_conn, &new_ingredient).await {
         Ok(v) => v,
         Err(e) => match e {
@@ -50,6 +52,12 @@ pub async fn add_one(
             }
         },
     };
+
+    trace!(
+        "Ingredient {:#?} added by account ID {}",
+        new_ingredient,
+        user.id
+    );
 
     HttpResponse::Created()
         .insert_header((http::header::LOCATION, format!("/{}", new_id)))

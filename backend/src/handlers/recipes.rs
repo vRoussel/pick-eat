@@ -1,12 +1,12 @@
 use super::db_error_to_http_response;
-use actix_identity::Identity;
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
+use crate::handlers::User;
 use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
 use crate::resources::{get_total_count, isolate_transaction};
@@ -39,24 +39,9 @@ pub struct GetQueryParams {
 pub async fn get_all(
     params: web::Query<GetQueryParams>,
     db_pool: web::Data<PgPool>,
-    user: Option<Identity>,
+    user: Option<User>,
 ) -> impl Responder {
     let mut db_conn = db_pool.begin().await.unwrap();
-
-    let user_id: Option<i32> = match user {
-        Some(u) => match u.id().map(|id_str| id_str.parse()) {
-            Ok(Ok(id)) => Some(id),
-            Ok(Err(e)) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-            Err(e) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-        },
-        None => None,
-    };
 
     // Make sure we ignore changes that occur between our
     // 2 requests (get_total_count and get_recipes)
@@ -137,7 +122,7 @@ pub async fn get_all(
         &params.range,
         &filters,
         &sort_method,
-        user_id,
+        user.map(|u| u.id),
     )
     .await
     {
@@ -184,23 +169,12 @@ pub async fn get_all(
 pub async fn add_one(
     new_recipe: web::Json<recipe::New>,
     db_pool: web::Data<PgPool>,
-    user: Identity,
+    user: User,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
 
     trace!("{:#?}", new_recipe);
-    let new_id = match recipe::add_one(&mut db_conn, &new_recipe, user_id).await {
+    let new_id = match recipe::add_one(&mut db_conn, &new_recipe, user.id).await {
         Ok(v) => v,
         Err(e) => match e {
             Error::Database(db_error) => {
@@ -223,26 +197,11 @@ pub async fn add_one(
 pub async fn get_one(
     id: web::Path<i32>,
     db_pool: web::Data<PgPool>,
-    user: Option<Identity>,
+    user: Option<User>,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let user_id: Option<i32> = match user {
-        Some(u) => match u.id().map(|id_str| id_str.parse()) {
-            Ok(Ok(id)) => Some(id),
-            Ok(Err(e)) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-            Err(e) => {
-                error!("{}", e);
-                return HttpResponse::InternalServerError().finish();
-            }
-        },
-        None => None,
-    };
-
-    let recipe = match recipe::get_one(&mut db_conn, id.into_inner(), user_id).await {
+    let recipe = match recipe::get_one(&mut db_conn, id.into_inner(), user.map(|u| u.id)).await {
         Ok(Some(v)) => v,
         Ok(None) => {
             return HttpResponse::NotFound().finish();

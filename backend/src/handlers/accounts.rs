@@ -1,11 +1,11 @@
 use super::db_error_to_http_response;
-use actix_identity::Identity;
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
+use crate::handlers::User;
 use crate::resources::account;
 use crate::resources::account::InsertAccountError;
 
@@ -61,21 +61,10 @@ pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl 
 }
 
 #[delete("/accounts/me")]
-pub async fn delete_me(user: Identity, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_me(user: User, db_pool: web::Data<PgPool>) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
 
-    match account::delete_one(&mut db_conn, user_id).await {
+    match account::delete_one(&mut db_conn, user.id).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
@@ -87,21 +76,10 @@ pub async fn delete_me(user: Identity, db_pool: web::Data<PgPool>) -> impl Respo
 }
 
 #[get("/accounts/me")]
-pub async fn get_current(user: Identity, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn get_current(user: User, db_pool: web::Data<PgPool>) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
 
-    let account = match account::get_one(&mut db_conn, user_id).await {
+    let account = match account::get_one(&mut db_conn, user.id).await {
         Ok(Some(v)) => v,
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
@@ -142,28 +120,16 @@ pub async fn get_all(
 #[put("/accounts/me")]
 pub async fn modify_current(
     account: web::Json<account::Update>,
-    user: Identity,
+    user: User,
     db_pool: web::Data<PgPool>,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
-
-    if let Err(e) = account::check_password(&mut db_conn, user_id, &account.old_password).await {
+    if let Err(e) = account::check_password(&mut db_conn, user.id, &account.old_password).await {
         return HttpResponse::Unauthorized().finish();
     };
 
-    match account::modify_one(&mut db_conn, user_id, &account).await {
+    match account::modify_one(&mut db_conn, user.id, &account).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => match e {
@@ -183,25 +149,13 @@ pub async fn modify_current(
 
 #[put("/accounts/me/favorites/{recipe_id}")]
 pub async fn add_fav_recipe(
-    user: Identity,
+    user: User,
     recipe_id: web::Path<i32>,
     db_pool: web::Data<PgPool>,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
-
-    match account::add_fav_recipe(&mut db_conn, user_id, *recipe_id).await {
+    match account::add_fav_recipe(&mut db_conn, user.id, *recipe_id).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
@@ -214,25 +168,13 @@ pub async fn add_fav_recipe(
 
 #[delete("/accounts/me/favorites/{recipe_id}")]
 pub async fn remove_fav_recipe(
-    user: Identity,
+    user: User,
     recipe_id: web::Path<i32>,
     db_pool: web::Data<PgPool>,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    let user_id: i32 = match user.id().map(|id_str| id_str.parse()) {
-        Ok(Ok(id)) => id,
-        Ok(Err(e)) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-        Err(e) => {
-            error!("{}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
-
-    match account::remove_fav_recipe(&mut db_conn, user_id, *recipe_id).await {
+    match account::remove_fav_recipe(&mut db_conn, user.id, *recipe_id).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
