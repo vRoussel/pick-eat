@@ -62,17 +62,6 @@
 
     <div class="form-control w-full">
       <label class="label">
-        <span class="label-text">Étapes</span>
-      </label>
-      <textarea
-        v-model="instructions"
-        class="textarea textarea-bordered h-40"
-        placeholder="Une étape par ligne"
-      />
-    </div>
-
-    <div class="form-control w-full">
-      <label class="label">
         <span class="label-text">Catégories</span>
       </label>
       <toggle-buttons
@@ -126,6 +115,18 @@
         @createUnit="openNewUnitForm"
       />
     </div>
+
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Étapes</span>
+      </label>
+      <textarea
+        v-model="instructions"
+        class="textarea textarea-bordered h-40"
+        placeholder="Une étape par ligne"
+      />
+    </div>
+
 
     <div class="form-control w-full">
       <label class="label">
