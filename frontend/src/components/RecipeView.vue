@@ -133,6 +133,12 @@
         </tbody>
       </table>
     </div>
+    <blockquote v-if="this.recipe.notes" class="pl-4 sm:pl-6 self-center w-full">
+      <p class="text-gray-400 whitespace-pre-wrap break-words"><em>
+        « {{ this.recipe.notes }} »
+        <p class="text-right mr-6">{{ this.recipe.author.display_name }}</p>
+      </em></p>
+    </blockquote>
   </div>
 <!--
         <div class="columns is-mobile has-text-centered my-0">
