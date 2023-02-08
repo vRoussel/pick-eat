@@ -38,14 +38,12 @@
             required
           >
         </div>
+        <div class="modal-action">
+          <button
+            class="btn btn-primary btn-sm btn-wide mx-auto"
+          >Ajouter</button>
+        </div>
       </form>
-      <div class="modal-action">
-        <button
-          class="btn btn-primary btn-sm btn-wide mx-auto"
-          type="button"
-          @click="sendUnit"
-        >Ajouter</button>
-      </div>
     </div>
   </div>
 </template>

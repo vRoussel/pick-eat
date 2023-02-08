@@ -25,14 +25,12 @@
             required
           >
         </div>
-      </form>
       <div class="modal-action">
         <button
           class="btn btn-primary btn-sm btn-wide mx-auto"
-          type="button"
-          @click="sendCategory"
         >Ajouter</button>
       </div>
+      </form>
     </div>
   </div>
 </template>

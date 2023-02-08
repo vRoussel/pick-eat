@@ -47,14 +47,12 @@
             @keydown.ctrl.enter.prevent="save_unit_search(), open_unit_modal()"
           />
         </div>
+        <div class="modal-action">
+          <button
+            class="btn btn-primary btn-sm btn-wide mx-auto"
+          >Ajouter</button>
+        </div>
       </form>
-      <div class="modal-action">
-        <button
-          class="btn btn-primary btn-sm btn-wide mx-auto"
-          type="button"
-          @click="sendIngredient"
-        >Ajouter</button>
-      </div>
     </div>
   </div>
   <new-unit-modal
