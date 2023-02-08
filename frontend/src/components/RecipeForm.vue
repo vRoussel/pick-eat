@@ -67,7 +67,7 @@
       <toggle-buttons
         v-model:picked="categories"
         :choices="foodStore.categories"
-        extendable
+        :extendable="authStore.is_admin"
         :extend-modal-component="meta.NewCategoryModal_"
       />
     </div>
@@ -79,7 +79,7 @@
       <toggle-buttons
         v-model:picked="tags"
         :choices="foodStore.tags"
-        extendable
+        :extendable="authStore.is_admin"
         :extend-modal-component="meta.NewTagModal_"
       />
     </div>
@@ -164,6 +164,7 @@ import {shallowRef} from 'vue'
 
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
 
 export default {
     name: 'RecipeForm',
@@ -200,7 +201,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useFoodStore),
+        ...mapStores(useFoodStore, useAuthStore),
         update_mode() {
             return this.existing_recipe != null
         },

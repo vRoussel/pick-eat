@@ -12,7 +12,7 @@
       </toggle-button>
     </template>
     <button
-      v-if="extendModalComponent"
+      v-if="extendable && extendModalComponent"
       class="btn rounded-full btn-primary btn-outline btn-sm"
       @click="this.$refs.modal.open()"
       type="button"
