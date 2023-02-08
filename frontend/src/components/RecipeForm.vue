@@ -240,7 +240,7 @@ export default {
                 "prep_time_min": this.prep_time,
                 "cook_time_min": this.cook_time,
                 "image": this.image_url,
-                "instructions": this.instructions.split(/\this?\n/).filter(i => i),
+                "instructions": this.instructions.split(/\r?\n/).filter(i => i),
                 "notes": this.notes,
                 "n_shares": this.shares,
             }
