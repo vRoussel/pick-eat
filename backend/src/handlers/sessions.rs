@@ -1,9 +1,10 @@
 use actix_identity::Identity;
+use actix_session::Session;
 use actix_web::{delete, post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
 
-use crate::resources::account;
+use crate::{handlers::User, resources::account};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(login).service(logout);
@@ -21,13 +22,30 @@ pub async fn login(
     request: HttpRequest,
     cred: web::Json<Credentials>,
     db_pool: web::Data<PgPool>,
+    session: Session,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
-    match account::check_credentials(&mut db_conn, &cred.email, &cred.password).await {
-        Ok(account_id) => Identity::login(&request.extensions(), account_id.to_string()).unwrap(),
-        Err(_) => return HttpResponse::Unauthorized(),
+    let account_id =
+        match account::check_credentials(&mut db_conn, &cred.email, &cred.password).await {
+            Ok(account_id) => account_id,
+            Err(_) => return HttpResponse::Unauthorized().finish(),
+        };
+    let account = match account::get_one(&mut db_conn, account_id).await {
+        Ok(Some(account)) => account,
+        _ => return HttpResponse::InternalServerError().finish(),
     };
-    HttpResponse::Ok()
+    Identity::login(&request.extensions(), account_id.to_string()).unwrap();
+    let session_user = User {
+        id: account.id,
+        is_admin: account.is_admin,
+    };
+    if session
+        .insert(account.id.to_string(), session_user)
+        .is_err()
+    {
+        return HttpResponse::InternalServerError().finish();
+    }
+    HttpResponse::Ok().finish()
 }
 
 #[delete("/sessions/current")]
