@@ -489,6 +489,21 @@ pub async fn get_one(
     Ok(recipe)
 }
 
+pub async fn get_author_id(db_conn: &mut PgConnection, id: i32) -> Result<i32, Error> {
+    let author_id: i32 = query!(
+        "
+            SELECT author_id
+            FROM recipes
+            WHERE id = $1
+        ",
+        id
+    )
+    .fetch_one(db_conn)
+    .await?
+    .author_id;
+    Ok(author_id)
+}
+
 pub async fn modify_one(
     db_conn: &mut PgConnection,
     id: i32,

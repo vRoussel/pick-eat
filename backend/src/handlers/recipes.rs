@@ -221,11 +221,21 @@ pub async fn modify_one(
     id: web::Path<i32>,
     new_recipe: web::Json<recipe::New>,
     db_pool: web::Data<PgPool>,
+    user: User,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
+    let recipe_id = id.into_inner();
+    let Ok(recipe_author_id) = recipe::get_author_id(&mut db_conn, recipe_id).await else {
+        return HttpResponse::InternalServerError().finish();
+    };
+
+    if !(user.is_admin || recipe_author_id == user.id) {
+        return HttpResponse::Forbidden().finish();
+    }
+
     trace!("{:#?}", new_recipe);
 
-    match recipe::modify_one(&mut db_conn, id.into_inner(), &new_recipe).await {
+    match recipe::modify_one(&mut db_conn, recipe_id, &new_recipe).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => match e {

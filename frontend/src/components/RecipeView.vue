@@ -148,6 +148,8 @@
 <script>
 import SeasonIcons from '@/components/SeasonIcons.vue'
 import {isOverflown} from '@/utils/utils.js'
+import { mapStores } from 'pinia'
+import { useAuthStore } from '@/store/auth.js'
 
 export default {
     name: 'RecipeView',
@@ -167,6 +169,7 @@ export default {
         }
     },
     computed : {
+        ...mapStores(useAuthStore),
         image() {
             if (this.recipe == null || this.recipe.image === "")
                 return this.icons.camera
@@ -178,6 +181,12 @@ export default {
         },
         is_vegan() {
             return this.recipe.diets.find(d => d.label == 'vegan')
+        },
+        allowed_to_modify() {
+            return this.authStore.is_logged_in
+                   && (this.authStore.account.id == this.recipe.author.id
+                       || this.authStore.is_admin
+                   )
         }
     },
     mounted() {

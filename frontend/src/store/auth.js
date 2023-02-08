@@ -16,6 +16,9 @@ export const useAuthStore = defineStore('auth', {
     getters: {
         is_logged_in(state) {
             return state.account != null
+        },
+        is_admin(state) {
+            return state.account != null && state.account.is_admin
         }
     },
     actions: {
