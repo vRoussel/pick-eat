@@ -61,7 +61,7 @@ export default {
             this.$emit('update:picked', this._picked)
         },
         created(new_choice) {
-            this.toggle(new_choice)
+            this.toggle(new_choice.id)
         }
     },
 }
