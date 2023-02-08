@@ -6,7 +6,7 @@ use serde_json;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
-use crate::handlers::User;
+use crate::handlers::{Admin, User};
 use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
 use crate::resources::{get_total_count, isolate_transaction};
@@ -243,7 +243,11 @@ pub async fn modify_one(
 }
 
 #[delete("/recipes/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
     match recipe::delete_one(&mut db_conn, id.into_inner()).await {

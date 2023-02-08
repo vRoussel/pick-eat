@@ -5,7 +5,7 @@ use serde::Deserialize;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
-use crate::handlers::User;
+use crate::handlers::{Admin, User};
 use crate::resources::account;
 use crate::resources::account::InsertAccountError;
 
@@ -46,7 +46,11 @@ pub async fn add_one(
 }
 
 #[delete("/accounts/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
     match account::delete_one(&mut db_conn, id.into_inner()).await {

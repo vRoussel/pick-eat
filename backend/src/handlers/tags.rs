@@ -4,6 +4,7 @@ use log::*;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
+use crate::handlers::Admin;
 use crate::resources::tag;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -31,7 +32,11 @@ pub async fn get_all(db_pool: web::Data<PgPool>) -> impl Responder {
 }
 
 #[post("/tags")]
-pub async fn add_one(new_tag: web::Json<tag::New>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn add_one(
+    new_tag: web::Json<tag::New>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_tag);
     let new_id = match tag::add_one(&mut db_conn, &new_tag).await {
@@ -77,6 +82,7 @@ pub async fn modify_one(
     id: web::Path<i32>,
     new_tag: web::Json<tag::New>,
     db_pool: web::Data<PgPool>,
+    _admin: Admin,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_tag);
@@ -99,7 +105,11 @@ pub async fn modify_one(
 }
 
 #[delete("/tags/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
     match tag::delete_one(&mut db_conn, id.into_inner()).await {

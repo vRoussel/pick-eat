@@ -4,6 +4,7 @@ use log::*;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
+use crate::handlers::Admin;
 use crate::resources::category;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -34,6 +35,7 @@ pub async fn get_all(db_pool: web::Data<PgPool>) -> impl Responder {
 pub async fn add_one(
     new_category: web::Json<category::New>,
     db_pool: web::Data<PgPool>,
+    _admin: Admin,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_category);
@@ -80,6 +82,7 @@ pub async fn modify_one(
     id: web::Path<i32>,
     new_category: web::Json<category::New>,
     db_pool: web::Data<PgPool>,
+    _admin: Admin,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_category);
@@ -102,7 +105,11 @@ pub async fn modify_one(
 }
 
 #[delete("/categories/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
     match category::delete_one(&mut db_conn, id.into_inner()).await {

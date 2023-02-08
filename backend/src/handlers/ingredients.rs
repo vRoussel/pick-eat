@@ -4,7 +4,7 @@ use log::*;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
-use crate::handlers::User;
+use crate::handlers::{Admin, User};
 use crate::resources::ingredient;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -88,6 +88,7 @@ pub async fn modify_one(
     id: web::Path<i32>,
     new_ingredient: web::Json<ingredient::New>,
     db_pool: web::Data<PgPool>,
+    _admin: Admin,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_ingredient);
@@ -110,7 +111,11 @@ pub async fn modify_one(
 }
 
 #[delete("/ingredients/{id}")]
-pub async fn delete_one(id: web::Path<i32>, db_pool: web::Data<PgPool>) -> impl Responder {
+pub async fn delete_one(
+    id: web::Path<i32>,
+    db_pool: web::Data<PgPool>,
+    _admin: Admin,
+) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
     match ingredient::delete_one(&mut db_conn, id.into_inner()).await {
