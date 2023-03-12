@@ -15,8 +15,8 @@ pub struct FromDB {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
-    name: String,
-    default_unit_id: Option<i32>,
+    pub name: String,
+    pub default_unit_id: Option<i32>,
 }
 
 pub type Ref = i32;
@@ -48,6 +48,40 @@ pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
     .await?;
 
     Ok(rows)
+}
+
+pub async fn get_one_by_name(
+    db_conn: &mut PgConnection,
+    name: &str,
+) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        r#"
+            SELECT
+                i.id as id,
+                i.name as name,
+                CASE WHEN i.default_unit_id is null THEN
+                    null
+                ELSE
+                    (
+                    u.id,
+                    u.full_name,
+                    u.short_name
+                    )
+                END as "default_unit: unit::FromDB"
+            FROM
+                ingredients as i
+                LEFT JOIN units as u
+                ON i.default_unit_id = u.id
+            WHERE
+                i.name = $1
+        "#,
+        name
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
 }
 
 pub async fn add_one(db_conn: &mut PgConnection, new_ingredient: &New) -> Result<i32, Error> {

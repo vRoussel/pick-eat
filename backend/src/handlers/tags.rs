@@ -1,8 +1,8 @@
-use super::db_error_to_http_response;
+use super::{db_error_to_http_response, APIAnswer};
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use sqlx::postgres::PgPool;
-use sqlx::Error;
+use sqlx::{Error, PgConnection};
 
 use crate::handlers::Admin;
 use crate::resources::tag;
@@ -13,6 +13,12 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(get_one)
         .service(modify_one)
         .service(delete_one);
+}
+
+async fn validate_new_tag(tag: &tag::New, api_answer: &mut APIAnswer, db_conn: &mut PgConnection) {
+    if let Ok(Some(_)) = tag::get_one_by_name(db_conn, &tag.name).await {
+        api_answer.add_field_error("name", "Un tag avec ce nom existe déjà");
+    }
 }
 
 #[get("/tags")]
@@ -39,6 +45,13 @@ pub async fn add_one(
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_tag);
+
+    let mut ret = APIAnswer::new();
+    validate_new_tag(&new_tag, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
+
     let new_id = match tag::add_one(&mut db_conn, &new_tag).await {
         Ok(v) => v,
         Err(e) => match e {
@@ -86,6 +99,12 @@ pub async fn modify_one(
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_tag);
+
+    let mut ret = APIAnswer::new();
+    validate_new_tag(&new_tag, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
 
     match tag::modify_one(&mut db_conn, id.into_inner(), &new_tag).await {
         Ok(Some(_)) => (),

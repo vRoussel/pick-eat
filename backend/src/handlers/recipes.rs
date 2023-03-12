@@ -6,7 +6,7 @@ use serde_json;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
-use crate::handlers::{Admin, User};
+use crate::handlers::{APIAnswer, APIError, Admin, User};
 use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
 use crate::resources::{get_total_count, isolate_transaction};
@@ -165,6 +165,45 @@ pub async fn get_all(
         .json(recipes)
 }
 
+fn validate_recipe(recipe: &recipe::New, api_answer: &mut APIAnswer) {
+    if recipe.name.is_empty() {
+        api_answer.add_field_error("name", "Le nom de la recette est obligatoire");
+    }
+    if recipe.prep_time_min <= 0 {
+        api_answer.add_field_error(
+            "prep_time",
+            "Le temps de préparation doit être supérieur à 0 minute",
+        );
+    }
+    if recipe.cook_time_min < 0 {
+        api_answer.add_field_error(
+            "cook_time",
+            "Le temps de préparation ne peut pas être négatif",
+        );
+    }
+    if recipe.n_shares < 0 {
+        api_answer.add_field_error("shares", "Le nombre de parts est obligatoire");
+    }
+    if recipe.category_ids.len() < 1 {
+        api_answer.add_field_error("categories", "Selectionnez au moins une catégorie");
+    }
+    if recipe.season_ids.len() < 1 {
+        api_answer.add_field_error("seasons", "Selectionnez au moins une saison");
+    }
+    if recipe.q_ingredients.len() < 1 {
+        api_answer.add_field_error("ingredients", "Selectionnez au moins un ingrédient");
+    }
+    if recipe.instructions.is_empty() {
+        api_answer.add_field_error(
+            "instructions",
+            "Ajoutez les étapes pour réaliser la recette",
+        )
+    }
+    if recipe.image.is_empty() {
+        api_answer.add_field_error("image_url", "Ajoutez une photo de la recette")
+    }
+}
+
 #[post("/recipes")]
 pub async fn add_one(
     new_recipe: web::Json<recipe::New>,
@@ -172,6 +211,12 @@ pub async fn add_one(
     user: User,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
+
+    let mut ret = APIAnswer::new();
+    validate_recipe(&new_recipe, &mut ret);
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
 
     trace!("{:#?}", new_recipe);
     let new_id = match recipe::add_one(&mut db_conn, &new_recipe, user.id).await {
@@ -231,6 +276,12 @@ pub async fn modify_one(
 
     if !(user.is_admin || recipe_author_id == user.id) {
         return HttpResponse::Forbidden().finish();
+    }
+
+    let mut ret = APIAnswer::new();
+    validate_recipe(&new_recipe, &mut ret);
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
     }
 
     trace!("{:#?}", new_recipe);

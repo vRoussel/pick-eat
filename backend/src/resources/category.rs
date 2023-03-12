@@ -11,7 +11,7 @@ pub struct FromDB {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
-    name: String,
+    pub name: String,
 }
 
 pub type Ref = i32;
@@ -47,6 +47,27 @@ pub async fn add_one(db_conn: &mut PgConnection, new_category: &New) -> Result<i
     .id;
 
     Ok(new_id)
+}
+
+pub async fn get_one_by_name(
+    db_conn: &mut PgConnection,
+    name: &str,
+) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        "
+            SELECT
+                id,
+                name
+            FROM categories
+            WHERE name = $1
+        ",
+        name
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
 }
 
 pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
