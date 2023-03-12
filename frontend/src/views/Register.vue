@@ -9,6 +9,7 @@
                 </label>
                 <input
                     v-model="name"
+                    ref="name"
                     type="text"
                     class="input input-bordered w-full"
                 >
@@ -57,6 +58,9 @@ export default {
     },
     computed: {
       ...mapStores(useAuthStore)
+    },
+    mounted() {
+        this.$nextTick(() => this.$refs.name.focus())
     },
     methods: {
         async register() {

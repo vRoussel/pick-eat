@@ -9,6 +9,7 @@
                 </label>
                 <input
                     v-model="email"
+                    ref="email"
                     type="text"
                     class="input input-bordered w-full"
                 >
@@ -46,6 +47,9 @@ export default {
     },
     computed: {
       ...mapStores(useAuthStore)
+    },
+    mounted() {
+        this.$nextTick(() => this.$refs.email.focus())
     },
     methods: {
         login() {
