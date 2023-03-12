@@ -46,7 +46,7 @@
     >
       <div class="form-control">
         <label class="label">
-          <span class="label-text text-lg">Ingrédients</span>
+          <span class="label-text">Ingrédients</span>
         </label>
         <Multiselect
           v-model="ingredients"
@@ -62,7 +62,7 @@
       </div>
       <div class="form-control">
         <label class="label">
-          <span class="label-text text-lg">Tags</span>
+          <span class="label-text">Tags</span>
         </label>
         <Multiselect
           v-model="tags"
@@ -79,7 +79,7 @@
       <!--
         <fieldset>
             <legend class="label">
-                <span class="label-text text-lg">Tags</span>
+                <span class="label-text">Tags</span>
             </legend>
             <div class="form-control" v-for="t in this.store.state.tags" :key="t.id">
                 <label class="label cursor-pointer justify-start gap-x-4 py-1">
@@ -91,7 +91,7 @@
         -->
       <fieldset>
         <legend class="label">
-          <span class="label-text text-lg">Régimes alimentaires</span>
+          <span class="label-text">Régimes alimentaires</span>
         </legend>
         <div
           v-for="d in foodStore.diets"
@@ -111,7 +111,7 @@
       </fieldset>
       <fieldset>
         <legend class="label">
-          <span class="label-text text-lg">Saisons</span>
+          <span class="label-text">Saisons</span>
         </legend>
         <div
           v-for="s in foodStore.seasons"
@@ -131,7 +131,7 @@
       </fieldset>
       <fieldset>
         <legend class="label">
-          <span class="label-text text-lg">Catégories</span>
+          <span class="label-text">Catégories</span>
         </legend>
         <div
           v-for="c in foodStore.categories"
@@ -151,7 +151,7 @@
       </fieldset>
       <div class="form-control">
         <label class="label">
-          <span class="label-text text-lg">Auteur</span>
+          <span class="label-text">Auteur</span>
         </label>
         <Multiselect
           v-model="account"
