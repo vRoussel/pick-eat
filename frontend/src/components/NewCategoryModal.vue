@@ -22,8 +22,12 @@
             class="input input-bordered w-full"
             type="text"
             name="name"
-            required
+            :class="errors.name && '!input-error'"
+            @blur="validate('name')"
           >
+          <label class="label" v-if="this.errors.name">
+              <span class="label-text-alt text-error">{{ errors.name }}</span>
+          </label>
         </div>
       <div class="modal-action">
         <button
@@ -38,38 +42,71 @@
 <script>
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
+import { useNotifStore } from '@/store/notif.js'
+import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
+import { object, string } from "yup";
+
+const validator = object().shape({
+    name: string()
+            .required("Le nom de la catégorie est obligatoire"),
+})
 
 export default {
     name: 'NewCategoryModal',
     computed: {
-        ...mapStores(useFoodStore),
+        ...mapStores(useFoodStore, useNotifStore),
     },
     emits: ['closed', 'created'],
     data: function() {
         return {
             name: null,
-            opened: false
+            opened: false,
+            errors: {
+                name: null
+            }
         }
     },
     methods: {
         sendCategory() {
-            let category = {
-                "name": this.name,
-            }
-            this.foodStore.sendNewCategory(category)
-                .then((new_categ) => {
-                    this.$emit('created', new_categ)
-                    this.close()
+            validator
+                .validate(this, { abortEarly: false })
+                .then(() => {
+                    this.errors = {};
+                    let category = {
+                        "name": this.name,
+                    }
+                    this.foodStore.sendNewCategory(category) .then((new_categ) => {
+                            this.$emit('created', new_categ)
+                            this.close()
+                    })
+                    .catch(err => {
+                        handle_form_api_errors(err.response, this.errors, this.notifStore)
+                    });
                 })
+                .catch(err => {
+                    handle_form_local_errors(err.inner, this.errors, this.notifStore)
+                });
         },
         open() {
             this.opened = true
-            setTimeout(() => this.$refs.categName.focus(), 50)
+            setTimeout(() =>  {
+                this.$refs.categName.focus()
+                this.errors = {}
+            }, 50)
         },
         close() {
             this.opened = false
             this.name = ""
             this.$emit('closed')
+        },
+        validate(field) {
+            validator.validateAt(field, this)
+            .then(() => {
+                this.errors[field] = null;
+            })
+            .catch(err => {
+                setTimeout(() => this.errors[field] = err.message, 200)
+            });
         }
     }
 }

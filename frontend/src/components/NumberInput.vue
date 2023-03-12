@@ -4,6 +4,7 @@
         <button
           type="button"
           class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l focus:!outline-none"
+          :class="this.badvalue && '!input-error'"
           @click="decrement"
         >
           <span class="m-auto text-2xl font-thin">−</span>
@@ -12,12 +13,14 @@
           type="number"
           :placeholder="placeholder"
           class="input input-bordered rounded-none w-full h-full min-w-[50px]"
+          :class="this.badvalue && '!input-error'"
           :value="modelValue"
           @input="e => $emit('update:modelValue', parseInt(e.target.value))"
         >
         <button
           type="button"
           class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r focus:!outline-none"
+          :class="this.badvalue && '!input-error'"
           @click="increment"
         >
           <span class="m-auto text-2xl font-thin">+</span>
@@ -50,6 +53,10 @@ export default {
         placeholder: {
             type: String,
             default: ""
+        },
+        badvalue: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['update:modelValue'],

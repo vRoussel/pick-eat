@@ -22,8 +22,12 @@
             class="input input-bordered w-full"
             type="text"
             name="name"
-            required
+            :class="errors.name && '!input-error'"
+            @blur="validate('name')"
           >
+          <label class="label" v-if="this.errors.name">
+              <span class="label-text-alt text-error">{{ errors.name }}</span>
+          </label>
         </div>
         <div class="form-control w-full">
           <label for="" class="label">
@@ -69,6 +73,14 @@ import NewUnitModal from '@/components/NewUnitModal.vue'
 
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
+import { useNotifStore } from '@/store/notif.js'
+import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
+import { object, string } from "yup";
+
+const validator = object().shape({
+    name: string()
+            .required("Le nom de l'ingrédient est obligatoire"),
+})
 
 export default {
     name: 'NewIngredientModal',
@@ -85,11 +97,14 @@ export default {
             name: null,
             default_unit: null,
             unit_search: null,
-            opened: false
+            opened: false,
+            errors: {
+                name: null
+            }
         }
     },
     computed: {
-        ...mapStores(useFoodStore),
+        ...mapStores(useFoodStore, useNotifStore),
     },
     watch: {
         input: function() {
@@ -98,15 +113,26 @@ export default {
     },
     methods: {
         sendIngredient() {
-            let ingredient = {
-                "name": this.name,
-                "default_unit_id": this.default_unit
-            }
-            this.foodStore.sendNewIngredient(ingredient)
-                .then((new_ingr) => {
-                    this.$emit('created', new_ingr)
-                    this.close()
+            validator
+                .validate(this, { abortEarly: false })
+                .then(() => {
+                    this.errors = {};
+                    let ingredient = {
+                        "name": this.name,
+                        "default_unit_id": this.default_unit
+                    }
+                    this.foodStore.sendNewIngredient(ingredient)
+                        .then((new_ingr) => {
+                            this.$emit('created', new_ingr)
+                            this.close()
+                        })
+                    .catch(err => {
+                        handle_form_api_errors(err.response, this.errors, this.notifStore)
+                    });
                 })
+                .catch(err => {
+                    handle_form_local_errors(err.inner, this.errors, this.notifStore)
+                });
         },
         save_unit_search() {
             this.unit_search = this.$refs.multiselect.search
@@ -116,7 +142,10 @@ export default {
         },
         open() {
             this.opened = true
-            setTimeout(() => this.$refs.ingrName.focus(), 50)
+            setTimeout(() => {
+                this.$refs.ingrName.focus()
+                this.errors = {}
+            }, 50)
         },
         close() {
             this.opened = false
@@ -127,6 +156,15 @@ export default {
         },
         open_unit_modal() {
             this.$refs.unit_modal_inner.open()
+        },
+        validate(field) {
+            validator.validateAt(field, this)
+            .then(() => {
+                this.errors[field] = null;
+            })
+            .catch(err => {
+                setTimeout(() => this.errors[field] = err.message, 200)
+            });
         }
     }
 }
