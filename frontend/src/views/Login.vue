@@ -12,7 +12,11 @@
                     ref="email"
                     type="text"
                     class="input input-bordered w-full"
+                    :class="errors.email && '!input-error'"
                 >
+                <label class="label" v-if="this.errors.email">
+                    <span class="label-text-alt text-error">{{ errors.email }}</span>
+                </label>
             </div>
             <div class="form-control">
                 <label class="label">
@@ -22,7 +26,11 @@
                     v-model="password"
                     type="password"
                     class="input input-bordered w-full"
+                    :class="errors.password && '!input-error'"
                 >
+                <label class="label" v-if="this.errors.password">
+                    <span class="label-text-alt text-error">{{ errors.password }}</span>
+                </label>
             </div>
             <div class="form-control">
                 <button class="btn btn-primary w-full btn-lg">
@@ -36,29 +44,64 @@
 <script>
 import { mapStores } from 'pinia'
 import { useAuthStore } from '@/store/auth.js'
+import { useNotifStore } from '@/store/notif.js'
+import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
+import { object, string } from "yup";
+
+const validator = object().shape({
+    email: string()
+            .required("L'adresse mail est obligatoire")
+            .email("L'adresse mail est invalide"),
+    password: string()
+            .required("Le mot de passe est obligatoire")
+})
 
 export default {
     name: 'Login',
     data: function() {
         return {
             email: null,
-            password: null
+            password: null,
+            errors: {
+                email: null,
+                password: null
+            }
         }
     },
     computed: {
-      ...mapStores(useAuthStore)
+      ...mapStores(useAuthStore, useNotifStore)
     },
     mounted() {
         this.$nextTick(() => this.$refs.email.focus())
     },
     methods: {
-        login() {
-            this.authStore.login(this.email, this.password).then(() => {
-                this.$router.push(this.authStore.return_url || '/account')
-                this.authStore.return_url = null
-                this.email = null
-                this.password = null
-            }).catch(() => {})
+        async login() {
+            validator
+                .validate(this, { abortEarly: false })
+                .then(() => {
+                    this.errors = {};
+                    this.authStore.login(this.email, this.password).then(() => {
+                        this.$router.push(this.authStore.return_url || '/account')
+                        this.authStore.return_url = null
+                        this.email = null
+                        this.password = null
+                    })
+                    .catch(err => {
+                        handle_form_api_errors(err.response, this.errors, this.notifStore)
+                    });
+                })
+                .catch(err => {
+                    handle_form_local_errors(err.inner, this.errors, this.notifStore)
+                });
+        },
+        validate(field) {
+            validator.validateAt(field, this)
+            .then(() => {
+                this.errors[field] = null;
+            })
+            .catch(err => {
+                setTimeout(() => this.errors[field] = err.message, 200)
+            });
         }
     }
 }

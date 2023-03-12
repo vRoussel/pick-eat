@@ -7,6 +7,7 @@
       <toggle-button
         :state="this.picked.has(el.id)"
         @update:state="this.toggle(el.id)"
+        v-bind="$attrs"
       >
         {{ el.name }}
       </toggle-button>

@@ -1,4 +1,8 @@
 <template>
+<div
+    v-bind="$attrs"
+    class="rounded-md"
+>
   <Multiselect
     ref="multiselect"
     v-model="dummy"
@@ -15,6 +19,7 @@
     @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
     @select="pick_ingr"
   />
+</div>
   <div class="flex gap-1 my-2">
     <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"

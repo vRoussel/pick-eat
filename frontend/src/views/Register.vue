@@ -12,7 +12,12 @@
                     ref="name"
                     type="text"
                     class="input input-bordered w-full"
+                    :class="errors.name && '!input-error'"
+                    @blur="validate('name')"
                 >
+                <label class="label" v-if="this.errors.name">
+                    <span class="label-text-alt text-error">{{ errors.name }}</span>
+                </label>
             </div>
             <div class="form-control">
                 <label class="label">
@@ -22,7 +27,12 @@
                     v-model="email"
                     type="text"
                     class="input input-bordered w-full"
+                    :class="errors.email && '!input-error'"
+                    @blur="validate('email')"
                 >
+                <label class="label" v-if="this.errors.email">
+                    <span class="label-text-alt text-error">{{ errors.email }}</span>
+                </label>
             </div>
             <div class="form-control">
                 <label class="label">
@@ -32,7 +42,12 @@
                     v-model="password"
                     type="password"
                     class="input input-bordered w-full"
+                    :class="errors.password && '!input-error'"
+                    @blur="validate('password')"
                 >
+                <label class="label" v-if="this.errors.password">
+                    <span class="label-text-alt text-error">{{ errors.password }}</span>
+                </label>
             </div>
             <div class="form-control">
                 <button class="btn btn-primary w-full btn-lg">
@@ -46,6 +61,20 @@
 <script>
 import { mapStores } from 'pinia'
 import { useAuthStore } from '@/store/auth.js'
+import { useNotifStore } from '@/store/notif.js'
+import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
+import { object, string } from "yup";
+
+const validator = object().shape({
+    email: string()
+            .required("L'adresse email est obligatoire")
+            .email("L'adresse email est invalide"),
+    password: string()
+            .required("Le mot de passe est obligatoire")
+            .min(8, "Le mot de passe doit faire au moins 8 caractères"),
+    name: string()
+            .required("Le nom est obligatoire")
+})
 
 export default {
     name: 'Register',
@@ -53,23 +82,48 @@ export default {
         return {
             email: null,
             password: null,
-            name: null
+            name: null,
+            errors: {
+                email: null,
+                password: null,
+                name: null
+            }
         }
     },
     computed: {
-      ...mapStores(useAuthStore)
+      ...mapStores(useAuthStore, useNotifStore)
     },
     mounted() {
         this.$nextTick(() => this.$refs.name.focus())
     },
     methods: {
         async register() {
-            this.authStore.register(this.email, this.password, this.name).then(() => {
-                this.$router.push('/login')
-                this.email = null
-                this.password = null
-                this.name = null
+            validator
+                .validate(this, { abortEarly: false })
+                .then(() => {
+                    this.errors = {};
+                    this.authStore.register(this.email, this.password, this.name).then(() => {
+                        this.$router.push('/login')
+                        this.email = null
+                        this.password = null
+                        this.name = null
+                    })
+                    .catch(err => {
+                        handle_form_api_errors(err.response, this.errors, this.notifStore)
+                    });
+                })
+                .catch(err => {
+                    handle_form_local_errors(err.inner, this.errors, this.notifStore)
+                });
+        },
+        validate(field) {
+            validator.validateAt(field, this)
+            .then(() => {
+                this.errors[field] = null;
             })
+            .catch(err => {
+                setTimeout(() => this.errors[field] = err.message, 200)
+            });
         }
     }
 }

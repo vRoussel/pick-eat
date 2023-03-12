@@ -13,7 +13,12 @@
         v-model="name"
         type="text"
         class="input input-bordered w-full"
+        :class="errors.name && '!input-error'"
+        @blur="validate('name')"
       >
+      <label class="label" v-if="this.errors.name">
+          <span class="label-text-alt text-error">{{ errors.name }}</span>
+      </label>
     </div>
     <div class="flex flex-wrap sm:flex-nowrap w-full gap-y-5 gap-x-5">
       <div class="flex flex-col justify-around justify-self-start grow sm:grow-0 basis-4/12">
@@ -26,8 +31,13 @@
               v-model="prep_time"
               type="number"
               class="input input-bordered w-full"
+              :class="errors.prep_time && '!input-error'"
+              @blur="validate('prep_time')"
             >
             <span class="bg-base-200 text-accent-content">minutes</span>
+          </label>
+          <label class="label" v-if="this.errors.prep_time">
+            <span class="label-text-alt text-error">{{ errors.prep_time }}</span>
           </label>
         </div>
 
@@ -40,8 +50,13 @@
               v-model="cook_time"
               type="number"
               class="input input-bordered w-full"
+              :class="errors.cook_time && '!input-error'"
+              @blur="validate('cook_time')"
             >
             <span class="bg-base-200 text-accent-content">minutes</span>
+          </label>
+          <label class="label" v-if="this.errors.cook_time">
+            <span class="label-text-alt text-error">{{ errors.cook_time }}</span>
           </label>
         </div>
 
@@ -52,11 +67,18 @@
           <number-input
             v-model="shares"
             :min="0"
+            :badvalue="errors.shares != null"
           />
+        <label class="label" v-if="this.errors.shares">
+          <span class="label-text-alt text-error">{{ errors.shares }}</span>
+        </label>
         </div>
       </div>
       <div class="form-control grow order-first sm:order-none justify-self-center">
         <image-chooser v-model:image_url="image_url" />
+        <label class="label mx-auto" v-if="this.errors.image_url">
+          <span class="label-text-alt text-error">{{ errors.image_url }}</span>
+        </label>
       </div>
     </div>
 
@@ -69,7 +91,11 @@
         :choices="foodStore.categories"
         :extendable="authStore.is_admin"
         :extend-modal-component="meta.NewCategoryModal_"
+        :class="errors.categories && '!border-error'"
       />
+      <label class="label" v-if="this.errors.categories">
+        <span class="label-text-alt text-error">{{ errors.categories }}</span>
+      </label>
     </div>
 
     <div class="form-control w-full">
@@ -91,7 +117,11 @@
       <toggle-buttons
         v-model:picked="seasons"
         :choices="foodStore.seasons"
+        :class="errors.seasons && '!border-error'"
       />
+      <label class="label" v-if="this.errors.seasons">
+        <span class="label-text-alt text-error">{{ errors.seasons }}</span>
+      </label>
     </div>
 
     <div class="form-control w-full">
@@ -113,7 +143,11 @@
         v-model:picked="ingredients"
         @createIngredient="openNewIngredientForm"
         @createUnit="openNewUnitForm"
+        :class="errors.ingredients && '!input-error !border-2'"
       />
+      <label class="label" v-if="this.errors.ingredients">
+        <span class="label-text-alt text-error">{{ errors.ingredients }}</span>
+      </label>
     </div>
 
     <div class="form-control w-full">
@@ -124,7 +158,12 @@
         v-model="instructions"
         class="textarea textarea-bordered h-40"
         placeholder="Une étape par ligne"
+        :class="errors.instructions && '!input-error'"
+        @blur="validate('instructions')"
       />
+      <label class="label" v-if="this.errors.instructions">
+          <span class="label-text-alt text-error">{{ errors.instructions }}</span>
+      </label>
     </div>
 
 
@@ -161,10 +200,47 @@ import NewCategoryModal from '@/components/NewCategoryModal.vue'
 import NumberInput from '@/components/NumberInput.vue'
 import Swal from 'sweetalert2'
 import {shallowRef} from 'vue'
+import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
+import { object, string, number, array } from "yup";
 
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useNotifStore } from '@/store/notif.js'
+
+const validator = object().shape({
+    name: string()
+            .required("Le nom de la recette est obligatoire"),
+    prep_time: number()
+            .required("Le temps de préparation est obligatoire")
+            .typeError("Le temps de préparation est vide ou invalide")
+            .positive("Le temps de préparation doit être supérieur à 0 minute")
+            .integer(),
+    cook_time: number()
+            .required("Le temps de cuisson est obligatoire")
+            .typeError("Le temps de cuisson est vide ou invalide")
+            .min(0, "Le temps de cuisson ne peut pas être négatif")
+            .integer(),
+    shares: number()
+            .required("Le nombre de parts est obligatoire")
+            .typeError("Le nombre de parts est vide ou invalide")
+            .positive("Le nombre de parts doit être positif")
+            .integer("Le nombre de parts doit être un nombre entier"),
+    categories: array()
+            .transform((value) => Array.from(value))
+            .min(1, "Selectionnez au moins une catégorie"),
+    seasons: array()
+            .transform((value) => Array.from(value))
+            .min(1, "Selectionnez au moins une saison"),
+    ingredients: array()
+            .transform((value) => Array.from(value))
+            .min(1, "Ajoutez au moins un ingrédient"),
+    instructions: string()
+            .required("Ajouter les étapes pour réaliser la recette"),
+    image_url: string()
+            .required()
+            .min(1, "Ajoutez une photo de la recette")
+})
 
 export default {
     name: 'RecipeForm',
@@ -183,8 +259,8 @@ export default {
     data: function() {
         return {
             name: "",
-            prep_time: 0,
-            cook_time: 0,
+            prep_time: null,
+            cook_time: null,
             shares: 0,
             instructions: "",
             categories: new Set(),
@@ -197,11 +273,25 @@ export default {
             meta: {
                 NewTagModal_: shallowRef(NewTagModal),
                 NewCategoryModal_: shallowRef(NewCategoryModal),
+            },
+            errors: {
+                name: null,
+                prep_time: null,
+                cook_time: null,
+                shares: null,
+                instructions: null,
+                categories: null,
+                tags: null,
+                seasons: null,
+                ingredients: null,
+                diets: null,
+                notes: null,
+                image_url: null
             }
         }
     },
     computed: {
-        ...mapStores(useFoodStore, useAuthStore),
+        ...mapStores(useFoodStore, useAuthStore, useNotifStore),
         update_mode() {
             return this.existing_recipe != null
         },
@@ -224,6 +314,18 @@ export default {
                     new_val.delete(2)
                 }
             }
+        },
+        categories() {
+            this.validate('categories')
+        },
+        seasons() {
+            this.validate('seasons')
+        },
+        ingredients() {
+            this.validate('ingredients')
+        },
+        shares() {
+            this.validate('shares')
         }
     },
     mounted() {
@@ -250,38 +352,36 @@ export default {
                     ingr.unit_id = null;
             }
 
-            if (this.insert_mode) {
-                this.foodStore.sendNewRecipe(recipe)
-                    .then((recipe) => {
-                        Swal.fire({
-                          title: 'Recette ajoutée',
-                          icon: 'success'
-                        })
-                        this.$emit('done', recipe)
-                    }) 
-                    .catch((e) => {
-                        console.error(e)
-                        Swal.fire({
-                          title: 'Erreur',
-                          text: e.statusText,
-                          icon: 'error'
-                        })
-                    })
-            } else {
-                this.foodStore.updateRecipe(this.existing_recipe.id, recipe)
-                    .then(() => {
-                        this.$emit('done')
-                    }) 
-                    .catch((e) => {
-                        console.error(e)
-                        Swal.fire({
-                          title: 'Erreur',
-                          text: e.statusText,
-                          icon: 'error'
-                        })
-                    })
+            validator
+                .validate(this, { abortEarly: false })
+                .then(() => {
+                    this.errors = {};
+                    if (this.insert_mode) {
+                        this.foodStore.sendNewRecipe(recipe)
+                            .then((recipe) => {
+                                Swal.fire({
+                                  title: 'Recette ajoutée',
+                                  icon: 'success'
+                                })
+                                this.$emit('done', recipe)
+                            }) 
+                            .catch(err => {
+                                handle_form_api_errors(err.response, this.errors, this.notifStore)
+                            })
+                    } else {
+                        this.foodStore.updateRecipe(this.existing_recipe.id, recipe)
+                            .then(() => {
+                                this.$emit('done')
+                            }) 
+                            .catch(err => {
+                                handle_form_api_errors(err.response, this.errors, this.notifStore)
+                            })
 
-            }
+                    }
+                })
+                .catch(err => {
+                    handle_form_local_errors(err.inner, this.errors, this.notifStore)
+                });
         },
         cancel() {
             this.$emit('done')
@@ -315,6 +415,16 @@ export default {
                 this.notes = other.notes
                 this.shares = other.n_shares
             }
+        },
+        validate(field) {
+            console.log(this.prep_time)
+            validator.validateAt(field, this)
+            .then(() => {
+                this.errors[field] = null;
+            })
+            .catch(err => {
+                setTimeout(() => this.errors[field] = err.message, 200)
+            });
         }
     }
 }
