@@ -1,8 +1,8 @@
-use super::db_error_to_http_response;
+use super::{db_error_to_http_response, APIAnswer};
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use sqlx::postgres::PgPool;
-use sqlx::Error;
+use sqlx::{Error, PgConnection};
 
 use crate::handlers::{Admin, User};
 use crate::resources::ingredient;
@@ -13,6 +13,16 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(get_one)
         .service(modify_one)
         .service(delete_one);
+}
+
+async fn validate_new_ingredient(
+    ingr: &ingredient::New,
+    api_answer: &mut APIAnswer,
+    db_conn: &mut PgConnection,
+) {
+    if let Ok(Some(_)) = ingredient::get_one_by_name(db_conn, &ingr.name).await {
+        api_answer.add_field_error("name", "Un ingrédient avec ce nom existe déjà");
+    }
 }
 
 #[get("/ingredients")]
@@ -38,6 +48,12 @@ pub async fn add_one(
     user: User,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
+
+    let mut ret = APIAnswer::new();
+    validate_new_ingredient(&new_ingredient, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
 
     let new_id = match ingredient::add_one(&mut db_conn, &new_ingredient).await {
         Ok(v) => v,
@@ -92,6 +108,12 @@ pub async fn modify_one(
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
     trace!("{:#?}", new_ingredient);
+
+    let mut ret = APIAnswer::new();
+    validate_new_ingredient(&new_ingredient, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
 
     match ingredient::modify_one(&mut db_conn, id.into_inner(), &new_ingredient).await {
         Ok(Some(_)) => (),

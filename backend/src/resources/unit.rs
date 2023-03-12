@@ -13,8 +13,8 @@ pub struct FromDB {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
-    full_name: String,
-    short_name: String,
+    pub full_name: String,
+    pub short_name: String,
 }
 
 pub type Ref = i32;
@@ -66,6 +66,50 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
             WHERE id = $1
         ",
         id
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
+}
+
+pub async fn get_one_by_full_name(
+    db_conn: &mut PgConnection,
+    full_name: &str,
+) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        "
+            SELECT
+                id,
+                full_name,
+                short_name
+            FROM units
+            WHERE full_name = $1
+        ",
+        full_name
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
+}
+
+pub async fn get_one_by_short_name(
+    db_conn: &mut PgConnection,
+    short_name: &str,
+) -> Result<Option<FromDB>, Error> {
+    let row: Option<FromDB> = query_as!(
+        FromDB,
+        "
+            SELECT
+                id,
+                full_name,
+                short_name
+            FROM units
+            WHERE short_name = $1
+        ",
+        short_name
     )
     .fetch_optional(db_conn)
     .await?;

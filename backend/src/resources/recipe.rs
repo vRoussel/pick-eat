@@ -39,18 +39,18 @@ pub struct FromDBLight {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
-    name: String,
-    notes: String,
-    q_ingredients: Vec<qingredient::Ref>,
-    category_ids: Vec<category::Ref>,
-    tag_ids: Vec<tag::Ref>,
-    prep_time_min: i16,
-    cook_time_min: i16,
-    image: String,
-    instructions: Vec<String>,
-    n_shares: i16,
-    season_ids: Vec<season::Ref>,
-    diet_ids: Vec<diet::Ref>,
+    pub name: String,
+    pub notes: String,
+    pub q_ingredients: Vec<qingredient::Ref>,
+    pub category_ids: Vec<category::Ref>,
+    pub tag_ids: Vec<tag::Ref>,
+    pub prep_time_min: i16,
+    pub cook_time_min: i16,
+    pub image: String,
+    pub instructions: Vec<String>,
+    pub n_shares: i16,
+    pub season_ids: Vec<season::Ref>,
+    pub diet_ids: Vec<diet::Ref>,
 }
 
 pub enum Filter {

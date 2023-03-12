@@ -4,7 +4,10 @@ use actix_web::{delete, post, web, HttpMessage, HttpRequest, HttpResponse, Respo
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
 
-use crate::{handlers::User, resources::account};
+use crate::{
+    handlers::{APIAnswer, User},
+    resources::account,
+};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(login).service(logout);
@@ -25,10 +28,15 @@ pub async fn login(
     session: Session,
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
+
     let account_id =
         match account::check_credentials(&mut db_conn, &cred.email, &cred.password).await {
             Ok(account_id) => account_id,
-            Err(_) => return HttpResponse::Unauthorized().finish(),
+            Err(_) => {
+                let mut ret = APIAnswer::new();
+                ret.add_text_error("Email ou mot de passe incorrect");
+                return HttpResponse::Unauthorized().json(ret);
+            }
         };
     let account = match account::get_one(&mut db_conn, account_id).await {
         Ok(Some(account)) => account,

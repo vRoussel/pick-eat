@@ -5,15 +5,18 @@ use argon2::{
     Argon2,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgConnection, Connection};
+use sqlx::{
+    postgres::{PgConnection, PgDatabaseError},
+    Connection,
+};
 use sqlx::{query, query_as, Error};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FromDBPrivate {
     pub id: i32,
-    display_name: String,
-    email: String,
-    creation_date: time::Date,
+    pub display_name: String,
+    pub email: String,
+    pub creation_date: time::Date,
     pub is_admin: bool,
 }
 
@@ -26,47 +29,24 @@ pub struct FromDBPublic {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct New {
-    email: String,
-    password: String,
-    display_name: String,
+    pub email: String,
+    pub password: String,
+    pub display_name: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Update {
-    new_email: String,
+    pub new_email: String,
     pub old_password: String,
-    new_password: Option<String>,
-    new_display_name: String,
+    pub new_password: Option<String>,
+    pub new_display_name: String,
 }
 
 pub type Ref = i32;
 
-pub enum InsertAccountError {
-    HashError(argon2::password_hash::Error),
-    DBError(sqlx::Error),
-}
-
-impl Display for InsertAccountError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            InsertAccountError::HashError(e) => write!(f, "{}", e),
-            InsertAccountError::DBError(e) => write!(f, "{}", e),
-        }
-    }
-}
-
-impl From<argon2::password_hash::Error> for InsertAccountError {
-    fn from(e: argon2::password_hash::Error) -> Self {
-        InsertAccountError::HashError(e)
-    }
-}
-
-impl From<sqlx::Error> for InsertAccountError {
-    fn from(e: sqlx::Error) -> Self {
-        InsertAccountError::DBError(e)
-    }
-}
+#[derive(Debug)]
+pub struct InsertAccountError(String);
 
 pub async fn add_one(
     db_conn: &mut PgConnection,
@@ -79,7 +59,8 @@ pub async fn add_one(
 
     // Hash password to PHC string ($argon2id$v=19$...)
     let password_hash = argon2
-        .hash_password(new_account.password.as_bytes(), &salt)?
+        .hash_password(new_account.password.as_bytes(), &salt)
+        .map_err(|e| InsertAccountError(e.to_string()))?
         .to_string();
 
     let new_id: i32 = query!(
@@ -93,7 +74,8 @@ pub async fn add_one(
         password_hash
     )
     .fetch_one(db_conn)
-    .await?
+    .await
+    .map_err(|e| InsertAccountError(e.to_string()))?
     .id;
 
     Ok(new_id)
@@ -199,6 +181,54 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
     Ok(row)
 }
 
+pub async fn get_one_by_name(
+    db_conn: &mut PgConnection,
+    name: &str,
+) -> Result<Option<FromDBPrivate>, Error> {
+    let row: Option<FromDBPrivate> = query_as!(
+        FromDBPrivate,
+        "
+            SELECT
+                id,
+                email,
+                display_name,
+                creation_date,
+                is_admin
+            FROM accounts
+            WHERE display_name = $1
+        ",
+        name
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
+}
+
+pub async fn get_one_by_email(
+    db_conn: &mut PgConnection,
+    email: &str,
+) -> Result<Option<FromDBPrivate>, Error> {
+    let row: Option<FromDBPrivate> = query_as!(
+        FromDBPrivate,
+        "
+            SELECT
+                id,
+                email,
+                display_name,
+                creation_date,
+                is_admin
+            FROM accounts
+            WHERE email = $1
+        ",
+        email
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row)
+}
+
 pub async fn get_all_with_recipes(db_conn: &mut PgConnection) -> Result<Vec<FromDBPublic>, Error> {
     let rows: Vec<FromDBPublic> = query_as!(
         FromDBPublic,
@@ -221,7 +251,10 @@ pub async fn modify_one(
     id: i32,
     account: &Update,
 ) -> Result<Option<()>, InsertAccountError> {
-    let mut transaction = db_conn.begin().await?;
+    let mut transaction = db_conn
+        .begin()
+        .await
+        .map_err(|e| InsertAccountError(e.to_string()))?;
 
     let mut n_rows: u64 = query!(
         "
@@ -235,7 +268,8 @@ pub async fn modify_one(
         id
     )
     .execute(&mut transaction)
-    .await?
+    .await
+    .map_err(|e| InsertAccountError(e.to_string()))?
     .rows_affected();
 
     if let Some(new_password) = &account.new_password {
@@ -246,7 +280,8 @@ pub async fn modify_one(
 
         // Hash password to PHC string ($argon2id$v=19$...)
         let password_hash = argon2
-            .hash_password(new_password.as_bytes(), &salt)?
+            .hash_password(new_password.as_bytes(), &salt)
+            .map_err(|e| InsertAccountError(e.to_string()))?
             .to_string();
 
         n_rows += query!(
@@ -259,11 +294,15 @@ pub async fn modify_one(
             id
         )
         .execute(&mut transaction)
-        .await?
+        .await
+        .map_err(|e| InsertAccountError(e.to_string()))?
         .rows_affected();
     };
 
-    transaction.commit().await?;
+    transaction
+        .commit()
+        .await
+        .map_err(|e| InsertAccountError(e.to_string()))?;
 
     if n_rows > 0 {
         Ok(Some(()))

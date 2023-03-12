@@ -72,3 +72,38 @@ impl FromRequest for Admin {
         })
     }
 }
+
+#[derive(Serialize)]
+#[serde(untagged)]
+pub enum APIError {
+    FieldError { field_name: String, error: String },
+    TextError { error: String },
+}
+
+#[derive(Serialize)]
+pub struct APIAnswer {
+    errors: Vec<APIError>,
+}
+
+impl APIAnswer {
+    fn new() -> Self {
+        Self { errors: Vec::new() }
+    }
+
+    fn add_field_error(&mut self, field_name: &str, error: &str) {
+        self.errors.push(APIError::FieldError {
+            field_name: field_name.to_owned(),
+            error: error.to_owned(),
+        });
+    }
+
+    fn add_text_error(&mut self, error: &str) {
+        self.errors.push(APIError::TextError {
+            error: error.to_owned(),
+        });
+    }
+
+    fn is_ok(&self) -> bool {
+        return self.errors.is_empty();
+    }
+}

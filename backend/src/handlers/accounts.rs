@@ -1,13 +1,12 @@
-use super::db_error_to_http_response;
+use super::{db_error_to_http_response, APIError};
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
-use sqlx::Error;
+use sqlx::{Error, PgConnection};
 
-use crate::handlers::{Admin, User};
+use crate::handlers::{APIAnswer, Admin, User};
 use crate::resources::account;
-use crate::resources::account::InsertAccountError;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(add_one)
@@ -20,25 +19,51 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(remove_fav_recipe);
 }
 
+async fn validate_new_account(
+    account: &account::New,
+    api_answer: &mut APIAnswer,
+    db_conn: &mut PgConnection,
+) {
+    if let Ok(Some(_)) = account::get_one_by_email(db_conn, &account.email).await {
+        api_answer.add_field_error("email", "Cette addresse email est déjà utilisée");
+    }
+    if let Ok(Some(_)) = account::get_one_by_name(db_conn, &account.display_name).await {
+        api_answer.add_field_error("name", "Ce nom est déjà utilisé");
+    }
+    if account.password.len() < 8 {
+        api_answer.add_field_error(
+            "new_password",
+            "Le mot de passe doit faire au moins 8 caractères",
+        );
+    }
+}
+
 #[post("/accounts")]
 pub async fn add_one(
     account: web::Json<account::New>,
     db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let mut db_conn = db_pool.acquire().await.unwrap();
+    let mut db_conn = db_pool.begin().await.unwrap();
+
+    let mut ret = APIAnswer::new();
+    validate_new_account(&account, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
+
     let new_id = match account::add_one(&mut db_conn, &account).await {
         Ok(v) => v,
         Err(e) => match e {
-            InsertAccountError::DBError(Error::Database(db_error)) => {
-                error!("{}", db_error);
-                return db_error_to_http_response(&*db_error);
-            }
             _ => {
-                error!("{}", e);
+                error!("{:?}", e);
                 return HttpResponse::InternalServerError().finish();
             }
         },
     };
+
+    if db_conn.commit().await.is_err() {
+        return HttpResponse::InternalServerError().finish();
+    }
 
     HttpResponse::Created()
         .insert_header((http::header::LOCATION, format!("/{}", new_id)))
@@ -121,6 +146,36 @@ pub async fn get_all(
     HttpResponse::Ok().json(accounts)
 }
 
+async fn validate_update_account(
+    current: &account::FromDBPrivate,
+    update: &account::Update,
+    api_answer: &mut APIAnswer,
+    db_conn: &mut PgConnection,
+) {
+    if let Err(_) = account::check_password(db_conn, current.id, &update.old_password).await {
+        api_answer.add_field_error("old_password", "Mot de passe incorrect");
+    };
+    if current.email != update.new_email {
+        if let Ok(Some(_)) = account::get_one_by_email(db_conn, &update.new_email).await {
+            api_answer.add_field_error("new_email", "Cette addresse email est déjà utilisée");
+        }
+    }
+    if current.display_name != update.new_display_name {
+        if let Ok(Some(_)) = account::get_one_by_name(db_conn, &update.new_display_name).await {
+            api_answer.add_field_error("new_name", "Ce nom est déjà utilisé");
+        }
+    }
+
+    if let Some(pwd) = &update.new_password {
+        if pwd.len() < 8 {
+            api_answer.add_field_error(
+                "new_password",
+                "Le mot de passe doit faire au moins 8 caractères",
+            );
+        }
+    }
+}
+
 #[put("/accounts/me")]
 pub async fn modify_current(
     account: web::Json<account::Update>,
@@ -129,20 +184,23 @@ pub async fn modify_current(
 ) -> impl Responder {
     let mut db_conn = db_pool.acquire().await.unwrap();
 
-    if let Err(e) = account::check_password(&mut db_conn, user.id, &account.old_password).await {
-        return HttpResponse::Unauthorized().finish();
+    let existing_account = match account::get_one(&mut db_conn, user.id).await {
+        Ok(Some(v)) => v,
+        _ => return HttpResponse::InternalServerError().finish(),
     };
+
+    let mut ret = APIAnswer::new();
+    validate_update_account(&existing_account, &account, &mut ret, &mut db_conn).await;
+    if !ret.is_ok() {
+        return HttpResponse::BadRequest().json(ret);
+    }
 
     match account::modify_one(&mut db_conn, user.id, &account).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => match e {
-            InsertAccountError::DBError(Error::Database(db_error)) => {
-                error!("{}", db_error);
-                return db_error_to_http_response(&*db_error);
-            }
             _ => {
-                error!("{}", e);
+                error!("{:?}", e);
                 return HttpResponse::InternalServerError().finish();
             }
         },
