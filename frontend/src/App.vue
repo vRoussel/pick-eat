@@ -103,16 +103,18 @@
     </transition>
   </router-view>
   <grocery-list-modal ref="grocery_list_modal" />
+  <toast :msg_queue="notifStore.messages"></toast>
 </template>
 
 <script>
 import icons from '@/utils/icons.js'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
+import Toast from '@/components/Toast.vue'
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
-import { useAuthStore } from '@/store/auth.js'
+import { useNotifStore } from '@/store/notif.js'
 
 import pickeat_png from '@/assets/pickeat.png'
 
@@ -120,7 +122,8 @@ export default {
   name: 'App',
   components: {
       ThemeToggle,
-      GroceryListModal
+      GroceryListModal,
+      Toast
   },
   provide: {
     icons
@@ -134,7 +137,7 @@ export default {
     }
   },
   computed: {
-    ...mapStores(useCartStore, useFoodStore, useAuthStore)
+    ...mapStores(useCartStore, useFoodStore, useNotifStore)
   },
   watch: {
         $route: {
