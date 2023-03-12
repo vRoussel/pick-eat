@@ -2,7 +2,7 @@
     <div class="my-8">
         <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="login">
         <h1 class="text-xl font-bold text-center">Connexion</h1>
-        <p class="text-center">Tu n'as pas encore de compte ? <router-link to="/register" class="link">Créer un compte</router-link></p>
+        <p class="text-center">Tu n'as pas encore de compte ? <router-link to="/register">Créer un compte</router-link></p>
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">Adresse mail</span>
