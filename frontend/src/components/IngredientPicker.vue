@@ -2,7 +2,6 @@
   <Multiselect
     ref="multiselect"
     v-model="dummy"
-    class="mb-4"
     mode="multiple"
     :options="ingr_remaining"
     label="name"

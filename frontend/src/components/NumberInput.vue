@@ -3,7 +3,7 @@
       <div class="flex flex-row h-full w-full rounded-lg bg-transparent">
         <button
           type="button"
-          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l"
+          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l focus:!outline-none"
           @click="decrement"
         >
           <span class="m-auto text-2xl font-thin">−</span>
@@ -17,7 +17,7 @@
         >
         <button
           type="button"
-          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r"
+          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r focus:!outline-none"
           @click="increment"
         >
           <span class="m-auto text-2xl font-thin">+</span>
