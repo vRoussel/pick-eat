@@ -197,7 +197,7 @@ pub async fn get_many(
                         "
                         , ingr_filter as (
                             SELECT
-                                distinct(recipe_id) as id
+                                recipe_id as id, count(*) as rank
                             FROM
                                 recipes_ingredients
                             WHERE
@@ -205,8 +205,12 @@ pub async fn get_many(
                         ",
                     )
                     .push_bind(ids)
-                    .push("))");
-                joins.push_str(" INNER JOIN ingr_filter USING (id)");
+                    .push(
+                        ")
+                    GROUP BY id)",
+                    );
+                joins.push_str(" INNER JOIN ingr_filter as if USING (id)");
+                sorting_fields.push(String::from("if.rank DESC"));
             }
             Filter::Tags(ids) => {
                 builder
@@ -214,7 +218,7 @@ pub async fn get_many(
                         "
                         , tag_filter as (
                             SELECT
-                                distinct(recipe_id) as id
+                                recipe_id as id, count(*) as rank
                             FROM
                                 recipes_tags
                             WHERE
@@ -222,8 +226,12 @@ pub async fn get_many(
                         ",
                     )
                     .push_bind(ids)
-                    .push("))");
-                joins.push_str(" INNER JOIN tag_filter USING (id)");
+                    .push(
+                        ")
+                    GROUP BY id)",
+                    );
+                joins.push_str(" INNER JOIN tag_filter tf USING (id)");
+                sorting_fields.push(String::from("tf.rank DESC"));
             }
             Filter::Account(id) => {
                 builder
