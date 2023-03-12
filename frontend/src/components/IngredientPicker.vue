@@ -86,13 +86,13 @@ export default {
     },
     computed: {
         ...mapStores(useFoodStore),
-        picked_obj() {
-            return Object.fromEntries(this.picked);
-        },
         ingr_remaining() {
             return this.foodStore.ingredients
                 .filter(ingr => !this.picked.has(ingr.id))
         },
+        _picked() {
+            return new Map(this.picked)
+        }
     },
     methods: {
         pick_ingr(ingr) {
@@ -102,17 +102,17 @@ export default {
             })
         },
         add_ingr(ingr) {
-            this.picked.set(ingr.id, {
+            this._picked.set(ingr.id, {
                 id: ingr.id,
                 unit_id: ingr.default_unit ? ingr.default_unit.id : null,
                 quantity: null,
             })
-            this.$emit('update:picked', this.picked)
+            this.$emit('update:picked', this._picked)
             this.$refs.multiselect.clear()
         },
         del_ingr(id) {
-            this.picked.delete(id)
-            this.$emit('update:picked', this.picked)
+            this._picked.delete(id)
+            this.$emit('update:picked', this._picked)
         },
         save_ingredient_search() {
             this.ingredient_search = this.$refs.multiselect.search
