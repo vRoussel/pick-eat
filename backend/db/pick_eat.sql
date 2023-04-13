@@ -428,6 +428,18 @@ CREATE TABLE public.account_validation_tokens (
 ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.password_reset_tokens | type: TABLE --
+-- DROP TABLE IF EXISTS public.password_reset_tokens CASCADE;
+CREATE TABLE public.password_reset_tokens (
+	account_id integer NOT NULL,
+	token text NOT NULL,
+	valid_until timestamptz NOT NULL
+
+);
+-- ddl-end --
+ALTER TABLE public.password_reset_tokens OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
@@ -536,6 +548,13 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- object: account_validation_tokens_fk_account_id | type: CONSTRAINT --
 -- ALTER TABLE public.account_validation_tokens DROP CONSTRAINT IF EXISTS account_validation_tokens_fk_account_id CASCADE;
 ALTER TABLE public.account_validation_tokens ADD CONSTRAINT account_validation_tokens_fk_account_id FOREIGN KEY (account_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: password_reset_tokens_fk_account_id | type: CONSTRAINT --
+-- ALTER TABLE public.password_reset_tokens DROP CONSTRAINT IF EXISTS password_reset_tokens_fk_account_id CASCADE;
+ALTER TABLE public.password_reset_tokens ADD CONSTRAINT password_reset_tokens_fk_account_id FOREIGN KEY (account_id)
 REFERENCES public.accounts (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
