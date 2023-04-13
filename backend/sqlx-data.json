@@ -1,0 +1,1355 @@
+{
+  "db": "PostgreSQL",
+  "00eb76ae1cd11dce74c5115bdb2bd3a65eb1e722e8aa9dcccc391e98596441b8": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO accounts (display_name, email, password)\n                VALUES ($1, $2, $3)\n            RETURNING id;\n        "
+  },
+  "050c210f13c4df1579d095737d3c2b76349fa9a1986f3de4d13f10d380f46654": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO units (full_name, short_name)\n                VALUES (sentence_case($1), $2)\n            RETURNING id;\n        "
+  },
+  "09d6a7d173e5e2a98594cc4cbb79822bf5bc9697fd9269b1c77142585c6f0346": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Int2",
+          "Int2",
+          "Text",
+          "TextArray",
+          "Int2",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE recipes SET\n                name = sentence_case($1),\n                notes = $2,\n                preparation_time_min = $3,\n                cooking_time_min = $4,\n                image = $5,\n                instructions = $6,\n                n_shares = $7\n            WHERE id = $8\n        "
+  },
+  "0d395fe1fca31ff9f027f1c2675d127bbc25a0b374d67012bfa7edad53a8667b": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "full_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "short_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                full_name,\n                short_name\n            FROM units\n            ORDER BY full_name\n        "
+  },
+  "0ebcb7f82e55b25a53a5f3a2aae7df7a2b7256573569cadfc2463d1b692104ab": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "full_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "short_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                full_name,\n                short_name\n            FROM units\n            WHERE id = $1\n        "
+  },
+  "115c1df73e0fb26aa3e32a1dd8eee6c56d288a3696ecf16d59944f2fe6263b87": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_unit: unit::FromDB",
+          "ordinal": 2,
+          "type_info": "Record"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                i.id as id,\n                i.name as name,\n                CASE WHEN i.default_unit_id is null THEN\n                    null\n                ELSE\n                    (\n                    u.id,\n                    u.full_name,\n                    u.short_name\n                    )\n                END as \"default_unit: unit::FromDB\"\n            FROM\n                ingredients as i\n                LEFT JOIN units as u\n                ON i.default_unit_id = u.id\n            WHERE\n                i.name = $1\n        "
+  },
+  "11a2912b28edcd20db7287e143d87db3053a93962c440ebaa860aaef0851c967": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO ingredients (name, default_unit_id)\n                VALUES (sentence_case($1), $2)\n            RETURNING id;\n        "
+  },
+  "12bb29608c9a076f4c9e31572ae30233b324a5582a6332d6524fc06069a98072": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM ingredients\n            WHERE id = $1\n        "
+  },
+  "12e92e505ea87f6cae164b75a601a8c11c43ec0aa10306122c016c4946a8e4ee": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                DELETE FROM recipes_categories\n                WHERE\n                    recipe_id = $1\n                    AND category_id <> ALL($2);\n            "
+  },
+  "13c38a000ff78164c780c8b360318500371f39efe64830b07b75aa7fd8938b66": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "full_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "short_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                full_name,\n                short_name\n            FROM units\n            WHERE short_name = $1\n        "
+  },
+  "1bcad5c6134c4cd7effdad8d8166849f3b02bff86515240e0c031bb18c7b099a": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_diets\n                (diet_id, recipe_id)\n                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id\n                ON CONFLICT DO NOTHING;\n            "
+  },
+  "20a5a39661ae91c91c5e60fa21f90816a2e19b5cdbe62f50bd64efe6e6e0a24f": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                DELETE FROM recipes_seasons\n                WHERE\n                    recipe_id = $1\n                    AND season_id <> ALL($2);\n            "
+  },
+  "2160075c9101d0eefff7c2a3e775292bff2ec620098eb7ca3625766a350f0948": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM categories\n            WHERE id = $1\n        "
+  },
+  "281f2e2608a2f3c22798f8d8bb00c3e4c4126ad247f4a3c9235902404d767931": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_tags\n                (tag_id, recipe_id)\n                SELECT tag_id, $1 FROM UNNEST($2::int[]) as tag_id\n                ON CONFLICT DO NOTHING;\n            "
+  },
+  "28ddaa1a73bcac34d311903ee9ebea3bedb15bd9574e0c0676315efeeda89bcc": {
+    "describe": {
+      "columns": [
+        {
+          "name": "account_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "token",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO account_validation_tokens (account_id, token, valid_until)\n            SELECT id, gen_random_uuid(), now() + interval '1 day'\n            FROM (\n                VALUES ($1)\n            ) x (email)\n            JOIN accounts USING (email)\n            RETURNING account_id, token, valid_until\n        "
+  },
+  "36117b5c7fb20f6066697edcbdc1abb94247b86480085278f4fc0d5aa1de7064": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                DELETE FROM recipes_ingredients\n                WHERE\n                    recipe_id = $1\n                    AND ingredient_id <> ALL($2);\n            "
+  },
+  "466e989c64d2006465bc52f543d9fe730cbb9daf7d8d13f2abadf29ab6eb8e79": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_seasons\n                (season_id, recipe_id)\n                SELECT season_id, $1 FROM UNNEST($2::int[]) as season_id\n                ON CONFLICT DO NOTHING;\n            "
+  },
+  "476df0db5e1b30cde40443a3629d9bce40bb1c397563bcc667919058979c5810": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n                UPDATE accounts SET\n                password = $1\n                WHERE id = $2\n            "
+  },
+  "4a14dc1e562c651d3f9332c3e98ca8badd9199d0b03abcaf6750cee6fc498a4a": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM account_validation_tokens\n            WHERE account_id = $1\n        "
+  },
+  "4cc197f032005f0004f2c0986d99a5a35b0d1c6abe46f510853d86b419825c7f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO categories (name)\n                VALUES (sentence_case($1))\n            RETURNING id;\n        "
+  },
+  "4ccd69205244849e9ca0077b506157d09783f5f2ca30aede6a4b44657ae9b259": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE accounts SET is_validated = 't'\n            WHERE id = $1\n        "
+  },
+  "51c6bc1560ab07ca8d09ced0fcf898f4369a83ce5dd11b79e31599235c7a82dd": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_diets\n                (diet_id, recipe_id)\n                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id;\n            "
+  },
+  "5a35c0269f645cde1ad4abd5619a64932af2cff9c3aa7aed6ce32d23f208a60e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "email",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "display_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "creation_date",
+          "ordinal": 3,
+          "type_info": "Date"
+        },
+        {
+          "name": "is_admin",
+          "ordinal": 4,
+          "type_info": "Bool"
+        },
+        {
+          "name": "is_validated",
+          "ordinal": 5,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                email,\n                display_name,\n                creation_date,\n                is_admin,\n                is_validated\n            FROM accounts\n            WHERE id = $1\n        "
+  },
+  "5c9e6745e416008742b844fa365ed34210a1c78eb724edbaa4d10f340683cd25": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_tags\n                (tag_id, recipe_id)\n                SELECT tag_id, $1 FROM UNNEST($2::int[]) as tag_id;\n            "
+  },
+  "5f9755a0fc9b9e9e9b143d011f04da018a7f75cbd24d964303284b00d2189ba6": {
+    "describe": {
+      "columns": [
+        {
+          "name": "password",
+          "ordinal": 0,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT password FROM accounts WHERE id = $1\n        "
+  },
+  "64fc7f4bd3ca0a53928b3b76dc27d9aa52e80e6bf4fd2f40cffc01835903fd55": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM tags\n            WHERE id = $1\n        "
+  },
+  "67aeb6100523b2eb800640a2672959621abb7f90448b9014074156199a8c1f94": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM tags\n            WHERE id = $1\n        "
+  },
+  "6c09786b4475286b94f8c69b152250d6919787880c35bda1c69f33433958d750": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_categories\n                (category_id, recipe_id)\n                SELECT category_id, $1 FROM UNNEST($2::int[]) as category_id\n                ON CONFLICT DO NOTHING;\n            "
+  },
+  "772ebe352af9ddd502ab3815f9d0725135bc1a48053b13ee5b8eb3ff5b91c57e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE accounts SET\n                display_name = $1,\n                email = $2\n            WHERE id = $3\n        "
+  },
+  "773e90b6bb502bfe808493b9ca2a5f990d966dbbc54ae0826cb51262421edb8a": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array",
+          "Float4Array",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                WITH input AS (\n                    SELECT i_id, q, u_id\n                    FROM\n                        UNNEST($2::int[], $3::real[], $4::int[])\n                        AS x(i_id, q, u_id)\n                )\n                INSERT INTO recipes_ingredients as ri\n                (recipe_id, ingredient_id, quantity, unit_id)\n                SELECT $1, i_id, q, u_id\n                FROM input\n                ON CONFLICT(recipe_id, ingredient_id) DO UPDATE\n                    SET quantity = EXCLUDED.quantity, unit_id = EXCLUDED.unit_id\n                    WHERE ri.recipe_id = $1 AND ri.ingredient_id = EXCLUDED.ingredient_id\n                ;\n            "
+  },
+  "79f499012b561f6a67d232232bde0e07a44f412f4c7496b8d39774dfa09ea7c4": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "label",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name,\n                label\n            FROM seasons\n            WHERE id = $1\n        "
+  },
+  "7a71e6a084dd84b817ca999d1dc95b25d68f114637830af9b13110153da8bc99": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM accounts\n            WHERE id = $1\n        "
+  },
+  "7cd3e863436122e9c75a705c171a32a94c50fdf6bbf32e18c661c0cfdd9e4235": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                DELETE FROM recipes_tags\n                WHERE\n                    recipe_id = $1\n                    AND tag_id <> ALL($2);\n            "
+  },
+  "7ead97853f5689ea03f4f6457b76941d4d9c255f1c834e9aa84632ceb1cf326d": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO accounts_fav_recipes (account_id, recipe_id)\n            VALUES ($1, $2)\n        "
+  },
+  "8128f8aa9c12b76f2b8c2a589a22e076903814b93756e66abcd2385e7ab711b8": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM units\n            WHERE id = $1\n        "
+  },
+  "95bafec33a594739041d2d8db1cee834e394740d400eb4ec4491557de8f888d9": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                DELETE FROM recipes_diets\n                WHERE\n                    recipe_id = $1\n                    AND diet_id <> ALL($2);\n            "
+  },
+  "963494d06907f06e7b91f5609d9720555c21a50514caacc1463cbd52f9932e6b": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE categories SET\n                name = sentence_case($1)\n            WHERE id = $2\n        "
+  },
+  "aa520231eebf614148babd03fe40c5ff86c759a7f9852416aefd98c0ea3b8c2f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_unit: unit::FromDB",
+          "ordinal": 2,
+          "type_info": "Record"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                i.id as id,\n                i.name as name,\n                CASE WHEN i.default_unit_id is null THEN\n                    null\n                ELSE\n                    (\n                    u.id,\n                    u.full_name,\n                    u.short_name\n                    )\n                END as \"default_unit: unit::FromDB\"\n            FROM\n                ingredients as i\n                LEFT JOIN units as u\n                ON i.default_unit_id = u.id\n            WHERE\n                i.id = $1\n        "
+  },
+  "aa7fbbc903d5503fd8d86db8af4270b4e24cc3a16cd06da398612b38c55e9572": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM accounts_fav_recipes\n            WHERE\n                account_id = $1 AND\n                recipe_id = $2\n        "
+  },
+  "ab0405f9bbe41c85588f06c35d373af14563381a4de0983b74fc8ed8cc617859": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "label",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name,\n                label\n            FROM diets\n            ORDER BY id\n        "
+  },
+  "ac609e294fb67e1d21eb2386f5189953582608bb5bf2f6166a43937994de154e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE units SET\n                full_name = sentence_case($1),\n                short_name = $2\n            WHERE id = $3\n        "
+  },
+  "ac62fb1612c12b14d1040f168df2b675d8d7b6a39c471a4390b702192356e8e3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE tags SET\n                name = sentence_case($1)\n            WHERE id = $2\n        "
+  },
+  "b0c04e8e943638277601e3683acb9e581056ea6d27121c8071ec057e27bf8cde": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM tags\n            WHERE name = $1\n        "
+  },
+  "b6c3885c1d502918a38ef733123d78e737aa269b9b873153adf64793239b382f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "author_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT author_id\n            FROM recipes\n            WHERE id = $1\n        "
+  },
+  "b99a0a8536ea662fb126d69ee47c8f001e61de3a9e187912e732061044cfb895": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "email",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "display_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "creation_date",
+          "ordinal": 3,
+          "type_info": "Date"
+        },
+        {
+          "name": "is_admin",
+          "ordinal": 4,
+          "type_info": "Bool"
+        },
+        {
+          "name": "is_validated",
+          "ordinal": 5,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                email,\n                display_name,\n                creation_date,\n                is_admin,\n                is_validated\n            FROM accounts\n            WHERE display_name = $1\n        "
+  },
+  "c01a87510f3d17e02ae741fcb0c57c453cf51550b249d64c74d92df2dfb2cc8b": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Int2",
+          "Int2",
+          "Text",
+          "TextArray",
+          "Int2",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO recipes\n            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, author_id)\n            VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7, $8)\n            RETURNING id;\n        "
+  },
+  "c2bb0cf9586a317c84e512ef83de89b105563a43b8f7d159972267f974c8ac0c": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_categories\n                (category_id, recipe_id)\n                SELECT category_id, $1 FROM UNNEST($2::int[]) as category_id;\n            "
+  },
+  "c4f5787faa98264392fbb38b283e9a6184b7674b0f774118efceed9a2443d1da": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "password",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT id, password FROM accounts WHERE email = $1\n        "
+  },
+  "c6d2a62954c3d8e1c70581bece4a51502eca5c4c68020f41ddfeb1abb376005d": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "email",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "display_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "creation_date",
+          "ordinal": 3,
+          "type_info": "Date"
+        },
+        {
+          "name": "is_admin",
+          "ordinal": 4,
+          "type_info": "Bool"
+        },
+        {
+          "name": "is_validated",
+          "ordinal": 5,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                email,\n                display_name,\n                creation_date,\n                is_admin,\n                is_validated\n            FROM accounts\n            WHERE email = $1\n        "
+  },
+  "cb3e175eb47ce962b0462f29b2d2f347a7ebba43b91b07e3b102abc90d8821e9": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM categories\n            WHERE name = $1\n        "
+  },
+  "cb4acddc0d089389bce84fd5e9bf4c139577c0a703b7afa72036622dcb6e39c0": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "display_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                distinct(author_id) as id,\n                display_name\n            FROM recipes r\n            INNER JOIN accounts a on r.author_id = a.id\n        "
+  },
+  "cd5fe37ac5ebfdab801d906b18f1c986f8773531206d3516806122017dadf438": {
+    "describe": {
+      "columns": [
+        {
+          "name": "account_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "token",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT account_id, token, valid_until\n            FROM account_validation_tokens\n            WHERE token = $1\n        "
+  },
+  "ce32b310b649ceb665a2c6da18dd9d3993c877bd2be2006b140f2d32bec51dbc": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "full_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "short_name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                full_name,\n                short_name\n            FROM units\n            WHERE full_name = $1\n        "
+  },
+  "cfdefe2e21a43371a51360042c5b80502f731bc55da9af456bc552a88e56dece": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "label",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name,\n                label\n            FROM seasons\n            ORDER BY id\n        "
+  },
+  "dc1caa0eb2c16997a962a0918ae2ea172cafca57f61b185a9f52c37dec9244da": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM recipes\n            WHERE id = $1\n        "
+  },
+  "e1ff31f6eb4ecc02405c16d250d31069e7dc4d971d83ff4734a835544cd89629": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM tags\n            ORDER BY name\n        "
+  },
+  "e622579f9465119364a11d92d7e0574f5bcc32d22570085ea8640975d05149c1": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM categories\n            WHERE id = $1\n        "
+  },
+  "e81e0efaf3a303873e3dc89b717a48a88eb149f626e3359000ae620911adf87d": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array",
+          "Float4Array",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_ingredients\n                (recipe_id, ingredient_id, quantity, unit_id)\n                SELECT $1, ingredient_id, quantity, unit_id\n                FROM\n                    UNNEST($2::int[], $3::real[], $4::int[])\n                    AS x(ingredient_id, quantity, unit_id)\n            "
+  },
+  "ea30aadcfde2203e39d08eaa3e13ba7e452c966df3b6211a71e8c592a9e357f3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE ingredients SET\n                name = sentence_case($1),\n                default_unit_id = $2\n            WHERE id = $3\n        "
+  },
+  "ee3284bb16c0ac41614c2b184a07bbcac00d524d271457b89b07a5716cd8e4eb": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO tags (name)\n                VALUES (sentence_case($1))\n            RETURNING id;\n        "
+  },
+  "f1891a09b27f370c8bdaa1839dacbf40e88610e57b59ddd5553a97e88cbcec08": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "\n                INSERT INTO recipes_seasons\n                (season_id, recipe_id)\n                SELECT season_id, $1 FROM UNNEST($2::int[]) as season_id;\n            "
+  },
+  "f373ebe11a0815be5c693e489e5327f2200cae3755e419a6d5ed3a2c2d53a2e4": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name\n            FROM categories\n            ORDER BY name\n        "
+  },
+  "f5a1aedcc1c3ca08f462243566e9d9bae5b3f8a05193259b31143f44436b4194": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_unit: unit::FromDB",
+          "ordinal": 2,
+          "type_info": "Record"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT\n                i.id as id,\n                i.name as name,\n                CASE WHEN i.default_unit_id is null THEN\n                    null\n                ELSE\n                    (\n                    u.id,\n                    u.full_name,\n                    u.short_name\n                    )\n                END as \"default_unit: unit::FromDB\"\n            FROM\n                ingredients as i\n                LEFT JOIN units as u\n                ON i.default_unit_id = u.id\n            ORDER BY name\n        "
+  },
+  "fa55d0a2961da500ebf689d251c0f7b60bb437c24e626a9bcb568bc195d21ce6": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "label",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT\n                id,\n                name,\n                label\n            FROM diets\n            WHERE id = $1\n        "
+  }
+}
