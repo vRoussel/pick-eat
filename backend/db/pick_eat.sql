@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.0-beta1
--- PostgreSQL version: 14.0
+-- pgModeler version: 1.0.2
+-- PostgreSQL version: 13.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
@@ -194,6 +194,7 @@ CREATE TABLE public.accounts (
 	email text NOT NULL,
 	password text NOT NULL,
 	is_admin bool NOT NULL DEFAULT false,
+	is_validated bool NOT NULL DEFAULT false,
 	CONSTRAINT accounts_pk PRIMARY KEY (id),
 	CONSTRAINT accounts_uq_display_name UNIQUE (display_name),
 	CONSTRAINT accounts_uq_email UNIQUE (email)
@@ -415,6 +416,18 @@ $$;
 ALTER FUNCTION public.get_diets_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.account_validation_tokens | type: TABLE --
+-- DROP TABLE IF EXISTS public.account_validation_tokens CASCADE;
+CREATE TABLE public.account_validation_tokens (
+	account_id integer NOT NULL,
+	token text NOT NULL,
+	valid_until timestamptz NOT NULL
+
+);
+-- ddl-end --
+ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
@@ -517,6 +530,13 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.recipes_diets DROP CONSTRAINT IF EXISTS recipes_diets_fk_diet_id CASCADE;
 ALTER TABLE public.recipes_diets ADD CONSTRAINT recipes_diets_fk_diet_id FOREIGN KEY (diet_id)
 REFERENCES public.diets (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: account_validation_tokens_fk_account_id | type: CONSTRAINT --
+-- ALTER TABLE public.account_validation_tokens DROP CONSTRAINT IF EXISTS account_validation_tokens_fk_account_id CASCADE;
+ALTER TABLE public.account_validation_tokens ADD CONSTRAINT account_validation_tokens_fk_account_id FOREIGN KEY (account_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 

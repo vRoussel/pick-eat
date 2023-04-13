@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-beta1" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="18"
+<dbmodel pgmodeler-ver="1.0.2" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="20"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -249,10 +249,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</element>
 </opclass>
 
-<table name="accounts" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="accounts" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<position x="320" y="300"/>
+	<position x="300" y="260"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -270,6 +270,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="text" length="0"/>
 	</column>
 	<column name="is_admin" not-null="true" default-value="false">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="is_validated" not-null="true" default-value="false">
 		<type name="bool" length="0"/>
 	</column>
 	<constraint name="accounts_pk" type="pk-constr" table="public.accounts">
@@ -558,6 +561,21 @@ CAUTION: Do not modify this file unless you know what you are doing.
 ]]> </definition>
 </function>
 
+<table name="account_validation_tokens" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="20" y="80"/>
+	<column name="account_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="token" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="valid_until" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+</table>
+
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
 	<columns names="tag_id" ref-type="src-columns"/>
@@ -648,6 +666,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="account_validation_tokens_fk_account_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.accounts" table="public.account_validation_tokens">
+	<columns names="account_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_recipes_tags_tags" type="relfk" layers="0"
 	 src-table="public.recipes_tags"
 	 dst-table="public.tags" reference-fk="recipes_tags_fk_tag_id"
@@ -733,6 +757,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_recipes_diets_diets" type="relfk" layers="0"
 	 src-table="public.recipes_diets"
 	 dst-table="public.diets" reference-fk="recipes_diets_fk_diet_id"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_account_validation_tokens_accounts" type="relfk" layers="0"
+	 src-table="public.account_validation_tokens"
+	 dst-table="public.accounts" reference-fk="account_validation_tokens_fk_account_id"
 	 src-required="false" dst-required="true"/>
 
 </dbmodel>
