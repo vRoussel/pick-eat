@@ -37,6 +37,7 @@
               @mousedown="save_unit_search"
               @click="open_unit_modal"
               type="button"
+              tabindex=-1
             >Unité manquante ?</button>
           </label>
           <multiselect

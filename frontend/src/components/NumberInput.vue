@@ -6,6 +6,7 @@
           class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l focus:!outline-none"
           :class="this.badvalue && '!input-error'"
           @click="decrement"
+          tabindex=-1
         >
           <span class="m-auto text-2xl font-thin">−</span>
         </button>
@@ -22,6 +23,7 @@
           class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r focus:!outline-none"
           :class="this.badvalue && '!input-error'"
           @click="increment"
+          tabindex=-1
         >
           <span class="m-auto text-2xl font-thin">+</span>
         </button>
