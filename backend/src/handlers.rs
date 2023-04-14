@@ -6,6 +6,7 @@ pub mod recipes;
 pub mod seasons;
 pub mod sessions;
 pub mod tags;
+pub mod tokens;
 pub mod units;
 
 use std::{future::Future, pin::Pin, sync::RwLock};

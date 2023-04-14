@@ -16,7 +16,7 @@ pub struct FromDBPrivate {
     pub id: i32,
     pub display_name: String,
     pub email: String,
-    pub creation_date: time::Date,
+    pub creation_date: chrono::NaiveDate,
     pub is_admin: bool,
 }
 

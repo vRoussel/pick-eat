@@ -56,7 +56,8 @@ async fn start_web_server(
                     .configure(handlers::seasons::config)
                     .configure(handlers::diets::config)
                     .configure(handlers::accounts::config)
-                    .configure(handlers::sessions::config),
+                    .configure(handlers::sessions::config)
+                    .configure(handlers::tokens::config),
             )
     })
     .bind("127.0.0.1:8080")?
