@@ -34,7 +34,7 @@ pub async fn login(
             Ok(account_id) => account_id,
             Err(_) => {
                 let mut ret = APIAnswer::new();
-                ret.add_text_error("Email ou mot de passe incorrect");
+                ret.add_error("Email ou mot de passe incorrect");
                 return HttpResponse::Unauthorized().json(ret);
             }
         };
