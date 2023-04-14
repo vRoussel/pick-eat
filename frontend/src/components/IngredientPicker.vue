@@ -26,12 +26,14 @@
       @mousedown="save_ingredient_search"
       @click="open_ingr_modal"
       type="button"
+      tabindex=-1
     >Ingrédient manquant ?</button>
     <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
       @mousedown="save_unit_search"
       @click="open_unit_modal"
       type="button"
+      tabindex=-1
     >Unité manquante ?</button>
   </div>
   <div class="flex flex-col items-center mt-2 gap-y-5">
