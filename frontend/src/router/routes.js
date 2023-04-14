@@ -5,6 +5,7 @@ import Recipe from '@/views/Recipe.vue'
 import RecipeList from '@/views/RecipeList.vue'
 import Login from '@/views/Login.vue'
 import Account from '@/views/Account.vue'
+import AccountValidation from '@/views/AccountValidation.vue'
 import Register from '@/views/Register.vue'
 import { useAuthStore } from '@/store/auth.js'
 
@@ -61,6 +62,16 @@ const routes = [
         props: route => ({ edit: 'edit' in route.query }),
         meta: {
             title: 'Mon Compte - PickEat'
+        }
+    },
+    {
+        name: 'account_validation',
+        path: '/account_validation',
+        component: AccountValidation,
+        props: route => ({ token: route.query.token }),
+        meta: {
+            title: 'Validation de compte - PickEat',
+            public: true
         }
     },
     {
