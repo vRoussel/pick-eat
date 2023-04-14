@@ -3,17 +3,17 @@ server {
     listen [::]:443 ssl;
     ssl_certificate {{ ssl_certif }};
     ssl_certificate_key {{ ssl_certif_key }};
-	server_name {{ pickeat_site_url }};
+    server_name {{ pickeat_site_url }};
 
-	location / {
+    location / {
         root /var/www/{{ pickeat_site_url }};
         try_files $uri $uri/ /index.html;
-	}
+    }
 
-	location /api {
-		rewrite ^/api(.*)$ $1 break;
-		proxy_pass http://localhost:8080;
-	}
+    location /api {
+        rewrite ^/api(.*)$ $1 break;
+        proxy_pass http://localhost:8080;
+    }
 }
 
 server {
