@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
 use log::*;
 use sqlx::postgres::PgPool;
 
@@ -12,11 +12,25 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 pub async fn create_account_validation_token(
     db_pool: web::Data<PgPool>,
     email_sender: web::Data<EmailSender>,
-    req: web::Json<token::New>,
+    body: web::Json<token::New>,
+    req: HttpRequest,
 ) -> impl Responder {
+    let headers = req.headers();
+    let host = match headers.get("Host") {
+        Some(h) => h.to_str().unwrap(),
+        None => return HttpResponse::BadRequest().finish(),
+    };
+
+    let scheme = match headers.get("X-Forwarded-Proto") {
+        Some(h) => h.to_str().unwrap(),
+        None => return HttpResponse::BadRequest().finish(),
+    };
+
+    let base_url = format!("{}://{}", scheme, host);
+
     let mut transaction = db_pool.begin().await.unwrap();
 
-    let token = match token::add_validation_token(&mut transaction, &req).await {
+    let token = match token::add_validation_token(&mut transaction, &body).await {
         Ok(t) => t,
         Err(e) => {
             error!("{}", e);
@@ -26,7 +40,7 @@ pub async fn create_account_validation_token(
 
     if let Some(t) = token {
         if let Err(e) = email_sender
-            .send_account_validation_email(&req.email, &t.token)
+            .send_account_validation_email(&body.email, &t.token, &base_url)
             .await
         {
             error!("{}", e);
