@@ -3,6 +3,7 @@
         <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="login">
             <h1 class="text-xl font-bold text-center">Connexion</h1>
             <p class="text-center">Vous n'avez pas encore de compte ? <router-link to="/register">Créer un compte</router-link></p>
+            <p v-if="show_resend_validation_email" class="text-center"> Vous n'avez pas reçu l'email de validation ? <span class="link link-primary no-underline" @click="resend_validation_email">Renvoyer</span></p>
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">Adresse mail</span>
@@ -62,6 +63,7 @@ export default {
         return {
             email: null,
             password: null,
+            show_resend_validation_email: false,
             errors: {
                 email: null,
                 password: null
@@ -88,6 +90,8 @@ export default {
                     })
                     .catch(err => {
                         handle_form_api_errors(err.response, this.errors, this.notifStore)
+                        if (err.response.data.errors.find(x => x.key == "account_pending_validation"))
+                            this.show_resend_validation_email = true
                     });
                 })
                 .catch(err => {
@@ -102,6 +106,11 @@ export default {
             .catch(err => {
                 setTimeout(() => this.errors[field] = err.message, 200)
             });
+        },
+        resend_validation_email() {
+            this.show_resend_validation_email = false
+            this.authStore.ask_account_validation_token(this.email)
+            this.notifStore.show_info("Nouvel email de confirmation envoyé")
         }
     }
 }
