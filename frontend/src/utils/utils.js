@@ -32,6 +32,8 @@ export function isOverflown(element) {
 }
 
 export function handle_form_api_errors(api_answer, errors_map, toast_elem) {
+    if (!Object.hasOwn(api_answer.data, "errors"))
+        return
     let popup_shown = false
     api_answer.data.errors.forEach(error => {
         if (Object.hasOwn(error,"field_name")) {
