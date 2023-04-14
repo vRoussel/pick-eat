@@ -103,7 +103,7 @@
     </transition>
   </router-view>
   <grocery-list-modal ref="grocery_list_modal" />
-  <toast :error_queue="notifStore.error_msgs""></toast>
+  <toast :error_queue="notifStore.error_msgs" :info_queue="notifStore.info_msgs"></toast>
 </template>
 
 <script>

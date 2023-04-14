@@ -5,6 +5,11 @@
                 <span>{{ msg }}</span>
             </div>
         </div>
+        <div v-for="msg in info_queue" :key="msg" class="alert alert-info">
+            <div>
+                <span>{{ msg }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -12,6 +17,9 @@
     export default {
         props: {
             error_queue: {
+                type: Array()
+            },
+            info_queue: {
                 type: Array()
             }
         }
