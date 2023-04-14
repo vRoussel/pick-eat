@@ -62,6 +62,7 @@
 import { mapStores } from 'pinia'
 import { useAuthStore } from '@/store/auth.js'
 import { useNotifStore } from '@/store/notif.js'
+import Swal from 'sweetalert2'
 import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
 import { object, string } from "yup";
 
@@ -103,6 +104,11 @@ export default {
                 .then(() => {
                     this.errors = {};
                     this.authStore.register(this.email, this.password, this.name).then(() => {
+                        Swal.fire({
+                          title: 'Inscription (presque) terminée',
+                          icon: 'success',
+                          text: 'Cliquez sur le lien reçu par email pour valider votre inscription'
+                        })
                         this.authStore.ask_account_validation_token(this.email)
                         this.$router.push('/login')
                         this.email = null
