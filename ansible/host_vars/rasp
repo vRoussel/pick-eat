@@ -1,4 +1,4 @@
-pickeat_site_url: pickeat.internal
+pickeat_site_url: preprod.pick-eat.fr
 session_cookie_secret: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64363131303337393734633632623363336539613731666266366366346431383261333865383762
