@@ -1,0 +1,3 @@
+certbot_certif_root: /etc/letsencrypt/live
+ssl_certif: "{{ certbot_certif_root }}/{{ pickeat_site_url }}/fullchain.pem"
+ssl_certif_key: "{{ certbot_certif_root }}/{{ pickeat_site_url }}/privkey.pem"
