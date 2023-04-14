@@ -5,6 +5,12 @@
     name:
       - nginx
 
+- name: Make sure nginx service is enabled and running
+  systemd:
+    enabled: true
+    state: started
+    name: nginx.service
+
 - name: Copy static files
   tags: app
   synchronize:
