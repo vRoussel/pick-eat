@@ -24,6 +24,7 @@ async fn start_web_server(
     let db_pool_data = web::Data::new(db_pool);
     let email_sender_data = web::Data::new(email_sender);
     let secret_key = Key::from(conf.sessions.cookie_secret.as_bytes());
+    let cookie_secure = conf.sessions.cookie_secure;
 
     let redis_conn_str = format!(
         "redis://:{}@{}:{}",
@@ -41,7 +42,7 @@ async fn start_web_server(
                 SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
                     .cookie_content_security(CookieContentSecurity::Signed)
                     .cookie_same_site(actix_web::cookie::SameSite::Strict)
-                    .cookie_secure(true)
+                    .cookie_secure(cookie_secure)
                     .build(),
             )
             .app_data(db_pool_data.clone())
