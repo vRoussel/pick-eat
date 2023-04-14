@@ -42,6 +42,16 @@ pub async fn login(
         Ok(Some(account)) => account,
         _ => return HttpResponse::InternalServerError().finish(),
     };
+
+    if !account.is_validated {
+        let mut ret = APIAnswer::new();
+        ret.add_error_with_key(
+            "Veuillez valider votre compte avec le lien reçu par mail",
+            "account_pending_validation",
+        );
+        return HttpResponse::Unauthorized().json(ret);
+    }
+
     Identity::login(&request.extensions(), account_id.to_string()).unwrap();
     let session_user = User {
         id: account.id,
