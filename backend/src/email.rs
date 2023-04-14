@@ -26,6 +26,7 @@ impl EmailSender {
         self: &Self,
         address: &str,
         token: &str,
+        base_url: &str,
     ) -> Result<(), String> {
         let body = EmailReq {
             api_key: self.api_key.clone(),
@@ -37,10 +38,10 @@ impl EmailSender {
                 \n\
                 Bienvenue sur Pick Eat ! :)\n\
                 Cliquez sur le lien suivant pour valider la création de votre compte :\n\
-                https://www.pick-eat.fr/account_validation?token={}",
+                {}/account_validation?token={}\n\
                 \n\
                 A très vite !",
-                token
+                base_url, token
             ),
         };
 
