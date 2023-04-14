@@ -18,6 +18,7 @@ pub struct FromDBPrivate {
     pub email: String,
     pub creation_date: chrono::NaiveDate,
     pub is_admin: bool,
+    pub is_validated: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -169,7 +170,8 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
                 email,
                 display_name,
                 creation_date,
-                is_admin
+                is_admin,
+                is_validated
             FROM accounts
             WHERE id = $1
         ",
@@ -193,7 +195,8 @@ pub async fn get_one_by_name(
                 email,
                 display_name,
                 creation_date,
-                is_admin
+                is_admin,
+                is_validated
             FROM accounts
             WHERE display_name = $1
         ",
@@ -217,7 +220,8 @@ pub async fn get_one_by_email(
                 email,
                 display_name,
                 creation_date,
-                is_admin
+                is_admin,
+                is_validated
             FROM accounts
             WHERE email = $1
         ",

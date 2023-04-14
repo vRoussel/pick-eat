@@ -78,7 +78,7 @@ impl FromRequest for Admin {
 #[serde(untagged)]
 pub enum APIError {
     FieldError { field_name: String, error: String },
-    TextError { error: String },
+    TextError { error: String, key: Option<String> },
 }
 
 #[derive(Serialize)]
@@ -101,6 +101,14 @@ impl APIAnswer {
     fn add_error(&mut self, error: &str) {
         self.errors.push(APIError::TextError {
             error: error.to_owned(),
+            key: None,
+        });
+    }
+
+    fn add_error_with_key(&mut self, error: &str, key: &str) {
+        self.errors.push(APIError::TextError {
+            error: error.to_owned(),
+            key: Some(key.to_owned()),
         });
     }
 
