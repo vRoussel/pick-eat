@@ -25,10 +25,17 @@ pub struct SessionsConf {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EmailConf {
+    pub api_key: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
 pub struct Conf {
     pub database: DBConf,
     pub redis: RedisConf,
     pub sessions: SessionsConf,
+    pub email: EmailConf,
 }
 
 pub fn parse_conf(conf_path: &std::path::PathBuf) -> Conf {

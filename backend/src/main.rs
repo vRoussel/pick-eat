@@ -11,12 +11,18 @@ use sqlx::postgres::PgPool;
 
 mod conf;
 mod database;
+mod email;
 mod handlers;
 mod query_params;
 mod resources;
 
-async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
+async fn start_web_server(
+    db_pool: PgPool,
+    email_sender: email::EmailSender,
+    conf: Conf,
+) -> std::io::Result<()> {
     let db_pool_data = web::Data::new(db_pool);
+    let email_sender_data = web::Data::new(email_sender);
     let secret_key = Key::from(conf.sessions.cookie_secret.as_bytes());
 
     let redis_conn_str = format!(
@@ -39,6 +45,7 @@ async fn start_web_server(db_pool: PgPool, conf: Conf) -> std::io::Result<()> {
                     .build(),
             )
             .app_data(db_pool_data.clone())
+            .app_data(email_sender_data.clone())
             .service(
                 web::scope("/v1")
                     .configure(handlers::recipes::config)
@@ -108,6 +115,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Starting");
     let conf = parse_conf(&args.conf);
     let db_pool = database::get_pool(&conf.database).await?;
-    start_web_server(db_pool, conf).await?;
+    let email_sender = email::EmailSender::new(conf.email.api_key.clone());
+    start_web_server(db_pool, email_sender, conf).await?;
     Ok(())
 }
