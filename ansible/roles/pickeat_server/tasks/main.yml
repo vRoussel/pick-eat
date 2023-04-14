@@ -1,3 +1,32 @@
+- name: Install redis-server
+  apt:
+    update_cache: true
+    cache_valid_time: 86400
+    name:
+      - redis-server
+
+- name: Install redis conf
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis-pickeat.conf
+    mode: '0440'
+    owner: redis
+    group: redis
+  notify: Restart redis
+
+- name: Make sure redis service is enabled and running
+  systemd:
+    enabled: true
+    state: started
+    name: redis-server@pickeat.service
+
+- name: Add current user to redis group
+  user:
+    name: "{{ ansible_user }}"
+    groups: redis
+    append: true
+  ignore_errors: "{{ ansible_check_mode }}"
+
 - name: Install pickeat binary
   tags: app
   copy:
@@ -17,8 +46,8 @@
     group: pickeat
 
 - name: Install pickeat conf
-  copy:
-    src: pickeat.conf
+  template:
+    src: pickeat.conf.j2
     dest: /etc/pickeat/pickeat.conf
     mode: '0440'
     owner: pickeat
