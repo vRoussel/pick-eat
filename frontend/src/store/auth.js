@@ -82,5 +82,15 @@ export const useAuthStore = defineStore('auth', {
             await axios.put(`${API_ROOT}/accounts/me`, post, { 'headers': headers })
             await this.load_account()
         },
+        async ask_account_validation_token(email) {
+            let post = {
+                'email': email
+            }
+            let headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+            await axios.post(`${API_ROOT}/accounts/validation/tokenrequest`, post, { 'headers': headers })
+        }
     }
 })

@@ -103,6 +103,7 @@ export default {
                 .then(() => {
                     this.errors = {};
                     this.authStore.register(this.email, this.password, this.name).then(() => {
+                        this.authStore.ask_account_validation_token(this.email)
                         this.$router.push('/login')
                         this.email = null
                         this.password = null
