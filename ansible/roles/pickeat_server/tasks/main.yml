@@ -88,3 +88,12 @@
         line: "export XDG_RUNTIME_DIR=\"/run/user/$UID\""
         dest: "$HOME/.bashrc"
   notify: Restart pickeat systemd service
+
+- name: Make sure pickeat server is enabled and running
+  become_user: pickeat
+  systemd:
+    daemon_reload: true
+    enabled: true
+    scope: user
+    state: started
+    name: pickeat.service
