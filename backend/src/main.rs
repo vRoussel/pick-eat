@@ -9,6 +9,8 @@ use log::*;
 use simplelog::*;
 use sqlx::postgres::PgPool;
 
+use crate::database::init_database;
+
 mod conf;
 mod database;
 mod email;
@@ -117,6 +119,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Starting");
     let conf = parse_conf(&args.conf);
     let db_pool = database::get_pool(&conf.database).await?;
+    init_database(&db_pool)
+        .await
+        .expect("Error while initializing DB");
     let email_sender = email::EmailSender::new(conf.email.api_key.clone());
     start_web_server(db_pool, email_sender, conf).await?;
     Ok(())
