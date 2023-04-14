@@ -22,6 +22,7 @@ pub struct RedisConf {
 #[serde(deny_unknown_fields)]
 pub struct SessionsConf {
     pub cookie_secret: String,
+    pub cookie_secure: bool,
 }
 
 #[derive(Debug, serde::Deserialize)]
