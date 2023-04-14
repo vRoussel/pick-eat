@@ -46,7 +46,7 @@ pub async fn add_one(
     account: web::Json<account::New>,
     db_pool: web::Data<PgPool>,
 ) -> impl Responder {
-    let mut db_conn = db_pool.begin().await.unwrap();
+    let mut db_conn = db_pool.acquire().await.unwrap();
 
     let mut ret = APIAnswer::new();
     validate_new_account(&account, &mut ret, &mut db_conn).await;
@@ -63,10 +63,6 @@ pub async fn add_one(
             }
         },
     };
-
-    if db_conn.commit().await.is_err() {
-        return HttpResponse::InternalServerError().finish();
-    }
 
     HttpResponse::Created()
         .insert_header((http::header::LOCATION, format!("/{}", new_id)))
