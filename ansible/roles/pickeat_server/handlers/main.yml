@@ -6,3 +6,11 @@
     scope: user
     state: restarted
     name: pickeat.service
+
+- name: Restart redis
+  systemd:
+    daemon_reload: true
+    enabled: true
+    scope: system
+    state: restarted
+    name: redis-server@pickeat.service
