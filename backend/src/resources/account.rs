@@ -44,6 +44,12 @@ pub struct Update {
     pub new_display_name: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Validate {
+    pub token: String,
+}
+
 pub type Ref = i32;
 
 #[derive(Debug)]
@@ -351,4 +357,17 @@ pub async fn remove_fav_recipe(
     .execute(db_conn)
     .await?;
     Ok(Some(()))
+}
+
+pub async fn validate_account(db_conn: &mut PgConnection, account_id: i32) -> Result<(), Error> {
+    query!(
+        "
+            UPDATE accounts SET is_validated = 't'
+            WHERE id = $1
+        ",
+        account_id
+    )
+    .execute(db_conn)
+    .await?;
+    Ok(())
 }
