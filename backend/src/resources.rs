@@ -6,6 +6,7 @@ pub mod qingredient;
 pub mod recipe;
 pub mod season;
 pub mod tag;
+pub mod token;
 pub mod unit;
 
 use sqlx::{postgres::PgConnection, query, Row};

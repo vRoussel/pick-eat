@@ -16,7 +16,7 @@ pub struct FromDB {
     prep_time_min: i16,
     cook_time_min: i16,
     image: String,
-    publish_date: time::Date,
+    publish_date: chrono::NaiveDate,
     instructions: Vec<String>,
     n_shares: i16,
     is_favorite: bool,
