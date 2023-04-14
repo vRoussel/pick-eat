@@ -98,7 +98,7 @@ impl APIAnswer {
         });
     }
 
-    fn add_text_error(&mut self, error: &str) {
+    fn add_error(&mut self, error: &str) {
         self.errors.push(APIError::TextError {
             error: error.to_owned(),
         });
