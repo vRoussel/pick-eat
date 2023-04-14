@@ -37,12 +37,12 @@ export function handle_form_api_errors(api_answer, errors_map, toast_elem) {
         if (Object.hasOwn(error,"field_name")) {
             errors_map[error.field_name] = error.error;
         } else {
-            toast_elem.show(error.error)
+            toast_elem.show_error(error.error)
             popup_shown = true
         }
     })
     if (!popup_shown) {
-        toast_elem.show("Veuillez corriger les erreurs et réessayer")
+        toast_elem.show_error("Veuillez corriger les erreurs et réessayer")
     }
 }
 
@@ -50,5 +50,5 @@ export function handle_form_local_errors(errors, errors_map, toast_elem) {
     errors.forEach(error => {
         errors_map[error.path] = error.message;
     });
-    toast_elem.show("Veuillez corriger les erreurs et réessayer")
+    toast_elem.show_error("Veuillez corriger les erreurs et réessayer")
 }

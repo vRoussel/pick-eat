@@ -1,6 +1,6 @@
 <template>
     <div class="toast">
-        <div v-for="msg in msg_queue" :key="msg" class="alert alert-error">
+        <div v-for="msg in error_queue" :key="msg" class="alert alert-error">
             <div>
                 <span>{{ msg }}</span>
             </div>
@@ -11,7 +11,7 @@
 <script>
     export default {
         props: {
-            msg_queue: {
+            error_queue: {
                 type: Array()
             }
         }

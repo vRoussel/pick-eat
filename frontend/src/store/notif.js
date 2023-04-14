@@ -3,13 +3,13 @@ import {defineStore } from 'pinia'
 export const useNotifStore = defineStore('notif', {
     state: () => {
         return {
-            messages: new Array()
+            error_msgs: new Array(),
         }
     },
     actions: {
-        show(msg) {
-            this.messages.push(msg)
-            setTimeout(() => this.messages.shift(), 5000)
+        show_error(msg) {
+            this.error_msgs.push(msg)
+            setTimeout(() => this.error_msgs.shift(), 5000)
         }
     }
 })
