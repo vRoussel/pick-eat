@@ -30,11 +30,16 @@ impl EmailSender {
         let body = EmailReq {
             api_key: self.api_key.clone(),
             to: vec![address.to_owned()],
-            sender: "pick-eat <noreply@pick-eat.fr>".to_owned(),
+            sender: "Pick Eat <noreply@pick-eat.fr>".to_owned(),
             subject: "Validation de votre compte pick-eat".to_owned(),
             text_body: format!(
-                "Bonjour et bienvenue sur pick-eat, cliquez sur le lien suivant pour valider la création de votre compte:\n\
+                "Bonjour,\n\
+                \n\
+                Bienvenue sur Pick Eat ! :)\n\
+                Cliquez sur le lien suivant pour valider la création de votre compte :\n\
                 https://www.pick-eat.fr/account_validation?token={}",
+                \n\
+                A très vite !",
                 token
             ),
         };
