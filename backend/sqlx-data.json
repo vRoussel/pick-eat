@@ -22,6 +22,16 @@
     },
     "query": "\n            INSERT INTO accounts (display_name, email, password)\n                VALUES ($1, $2, $3)\n            RETURNING id;\n        "
   },
+  "01392ec7319ed497b810ae758e173e74ef987f83b10b440bce2bf5f18d3f5b53": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        INSERT INTO diets (label,name) VALUES\n            ('vegetarian', 'Végétarien')\n            ,('vegan', 'Vegan')\n        ON CONFLICT DO NOTHING\n        ;\n    "
+  },
   "050c210f13c4df1579d095737d3c2b76349fa9a1986f3de4d13f10d380f46654": {
     "describe": {
       "columns": [
@@ -246,6 +256,16 @@
       }
     },
     "query": "\n                INSERT INTO recipes_diets\n                (diet_id, recipe_id)\n                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id\n                ON CONFLICT DO NOTHING;\n            "
+  },
+  "1be479c143ee4a78f301c9283b15ed2e8aaabb86fe3e89c084c45d759e9a4588": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        INSERT INTO seasons (label,name) VALUES\n            ('spring', 'Printemps')\n            ,('summer', 'Été')\n            ,('fall', 'Automne')\n            ,('winter', 'Hiver')\n        ON CONFLICT DO NOTHING\n        ;\n    "
   },
   "20a5a39661ae91c91c5e60fa21f90816a2e19b5cdbe62f50bd64efe6e6e0a24f": {
     "describe": {
@@ -561,6 +581,16 @@
     },
     "query": "\n                INSERT INTO recipes_categories\n                (category_id, recipe_id)\n                SELECT category_id, $1 FROM UNNEST($2::int[]) as category_id\n                ON CONFLICT DO NOTHING;\n            "
   },
+  "6e914fe16f8e3d63a28599816d47b4f0fbfceb58ec20c0e8f0c36b75c878ebff": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        INSERT INTO tags (name) VALUES\n            ('Rapide')\n            ,('Réconfortant')\n            ,('Grosse faim')\n        ON CONFLICT DO NOTHING\n        ;\n    "
+  },
   "772ebe352af9ddd502ab3815f9d0725135bc1a48053b13ee5b8eb3ff5b91c57e": {
     "describe": {
       "columns": [],
@@ -672,6 +702,16 @@
     },
     "query": "\n            DELETE FROM units\n            WHERE id = $1\n        "
   },
+  "8f2d766474c281c1da06121845e5290b23ac5f2a071cc836cba5ab86bde64fdb": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        INSERT INTO units (full_name,short_name) VALUES\n            ('Grammes', 'g')\n            ,('Kilogrammes', 'kg')\n            ,('Litres', 'L')\n            ,('Centilitres', 'cL')\n            ,('Millilitres', 'mL')\n            ,('Cuillères à soupe', 'cas')\n            ,('Cuillères à café', 'cac')\n            ,('Poignées', 'poignées')\n            ,('Pincées', 'pincées')\n            ,('Boules', 'boules')\n            ,('Pots', 'pots')\n        ON CONFLICT DO NOTHING\n        ;\n    "
+  },
   "95bafec33a594739041d2d8db1cee834e394740d400eb4ec4491557de8f888d9": {
     "describe": {
       "columns": [],
@@ -697,6 +737,16 @@
       }
     },
     "query": "\n            UPDATE categories SET\n                name = sentence_case($1)\n            WHERE id = $2\n        "
+  },
+  "9cf60fdae92fed5ab2fc8c8ee854bc5dbaa2ab510d09ef1aac72d54912ad2dce": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        INSERT INTO categories (name) VALUES\n            ('Petit dej')\n            ,('Repas')\n            ,('Gouter')\n            ,('Dessert')\n        ON CONFLICT DO NOTHING\n        ;\n    "
   },
   "aa520231eebf614148babd03fe40c5ff86c759a7f9852416aefd98c0ea3b8c2f": {
     "describe": {
