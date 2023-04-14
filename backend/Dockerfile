@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM rust:1.61 as builder
+FROM --platform=$BUILDPLATFORM rust:1.68 as builder
 
 RUN apt update && apt upgrade -y
 ARG TARGETPLATFORM
