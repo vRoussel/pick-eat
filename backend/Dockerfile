@@ -21,6 +21,7 @@ ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
 WORKDIR /usr/src/pickeat/
 COPY src/ src/
 COPY Cargo.lock Cargo.toml .
+COPY sqlx-data.json .
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=./target \
     cargo install --path . --target $(cat /rust_target.txt)
