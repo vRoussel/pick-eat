@@ -27,7 +27,13 @@
     mode: '0444'
   notify: Reload nginx service
 
-- name: Enable site
+- name: Disable default site
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: Reload nginx service
+
+- name: Enable pick-eat site
   file:
     path: "/etc/nginx/sites-enabled/{{ pickeat_site_url }}"
     state: link
