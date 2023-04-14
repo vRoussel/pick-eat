@@ -1,12 +1,14 @@
-use super::{db_error_to_http_response, APIError};
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 use sqlx::postgres::PgPool;
-use sqlx::{Error, PgConnection};
+use sqlx::PgConnection;
 
 use crate::handlers::{APIAnswer, Admin, User};
 use crate::resources::account;
+use crate::resources::token::{
+    check_validation_token_validity, delete_all_account_validation_tokens, TokenValidity,
+};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(add_one)
@@ -16,7 +18,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(get_all)
         .service(modify_current)
         .service(add_fav_recipe)
-        .service(remove_fav_recipe);
+        .service(remove_fav_recipe)
+        .service(validate_account);
 }
 
 async fn validate_new_account(
@@ -243,6 +246,48 @@ pub async fn remove_fav_recipe(
             error!("{}", e);
             return HttpResponse::InternalServerError().finish();
         }
+    }
+    HttpResponse::Ok().finish()
+}
+
+#[post("/accounts/validation")]
+pub async fn validate_account(
+    req: web::Json<account::Validate>,
+    db_pool: web::Data<PgPool>,
+) -> impl Responder {
+    let mut transaction = db_pool.begin().await.unwrap();
+    let validity = check_validation_token_validity(&mut transaction, &req.token).await;
+    let account_id = match validity {
+        Ok(v) => match v {
+            TokenValidity::Valid { account_id } => account_id,
+            _ => {
+                let mut ret = APIAnswer::new();
+                ret.add_error("Ce lien est incorrect ou expiré, essayez de vous connecter pour en générer un nouveau");
+                return HttpResponse::Unauthorized().json(ret);
+            }
+        },
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
+    if account::validate_account(&mut transaction, account_id)
+        .await
+        .is_err()
+    {
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    if delete_all_account_validation_tokens(&mut transaction, account_id)
+        .await
+        .is_err()
+    {
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    if transaction.commit().await.is_err() {
+        return HttpResponse::InternalServerError().finish();
     }
     HttpResponse::Ok().finish()
 }
