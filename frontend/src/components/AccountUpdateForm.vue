@@ -12,6 +12,7 @@
                 class="input input-bordered w-full"
                 :class="errors.old_password && '!input-error'"
                 @blur="validate('old_password')"
+                ref="old_password"
             >
             <label class="label" v-if="this.errors.old_password">
                 <span class="label-text-alt text-error">{{ errors.old_password }}</span>
@@ -124,6 +125,10 @@ export default {
     mounted() {
         this.email = this.account.email
         this.name = this.account.display_name
+        setTimeout(() =>  {
+            this.$refs.old_password.focus()
+            this.errors = {}
+        }, 50)
     },
     methods: {
         updateAccount() {
