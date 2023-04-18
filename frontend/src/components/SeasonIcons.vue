@@ -49,8 +49,8 @@ export default {
         dynClass(label) {
             return {
                 "text-primary" : this.has_season(label),
-                "text-accent" : !this.has_season(label),
-                "opacity-30" : !this.has_season(label)
+                "text-base-300" : !this.has_season(label),
+                "opacity-50" : !this.has_season(label)
             }
         },
         has_season(label) {
