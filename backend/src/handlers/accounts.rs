@@ -270,17 +270,13 @@ pub async fn validate_account(
         }
     };
 
-    if account::validate_account(&mut transaction, account_id)
-        .await
-        .is_err()
-    {
+    if let Err(e) = account::validate_account(&mut transaction, account_id).await {
+        error!("{:?}", e);
         return HttpResponse::InternalServerError().finish();
     }
 
-    if delete_all_account_validation_tokens(&mut transaction, account_id)
-        .await
-        .is_err()
-    {
+    if let Err(e) = delete_all_account_validation_tokens(&mut transaction, account_id).await {
+        error!("{:?}", e);
         return HttpResponse::InternalServerError().finish();
     }
 
