@@ -42,6 +42,9 @@
     apply:
       become_user: postgres
 
+- name: "Flush handlers"
+  meta: flush_handlers
+
 - include_tasks:
     file: db_model.yml
     apply:
