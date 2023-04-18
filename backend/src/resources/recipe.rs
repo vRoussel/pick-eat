@@ -151,7 +151,7 @@ pub async fn get_many(
                             CROSS JOIN
                             recipes AS r
                         GROUP BY r.id
-                        HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.4
+                        HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.7
                         )
                         ",
                     );
