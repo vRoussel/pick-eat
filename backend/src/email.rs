@@ -56,4 +56,40 @@ impl EmailSender {
             .map_err(|e| e.to_string())?;
         Ok(())
     }
+
+    pub async fn send_password_reset_email(
+        self: &Self,
+        address: &str,
+        token: &str,
+        base_url: &str,
+    ) -> Result<(), String> {
+        let body = EmailReq {
+            api_key: self.api_key.clone(),
+            to: vec![address.to_owned()],
+            sender: "Pick Eat <noreply@pick-eat.fr>".to_owned(),
+            subject: "Mot de passe oublié".to_owned(),
+            text_body: format!(
+                "Bonjour,\n\
+                \n\
+                Suite à votre demande, voici un lien pour réinitialiser votre mot de passe :\n\
+                {}/password_reset?token={}\n\
+                \n\
+                Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
+                \n\
+                A très vite !",
+                base_url, token
+            ),
+        };
+
+        let endpoint = format!("{}/email/send", SMTP2GO_API_ROOT);
+        info!("{:?}", body);
+        let client = reqwest::Client::new();
+        client
+            .post(endpoint)
+            .json(&body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+        Ok(())
+    }
 }
