@@ -132,6 +132,7 @@ pub async fn get_many(
     for f in filters {
         match f {
             Filter::Search(query) => {
+                let sanitized_query = query.split_whitespace().collect::<Vec<_>>().join(" ");
                 builder
                     .push(
                         "
@@ -140,13 +141,13 @@ pub async fn get_many(
                                 r.id,
                                 AVG(w.word <<-> unaccent(r.name)) AS rank
                             FROM
-                                ( SELECT UNNEST(STRING_TO_ARRAY(
+                                ( SELECT UNNEST(STRING_TO_ARRAY(unaccent(
                         ",
                     )
-                    .push_bind(query)
+                    .push_bind(sanitized_query)
                     .push(
                         "
-                        , ' ')) AS word ) AS w
+                        ), ' ')) AS word ) AS w
                             CROSS JOIN
                             recipes AS r
                         GROUP BY r.id
