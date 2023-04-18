@@ -22,7 +22,7 @@
       <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2 sm:p-0">
         <img
           :src="image"
-          class="rounded-xl"
+          class="rounded-xl w-[512px]"
         >
       </div>
       <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
