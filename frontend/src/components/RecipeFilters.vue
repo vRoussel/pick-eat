@@ -13,7 +13,7 @@
       </div>
       <div class="form-control relative grow">
         <div class="input-group">
-          <span class="icon text-xl">
+          <span class="icon text-xl bg-accent text-accent-content">
             <Icon
               :icon="icons.search"
               :inline="true"
@@ -102,7 +102,7 @@
             <input
               v-model="diets"
               type="checkbox"
-              class="checkbox checkbox-sm"
+              class="checkbox checkbox-sm checkbox-accent"
               :value="d.id"
             >
             <span class="label-text">{{ d.name }}</span>
@@ -122,7 +122,7 @@
             <input
               v-model="seasons"
               type="checkbox"
-              class="checkbox checkbox-sm"
+              class="checkbox checkbox-sm checkbox-accent"
               :value="s.id"
             >
             <span class="label-text">{{ s.name }}</span>
@@ -142,7 +142,7 @@
             <input
               v-model="categories"
               type="checkbox"
-              class="checkbox checkbox-sm"
+              class="checkbox checkbox-sm checkbox-accent"
               :value="c.id"
             >
             <span class="label-text">{{ c.name }}</span>

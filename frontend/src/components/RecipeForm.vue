@@ -34,7 +34,7 @@
               :class="errors.prep_time && '!input-error'"
               @blur="validate('prep_time')"
             >
-            <span class="bg-base-200 text-accent-content">minutes</span>
+            <span class="bg-accent text-accent-content">minutes</span>
           </label>
           <label class="label" v-if="this.errors.prep_time">
             <span class="label-text-alt text-error">{{ errors.prep_time }}</span>
@@ -53,7 +53,7 @@
               :class="errors.cook_time && '!input-error'"
               @blur="validate('cook_time')"
             >
-            <span class="bg-base-200 text-accent-content">minutes</span>
+            <span class="bg-accent text-accent-content">minutes</span>
           </label>
           <label class="label" v-if="this.errors.cook_time">
             <span class="label-text-alt text-error">{{ errors.cook_time }}</span>
