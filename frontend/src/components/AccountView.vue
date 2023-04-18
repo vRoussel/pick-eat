@@ -10,7 +10,7 @@
         <h1 class="text-xl font-bold text-center">Mon Compte</h1>
         <div class="form-control">
             <label class="label">
-                <span class="label-text">Nom</span>
+                <span class="label-text">Pseudo</span>
             </label>
             <input
                 v-model="this.account.display_name"

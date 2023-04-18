@@ -5,7 +5,7 @@
         <p class="text-center">Vous avez déjà un compte ? <router-link to="/login">Se connecter</router-link></p>
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text">Nom</span>
+                    <span class="label-text">Pseudo</span>
                 </label>
                 <input
                     v-model="name"
