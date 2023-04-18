@@ -351,6 +351,38 @@
     },
     "query": "\n            INSERT INTO account_validation_tokens (account_id, token, valid_until)\n            SELECT id, gen_random_uuid(), now() + interval '1 day'\n            FROM (\n                VALUES ($1)\n            ) x (email)\n            JOIN accounts USING (email)\n            RETURNING account_id, token, valid_until\n        "
   },
+  "3035094b87d7bc5f5d62088fa1603b26914515112de386717fb1c44f1f8615bc": {
+    "describe": {
+      "columns": [
+        {
+          "name": "account_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "token",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT account_id, token, valid_until\n            FROM password_reset_tokens\n            WHERE token = $1\n        "
+  },
   "36117b5c7fb20f6066697edcbdc1abb94247b86480085278f4fc0d5aa1de7064": {
     "describe": {
       "columns": [],
@@ -446,6 +478,19 @@
       }
     },
     "query": "\n                INSERT INTO recipes_diets\n                (diet_id, recipe_id)\n                SELECT diet_id, $1 FROM UNNEST($2::int[]) as diet_id;\n            "
+  },
+  "54fdbcd8997beb431fd403f4aa6d502b6a2ec7f977f317749a23bd201dc22c45": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE accounts SET\n            password = $1\n            WHERE id = $2\n        "
   },
   "5a35c0269f645cde1ad4abd5619a64932af2cff9c3aa7aed6ce32d23f208a60e": {
     "describe": {
@@ -1340,6 +1385,38 @@
     },
     "query": "\n            SELECT\n                id,\n                name\n            FROM categories\n            ORDER BY name\n        "
   },
+  "f3d546052806130e076e61ee9446d3012d06a122cbf086321b473c07059f4e0d": {
+    "describe": {
+      "columns": [
+        {
+          "name": "account_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "token",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO password_reset_tokens (account_id, token, valid_until)\n            SELECT id, gen_random_uuid(), now() + interval '1 day'\n            FROM (\n                VALUES ($1)\n            ) x (email)\n            JOIN accounts USING (email)\n            RETURNING account_id, token, valid_until\n        "
+  },
   "f5a1aedcc1c3ca08f462243566e9d9bae5b3f8a05193259b31143f44436b4194": {
     "describe": {
       "columns": [
@@ -1369,6 +1446,18 @@
       }
     },
     "query": "\n            SELECT\n                i.id as id,\n                i.name as name,\n                CASE WHEN i.default_unit_id is null THEN\n                    null\n                ELSE\n                    (\n                    u.id,\n                    u.full_name,\n                    u.short_name\n                    )\n                END as \"default_unit: unit::FromDB\"\n            FROM\n                ingredients as i\n                LEFT JOIN units as u\n                ON i.default_unit_id = u.id\n            ORDER BY name\n        "
+  },
+  "f9b5b8e82728791b07965aa0a4ca0ef1bd3e607363fcd810fd2c2c982e645b2f": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            DELETE FROM password_reset_tokens\n            WHERE account_id = $1\n        "
   },
   "fa55d0a2961da500ebf689d251c0f7b60bb437c24e626a9bcb568bc195d21ce6": {
     "describe": {
