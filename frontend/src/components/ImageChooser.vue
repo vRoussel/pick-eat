@@ -5,13 +5,11 @@
         :src="image_preview"
         @click="imageWidget.open()"
       >
-      <button
+      <span
         v-if="image_url != ''"
-        class="btn btn-sm btn-circle absolute right-2 top-2"
-        @click="clear"
-      >
-        ✕
-      </button>
+        class="icon text-2xl cursor-pointer text-black absolute right-2 top-2" @click="clear">
+        <Icon :icon="icons.close" />
+      </span>
     </div>
 </template>
 
