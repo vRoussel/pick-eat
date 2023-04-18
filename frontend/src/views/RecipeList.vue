@@ -30,7 +30,7 @@
       <p class="text-xl mb-2">
         Aucune recette trouvée :(
       </p>
-      <img :src="no_recipe_gif">
+      <video :src="no_recipe_webm" autoplay loop muted/>
     </div>
   </div>
 </template>
@@ -44,7 +44,7 @@ import {Filters} from '@/components/RecipeFilters.vue'
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
 
-import no_recipe_gif from '@/assets/homer_hungry.gif'
+import no_recipe_webm from '@/assets/homer_hungry.webm'
 
 export default {
     name: 'RecipeList',
@@ -58,7 +58,7 @@ export default {
             recipes: [],
             per_page: 12,
             total_count: 0,
-            no_recipe_gif: no_recipe_gif
+            no_recipe_webm: no_recipe_webm
         }
     },
     computed: {
