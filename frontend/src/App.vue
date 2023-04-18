@@ -41,7 +41,7 @@
         to="/recipes"
       >
         <img
-          :src="pickeat_png"
+          :src="this.pickeat_logo"
           width="200"
         >
       </router-link>
@@ -74,8 +74,9 @@
         >{{ cartStore.recipeCount }}</span>
       </button>
       <theme-toggle
-        dark_theme="dark"
+        dark_theme="pickeat_dark"
         light_theme="pickeat_light"
+        @theme_changed="set_logo"
       />
       <button
         @click="this.$router.push({ name: 'account' })"
@@ -116,7 +117,8 @@ import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
 import { useNotifStore } from '@/store/notif.js'
 
-import pickeat_png from '@/assets/pickeat.png'
+import pickeat_logo_light from '@/assets/pickeat_light.png'
+import pickeat_logo_dark from '@/assets/pickeat_dark.png'
 
 export default {
   name: 'App',
@@ -131,7 +133,7 @@ export default {
   data: function() {
     return {
         navbarIsOpen: false,
-        pickeat_png: pickeat_png,
+        pickeat_logo: null,
         icons: icons,
         dropdown_main_opened: false
     }
@@ -156,6 +158,12 @@ export default {
       }, 5 * 60 * 1000)
   },
   methods: {
+        set_logo(theme) {
+            if (theme == 'light')
+                this.pickeat_logo = pickeat_logo_light
+            else
+                this.pickeat_logo = pickeat_logo_dark
+        },
         unfocus(e) {
             let targetEl = e.currentTarget;
             setTimeout(function(){

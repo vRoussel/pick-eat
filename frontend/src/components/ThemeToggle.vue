@@ -2,9 +2,8 @@
   <label class="swap swap-rotate">
     <input
       type="checkbox"
-      :checked="initial_theme == light_theme"
+      v-model="state"
       :data-toggle-theme="light_theme + ',' + dark_theme"
-      data-act-class="ACTIVECLASS"
     >
 
     <!-- sun icon -->
@@ -27,6 +26,7 @@
 import { themeChange } from 'theme-change'
 export default {
     name: 'ThemeToggle',
+    emits: ['theme_changed'],
     props: {
         dark_theme: {
             default: 'dark',
@@ -36,13 +36,31 @@ export default {
         }
     },
     data: function() {
-        return {
-            initial_theme: null,
-        }
+      return {
+          state: null
+      }
     },
     mounted: function () {
-        themeChange(false)
-        this.initial_theme = document.documentElement.getAttribute("data-theme");
+        themeChange(false);
+        let initial_theme = document.documentElement.getAttribute("data-theme");
+        if (initial_theme == this.light_theme)
+            this.state = true
+        else if (initial_theme == this.dark_theme)
+            this.state = false
+        else
+            this.state = true
+
     },
+    watch: {
+        state(val) {
+            if (val) {
+                this.$emit('theme_changed', 'light')
+                document.querySelector('html').setAttribute('data-theme', this.light_theme);
+            } else {
+                this.$emit('theme_changed', 'dark')
+                document.querySelector('html').setAttribute('data-theme', this.dark_theme);
+            }
+        }
+    }
 }
 </script>

@@ -39,8 +39,20 @@ module.exports = {
             "warning": "#FBBD23",
             "error": "#F87272",
         },
-      },
-          , "dark"]
+        pickeat_dark: {
+            "primary": "#BF9C53",
+            "primary-content": "#FFFFFF",
+            "secondary": "#5D7772",
+            "accent": "#B6B6B6",
+            "neutral": "#000000",
+            "base-100": "#000000",
+            "info": "#3ABFF8",
+            "success": "#36D399",
+            "warning": "#FBBD23",
+            "error": "#F87272",
+        },
+      }
+      ]
   },
   plugins: [
     require("daisyui"),
