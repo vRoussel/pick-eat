@@ -7,7 +7,8 @@ use sqlx::PgConnection;
 use crate::handlers::{APIAnswer, Admin, User};
 use crate::resources::account;
 use crate::resources::token::{
-    check_validation_token_validity, delete_all_account_validation_tokens, TokenValidity,
+    check_password_reset_token_validity, check_validation_token_validity,
+    delete_all_account_validation_tokens, delete_all_password_reset_tokens, TokenValidity,
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -19,7 +20,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(modify_current)
         .service(add_fav_recipe)
         .service(remove_fav_recipe)
-        .service(validate_account);
+        .service(validate_account)
+        .service(reset_password);
 }
 
 async fn validate_new_account(
@@ -279,6 +281,53 @@ pub async fn validate_account(
         .await
         .is_err()
     {
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    if transaction.commit().await.is_err() {
+        return HttpResponse::InternalServerError().finish();
+    }
+    HttpResponse::Ok().finish()
+}
+
+#[post("/accounts/passwordreset")]
+pub async fn reset_password(
+    req: web::Json<account::ResetPassword>,
+    db_pool: web::Data<PgPool>,
+) -> impl Responder {
+    let mut transaction = db_pool.begin().await.unwrap();
+    let validity = check_password_reset_token_validity(&mut transaction, &req.token).await;
+    let account_id = match validity {
+        Ok(v) => match v {
+            TokenValidity::Valid { account_id } => account_id,
+            _ => {
+                let mut ret = APIAnswer::new();
+                ret.add_error("Ce lien est incorrect ou expiré, veuillez demander un nouvel email de réinitialisation de mot de passe");
+                return HttpResponse::Unauthorized().json(ret);
+            }
+        },
+        Err(e) => {
+            error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
+    if req.new_password.len() < 8 {
+        let mut ret = APIAnswer::new();
+        ret.add_field_error(
+            "new_password",
+            "Le mot de passe doit faire au moins 8 caractères",
+        );
+        return HttpResponse::BadRequest().json(ret);
+    }
+
+    if let Err(e) = account::reset_password(&mut transaction, account_id, &req.new_password).await {
+        error!("{:?}", e);
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    if let Err(e) = delete_all_password_reset_tokens(&mut transaction, account_id).await {
+        error!("{:?}", e);
         return HttpResponse::InternalServerError().finish();
     }
 

@@ -50,6 +50,13 @@ pub struct Validate {
     pub token: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResetPassword {
+    pub token: String,
+    pub new_password: String,
+}
+
 pub type Ref = i32;
 
 #[derive(Debug)]
@@ -369,5 +376,40 @@ pub async fn validate_account(db_conn: &mut PgConnection, account_id: i32) -> Re
     )
     .execute(db_conn)
     .await?;
+    Ok(())
+}
+
+#[derive(Debug)]
+pub struct ResetPasswordError(String);
+
+pub async fn reset_password(
+    db_conn: &mut PgConnection,
+    account_id: i32,
+    new_password: &str,
+) -> Result<(), ResetPasswordError> {
+    let salt = SaltString::generate(&mut OsRng);
+
+    // Argon2 with default params (Argon2id v19)
+    let argon2 = Argon2::default();
+
+    // Hash password to PHC string ($argon2id$v=19$...)
+    let password_hash = argon2
+        .hash_password(new_password.as_bytes(), &salt)
+        .map_err(|e| ResetPasswordError(e.to_string()))?
+        .to_string();
+
+    query!(
+        "
+            UPDATE accounts SET
+            password = $1
+            WHERE id = $2
+        ",
+        password_hash,
+        account_id
+    )
+    .execute(db_conn)
+    .await
+    .map_err(|e| ResetPasswordError(e.to_string()))?;
+
     Ok(())
 }

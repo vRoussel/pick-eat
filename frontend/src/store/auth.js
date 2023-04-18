@@ -101,6 +101,27 @@ export const useAuthStore = defineStore('auth', {
                 'Content-Type': 'application/json;charset=UTF-8'
             }
             await axios.post(`${API_ROOT}/accounts/validation/tokenrequest`, post, { 'headers': headers })
+        },
+        async reset_password(token, new_password) {
+            let post = {
+                'token': token,
+                'new_password': new_password
+            }
+            let headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+            await axios.post(`${API_ROOT}/accounts/passwordreset`, post, { 'headers': headers })
+        },
+        async ask_password_reset_token(email) {
+            let post = {
+                'email': email
+            }
+            let headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+            await axios.post(`${API_ROOT}/accounts/passwordreset/tokenrequest`, post, { 'headers': headers })
         }
     }
 })

@@ -6,6 +6,8 @@ import RecipeList from '@/views/RecipeList.vue'
 import Login from '@/views/Login.vue'
 import Account from '@/views/Account.vue'
 import AccountValidation from '@/views/AccountValidation.vue'
+import ForgottenPassword from '@/views/ForgottenPassword.vue'
+import PasswordReset from '@/views/PasswordReset.vue'
 import Register from '@/views/Register.vue'
 import { useAuthStore } from '@/store/auth.js'
 
@@ -71,6 +73,25 @@ const routes = [
         props: route => ({ token: route.query.token }),
         meta: {
             title: 'Validation de compte - PickEat',
+            public: true
+        }
+    },
+    {
+        name: '/forgotten_password',
+        path: '/forgotten_password',
+        component: ForgottenPassword,
+        meta: {
+            title: 'Mot de passe oublié - PickEat',
+            public: true
+        }
+    },
+    {
+        name: 'password_reset',
+        path: '/password_reset',
+        component: PasswordReset,
+        props: route => ({ token: route.query.token }),
+        meta: {
+            title: 'Réinitialisation du mot de passe - PickEat',
             public: true
         }
     },
