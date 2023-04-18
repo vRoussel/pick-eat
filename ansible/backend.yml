@@ -1,5 +1,16 @@
 #!/usr/bin/env ansible-playbook
 
+- name: Update apt cache if it's never been done
+  hosts: backend
+  become: true
+  tasks:
+    - stat:
+        path: /var/lib/apt/periodic/update-success-stamp
+      register: stat_result
+    - apt:
+        update_cache: true
+      when: not stat_result.stat.exists
+
 - name: Install dependencies
   hosts: backend
   become: true
