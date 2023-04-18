@@ -3,7 +3,7 @@
       <div class="flex flex-row h-full w-full rounded-lg bg-transparent">
         <button
           type="button"
-          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-l-md border-base-300 border-y border-l focus:!outline-none"
+          class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-l-md border-accent border-y border-l focus:!outline-none"
           :class="this.badvalue && '!input-error'"
           @click="decrement"
           tabindex=-1
@@ -20,7 +20,7 @@
         >
         <button
           type="button"
-          class="bg-base text-base-content hover:bg-base-200 h-full px-1 sm:px-2 rounded-r-md border-base-300 border-y border-r focus:!outline-none"
+          class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-r-md border-accent border-y border-r focus:!outline-none"
           :class="this.badvalue && '!input-error'"
           @click="increment"
           tabindex=-1
