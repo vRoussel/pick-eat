@@ -238,7 +238,7 @@ const validator = object().shape({
     instructions: string()
             .required("Ajouter les étapes pour réaliser la recette"),
     image_url: string()
-            .required()
+            .required("Ajoutez une photo de la recette")
             .min(1, "Ajoutez une photo de la recette")
 })
 
@@ -326,6 +326,9 @@ export default {
         },
         shares() {
             this.validate('shares')
+        },
+        image_url() {
+            this.validate('image_url')
         }
     },
     mounted() {
