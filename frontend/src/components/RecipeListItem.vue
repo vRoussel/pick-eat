@@ -4,7 +4,7 @@
     @click="openRecipe(recipe.id)"
   >
     <figure class="relative">
-        <img class="rounded-t-xl" :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera">
+        <img class="rounded-t-xl w-[512px]" :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera">
     </figure>
     <Icon
       v-if="this.is_vegan"
