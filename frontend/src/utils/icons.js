@@ -1,6 +1,6 @@
 import search from '@iconify-icons/mdi/magnify';
 import options from '@iconify-icons/ion/options';
-import close from '@iconify-icons/mdi/close';
+import close from '@iconify-icons/mdi/close-circle';
 import reset from '@iconify-icons/system-uicons/reset';
 import heart from '@iconify-icons/mdi/cards-heart';
 import heart_outline from '@iconify-icons/mdi/cards-heart-outline';
