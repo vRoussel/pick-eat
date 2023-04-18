@@ -15,7 +15,7 @@
             <input
                 v-model="this.account.display_name"
                 type="text"
-                class="input input-bordered w-full"
+                class="input input-bordered w-full disabled:bg-accent disabled:text-accent-content"
                 disabled
             >
         </div>
@@ -26,7 +26,7 @@
             <input
                 v-model="this.account.email"
                 type="text"
-                class="input input-bordered w-full"
+                class="input input-bordered w-full disabled:bg-accent disabled:text-accent-content"
                 disabled
             >
         </div>
