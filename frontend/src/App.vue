@@ -45,7 +45,7 @@
           width="200"
         >
       </router-link>
-      <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex">
+      <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
         <li class="shrink-0">
           <router-link to="/recipes">
             Recettes
