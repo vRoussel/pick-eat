@@ -51,6 +51,8 @@ import {isOverflown} from '@/utils/utils.js'
 import { mapStores } from 'pinia'
 import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
+import { useNotifStore } from '@/store/notif.js'
 
 export default {
     name: 'RecipeListItem',
@@ -67,7 +69,7 @@ export default {
         }
     },
     computed: {
-        ...mapStores(useCartStore, useFoodStore),
+        ...mapStores(useCartStore, useFoodStore, useAuthStore, useNotifStore),
         heart_svg() {
             return this.recipe.is_favorite ? this.icons.heart : this.icons.heart_outline
         },
@@ -92,7 +94,11 @@ export default {
     },
     methods: {
         toggleFavorite(recipe) {
-            this.foodStore.toggleFavorite(recipe)
+            if (this.authStore.is_logged_in)
+                this.foodStore.toggleFavorite(recipe)
+            else
+                this.notifStore.show_error("Vous devez vous connecter pour utiliser les favoris")
+
         },
         openRecipe(id) {
             this.$router.push({ name: 'recipe', params: { id } })
