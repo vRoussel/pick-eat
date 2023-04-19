@@ -1,8 +1,11 @@
 <template>
   <div class="flex items-center gap-x-4 w-full">
-      <span class="icon text-2xl basis-6 grow-0 text-primary cursor-pointer" @click="$emit('delete')">
-        <Icon :icon="icons.close" />
-      </span>
+    <span
+      class="icon text-2xl basis-6 grow-0 text-primary cursor-pointer"
+      @click="$emit('delete')"
+    >
+      <Icon :icon="icons.close" />
+    </span>
     <div class="flex flex-wrap items-center gap-2 grow">
       <span
         class="sm:text-end basis-full sm:basis-3/12 grow shrink"

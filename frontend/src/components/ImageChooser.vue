@@ -1,16 +1,18 @@
 <template>
-    <div class="relative w-fit mx-auto">
-      <img
-        class="cursor-pointer m-auto rounded-lg w-80"
-        :src="image_preview"
-        @click="imageWidget.open()"
-      >
-      <span
-        v-if="image_url != ''"
-        class="icon text-2xl cursor-pointer text-black absolute right-2 top-2" @click="clear">
-        <Icon :icon="icons.close" />
-      </span>
-    </div>
+  <div class="relative w-fit mx-auto">
+    <img
+      class="cursor-pointer m-auto rounded-lg w-80"
+      :src="image_preview"
+      @click="imageWidget.open()"
+    >
+    <span
+      v-if="image_url != ''"
+      class="icon text-2xl cursor-pointer text-black absolute right-2 top-2"
+      @click="clear"
+    >
+      <Icon :icon="icons.close" />
+    </span>
+  </div>
 </template>
 
 <script>

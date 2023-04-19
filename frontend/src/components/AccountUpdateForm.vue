@@ -1,80 +1,97 @@
 <template>
-    <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="updateAccount">
-        <h1 class="text-xl font-bold text-center">Modification du compte</h1>
-        <div class="form-control">
-            <label class="label">
-                <span class="label-text">Mot de passe actuel</span>
-            </label>
-            <input
-                v-model="old_password"
-                type="password"
-                placeholder="Requis"
-                class="input input-bordered w-full"
-                :class="errors.old_password && '!input-error'"
-                @blur="validate('old_password')"
-                ref="old_password"
-            >
-            <label class="label" v-if="this.errors.old_password">
-                <span class="label-text-alt text-error">{{ errors.old_password }}</span>
-            </label>
-        </div>
-        <div class="form-control">
-            <label class="label">
-                <span class="label-text">Nom</span>
-            </label>
-            <input
-                v-model="name"
-                type="text"
-                class="input input-bordered w-full"
-                :class="errors.name && '!input-error'"
-                @blur="validate('name')"
-            >
-            <label class="label" v-if="this.errors.name">
-                <span class="label-text-alt text-error">{{ errors.name }}</span>
-            </label>
-        </div>
-        <div class="form-control">
-            <label class="label">
-                <span class="label-text">Adresse mail</span>
-            </label>
-            <input
-                v-model="email"
-                type="text"
-                class="input input-bordered w-full"
-                :class="errors.email && '!input-error'"
-                @blur="validate('email')"
-            >
-            <label class="label" v-if="this.errors.email">
-                <span class="label-text-alt text-error">{{ errors.email }}</span>
-            </label>
-        </div>
-        <div class="form-control">
-            <label class="label">
-                <span class="label-text">Nouveau mot de passe (si changement)</span>
-            </label>
-            <input
-                v-model="password"
-                type="password"
-                placeholder="Laisser vide pour conserver l'actuel"
-                class="input input-bordered w-full"
-                :class="errors.password && '!input-error'"
-                @blur="validate('password')"
-            >
-            <label class="label" v-if="this.errors.password">
-                <span class="label-text-alt text-error">{{ errors.password }}</span>
-            </label>
-        </div>
-        <button class="btn btn-primary w-full">
-          Valider
-        </button>
-        <button
-          type="button"
-          class="btn btn-accent w-full"
-          @click="cancel"
-        >
-          Annuler
-        </button>
-    </form>
+  <form
+    class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+    @submit.prevent="updateAccount"
+  >
+    <h1 class="text-xl font-bold text-center">
+      Modification du compte
+    </h1>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Mot de passe actuel</span>
+      </label>
+      <input
+        ref="old_password"
+        v-model="old_password"
+        type="password"
+        placeholder="Requis"
+        class="input input-bordered w-full"
+        :class="errors.old_password && '!input-error'"
+        @blur="validate('old_password')"
+      >
+      <label
+        v-if="errors.old_password"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.old_password }}</span>
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Nom</span>
+      </label>
+      <input
+        v-model="name"
+        type="text"
+        class="input input-bordered w-full"
+        :class="errors.name && '!input-error'"
+        @blur="validate('name')"
+      >
+      <label
+        v-if="errors.name"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.name }}</span>
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Adresse mail</span>
+      </label>
+      <input
+        v-model="email"
+        type="text"
+        class="input input-bordered w-full"
+        :class="errors.email && '!input-error'"
+        @blur="validate('email')"
+      >
+      <label
+        v-if="errors.email"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.email }}</span>
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Nouveau mot de passe (si changement)</span>
+      </label>
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Laisser vide pour conserver l'actuel"
+        class="input input-bordered w-full"
+        :class="errors.password && '!input-error'"
+        @blur="validate('password')"
+      >
+      <label
+        v-if="errors.password"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.password }}</span>
+      </label>
+    </div>
+    <button class="btn btn-primary w-full">
+      Valider
+    </button>
+    <button
+      type="button"
+      class="btn btn-accent w-full"
+      @click="cancel"
+    >
+      Annuler
+    </button>
+  </form>
 </template>
 
 <script>
@@ -101,6 +118,7 @@ const validator = object().shape({
 
 export default {
     name: 'AccountUpdateForm',
+    emits: ['done'],
     data: function() {
         return {
             email: null,
@@ -115,7 +133,6 @@ export default {
             }
         }
     },
-    emits: ['done'],
     computed: {
         ...mapStores(useAuthStore, useNotifStore),
         account() {

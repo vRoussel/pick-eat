@@ -25,8 +25,11 @@
             :class="errors.full_name && '!input-error'"
             @blur="validate('full_name')"
           >
-          <label class="label" v-if="this.errors.full_name">
-              <span class="label-text-alt text-error">{{ errors.full_name }}</span>
+          <label
+            v-if="errors.full_name"
+            class="label"
+          >
+            <span class="label-text-alt text-error">{{ errors.full_name }}</span>
           </label>
         </div>
         <div class="form-control w-full">
@@ -41,14 +44,19 @@
             name="short_name"
             :class="errors.short_name && '!input-error'"
           >
-          <label class="label" v-if="this.errors.short_name">
-              <span class="label-text-alt text-error">{{ errors.short_name }}</span>
+          <label
+            v-if="errors.short_name"
+            class="label"
+          >
+            <span class="label-text-alt text-error">{{ errors.short_name }}</span>
           </label>
         </div>
         <div class="modal-action">
           <button
             class="btn btn-primary btn-sm btn-wide mx-auto"
-          >Ajouter</button>
+          >
+            Ajouter
+          </button>
         </div>
       </form>
     </div>

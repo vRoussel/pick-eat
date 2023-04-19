@@ -1,31 +1,45 @@
 <template>
-    <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="send_password_reset_token_request">
-            <h1 class="text-xl font-bold text-center">Mot de passe oublié</h1>
-            <p class="text-center">Entrez votre email pour recevoir un lien qui vous permettra de choisir un nouveau mot de passe.</p>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Adresse mail</span>
-                </label>
-                <input
-                    v-model="email"
-                    ref="email"
-                    type="text"
-                    class="input input-bordered w-full"
-                    :class="errors.email && '!input-error'"
-                >
-                <label class="label" v-if="this.errors.email">
-                    <span class="label-text-alt text-error">{{ errors.email }}</span>
-                </label>
-            </div>
-            <div class="form-control">
-                <button class="btn btn-primary w-full btn-lg">
-                  Recevoir le lien
-                </button>
-            </div>
-            <p class="text-center"><router-link to="/login">Retour</router-link></p>
-        </form>
-    </div>
+  <div class="my-8">
+    <form
+      class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+      @submit.prevent="send_password_reset_token_request"
+    >
+      <h1 class="text-xl font-bold text-center">
+        Mot de passe oublié
+      </h1>
+      <p class="text-center">
+        Entrez votre email pour recevoir un lien qui vous permettra de choisir un nouveau mot de passe.
+      </p>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Adresse mail</span>
+        </label>
+        <input
+          ref="email"
+          v-model="email"
+          type="text"
+          class="input input-bordered w-full"
+          :class="errors.email && '!input-error'"
+        >
+        <label
+          v-if="errors.email"
+          class="label"
+        >
+          <span class="label-text-alt text-error">{{ errors.email }}</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <button class="btn btn-primary w-full btn-lg">
+          Recevoir le lien
+        </button>
+      </div>
+      <p class="text-center">
+        <router-link to="/login">
+          Retour
+        </router-link>
+      </p>
+    </form>
+  </div>
 </template>
 
 <script>

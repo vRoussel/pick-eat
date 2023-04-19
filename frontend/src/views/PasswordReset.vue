@@ -1,29 +1,37 @@
 <template>
-    <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="send_password_reset_request">
-            <h1 class="text-xl font-bold text-center">Réinitialisation du mot de passe</h1>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Nouveau mot de passe</span>
-                </label>
-                <input
-                    v-model="password"
-                    ref="password"
-                    type="password"
-                    class="input input-bordered w-full"
-                    :class="errors.password && '!input-error'"
-                >
-                <label class="label" v-if="this.errors.password">
-                    <span class="label-text-alt text-error">{{ errors.password }}</span>
-                </label>
-            </div>
-            <div class="form-control">
-                <button class="btn btn-primary w-full btn-lg">
-                  Valider
-                </button>
-            </div>
-        </form>
-    </div>
+  <div class="my-8">
+    <form
+      class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+      @submit.prevent="send_password_reset_request"
+    >
+      <h1 class="text-xl font-bold text-center">
+        Réinitialisation du mot de passe
+      </h1>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Nouveau mot de passe</span>
+        </label>
+        <input
+          ref="password"
+          v-model="password"
+          type="password"
+          class="input input-bordered w-full"
+          :class="errors.password && '!input-error'"
+        >
+        <label
+          v-if="errors.password"
+          class="label"
+        >
+          <span class="label-text-alt text-error">{{ errors.password }}</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <button class="btn btn-primary w-full btn-lg">
+          Valider
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -41,17 +49,17 @@ const validator = object().shape({
 
 export default {
     name: 'PasswordReset',
+    props: {
+        token: {
+            type: String
+        }
+    },
     data: function() {
         return {
             email: null,
             errors: {
                 password: null
             }
-        }
-    },
-    props: {
-        token: {
-            type: String
         }
     },
     computed: {

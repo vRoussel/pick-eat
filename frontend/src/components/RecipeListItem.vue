@@ -4,16 +4,19 @@
     @click="openRecipe(recipe.id)"
   >
     <figure class="relative">
-        <img class="rounded-t-xl w-[512px]" :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera">
+      <img
+        class="rounded-t-xl w-[512px]"
+        :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"
+      >
     </figure>
     <Icon
-      v-if="this.is_vegan"
-      :icon="this.icons.vegan"
+      v-if="is_vegan"
+      :icon="icons.vegan"
       class="text-3xl absolute text-primary  right-2 top-2 bg-primary-content rounded-full ring-primary ring-2"
     />
     <Icon
-      v-else-if="this.is_vege"
-      :icon="this.icons.vege"
+      v-else-if="is_vege"
+      :icon="icons.vege"
       class="text-3xl absolute text-primary right-2 top-2 bg-primary-content rounded-full ring-primary ring-2"
     />
     <div class="card-body divide-y-2 divide-accent !pb-0">
