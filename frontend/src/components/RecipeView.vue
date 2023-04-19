@@ -11,7 +11,10 @@
     v-if="recipe"
     class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl relative"
   >
-    <span v-if="this.allowed_to_modify" class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
+    <span
+      v-if="allowed_to_modify"
+      class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl"
+    >
       <Icon
         class="text-primary cursor-pointer"
         :icon="icons.pencil"
@@ -48,21 +51,26 @@
             class="text-primary"
           />{{ recipe.cook_time_min }} min</span>
         </p>
-        <p v-if="this.is_vegan">
+        <p v-if="is_vegan">
           <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
             :icon="icons.vegan"
             class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl"
           /> Vegan</span>
         </p>
-        <p v-else-if="this.is_vege">
+        <p v-else-if="is_vege">
           <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl"><Icon
             :icon="icons.vege"
             class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl"
           /> Végétarien</span>
         </p>
         <p class="text-xs sm:text-sm italic text-center">
-            Ajoutée par {{ recipe.author.display_name }}
-            <br><router-link class="link-primary" :to="'/recipes?a=' + recipe.author.id">voir toutes ses recettes</router-link>
+          Ajoutée par {{ recipe.author.display_name }}
+          <br><router-link
+            class="link-primary"
+            :to="'/recipes?a=' + recipe.author.id"
+          >
+            voir toutes ses recettes
+          </router-link>
         </p>
       </div>
     </div>
@@ -84,7 +92,10 @@
               colspan="2"
               class="text-primary-content !bg-primary text-lg"
             >
-              <span v-if="recipe.n_shares > 0" class="icon inline-flex items-center">Ingrédients ({{ recipe.n_shares }} <Icon
+              <span
+                v-if="recipe.n_shares > 0"
+                class="icon inline-flex items-center"
+              >Ingrédients ({{ recipe.n_shares }} <Icon
                 class="pl-0.5"
                 :icon="icons.person"
               />)</span>
@@ -106,10 +117,10 @@
         </tbody>
       </table>
       <table class="table table-compact table-fixed grow w-full">
-      <colgroup>
-        <col class="w-8" />
-        <col/>
-      </colgroup>
+        <colgroup>
+          <col class="w-8">
+          <col>
+        </colgroup>
         <thead>
           <tr class="text-center border-b border-primary">
             <th
@@ -136,11 +147,16 @@
         </tbody>
       </table>
     </div>
-    <blockquote v-if="this.recipe.notes" class="pl-4 sm:pl-6 self-center w-full">
-      <p class="text-gray-400 whitespace-pre-wrap break-words"><em>
-        « {{ this.recipe.notes }} »
-        <p class="text-right mr-6">{{ this.recipe.author.display_name }}</p>
-      </em></p>
+    <blockquote
+      v-if="recipe.notes"
+      class="pl-4 sm:pl-6 self-center w-full"
+    >
+      <p class="text-gray-400 whitespace-pre-wrap break-words">
+        <em>
+          « {{ recipe.notes }} »
+          <p class="text-right mr-6">{{ recipe.author.display_name }}</p>
+        </em>
+      </p>
     </blockquote>
   </div>
 </template>

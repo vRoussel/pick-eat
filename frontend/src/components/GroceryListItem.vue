@@ -4,7 +4,7 @@
     v-tooltip="overflown ? recipe_name : null"
     class="text-end truncate grow link-hover"
     :to="'/recipe/' + recipe_id"
-    tabindex=-1
+    tabindex="-1"
   >
     {{ recipe_name }}
   </router-link>

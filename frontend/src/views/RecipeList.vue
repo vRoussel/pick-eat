@@ -30,7 +30,12 @@
       <p class="text-xl mb-2">
         Aucune recette trouvée :(
       </p>
-      <video :src="no_recipe_webm" autoplay loop muted/>
+      <video
+        :src="no_recipe_webm"
+        autoplay
+        loop
+        muted
+      />
     </div>
   </div>
 </template>
@@ -130,19 +135,6 @@ export default {
     created() {
         this.loadRecipes()
     },
-    methods: {
-        loadRecipes() {
-            this.foodStore.getRecipes(this.from,this.to,this.filters).then(result => {
-                let [recipes, total_count] = result
-                this.recipes = recipes
-                this.total_count = total_count
-            });
-            this.last_query = this.$route.query
-        },
-        on_mobile() {
-            return screen.width < 768;
-        }
-    },
     deactivated() {
         this.saved_query = this.last_query
     },
@@ -154,6 +146,19 @@ export default {
             }
             this.loadRecipes()
             this.saved_query = null
+        }
+    },
+    methods: {
+        loadRecipes() {
+            this.foodStore.getRecipes(this.from,this.to,this.filters).then(result => {
+                let [recipes, total_count] = result
+                this.recipes = recipes
+                this.total_count = total_count
+            });
+            this.last_query = this.$route.query
+        },
+        on_mobile() {
+            return screen.width < 768;
         }
     }
 }

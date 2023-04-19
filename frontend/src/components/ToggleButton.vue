@@ -1,11 +1,11 @@
 <template>
-      <button
-        type="button"
-        :class="buttonClass()"
-        @click="toggle()"
-      >
-      <slot/>
-      </button>
+  <button
+    type="button"
+    :class="buttonClass()"
+    @click="toggle()"
+  >
+    <slot />
+  </button>
 </template>
 
 <script>

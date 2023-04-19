@@ -25,14 +25,19 @@
             :class="errors.name && '!input-error'"
             @blur="validate('name')"
           >
-          <label class="label" v-if="this.errors.name">
-              <span class="label-text-alt text-error">{{ errors.name }}</span>
+          <label
+            v-if="errors.name"
+            class="label"
+          >
+            <span class="label-text-alt text-error">{{ errors.name }}</span>
           </label>
         </div>
         <div class="modal-action">
           <button
             class="btn btn-primary btn-sm btn-wide mx-auto"
-          >Ajouter</button>
+          >
+            Ajouter
+          </button>
         </div>
       </form>
     </div>

@@ -1,61 +1,79 @@
 <template>
-    <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="register">
-        <h1 class="text-xl font-bold text-center">Inscription</h1>
-        <p class="text-center">Vous avez déjà un compte ? <router-link to="/login">Se connecter</router-link></p>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Pseudo</span>
-                </label>
-                <input
-                    v-model="name"
-                    ref="name"
-                    type="text"
-                    class="input input-bordered w-full"
-                    :class="errors.name && '!input-error'"
-                    @blur="validate('name')"
-                >
-                <label class="label" v-if="this.errors.name">
-                    <span class="label-text-alt text-error">{{ errors.name }}</span>
-                </label>
-            </div>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Adresse mail</span>
-                </label>
-                <input
-                    v-model="email"
-                    type="text"
-                    class="input input-bordered w-full"
-                    :class="errors.email && '!input-error'"
-                    @blur="validate('email')"
-                >
-                <label class="label" v-if="this.errors.email">
-                    <span class="label-text-alt text-error">{{ errors.email }}</span>
-                </label>
-            </div>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Mot de passe</span>
-                </label>
-                <input
-                    v-model="password"
-                    type="password"
-                    class="input input-bordered w-full"
-                    :class="errors.password && '!input-error'"
-                    @blur="validate('password')"
-                >
-                <label class="label" v-if="this.errors.password">
-                    <span class="label-text-alt text-error">{{ errors.password }}</span>
-                </label>
-            </div>
-            <div class="form-control">
-                <button class="btn btn-primary w-full btn-lg">
-                  Créer mon compte
-                </button>
-            </div>
-        </form>
-    </div>
+  <div class="my-8">
+    <form
+      class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+      @submit.prevent="register"
+    >
+      <h1 class="text-xl font-bold text-center">
+        Inscription
+      </h1>
+      <p class="text-center">
+        Vous avez déjà un compte ? <router-link to="/login">
+          Se connecter
+        </router-link>
+      </p>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Pseudo</span>
+        </label>
+        <input
+          ref="name"
+          v-model="name"
+          type="text"
+          class="input input-bordered w-full"
+          :class="errors.name && '!input-error'"
+          @blur="validate('name')"
+        >
+        <label
+          v-if="errors.name"
+          class="label"
+        >
+          <span class="label-text-alt text-error">{{ errors.name }}</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Adresse mail</span>
+        </label>
+        <input
+          v-model="email"
+          type="text"
+          class="input input-bordered w-full"
+          :class="errors.email && '!input-error'"
+          @blur="validate('email')"
+        >
+        <label
+          v-if="errors.email"
+          class="label"
+        >
+          <span class="label-text-alt text-error">{{ errors.email }}</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Mot de passe</span>
+        </label>
+        <input
+          v-model="password"
+          type="password"
+          class="input input-bordered w-full"
+          :class="errors.password && '!input-error'"
+          @blur="validate('password')"
+        >
+        <label
+          v-if="errors.password"
+          class="label"
+        >
+          <span class="label-text-alt text-error">{{ errors.password }}</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <button class="btn btn-primary w-full btn-lg">
+          Créer mon compte
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>

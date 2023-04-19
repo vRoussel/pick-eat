@@ -1,16 +1,24 @@
 <template>
-    <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="validate_account">
-        <div>
-            <video :src="welcome_webm" autoplay loop muted/>
-        </div>
-        <div class="form-control">
-            <button class="btn btn-primary w-full">
-              Valider mon compte
-            </button>
-        </div>
-        </form>
-    </div>
+  <div class="my-8">
+    <form
+      class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+      @submit.prevent="validate_account"
+    >
+      <div>
+        <video
+          :src="welcome_webm"
+          autoplay
+          loop
+          muted
+        />
+      </div>
+      <div class="form-control">
+        <button class="btn btn-primary w-full">
+          Valider mon compte
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -24,14 +32,14 @@ import welcome_webm from '@/assets/gatsby_welcome.webm'
 
 export default {
     name: 'Register',
-    data: function() {
-        return {
-            welcome_webm: welcome_webm
-        }
-    },
     props: {
         token: {
             type: String
+        }
+    },
+    data: function() {
+        return {
+            welcome_webm: welcome_webm
         }
     },
     computed: {

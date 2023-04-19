@@ -16,8 +16,11 @@
         :class="errors.name && '!input-error'"
         @blur="validate('name')"
       >
-      <label class="label" v-if="this.errors.name">
-          <span class="label-text-alt text-error">{{ errors.name }}</span>
+      <label
+        v-if="errors.name"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.name }}</span>
       </label>
     </div>
     <div class="flex flex-wrap sm:flex-nowrap w-full gap-y-5 gap-x-5">
@@ -36,7 +39,10 @@
             >
             <span class="bg-accent text-accent-content">minutes</span>
           </label>
-          <label class="label" v-if="this.errors.prep_time">
+          <label
+            v-if="errors.prep_time"
+            class="label"
+          >
             <span class="label-text-alt text-error">{{ errors.prep_time }}</span>
           </label>
         </div>
@@ -55,7 +61,10 @@
             >
             <span class="bg-accent text-accent-content">minutes</span>
           </label>
-          <label class="label" v-if="this.errors.cook_time">
+          <label
+            v-if="errors.cook_time"
+            class="label"
+          >
             <span class="label-text-alt text-error">{{ errors.cook_time }}</span>
           </label>
         </div>
@@ -69,14 +78,20 @@
             :min="0"
             :badvalue="errors.shares != null"
           />
-        <label class="label" v-if="this.errors.shares">
-          <span class="label-text-alt text-error">{{ errors.shares }}</span>
-        </label>
+          <label
+            v-if="errors.shares"
+            class="label"
+          >
+            <span class="label-text-alt text-error">{{ errors.shares }}</span>
+          </label>
         </div>
       </div>
       <div class="form-control grow order-first sm:order-none justify-self-center">
         <image-chooser v-model:image_url="image_url" />
-        <label class="label mx-auto" v-if="this.errors.image_url">
+        <label
+          v-if="errors.image_url"
+          class="label mx-auto"
+        >
           <span class="label-text-alt text-error">{{ errors.image_url }}</span>
         </label>
       </div>
@@ -93,7 +108,10 @@
         :extend-modal-component="meta.NewCategoryModal_"
         :class="errors.categories && '!border-error'"
       />
-      <label class="label" v-if="this.errors.categories">
+      <label
+        v-if="errors.categories"
+        class="label"
+      >
         <span class="label-text-alt text-error">{{ errors.categories }}</span>
       </label>
     </div>
@@ -119,7 +137,10 @@
         :choices="foodStore.seasons"
         :class="errors.seasons && '!border-error'"
       />
-      <label class="label" v-if="this.errors.seasons">
+      <label
+        v-if="errors.seasons"
+        class="label"
+      >
         <span class="label-text-alt text-error">{{ errors.seasons }}</span>
       </label>
     </div>
@@ -141,11 +162,14 @@
       <ingredient-picker
         ref="ingredients"
         v-model:picked="ingredients"
+        :class="errors.ingredients && '!input-error !border-2'"
         @createIngredient="openNewIngredientForm"
         @createUnit="openNewUnitForm"
-        :class="errors.ingredients && '!input-error !border-2'"
       />
-      <label class="label" v-if="this.errors.ingredients">
+      <label
+        v-if="errors.ingredients"
+        class="label"
+      >
         <span class="label-text-alt text-error">{{ errors.ingredients }}</span>
       </label>
     </div>
@@ -161,8 +185,11 @@
         :class="errors.instructions && '!input-error'"
         @blur="validate('instructions')"
       />
-      <label class="label" v-if="this.errors.instructions">
-          <span class="label-text-alt text-error">{{ errors.instructions }}</span>
+      <label
+        v-if="errors.instructions"
+        class="label"
+      >
+        <span class="label-text-alt text-error">{{ errors.instructions }}</span>
       </label>
     </div>
 

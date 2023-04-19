@@ -25,19 +25,25 @@
             :class="errors.name && '!input-error'"
             @blur="validate('name')"
           >
-          <label class="label" v-if="this.errors.name">
-              <span class="label-text-alt text-error">{{ errors.name }}</span>
+          <label
+            v-if="errors.name"
+            class="label"
+          >
+            <span class="label-text-alt text-error">{{ errors.name }}</span>
           </label>
         </div>
         <div class="form-control w-full">
-          <label for="" class="label">
+          <label
+            for=""
+            class="label"
+          >
             <span class="label-text">Unité par défaut</span>
             <button
               class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+              type="button"
+              tabindex="-1"
               @mousedown="save_unit_search"
               @click="open_unit_modal"
-              type="button"
-              tabindex=-1
             >Unité manquante ?</button>
           </label>
           <multiselect
@@ -55,16 +61,18 @@
         <div class="modal-action">
           <button
             class="btn btn-primary btn-sm btn-wide mx-auto"
-          >Ajouter</button>
+          >
+            Ajouter
+          </button>
         </div>
       </form>
     </div>
   </div>
   <new-unit-modal
+    ref="unit_modal_inner"
     :input="unit_search"
     @created="set_unit"
     @closed="$refs.ingrName.focus()"
-    ref="unit_modal_inner"
   />
 </template>
 

@@ -5,9 +5,9 @@
       :key="el.id"
     >
       <toggle-button
-        :state="this.picked.has(el.id)"
-        @update:state="this.toggle(el.id)"
+        :state="picked.has(el.id)"
         v-bind="$attrs"
+        @update:state="toggle(el.id)"
       >
         {{ el.name }}
       </toggle-button>
@@ -15,9 +15,11 @@
     <button
       v-if="extendable && extendModalComponent"
       class="btn rounded-full btn-primary btn-outline btn-sm"
-      @click="this.$refs.modal.open()"
       type="button"
-    >+</button>
+      @click="$refs.modal.open()"
+    >
+      +
+    </button>
   </div>
   <component
     :is="extendModalComponent"

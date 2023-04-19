@@ -8,7 +8,8 @@
       >
         <label
           tabindex="0"
-          class="btn btn-ghost">
+          class="btn btn-ghost"
+        >
           <Icon
             class="icon text-2xl"
             :icon="icons.menu"
@@ -41,7 +42,7 @@
         to="/recipes"
       >
         <img
-          :src="this.pickeat_logo"
+          :src="pickeat_logo"
           width="200"
         >
       </router-link>
@@ -61,8 +62,8 @@
     <div class="navbar-end space-x-3">
       <button
         class="indicator"
-        @click="this.$refs.grocery_list_modal.open()"
         type="button"
+        @click="$refs.grocery_list_modal.open()"
       >
         <Icon
           class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
@@ -79,8 +80,8 @@
         @theme_changed="set_logo"
       />
       <button
-        @click="this.$router.push({ name: 'account' })"
         type="button"
+        @click="$router.push({ name: 'account' })"
       >
         <Icon
           class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
@@ -104,7 +105,10 @@
     </transition>
   </router-view>
   <grocery-list-modal ref="grocery_list_modal" />
-  <toast :error_queue="notifStore.error_msgs" :info_queue="notifStore.info_msgs"></toast>
+  <toast
+    :error_queue="notifStore.error_msgs"
+    :info_queue="notifStore.info_msgs"
+  />
 </template>
 
 <script>

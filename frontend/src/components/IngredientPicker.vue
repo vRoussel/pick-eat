@@ -1,40 +1,44 @@
 <template>
-<div
+  <div
     v-bind="$attrs"
     class="rounded-md"
->
-  <Multiselect
-    ref="multiselect"
-    v-model="dummy"
-    mode="multiple"
-    :options="ingr_remaining"
-    label="name"
-    searchable
-    track-by="name"
-    :strict="false"
-    object
-    value-prop="id"
-    placeholder="Ajouter un ingrédient"
-    open-direction="top"
-    @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
-    @select="pick_ingr"
-  />
-</div>
+  >
+    <Multiselect
+      ref="multiselect"
+      v-model="dummy"
+      mode="multiple"
+      :options="ingr_remaining"
+      label="name"
+      searchable
+      track-by="name"
+      :strict="false"
+      object
+      value-prop="id"
+      placeholder="Ajouter un ingrédient"
+      open-direction="top"
+      @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
+      @select="pick_ingr"
+    />
+  </div>
   <div class="flex gap-1 my-2">
     <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+      type="button"
+      tabindex="-1"
       @mousedown="save_ingredient_search"
       @click="open_ingr_modal"
-      type="button"
-      tabindex=-1
-    >Ingrédient manquant ?</button>
+    >
+      Ingrédient manquant ?
+    </button>
     <button
       class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+      type="button"
+      tabindex="-1"
       @mousedown="save_unit_search"
       @click="open_unit_modal"
-      type="button"
-      tabindex=-1
-    >Unité manquante ?</button>
+    >
+      Unité manquante ?
+    </button>
   </div>
   <div class="flex flex-col items-center mt-2 gap-y-5">
     <ingredient-list-item
@@ -49,14 +53,14 @@
     />
   </div>
   <new-ingredient-modal
+    ref="ingr_modal"
     :input="ingredient_search"
     @created="add_ingr"
-    ref="ingr_modal"
   />
   <new-unit-modal
+    ref="unit_modal"
     :input="unit_search"
     @created="set_current_unit"
-    ref="unit_modal"
   />
 </template>
 

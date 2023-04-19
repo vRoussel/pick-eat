@@ -1,33 +1,33 @@
 <template>
-    <div class="w-32 h-[42px]">
-      <div class="flex flex-row h-full w-full rounded-lg bg-transparent">
-        <button
-          type="button"
-          class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-l-md border-accent border-y border-l focus:!outline-none"
-          :class="this.badvalue && '!input-error'"
-          @click="decrement"
-          tabindex=-1
-        >
-          <span class="m-auto text-2xl font-thin">−</span>
-        </button>
-        <input
-          type="number"
-          :placeholder="placeholder"
-          class="input input-bordered rounded-none w-full h-full min-w-[50px]"
-          :class="this.badvalue && '!input-error'"
-          :value="modelValue"
-          @input="e => $emit('update:modelValue', parseInt(e.target.value))"
-        >
-        <button
-          type="button"
-          class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-r-md border-accent border-y border-r focus:!outline-none"
-          :class="this.badvalue && '!input-error'"
-          @click="increment"
-          tabindex=-1
-        >
-          <span class="m-auto text-2xl font-thin">+</span>
-        </button>
-      </div>
+  <div class="w-32 h-[42px]">
+    <div class="flex flex-row h-full w-full rounded-lg bg-transparent">
+      <button
+        type="button"
+        class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-l-md border-accent border-y border-l focus:!outline-none"
+        :class="badvalue && '!input-error'"
+        tabindex="-1"
+        @click="decrement"
+      >
+        <span class="m-auto text-2xl font-thin">−</span>
+      </button>
+      <input
+        type="number"
+        :placeholder="placeholder"
+        class="input input-bordered rounded-none w-full h-full min-w-[50px]"
+        :class="badvalue && '!input-error'"
+        :value="modelValue"
+        @input="e => $emit('update:modelValue', parseInt(e.target.value))"
+      >
+      <button
+        type="button"
+        class="bg-base text-base-content hover:bg-accent h-full px-1 sm:px-2 rounded-r-md border-accent border-y border-r focus:!outline-none"
+        :class="badvalue && '!input-error'"
+        tabindex="-1"
+        @click="increment"
+      >
+        <span class="m-auto text-2xl font-thin">+</span>
+      </button>
+    </div>
   </div>
 </template>
 
