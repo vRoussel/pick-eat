@@ -23,16 +23,8 @@ server {
 }
 
 server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    ssl_certificate {{ ssl_certif }};
-    ssl_certificate_key {{ ssl_certif_key }};
-    server_name www.{{ pickeat_site_url }};
-    return 301 $scheme://{{ pickeat_site_url }}$request_uri;
-}
-
-server {
-    listen 80 default_server;
-    server_name _;
+    listen 80;
+    listen [::]:80;
+    server_name pick-eat.fr;
     return 301 https://$host$request_uri;
 }
