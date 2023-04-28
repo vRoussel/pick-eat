@@ -6,10 +6,11 @@
     >
       <div>
         <video
-          :src="welcome_webm"
+          :src="welcome_video"
           autoplay
           loop
           muted
+          playsinline
         />
       </div>
       <div class="form-control">
@@ -27,7 +28,7 @@ import { useNotifStore } from '@/store/notif.js'
 import { useAuthStore } from '@/store/auth.js'
 import Swal from 'sweetalert2'
 import {handle_form_api_errors} from '@/utils/utils.js'
-import welcome_webm from '@/assets/gatsby_welcome.webm'
+import welcome_video from '@/assets/gatsby_welcome.mp4'
 
 
 export default {
@@ -39,7 +40,7 @@ export default {
     },
     data: function() {
         return {
-            welcome_webm: welcome_webm
+            welcome_video: welcome_video
         }
     },
     computed: {
