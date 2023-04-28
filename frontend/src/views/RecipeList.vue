@@ -31,10 +31,11 @@
         Aucune recette trouvée :(
       </p>
       <video
-        :src="no_recipe_webm"
+        :src="no_recipe_video"
         autoplay
         loop
         muted
+        playsinline
       />
     </div>
   </div>
@@ -49,7 +50,7 @@ import {Filters} from '@/components/RecipeFilters.vue'
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
 
-import no_recipe_webm from '@/assets/homer_hungry.webm'
+import no_recipe_video from '@/assets/homer_hungry.mp4'
 
 export default {
     name: 'RecipeList',
@@ -63,7 +64,7 @@ export default {
             recipes: [],
             per_page: 12,
             total_count: 0,
-            no_recipe_webm: no_recipe_webm
+            no_recipe_video: no_recipe_video
         }
     },
     computed: {
