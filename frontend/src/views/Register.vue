@@ -92,7 +92,7 @@ const validator = object().shape({
             .required("Le mot de passe est obligatoire")
             .min(8, "Le mot de passe doit faire au moins 8 caractères"),
     name: string()
-            .required("Le nom est obligatoire")
+            .required("Le pseudo est obligatoire")
 })
 
 export default {

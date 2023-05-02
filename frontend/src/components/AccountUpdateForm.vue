@@ -113,7 +113,7 @@ const validator = object().shape({
             .nullable()
             .transform((value) => value ? value : null),
     name: string()
-            .required("Le nom est obligatoire")
+            .required("Le pseudo est obligatoire")
 })
 
 export default {
