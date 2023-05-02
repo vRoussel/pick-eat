@@ -68,7 +68,7 @@
         </label>
       </div>
       <div class="form-control">
-        <button class="btn btn-primary w-full btn-lg">
+          <button class="btn btn-primary w-full btn-lg" :class="{ loading: waiting_for_api }">
           Créer mon compte
         </button>
       </div>
@@ -102,6 +102,7 @@ export default {
             email: null,
             password: null,
             name: null,
+            waiting_for_api: false,
             errors: {
                 email: null,
                 password: null,
@@ -121,6 +122,7 @@ export default {
                 .validate(this, { abortEarly: false })
                 .then(() => {
                     this.errors = {};
+                    this.waiting_for_api = true
                     this.authStore.register(this.email, this.password, this.name).then(() => {
                         Swal.fire({
                           title: 'Inscription (presque) terminée',
@@ -140,6 +142,7 @@ export default {
                 .catch(err => {
                     handle_form_local_errors(err.inner, this.errors, this.notifStore)
                 });
+            this.waiting_for_api = false
         },
         validate(field) {
             validator.validateAt(field, this)
