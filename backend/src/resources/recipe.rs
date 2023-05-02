@@ -274,7 +274,7 @@ pub async fn get_many(
     match sort_method {
         SortMethod::Random { seed } => {
             sorting_fields.push(format!(
-                "(extract(epoch from publication_date)+id) % {}",
+                "(extract(epoch from publication_date)+id)::numeric % {}",
                 seed
             ));
         }
