@@ -410,6 +410,7 @@ export default {
                             })
 
                     }
+                    this.clearForm()
                 })
                 .catch(err => {
                     handle_form_local_errors(err.inner, this.errors, this.notifStore)
@@ -447,6 +448,20 @@ export default {
                 this.notes = other.notes
                 this.shares = other.n_shares
             }
+        },
+        clearForm() {
+            this.name = "",
+            this.prep_time = null,
+            this.cook_time = null,
+            this.shares = 0,
+            this.instructions = "",
+            this.categories.clear(),
+            this.tags.clear(),
+            this.seasons.clear(),
+            this.ingredients.clear(),
+            this.diets.clear(),
+            this.notes = "",
+            this.image_url = ""
         },
         validate(field) {
             console.log(this.prep_time)
