@@ -199,9 +199,10 @@ fn validate_recipe(recipe: &recipe::New, api_answer: &mut APIAnswer) {
             "Ajoutez les étapes pour réaliser la recette",
         )
     }
-    if recipe.image.is_empty() {
-        api_answer.add_field_error("image_url", "Ajoutez une photo de la recette")
-    }
+    // Mandatory image is too annoying, find a better way
+    //if recipe.image.is_empty() {
+    //    api_answer.add_field_error("image_url", "Ajoutez une photo de la recette")
+    //}
 }
 
 #[post("/recipes")]

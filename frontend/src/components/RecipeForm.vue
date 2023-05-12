@@ -263,10 +263,11 @@ const validator = object().shape({
             .transform((value) => Array.from(value))
             .min(1, "Ajoutez au moins un ingrédient"),
     instructions: string()
-            .required("Ajouter les étapes pour réaliser la recette"),
-    image_url: string()
-            .required("Ajoutez une photo de la recette")
-            .min(1, "Ajoutez une photo de la recette")
+            .required("Ajouter les étapes pour réaliser la recette")
+    // Mandatory image is too annoying, find a better way
+    //image_url: string()
+    //        .required("Ajoutez une photo de la recette")
+    //        .min(1, "Ajoutez une photo de la recette")
 })
 
 export default {
@@ -353,10 +354,11 @@ export default {
         },
         shares() {
             this.validate('shares')
-        },
-        image_url() {
-            this.validate('image_url')
         }
+        // Mandatory image is too annoying, find a better way
+        //image_url() {
+        //    this.validate('image_url')
+        //}
     },
     mounted() {
         this.fillForm()
