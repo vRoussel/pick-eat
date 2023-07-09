@@ -13,10 +13,11 @@
       <input
         type="number"
         :placeholder="placeholder"
+        step="any"
         class="input input-bordered rounded-none w-full h-full min-w-[50px]"
         :class="badvalue && '!input-error'"
         :value="modelValue"
-        @input="e => $emit('update:modelValue', parseInt(e.target.value))"
+        @input="e => $emit('update:modelValue', e.target.value)"
       >
       <button
         type="button"
