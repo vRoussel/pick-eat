@@ -12,7 +12,7 @@
         tabindex="-1"
       > {{ ingredient_name }}</span>
       <number-input
-        v-model="ingredient_quantity"
+        v-model.number="ingredient_quantity"
         :min="0"
         placeholder="Quantité"
         class="basis-5/12 sm:basis-3/12"
@@ -71,7 +71,7 @@ export default {
                 return this.quantity
             },
             set(v) {
-                this.$emit('update:quantity', v == "" ? null : parseFloat(v))
+                this.$emit('update:quantity', v == "" ? null : v)
             },
 
         },
