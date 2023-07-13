@@ -74,7 +74,7 @@
             <span class="label-text">Parts</span>
           </label>
           <number-input
-            v-model="shares"
+            v-model.number="shares"
             :min="0"
             :badvalue="errors.shares != null"
           />
