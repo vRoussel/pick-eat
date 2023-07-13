@@ -15,6 +15,7 @@ import account from '@iconify-icons/mdi/account';
 import menu from '@iconify-icons/mdi/menu';
 import vegan from '@iconify-icons/iconoir/vegan';
 import vege from '@iconify-icons/iconoir/vegan';
+import priv from '@iconify-icons/mdi/eye-off-outline';
 
 import flower from '@iconify-icons/ph/flower-fill';
 import sun from '@iconify-icons/ph/sun-fill';
@@ -42,5 +43,6 @@ export default {
     "account": account,
     "menu": menu,
     "vegan": vegan,
-    "vege": vege
+    "vege": vege,
+    "private": priv
 }

@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.2
--- PostgreSQL version: 13.0
+-- pgModeler version: 1.0.4
+-- PostgreSQL version: 14.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
@@ -227,6 +227,7 @@ CREATE TABLE public.recipes (
 	instructions text[] NOT NULL,
 	n_shares smallint NOT NULL,
 	author_id integer NOT NULL,
+	is_private bool DEFAULT false,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 );

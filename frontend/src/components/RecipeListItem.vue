@@ -10,6 +10,11 @@
       >
     </figure>
     <Icon
+      v-if="recipe.is_private"
+      :icon="icons.private"
+      class="text-3xl absolute text-primary left-2 top-2 bg-primary-content rounded-full ring-primary ring-2"
+    />
+    <Icon
       v-if="is_vegan"
       :icon="icons.vegan"
       class="text-3xl absolute text-primary  right-2 top-2 bg-primary-content rounded-full ring-primary ring-2"

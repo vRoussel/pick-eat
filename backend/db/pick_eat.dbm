@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.2" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="20"
+<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="20"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -301,7 +301,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="12" z-value="0">
+<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="13" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
 	<position x="320" y="540"/>
@@ -335,6 +335,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="author_id" not-null="true">
 		<type name="integer" length="0"/>
+	</column>
+	<column name="is_private" default-value="false">
+		<type name="bool" length="0"/>
 	</column>
 	<constraint name="recipes_pk" type="pk-constr" table="public.recipes">
 		<columns names="id" ref-type="src-columns"/>
