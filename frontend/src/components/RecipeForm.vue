@@ -23,6 +23,7 @@
         <span class="label-text-alt text-error">{{ errors.name }}</span>
       </label>
     </div>
+
     <div class="flex flex-wrap sm:flex-nowrap w-full gap-y-5 gap-x-5">
       <div class="flex flex-col justify-around justify-self-start grow sm:grow-0 basis-4/12">
         <div class="form-control">
@@ -204,6 +205,17 @@
       />
     </div>
 
+    <div class="form-control w-full">
+        <label class="label cursor-pointer justify-start gap-x-4">
+          <input
+            v-model="is_private"
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-accent"
+          >
+          <span class="label-text">Recette privée</span>
+        </label>
+    </div>
+
     <button class="btn btn-primary w-full btn-lg">
       {{ update_mode ? 'Valider' : 'Ajouter' }}
     </button>
@@ -298,6 +310,7 @@ export default {
             diets: new Set(),
             notes: "",
             image_url: "",
+            is_private: false,
             meta: {
                 NewTagModal_: shallowRef(NewTagModal),
                 NewCategoryModal_: shallowRef(NewCategoryModal),
@@ -378,6 +391,7 @@ export default {
                 "instructions": this.instructions.split(/\r?\n/).filter(i => i),
                 "notes": this.notes,
                 "n_shares": this.shares,
+                "is_private": this.is_private
             }
             for (var ingr of recipe.q_ingredients) {
                 if (ingr.quantity == null)
@@ -447,6 +461,7 @@ export default {
                 this.instructions = other.instructions.join('\n')
                 this.notes = other.notes
                 this.shares = other.n_shares
+                this.is_private = other.is_private
             }
         },
         clearForm() {
@@ -462,6 +477,7 @@ export default {
             this.diets.clear(),
             this.notes = "",
             this.image_url = ""
+            this.is_private = false
         },
         validate(field) {
             console.log(this.prep_time)

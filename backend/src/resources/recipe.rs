@@ -23,6 +23,7 @@ pub struct FromDB {
     seasons: Vec<season::FromDB>,
     author: account::FromDBPublic,
     diets: Vec<diet::FromDB>,
+    is_private: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -34,6 +35,7 @@ pub struct FromDBLight {
     n_shares: i16,
     is_favorite: bool,
     diets: Vec<diet::FromDB>,
+    is_private: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -51,6 +53,7 @@ pub struct New {
     pub n_shares: i16,
     pub season_ids: Vec<season::Ref>,
     pub diet_ids: Vec<diet::Ref>,
+    pub is_private: bool,
 }
 
 pub enum Filter {
@@ -95,6 +98,7 @@ impl FromRow<'_, PgRow> for FromDB {
             seasons: _seasons.0,
             author: _author,
             diets: _diets.0,
+            is_private: row.get("is_private"),
         })
     }
 }
@@ -111,6 +115,7 @@ impl FromRow<'_, PgRow> for FromDBLight {
             n_shares: row.get("n_shares"),
             is_favorite: row.get("is_favorite"),
             diets: _diets.0,
+            is_private: row.get("is_private"),
         })
     }
 }
@@ -294,10 +299,18 @@ pub async fn get_many(
                 get_ingredients_json(id) as ingredients,
                 get_diets_json(id) as diets,
                 n_shares,
-                count(*) OVER() AS total_count
+                count(*) OVER() AS total_count,
+                is_private
             FROM recipes AS r
             LEFT JOIN accounts_fav_recipes fav
-                ON r.id = fav.recipe_id AND fav.account_id = ",
+                ON r.id = fav.recipe_id AND fav.account_id = 
+            ",
+        )
+        .push_bind(account_id)
+        .push(
+            "
+            WHERE is_private = 'f' OR author_id = 
+            ",
         )
         .push_bind(account_id)
         .push(" \n")
@@ -344,8 +357,8 @@ pub async fn add_one(
     let new_id: i32 = query!(
         "
             INSERT INTO recipes
-            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, author_id)
-            VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7, $8)
+            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, is_private, author_id)
+            VALUES (sentence_case($1), $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING id;
         ",
         new_recipe.name,
@@ -355,6 +368,7 @@ pub async fn add_one(
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
+        new_recipe.is_private,
         user_id
     )
     .fetch_one(&mut transaction)
@@ -474,6 +488,7 @@ pub async fn get_one(
                 r.publication_date,
                 r.instructions,
                 r.n_shares,
+                r.is_private,
                 fav IS NOT null as is_favorite,
                 accounts.id as author_id,
                 accounts.display_name as author_name,
@@ -529,8 +544,9 @@ pub async fn modify_one(
                 cooking_time_min = $4,
                 image = $5,
                 instructions = $6,
-                n_shares = $7
-            WHERE id = $8
+                n_shares = $7,
+                is_private = $8
+            WHERE id = $9
         ",
         new_recipe.name,
         new_recipe.notes,
@@ -539,6 +555,7 @@ pub async fn modify_one(
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
+        new_recipe.is_private,
         id
     )
     .execute(&mut transaction)
