@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.id as id,\n                i.name as name,\n                CASE WHEN i.default_unit_id is null THEN\n                    null\n                ELSE\n                    (\n                    u.id,\n                    u.full_name,\n                    u.short_name\n                    )\n                END as \"default_unit: unit::FromDB\"\n            FROM\n                ingredients as i\n                LEFT JOIN units as u\n                ON i.default_unit_id = u.id\n            WHERE\n                i.name = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "default_unit: unit::FromDB",
+        "type_info": "Record"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "115c1df73e0fb26aa3e32a1dd8eee6c56d288a3696ecf16d59944f2fe6263b87"
+}
