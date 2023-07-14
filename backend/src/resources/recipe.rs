@@ -307,14 +307,14 @@ pub async fn get_many(
             ",
         )
         .push_bind(account_id)
+        .push(" \n")
+        .push(joins)
         .push(
             "
             WHERE is_private = 'f' OR author_id = 
             ",
         )
         .push_bind(account_id)
-        .push(" \n")
-        .push(joins)
         .push(
             "
         ORDER BY ",
