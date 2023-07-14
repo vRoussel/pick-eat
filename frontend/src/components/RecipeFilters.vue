@@ -12,15 +12,15 @@
         </button>
       </div>
       <div class="form-control relative grow">
-        <div class="input-group">
-          <span class="icon text-xl bg-accent text-accent-content">
+        <div class="join bg-accent flex items-center">
+          <span class="icon text-xl bg-accent text-accent-content join px-3">
             <Icon
               :icon="icons.search"
               :inline="true"
             />
           </span>
           <input
-            class="input w-full"
+            class="input w-full join-item"
             type="search"
             placeholder="Trouver une recette"
             :value="search_query"

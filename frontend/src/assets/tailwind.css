@@ -10,10 +10,6 @@
     @apply font-normal;
 }
 
-a {
-    @apply text-primary;
-}
-
 .btn {
   @apply normal-case;
   font-weight: normal;

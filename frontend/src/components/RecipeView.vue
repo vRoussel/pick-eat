@@ -90,7 +90,7 @@
           <tr class="text-center">
             <th
               colspan="2"
-              class="text-primary-content !bg-primary text-lg"
+              class="text-primary-content !bg-primary text-lg rounded-t-xl"
             >
               <span
                 v-if="recipe.n_shares > 0"
