@@ -371,7 +371,7 @@ pub async fn add_one(
         new_recipe.is_private,
         user_id
     )
-    .fetch_one(&mut transaction)
+    .fetch_one(&mut *transaction)
     .await?
     .id;
 
@@ -386,7 +386,7 @@ pub async fn add_one(
             new_id,
             &new_recipe.tag_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -401,7 +401,7 @@ pub async fn add_one(
             new_id,
             &new_recipe.category_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -416,7 +416,7 @@ pub async fn add_one(
             new_id,
             &new_recipe.season_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -431,7 +431,7 @@ pub async fn add_one(
             new_id,
             &new_recipe.diet_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -462,7 +462,7 @@ pub async fn add_one(
             &qtys,
             &unit_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -558,7 +558,7 @@ pub async fn modify_one(
         new_recipe.is_private,
         id
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?
     .rows_affected();
 
@@ -578,7 +578,7 @@ pub async fn modify_one(
             id,
             &new_recipe.tag_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -592,7 +592,7 @@ pub async fn modify_one(
         id,
         &new_recipe.tag_ids
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Seasons
@@ -607,7 +607,7 @@ pub async fn modify_one(
             id,
             &new_recipe.season_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -621,7 +621,7 @@ pub async fn modify_one(
         id,
         &new_recipe.season_ids
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Categories
@@ -636,7 +636,7 @@ pub async fn modify_one(
             id,
             &new_recipe.category_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -650,7 +650,7 @@ pub async fn modify_one(
         id,
         &new_recipe.category_ids
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Diets
@@ -665,7 +665,7 @@ pub async fn modify_one(
             id,
             &new_recipe.diet_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -679,7 +679,7 @@ pub async fn modify_one(
         id,
         &new_recipe.diet_ids
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Ingredients
@@ -716,7 +716,7 @@ pub async fn modify_one(
             &qtys,
             &unit_ids
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await?;
     }
 
@@ -730,7 +730,7 @@ pub async fn modify_one(
         id,
         &ingr_ids
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
     transaction.commit().await?;
 
