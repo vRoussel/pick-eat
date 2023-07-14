@@ -284,7 +284,7 @@ pub async fn modify_one(
         account.new_email,
         id
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await
     .map_err(|e| InsertAccountError(e.to_string()))?
     .rows_affected();
@@ -310,7 +310,7 @@ pub async fn modify_one(
             password_hash,
             id
         )
-        .execute(&mut transaction)
+        .execute(&mut *transaction)
         .await
         .map_err(|e| InsertAccountError(e.to_string()))?
         .rows_affected();

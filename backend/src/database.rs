@@ -37,7 +37,7 @@ pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
         ;
     "
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Diets
@@ -50,7 +50,7 @@ pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
         ;
     "
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     // Units
@@ -72,7 +72,7 @@ pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
         ;
     "
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     query!(
@@ -86,7 +86,7 @@ pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
         ;
     "
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     query!(
@@ -99,7 +99,7 @@ pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
         ;
     "
     )
-    .execute(&mut transaction)
+    .execute(&mut *transaction)
     .await?;
 
     transaction.commit().await?;
