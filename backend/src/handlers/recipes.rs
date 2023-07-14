@@ -6,7 +6,7 @@ use serde_json;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
 
-use crate::handlers::{APIAnswer, APIError, Admin, User};
+use crate::handlers::{APIAnswer, Admin, User};
 use crate::query_params::{Range, RangeError};
 use crate::resources::recipe::{self, Filter};
 use crate::resources::{get_total_count, isolate_transaction};

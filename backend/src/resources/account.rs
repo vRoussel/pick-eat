@@ -6,7 +6,7 @@ use argon2::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{
-    postgres::{PgConnection, PgDatabaseError},
+    postgres::{PgConnection},
     Connection,
 };
 use sqlx::{query, query_as, Error};

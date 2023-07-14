@@ -9,7 +9,7 @@ pub mod tags;
 pub mod tokens;
 pub mod units;
 
-use std::{future::Future, pin::Pin, sync::RwLock};
+use std::{future::Future, pin::Pin};
 
 use actix_identity::Identity;
 use actix_session::Session;
