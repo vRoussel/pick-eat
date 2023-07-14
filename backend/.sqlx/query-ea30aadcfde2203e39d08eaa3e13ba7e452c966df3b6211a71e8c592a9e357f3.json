@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE ingredients SET\n                name = sentence_case($1),\n                default_unit_id = $2\n            WHERE id = $3\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ea30aadcfde2203e39d08eaa3e13ba7e452c966df3b6211a71e8c592a9e357f3"
+}
