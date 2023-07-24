@@ -142,7 +142,7 @@ export default {
     async activated() {
         if (this.saved_query != null) {
             // Only restore saved_query if the current_one  has no query params
-            if (Object.keys(this.$route.query).length == 0) {
+            if (Object.keys(this.$route.query).length == 0 && this.saved_query != this.$router.query) {
                 await this.$router.replace({ query: this.saved_query });
             }
             this.loadRecipes()
