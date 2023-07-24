@@ -15,6 +15,7 @@
     "axios": "^1.4.0",
     "daisyui": "^3.2.1",
     "floating-vue": "^2.0.0-beta.24",
+    "lodash.isequal": "^4.5.0",
     "pinia": "^2.1.4",
     "postcss": "^8.4.25",
     "sweetalert2": "^11.7.16",
