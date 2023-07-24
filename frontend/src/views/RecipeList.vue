@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import isEqual from 'lodash.isequal';
 import Pagination from '@/components/Pagination.vue'
 import RecipeFilters from '@/components/RecipeFilters.vue'
 import RecipeListItem from '@/components/RecipeListItem.vue'
@@ -142,7 +143,7 @@ export default {
     async activated() {
         if (this.saved_query != null) {
             // Only restore saved_query if the current_one  has no query params
-            if (Object.keys(this.$route.query).length == 0 && this.saved_query != this.$router.query) {
+            if (Object.keys(this.$route.query).length == 0 && !isEqual(this.saved_query, this.$route.query)) {
                 await this.$router.replace({ query: this.saved_query });
             }
             this.loadRecipes()
