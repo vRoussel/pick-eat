@@ -206,14 +206,14 @@
     </div>
 
     <div class="form-control w-full">
-        <label class="label cursor-pointer justify-start gap-x-4">
-          <input
-            v-model="is_private"
-            type="checkbox"
-            class="checkbox checkbox-sm checkbox-accent"
-          >
-          <span class="label-text">Recette privée</span>
-        </label>
+      <label class="label cursor-pointer justify-start gap-x-4">
+        <input
+          v-model="is_private"
+          type="checkbox"
+          class="checkbox checkbox-sm checkbox-accent"
+        >
+        <span class="label-text">Recette privée</span>
+      </label>
     </div>
 
     <button class="btn btn-primary w-full btn-lg">
