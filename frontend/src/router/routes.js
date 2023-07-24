@@ -108,20 +108,20 @@ const router = createRouter({
     routes,
     linkActiveClass: 'active',
     scrollBehavior: (to, from, savedPosition) => {
-        if (to.query.ns !== undefined) {
-            return {}
-        }
-        else if (savedPosition) {
+        if (savedPosition) {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(savedPosition)
-                    }, 200)
+                    }, 300)
             })
+        }
+        else if (to.query.ns !== undefined) {
+            return {}
         } else {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve({left: 0,top: 0})
-                    }, 200)
+                    }, 300)
             })
         }
     }
