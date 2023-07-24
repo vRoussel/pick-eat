@@ -68,7 +68,10 @@
         </label>
       </div>
       <div class="form-control">
-          <button class="btn btn-primary w-full btn-lg" :class="{ loading: waiting_for_api }">
+        <button
+          class="btn btn-primary w-full btn-lg"
+          :class="{ loading: waiting_for_api }"
+        >
           Créer mon compte
         </button>
       </div>
