@@ -1,4 +1,4 @@
-pg_version: 13
+pg_version: 15
 pg_hba_path: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
 pg_ident_path: "/etc/postgresql/{{ pg_version }}/main/pg_ident.conf"
 pg_unix_socket: "/var/run/postgresql"

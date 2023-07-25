@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 1.0.4
--- PostgreSQL version: 14.0
+-- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
