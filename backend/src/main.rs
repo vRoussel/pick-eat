@@ -1,72 +1,20 @@
-use actix_identity::IdentityMiddleware;
-use actix_session::config::CookieContentSecurity;
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
-use actix_web::cookie::Key;
-use actix_web::{middleware::Logger, web, App, HttpServer};
 use clap::Parser;
 use conf::{parse_conf, Conf};
 use log::*;
 use simplelog::*;
 use sqlx::postgres::PgPool;
 
-use crate::database::init_database;
-
+mod app;
 mod conf;
 mod database;
 mod email;
 mod handlers;
 mod query_params;
 mod resources;
+mod webserver;
 
-async fn start_web_server(
-    db_pool: PgPool,
-    email_sender: email::EmailSender,
-    conf: Conf,
-) -> std::io::Result<()> {
-    let db_pool_data = web::Data::new(db_pool);
-    let email_sender_data = web::Data::new(email_sender);
-    let secret_key = Key::from(conf.sessions.cookie_secret.as_bytes());
-    let cookie_secure = conf.sessions.cookie_secure;
-
-    let redis_conn_str = format!(
-        "redis://:{}@{}:{}",
-        conf.redis.password.unwrap_or_default(),
-        conf.redis.host,
-        conf.redis.port.unwrap_or(6379).to_string(),
-    );
-    let redis_store = RedisSessionStore::new(redis_conn_str).await.unwrap();
-    HttpServer::new(move || {
-        App::new()
-            .wrap(Logger::default())
-            .wrap(IdentityMiddleware::default())
-            .wrap(
-                // create cookie based session middleware
-                SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                    .cookie_content_security(CookieContentSecurity::Signed)
-                    .cookie_same_site(actix_web::cookie::SameSite::Strict)
-                    .cookie_secure(cookie_secure)
-                    .build(),
-            )
-            .app_data(db_pool_data.clone())
-            .app_data(email_sender_data.clone())
-            .service(
-                web::scope("/v1")
-                    .configure(handlers::recipes::config)
-                    .configure(handlers::ingredients::config)
-                    .configure(handlers::tags::config)
-                    .configure(handlers::categories::config)
-                    .configure(handlers::units::config) //            .configure(resources::search::config)
-                    .configure(handlers::seasons::config)
-                    .configure(handlers::diets::config)
-                    .configure(handlers::accounts::config)
-                    .configure(handlers::sessions::config)
-                    .configure(handlers::tokens::config),
-            )
-    })
-    .bind("127.0.0.1:8080")?
-    .run()
-    .await
-}
+use app::App;
+use webserver::start_web_server;
 
 fn setup_logging(verbose: u8) {
     let pickeat_log_level = match verbose {
@@ -122,13 +70,14 @@ struct Cli {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
     setup_logging(args.verbose);
-    info!("Starting");
+    info!("Starting app");
     let conf = parse_conf(&args.conf);
+    let email_sender = email::EmailSender::new(conf.email.api_key.clone());
     let db_pool = database::get_pool(&conf.database).await?;
-    init_database(&db_pool)
+    database::add_default_data(&db_pool)
         .await
         .expect("Error while initializing DB");
-    let email_sender = email::EmailSender::new(conf.email.api_key.clone());
-    start_web_server(db_pool, email_sender, conf).await?;
+    let app = App::new(db_pool, email_sender);
+    start_web_server(app, conf.sessions, conf.redis).await?;
     Ok(())
 }

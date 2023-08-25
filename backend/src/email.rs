@@ -13,6 +13,7 @@ struct EmailReq {
     text_body: String,
 }
 
+#[derive(Clone)]
 pub struct EmailSender {
     api_key: String,
 }
