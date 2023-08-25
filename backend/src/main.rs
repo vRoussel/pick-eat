@@ -69,9 +69,15 @@ async fn start_web_server(
 }
 
 fn setup_logging(verbose: u8) {
-    let log_level = match verbose {
+    let pickeat_log_level = match verbose {
         0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
+        _ => LevelFilter::Trace,
+    };
+
+    let others_log_level = match verbose {
+        0 => LevelFilter::Info,
+        1 | 2 => LevelFilter::Debug,
         _ => LevelFilter::Trace,
     };
 
@@ -83,13 +89,13 @@ fn setup_logging(verbose: u8) {
 
     let init_log = CombinedLogger::init(vec![
         TermLogger::new(
-            log_level,
+            pickeat_log_level,
             pickeat_log_config.clone(),
             TerminalMode::Mixed,
             ColorChoice::Auto,
         ),
         TermLogger::new(
-            LevelFilter::Warn,
+            pickeat_log_level,
             others_log_config.clone(),
             TerminalMode::Mixed,
             ColorChoice::Auto,
@@ -97,8 +103,8 @@ fn setup_logging(verbose: u8) {
     ]);
     if let Err(_) = init_log {
         CombinedLogger::init(vec![
-            SimpleLogger::new(log_level, pickeat_log_config.clone()),
-            SimpleLogger::new(LevelFilter::Warn, others_log_config.clone()),
+            SimpleLogger::new(pickeat_log_level, pickeat_log_config.clone()),
+            SimpleLogger::new(others_log_level, others_log_config.clone()),
         ])
         .expect("Could not setup logging");
     }
