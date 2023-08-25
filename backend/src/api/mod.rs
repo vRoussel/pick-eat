@@ -1,14 +1,6 @@
-pub mod accounts;
-pub mod categories;
-pub mod diets;
-pub mod ingredients;
-pub mod recipes;
-pub mod seasons;
-pub mod sessions;
 pub mod tags;
-pub mod tokens;
-pub mod units;
 
+use std::convert::{TryFrom, TryInto};
 use std::{future::Future, pin::Pin};
 
 use actix_identity::Identity;
@@ -16,18 +8,13 @@ use actix_session::Session;
 use actix_web::{
     dev::Payload,
     error::{ErrorForbidden, ErrorUnauthorized},
-    Error, FromRequest, HttpRequest, HttpResponse,
+    FromRequest, HttpRequest,
 };
+use actix_web::{Error, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
-use sqlx::error::DatabaseError;
 
-pub fn db_error_to_http_response(db_error: &dyn DatabaseError) -> HttpResponse {
-    match db_error.code().as_deref() {
-        Some("23505") => HttpResponse::Conflict().finish(),
-        Some("23503") => HttpResponse::UnprocessableEntity().finish(),
-        _ => HttpResponse::InternalServerError().finish(),
-    }
-}
+use crate::app::{AppError, AppErrorWith};
+use crate::models;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct User {
@@ -74,11 +61,11 @@ impl FromRequest for Admin {
     }
 }
 
-#[derive(Serialize)]
-#[serde(untagged)]
-pub enum APIError {
-    FieldError { field_name: String, error: String },
-    TextError { error: String, key: Option<String> },
+#[derive(Serialize, Default)]
+pub struct APIError {
+    message: &'static str,
+    field: Option<&'static str>,
+    code: Option<&'static str>,
 }
 
 #[derive(Serialize)]
@@ -86,33 +73,46 @@ pub struct APIAnswer {
     errors: Vec<APIError>,
 }
 
-impl APIAnswer {
-    fn new() -> Self {
-        Self { errors: Vec::new() }
+impl<T> From<AppErrorWith<T>> for HttpResponse
+where
+    T: models::InvalidInput,
+{
+    fn from(value: AppErrorWith<T>) -> Self {
+        match value {
+            AppErrorWith::InvalidInput(v) => {
+                HttpResponse::BadRequest().json(APIAnswer { errors: v.into() })
+            }
+            AppErrorWith::AppError(v) => HttpResponse::InternalServerError().finish(),
+        }
     }
+}
 
-    fn add_field_error(&mut self, field_name: &str, error: &str) {
-        self.errors.push(APIError::FieldError {
-            field_name: field_name.to_owned(),
-            error: error.to_owned(),
-        });
+impl From<AppError> for HttpResponse {
+    fn from(value: AppError) -> Self {
+        match value {
+            AppError::InternalError(v) => HttpResponse::InternalServerError().finish(),
+        }
     }
+}
 
-    fn add_error(&mut self, error: &str) {
-        self.errors.push(APIError::TextError {
-            error: error.to_owned(),
-            key: None,
-        });
+impl<T> TryFrom<AppErrorWith<T>> for APIAnswer
+where
+    T: models::InvalidInput,
+{
+    type Error = ();
+    fn try_from(value: AppErrorWith<T>) -> Result<APIAnswer, ()> {
+        match value {
+            AppErrorWith::InvalidInput(v) => Ok(APIAnswer { errors: v.into() }),
+            AppErrorWith::AppError(v) => v.try_into(),
+        }
     }
+}
 
-    fn add_error_with_key(&mut self, error: &str, key: &str) {
-        self.errors.push(APIError::TextError {
-            error: error.to_owned(),
-            key: Some(key.to_owned()),
-        });
-    }
-
-    fn is_ok(&self) -> bool {
-        return self.errors.is_empty();
+impl TryFrom<AppError> for APIAnswer {
+    type Error = ();
+    fn try_from(value: AppError) -> Result<APIAnswer, ()> {
+        match value {
+            AppError::InternalError(_) => Err(()),
+        }
     }
 }

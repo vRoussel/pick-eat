@@ -4,13 +4,15 @@ use log::*;
 use simplelog::*;
 use sqlx::postgres::PgPool;
 
+mod api;
 mod app;
 mod conf;
 mod database;
 mod email;
-mod handlers;
+mod models;
 mod query_params;
-mod resources;
+mod storage;
+mod utils;
 mod webserver;
 
 use app::App;

@@ -1,25 +1,30 @@
+use std::collections::HashMap;
+use std::convert::TryFrom;
+
+use crate::models::{InvalidTag, InvalidityKind, NewTag, Tag};
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgConnection;
-use sqlx::Error;
+use sqlx::error::ErrorKind;
+use sqlx::postgres::{PgConnection, PgDatabaseError};
 use sqlx::{query, query_as};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct FromDB {
-    id: i32,
-    name: String,
+use super::{DBConstraint, StorageError};
+
+impl<'a> TryFrom<&DBConstraint> for InvalidTag {
+    type Error = &'static str;
+
+    fn try_from(value: &DBConstraint) -> Result<Self, &'static str> {
+        match value.0.as_str() {
+            "tags_uq_name" => Ok(InvalidTag {
+                name: Some(InvalidityKind::AlreadyUsed),
+            }),
+            _ => Err("Unknown DB constraint {value.0}"),
+        }
+    }
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct New {
-    pub name: String,
-}
-
-pub type Ref = i32;
-
-pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
-    let rows: Vec<FromDB> = query_as!(
-        FromDB,
+pub async fn get_all_tags(db_conn: &mut PgConnection) -> Result<Vec<Tag>, StorageError> {
+    let rows: Vec<Tag> = query_as!(
+        Tag,
         "
             SELECT
                 id,
@@ -34,11 +39,11 @@ pub async fn get_all(db_conn: &mut PgConnection) -> Result<Vec<FromDB>, Error> {
     Ok(rows)
 }
 
-pub async fn add_one(db_conn: &mut PgConnection, new_tag: &New) -> Result<i32, Error> {
+pub async fn add_tag(db_conn: &mut PgConnection, new_tag: &NewTag) -> Result<i32, StorageError> {
     let new_id: i32 = query!(
         "
             INSERT INTO tags (name)
-                VALUES (sentence_case($1))
+                VALUES ($1)
             RETURNING id;
         ",
         new_tag.name
@@ -50,12 +55,12 @@ pub async fn add_one(db_conn: &mut PgConnection, new_tag: &New) -> Result<i32, E
     Ok(new_id)
 }
 
-pub async fn get_one_by_name(
+pub async fn get_tag_by_name(
     db_conn: &mut PgConnection,
     name: &str,
-) -> Result<Option<FromDB>, Error> {
-    let row: Option<FromDB> = query_as!(
-        FromDB,
+) -> Result<Option<Tag>, StorageError> {
+    let row: Option<Tag> = query_as!(
+        Tag,
         "
             SELECT
                 id,
@@ -71,9 +76,12 @@ pub async fn get_one_by_name(
     Ok(row)
 }
 
-pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromDB>, Error> {
-    let row: Option<FromDB> = query_as!(
-        FromDB,
+pub async fn get_tag_by_id(
+    db_conn: &mut PgConnection,
+    id: i32,
+) -> Result<Option<Tag>, StorageError> {
+    let row: Option<Tag> = query_as!(
+        Tag,
         "
             SELECT
                 id,
@@ -89,15 +97,15 @@ pub async fn get_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<FromD
     Ok(row)
 }
 
-pub async fn modify_one(
+pub async fn replace_tag(
     db_conn: &mut PgConnection,
     id: i32,
-    new_tag: &New,
-) -> Result<Option<()>, Error> {
+    new_tag: &NewTag,
+) -> Result<Option<()>, StorageError> {
     let n_rows: u64 = query!(
         "
             UPDATE tags SET
-                name = sentence_case($1)
+                name = $1
             WHERE id = $2
         ",
         new_tag.name,
@@ -114,7 +122,7 @@ pub async fn modify_one(
     }
 }
 
-pub async fn delete_one(db_conn: &mut PgConnection, id: i32) -> Result<Option<()>, Error> {
+pub async fn delete_tag(db_conn: &mut PgConnection, id: i32) -> Result<Option<()>, StorageError> {
     let n_rows: u64 = query!(
         "
             DELETE FROM tags
