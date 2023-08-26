@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.4
+-- pgModeler version: 1.0.5
 -- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
@@ -235,9 +235,9 @@ CREATE TABLE public.recipes (
 ALTER TABLE public.recipes OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_ingredients_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_ingredients_json(integer) CASCADE;
-CREATE FUNCTION public.get_ingredients_json (IN recipe_id_in integer)
+-- object: public.get_recipe_ingredients_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_ingredients_json(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_ingredients_json (IN recipe_id_in integer)
 	RETURNS json
 	LANGUAGE sql
 	STABLE 
@@ -270,12 +270,12 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
     ) as result
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_ingredients_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_ingredients_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_tags_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_tags_json(integer) CASCADE;
-CREATE FUNCTION public.get_tags_json (IN recipe_id_in integer)
+-- object: public.get_recipe_tags_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_tags_json(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_tags_json (IN recipe_id_in integer)
 	RETURNS json
 	LANGUAGE sql
 	STABLE 
@@ -297,12 +297,12 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
 
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_tags_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_tags_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_categories_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_categories_json(integer) CASCADE;
-CREATE FUNCTION public.get_categories_json (IN recipe_id_in integer)
+-- object: public.get_recipe_categories_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_categories_json(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_categories_json (IN recipe_id_in integer)
 	RETURNS json
 	LANGUAGE sql
 	STABLE 
@@ -324,12 +324,12 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
 
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_categories_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_categories_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_seasons_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_seasons_json(integer) CASCADE;
-CREATE FUNCTION public.get_seasons_json (IN recipe_id_in integer)
+-- object: public.get_recipe_seasons_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_seasons_json(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_seasons_json (IN recipe_id_in integer)
 	RETURNS json
 	LANGUAGE sql
 	STABLE 
@@ -352,7 +352,7 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
 
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_seasons_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_seasons_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: trgm_idx | type: INDEX --
@@ -389,9 +389,9 @@ CREATE TABLE public.recipes_diets (
 ALTER TABLE public.recipes_diets OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_diets_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_diets_json(integer) CASCADE;
-CREATE FUNCTION public.get_diets_json (IN recipe_id_in integer)
+-- object: public.get_recipe_diets_json | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_diets_json(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_diets_json (IN recipe_id_in integer)
 	RETURNS json
 	LANGUAGE sql
 	STABLE 
@@ -414,7 +414,7 @@ SELECT coalesce(json_agg(result), '[]'::json) FROM
 
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_diets_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_diets_json(integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.account_validation_tokens | type: TABLE --
