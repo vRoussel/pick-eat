@@ -1,9 +1,11 @@
 mod category;
+mod diet;
 mod season;
 mod tag;
 use std::convert::TryFrom;
 
 pub use category::*;
+pub use diet::*;
 pub use season::*;
 pub use tag::*;
 
@@ -14,7 +16,7 @@ pub trait InvalidInput:
 {
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum InvalidityKind {
     AlreadyUsed,
     Empty,
