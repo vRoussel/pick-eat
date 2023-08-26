@@ -5,6 +5,7 @@ use crate::models::InvalidInput;
 use crate::{email::EmailSender, storage::StorageError};
 
 mod category;
+mod diet;
 mod season;
 mod tag;
 

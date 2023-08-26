@@ -1,4 +1,5 @@
 pub mod categories;
+pub mod diets;
 pub mod seasons;
 pub mod tags;
 
