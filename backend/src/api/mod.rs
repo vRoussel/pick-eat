@@ -2,6 +2,7 @@ pub mod categories;
 pub mod diets;
 pub mod seasons;
 pub mod tags;
+pub mod units;
 
 use std::convert::{TryFrom, TryInto};
 use std::{future::Future, pin::Pin};

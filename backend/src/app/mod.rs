@@ -8,6 +8,7 @@ mod category;
 mod diet;
 mod season;
 mod tag;
+mod unit;
 
 pub struct App {
     db_pool: PgPool,
