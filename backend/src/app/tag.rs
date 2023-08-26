@@ -8,6 +8,15 @@ use crate::{
 fn sanitize_tag_input(input: &mut NewTag) {
     input.name = sentence_case(&input.name);
 }
+fn check_tag_input(input: &NewTag) -> Result<(), InvalidTag> {
+    if input.name.is_empty() {
+        return Err(InvalidTag {
+            name: Some(InvalidityKind::Empty),
+        });
+    };
+    Ok(())
+}
+
 impl App {
     pub async fn get_all_tags(&self) -> Result<Vec<Tag>, AppError> {
         retry_up_to_n_times(
@@ -22,6 +31,9 @@ impl App {
     }
 
     pub async fn add_tag(&self, new_tag: &mut NewTag) -> Result<i32, AppErrorWith<InvalidTag>> {
+        if let Err(e) = check_tag_input(new_tag) {
+            return Err(AppErrorWith::InvalidInput(e));
+        };
         sanitize_tag_input(new_tag);
         retry_up_to_n_times(
             || async {
@@ -51,6 +63,9 @@ impl App {
         id: i32,
         new_tag: &mut NewTag,
     ) -> Result<Option<()>, AppErrorWith<InvalidTag>> {
+        if let Err(e) = check_tag_input(new_tag) {
+            return Err(AppErrorWith::InvalidInput(e));
+        };
         sanitize_tag_input(new_tag);
         retry_up_to_n_times(
             || async {

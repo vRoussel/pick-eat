@@ -13,4 +13,5 @@ pub trait InvalidInput:
 #[derive(Debug)]
 pub enum InvalidityKind {
     AlreadyUsed,
+    Empty,
 }
