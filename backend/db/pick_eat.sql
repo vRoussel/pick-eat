@@ -127,7 +127,7 @@ ALTER TABLE public.units OWNER TO pickeat;
 CREATE TABLE public.seasons (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
-	label text,
+	label text NOT NULL,
 	CONSTRAINT seasons_pk PRIMARY KEY (id),
 	CONSTRAINT seasons_uq_name UNIQUE (name),
 	CONSTRAINT seasons_uq_label UNIQUE (label)
