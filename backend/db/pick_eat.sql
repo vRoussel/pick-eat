@@ -441,6 +441,24 @@ CREATE TABLE public.password_reset_tokens (
 ALTER TABLE public.password_reset_tokens OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.recipes_full | type: VIEW --
+-- DROP VIEW IF EXISTS public.recipes_full CASCADE;
+CREATE VIEW public.recipes_full
+AS 
+
+SELECT
+   r.*,
+   get_recipe_tags_json(r.id) AS tags,
+   get_recipe_categories_json(r.id) AS categories,
+   get_recipe_seasons_json(r.id) AS seasons,
+   get_recipe_ingredients_json(r.id) AS ingredients,
+   get_recipe_diets_json(r.id) AS diets
+FROM
+   public.recipes AS r;
+-- ddl-end --
+ALTER VIEW public.recipes_full OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
