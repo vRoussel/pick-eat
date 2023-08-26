@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="20"
+<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="21"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -347,7 +347,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<function name="get_ingredients_json"
+<function name="get_recipe_ingredients_json"
 		window-func="false"
 		returns-setof="false"
 		behavior-type="CALLED ON NULL INPUT"
@@ -389,7 +389,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
     ) as result]]> </definition>
 </function>
 
-<function name="get_tags_json"
+<function name="get_recipe_tags_json"
 		window-func="false"
 		returns-setof="false"
 		behavior-type="CALLED ON NULL INPUT"
@@ -420,7 +420,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 ]]> </definition>
 </function>
 
-<function name="get_categories_json"
+<function name="get_recipe_categories_json"
 		window-func="false"
 		returns-setof="false"
 		behavior-type="CALLED ON NULL INPUT"
@@ -451,7 +451,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 ]]> </definition>
 </function>
 
-<function name="get_seasons_json"
+<function name="get_recipe_seasons_json"
 		window-func="false"
 		returns-setof="false"
 		behavior-type="CALLED ON NULL INPUT"
@@ -532,7 +532,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<function name="get_diets_json"
+<function name="get_recipe_diets_json"
 		window-func="false"
 		returns-setof="false"
 		behavior-type="CALLED ON NULL INPUT"
