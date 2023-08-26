@@ -1,10 +1,7 @@
-use std::collections::HashMap;
 use std::convert::TryFrom;
 
 use crate::models::{InvalidTag, InvalidityKind, NewTag, Tag};
-use serde::{Deserialize, Serialize};
-use sqlx::error::ErrorKind;
-use sqlx::postgres::{PgConnection, PgDatabaseError};
+use sqlx::postgres::PgConnection;
 use sqlx::{query, query_as};
 
 use super::{DBConstraint, StorageError};
@@ -53,27 +50,6 @@ pub async fn add_tag(db_conn: &mut PgConnection, new_tag: &NewTag) -> Result<i32
     .id;
 
     Ok(new_id)
-}
-
-pub async fn get_tag_by_name(
-    db_conn: &mut PgConnection,
-    name: &str,
-) -> Result<Option<Tag>, StorageError> {
-    let row: Option<Tag> = query_as!(
-        Tag,
-        "
-            SELECT
-                id,
-                name
-            FROM tags
-            WHERE name = $1
-        ",
-        name
-    )
-    .fetch_optional(db_conn)
-    .await?;
-
-    Ok(row)
 }
 
 pub async fn get_tag_by_id(

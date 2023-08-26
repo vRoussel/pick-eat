@@ -1,16 +1,12 @@
-use std::fmt::Display;
-use std::iter::Take;
-
 use sqlx::PgPool;
 use thiserror::Error;
 
 use crate::models::InvalidInput;
 //use crate::storage::StorageErrorWith;
-use crate::{conf::Conf, email::EmailSender, storage::StorageError};
+use crate::{email::EmailSender, storage::StorageError};
 
 mod tag;
 
-#[derive(Clone)]
 pub struct App {
     db_pool: PgPool,
     email_sender: EmailSender,
