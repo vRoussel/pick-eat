@@ -7,13 +7,14 @@ pub mod diet;
 //pub mod recipe;
 pub mod season;
 //pub mod token;
-//pub mod unit;
+pub mod unit;
 
 pub use category::*;
 pub use diet::*;
 pub use season::*;
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;
+pub use unit::*;
 
 use sqlx::{self, Connection, Postgres, Transaction};
 use sqlx::{postgres::PgConnection, query, Row};
