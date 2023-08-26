@@ -1,8 +1,7 @@
 use clap::Parser;
-use conf::{parse_conf, Conf};
+use conf::parse_conf;
 use log::*;
 use simplelog::*;
-use sqlx::postgres::PgPool;
 
 mod api;
 mod app;
