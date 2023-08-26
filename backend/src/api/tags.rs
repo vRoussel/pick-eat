@@ -60,7 +60,7 @@ impl From<models::Tag> for TagOut {
 }
 
 #[get("/tags")]
-pub async fn get_all_tags(app: web::Data<App>) -> impl Responder {
+async fn get_all_tags(app: web::Data<App>) -> impl Responder {
     let tags: Vec<TagOut> = match app.get_all_tags().await {
         Ok(v) => v.into_iter().map(|x| x.into()).collect(),
         Err(e) => {
@@ -78,11 +78,7 @@ pub async fn get_all_tags(app: web::Data<App>) -> impl Responder {
 }
 
 #[post("/tags")]
-pub async fn add_tag(
-    new_tag: web::Json<TagIn>,
-    app: web::Data<App>,
-    _admin: Admin,
-) -> impl Responder {
+async fn add_tag(new_tag: web::Json<TagIn>, app: web::Data<App>, _admin: Admin) -> impl Responder {
     debug!("{:?}", new_tag);
 
     let mut t: models::NewTag = new_tag.into_inner().into();
@@ -105,7 +101,7 @@ pub async fn add_tag(
 }
 
 #[get("/tags/{id}")]
-pub async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
+async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
     let tag: TagOut = match app.get_tag(id.into_inner()).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {
@@ -126,7 +122,7 @@ pub async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder 
 }
 
 #[put("/tags/{id}")]
-pub async fn replace_tag(
+async fn replace_tag(
     id: web::Path<i32>,
     new_tag: web::Json<TagIn>,
     app: web::Data<App>,
@@ -151,7 +147,7 @@ pub async fn replace_tag(
 }
 
 #[delete("/tags/{id}")]
-pub async fn delete_tag(id: web::Path<i32>, app: web::Data<App>, _admin: Admin) -> impl Responder {
+async fn delete_tag(id: web::Path<i32>, app: web::Data<App>, _admin: Admin) -> impl Responder {
     match app.delete_tag(id.into_inner()).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
