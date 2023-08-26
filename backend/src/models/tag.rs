@@ -1,5 +1,3 @@
-use std::convert::TryFrom;
-
 use super::{InvalidInput, InvalidityKind};
 
 #[derive(Debug)]

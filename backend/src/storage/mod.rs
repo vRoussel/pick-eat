@@ -9,8 +9,6 @@ mod tag;
 //pub mod token;
 //pub mod unit;
 
-use std::collections::HashMap;
-
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;
 
@@ -18,7 +16,6 @@ use sqlx::{self, Connection, Postgres, Transaction};
 use sqlx::{postgres::PgConnection, query, Row};
 use thiserror::Error;
 
-use crate::models::{InvalidInput, InvalidityKind};
 use crate::utils::RetryBehavior;
 
 #[derive(Debug)]

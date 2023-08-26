@@ -10,7 +10,7 @@ use actix_web::{
     error::{ErrorForbidden, ErrorUnauthorized},
     FromRequest, HttpRequest,
 };
-use actix_web::{Error, HttpResponse, Responder};
+use actix_web::{Error, HttpResponse};
 use serde::{Deserialize, Serialize};
 
 use crate::app::{AppError, AppErrorWith};
@@ -82,7 +82,7 @@ where
             AppErrorWith::InvalidInput(v) => {
                 HttpResponse::BadRequest().json(APIAnswer { errors: v.into() })
             }
-            AppErrorWith::AppError(v) => HttpResponse::InternalServerError().finish(),
+            AppErrorWith::AppError(_) => HttpResponse::InternalServerError().finish(),
         }
     }
 }
@@ -90,7 +90,7 @@ where
 impl From<AppError> for HttpResponse {
     fn from(value: AppError) -> Self {
         match value {
-            AppError::InternalError(v) => HttpResponse::InternalServerError().finish(),
+            AppError::InternalError(_) => HttpResponse::InternalServerError().finish(),
         }
     }
 }
