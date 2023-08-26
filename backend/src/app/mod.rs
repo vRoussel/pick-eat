@@ -4,6 +4,7 @@ use thiserror::Error;
 use crate::models::InvalidInput;
 use crate::{email::EmailSender, storage::StorageError};
 
+mod category;
 mod tag;
 
 pub struct App {

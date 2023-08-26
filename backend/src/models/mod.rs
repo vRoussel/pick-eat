@@ -1,6 +1,8 @@
+mod category;
 mod tag;
 use std::convert::TryFrom;
 
+pub use category::*;
 pub use tag::*;
 
 use crate::{api::APIError, storage::DBConstraint};

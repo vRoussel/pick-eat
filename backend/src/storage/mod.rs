@@ -1,6 +1,6 @@
+mod category;
 mod tag;
 //pub mod account;
-//pub mod category;
 //pub mod diet;
 //pub mod ingredient;
 //pub mod qingredient;
@@ -9,6 +9,7 @@ mod tag;
 //pub mod token;
 //pub mod unit;
 
+pub use category::*;
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;
 
