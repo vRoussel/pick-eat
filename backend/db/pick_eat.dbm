@@ -182,7 +182,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="label">
+	<column name="label" not-null="true">
 		<type name="text" length="0"/>
 	</column>
 	<constraint name="seasons_pk" type="pk-constr" table="public.seasons">
