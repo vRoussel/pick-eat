@@ -27,6 +27,13 @@ impl From<InvalidTag> for Vec<APIError> {
                         code: None,
                     });
                 }
+                Kind::Empty => {
+                    ret.push(APIError {
+                        message: "Un tag ne peut pas avoir un nom vide",
+                        field: Some("name"),
+                        code: None,
+                    });
+                }
             };
         };
         ret
