@@ -1,3 +1,4 @@
+pub mod categories;
 pub mod tags;
 
 use std::convert::{TryFrom, TryInto};
