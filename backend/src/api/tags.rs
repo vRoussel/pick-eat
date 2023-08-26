@@ -1,14 +1,10 @@
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgPool;
-use sqlx::{Error, PgConnection};
 
 use super::{APIError, Admin};
-use crate::api::APIAnswer;
 use crate::app::{App, AppErrorWith};
 use crate::models::{self, InvalidTag};
-use crate::storage;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_tags)
@@ -20,11 +16,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 impl From<InvalidTag> for Vec<APIError> {
     fn from(value: InvalidTag) -> Self {
-        type kind = models::InvalidityKind;
+        type Kind = models::InvalidityKind;
         let mut ret = Vec::new();
         if let Some(v) = value.name {
             match v {
-                kind::AlreadyUsed => {
+                Kind::AlreadyUsed => {
                     ret.push(APIError {
                         message: "Un tag avec ce nom existe déjà",
                         field: Some("name"),
