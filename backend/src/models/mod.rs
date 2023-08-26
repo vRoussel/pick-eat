@@ -1,8 +1,10 @@
 mod category;
+mod season;
 mod tag;
 use std::convert::TryFrom;
 
 pub use category::*;
+pub use season::*;
 pub use tag::*;
 
 use crate::{api::APIError, storage::DBConstraint};

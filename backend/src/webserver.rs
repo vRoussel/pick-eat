@@ -41,12 +41,11 @@ pub async fn start_web_server(
             .service(
                 web::scope("/v1")
                     .configure(api::tags::config)
-                    .configure(api::categories::config),
+                    .configure(api::categories::config)
+                    .configure(api::seasons::config),
                 //.configure(api::recipes::config)
                 //.configure(api::ingredients::config)
-                //.configure(api::categories::config)
                 //.configure(api::units::config) //            .configure(resources::search::config)
-                //.configure(api::seasons::config)
                 //.configure(api::diets::config)
                 //.configure(api::accounts::config)
                 //.configure(api::sessions::config)

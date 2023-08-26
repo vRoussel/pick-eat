@@ -1,4 +1,5 @@
 pub mod categories;
+pub mod seasons;
 pub mod tags;
 
 use std::convert::{TryFrom, TryInto};

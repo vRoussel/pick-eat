@@ -5,11 +5,12 @@ mod tag;
 //pub mod ingredient;
 //pub mod qingredient;
 //pub mod recipe;
-//pub mod season;
+pub mod season;
 //pub mod token;
 //pub mod unit;
 
 pub use category::*;
+pub use season::*;
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;
 
