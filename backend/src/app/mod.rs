@@ -2,7 +2,6 @@ use sqlx::PgPool;
 use thiserror::Error;
 
 use crate::models::InvalidInput;
-//use crate::storage::StorageErrorWith;
 use crate::{email::EmailSender, storage::StorageError};
 
 mod tag;
@@ -26,15 +25,6 @@ pub enum AppErrorWith<T: InvalidInput> {
     #[error(transparent)]
     AppError(#[from] AppError),
 }
-
-//impl<T: InvalidInput> From<StorageErrorWith<T>> for AppErrorWith<T> {
-//    fn from(value: StorageErrorWith<T>) -> Self {
-//        match value {
-//            StorageErrorWith::InvalidInput(v) => Self::InvalidInput(v),
-//            StorageErrorWith::StorageError(e) => Self::AppError(e.into()),
-//        }
-//    }
-//}
 
 impl<T: InvalidInput> From<StorageError> for AppErrorWith<T> {
     fn from(value: StorageError) -> Self {
