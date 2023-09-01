@@ -11,7 +11,7 @@ edition = "2018"
 actix-web = "4.3.1"
 actix-session = { version = "0.7.2", features = ["redis-rs-session"] }
 actix-identity = { version = "0.5.2" }
-argon2 = "0.5"
+argon2 = { version = "0.5", features = ["std"] }
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock", "std"] }
 clap = { version = "4.3.11", features = ["derive"] }
 config = "0.13.3"
