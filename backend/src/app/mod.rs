@@ -3,8 +3,10 @@ use sqlx::PgPool;
 use thiserror::Error;
 
 use crate::models::InvalidInput;
+use crate::utils::PasswordHashingError;
 use crate::{email::EmailSender, storage::StorageError};
 
+mod account;
 mod category;
 mod diet;
 mod ingredient;
@@ -20,8 +22,12 @@ pub struct App {
 
 #[derive(Debug, Error)]
 pub enum AppError {
-    #[error("Internal Error ({0})")]
-    InternalError(#[from] StorageError),
+    #[error(transparent)]
+    StorageError(#[from] StorageError),
+    #[error(transparent)]
+    PasswordHashingError(#[from] PasswordHashingError),
+    #[error("Unknown App Error ({0})")]
+    Other(String),
 }
 
 #[derive(Debug, Error)]

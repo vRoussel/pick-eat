@@ -46,8 +46,8 @@ pub async fn start_web_server(
                     .configure(api::diets::config)
                     .configure(api::units::config)
                     .configure(api::ingredients::config)
+                    .configure(api::accounts::config)
                 //.configure(api::recipes::config)
-                //.configure(api::accounts::config)
                 //.configure(api::sessions::config)
                 //.configure(api::tokens::config),
             )
