@@ -1,14 +1,13 @@
 mod account;
 mod category;
+mod diet;
+mod ingredient;
 mod tag;
-pub mod diet;
-//pub mod ingredient;
-pub mod ingredient;
 //pub mod qingredient;
 //pub mod recipe;
-pub mod season;
 //pub mod token;
-pub mod unit;
+mod season;
+mod unit;
 
 pub use account::*;
 pub use category::*;
