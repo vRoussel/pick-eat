@@ -34,6 +34,12 @@ impl From<InvalidCategory> for Vec<APIError> {
                         code: None,
                     });
                 }
+                _ => {
+                    warn!(
+                        "{:?} error received for category's name, this should not happen",
+                        v
+                    );
+                }
             };
         };
         ret

@@ -3,6 +3,7 @@ mod tag;
 //pub mod account;
 pub mod diet;
 //pub mod ingredient;
+pub mod ingredient;
 //pub mod qingredient;
 //pub mod recipe;
 pub mod season;
@@ -11,6 +12,7 @@ pub mod unit;
 
 pub use category::*;
 pub use diet::*;
+pub use ingredient::*;
 pub use season::*;
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;

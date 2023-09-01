@@ -6,6 +6,7 @@ use crate::{email::EmailSender, storage::StorageError};
 
 mod category;
 mod diet;
+mod ingredient;
 mod season;
 mod tag;
 mod unit;

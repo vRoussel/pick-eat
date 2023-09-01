@@ -1,3 +1,4 @@
+pub mod ingredients;
 pub mod categories;
 pub mod diets;
 pub mod seasons;

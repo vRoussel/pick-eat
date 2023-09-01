@@ -34,6 +34,12 @@ impl From<InvalidUnit> for Vec<APIError> {
                         code: None,
                     });
                 }
+                _ => {
+                    warn!(
+                        "{:?} error received for unit's full name, this should not happen",
+                        v
+                    );
+                }
             };
         };
         if let Some(v) = value.short_name {
@@ -51,6 +57,12 @@ impl From<InvalidUnit> for Vec<APIError> {
                         field: Some("short_name"),
                         code: None,
                     });
+                }
+                _ => {
+                    warn!(
+                        "{:?} error received for unit's short name, this should not happen",
+                        v
+                    );
                 }
             };
         };

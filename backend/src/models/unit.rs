@@ -1,6 +1,9 @@
+use serde::Serialize;
+use sqlx::Decode;
+
 use super::{InvalidInput, InvalidityKind};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Decode)]
 pub struct Unit {
     pub id: i32,
     pub full_name: String,

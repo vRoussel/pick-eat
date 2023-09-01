@@ -34,6 +34,12 @@ impl From<InvalidTag> for Vec<APIError> {
                         code: None,
                     });
                 }
+                _ => {
+                    warn!(
+                        "{:?} error received for tag's name, this should not happen",
+                        v
+                    );
+                }
             };
         };
         ret

@@ -4,9 +4,11 @@ mod season;
 mod tag;
 mod unit;
 use std::convert::TryFrom;
+mod ingredient;
 
 pub use category::*;
 pub use diet::*;
+pub use ingredient::*;
 pub use season::*;
 pub use tag::*;
 pub use unit::*;
@@ -22,4 +24,5 @@ pub trait InvalidInput:
 pub enum InvalidityKind {
     AlreadyUsed,
     Empty,
+    InvalidRef,
 }
