@@ -2,65 +2,58 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::{Deserialize, Serialize};
 
-use super::{APIError, Admin};
+use super::{APIError, Admin, User};
 use crate::app::{App, AppErrorWith};
-use crate::models::{self, InvalidDiet};
+use crate::models::{self, InvalidIngredient};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_all_diets)
-        .service(add_diet)
-        .service(get_diet)
-        .service(replace_diet)
-        .service(delete_diet);
+    cfg.service(get_all_ingredients)
+        .service(add_ingredient)
+        .service(get_ingredient)
+        .service(replace_ingredient)
+        .service(delete_ingredient);
 }
 
-impl From<InvalidDiet> for Vec<APIError> {
-    fn from(value: InvalidDiet) -> Self {
+impl From<InvalidIngredient> for Vec<APIError> {
+    fn from(value: InvalidIngredient) -> Self {
         type Kind = models::InvalidityKind;
         let mut ret = Vec::new();
         if let Some(v) = value.name {
             match v {
                 Kind::AlreadyUsed => {
                     ret.push(APIError {
-                        message: "Un régime alimentaire avec ce nom existe déjà",
+                        message: "Un ingredient avec ce nom existe déjà",
                         field: Some("name"),
                         code: None,
                     });
                 }
                 Kind::Empty => {
                     ret.push(APIError {
-                        message: "Un régime alimentaire ne peut pas avoir un nom vide",
+                        message: "Un ingredient ne peut pas avoir un nom vide",
                         field: Some("name"),
                         code: None,
                     });
                 }
                 _ => {
                     warn!(
-                        "{:?} error received for diet's name, this should not happen",
+                        "{:?} error received for ingredient's name, this should not happen",
                         v
                     );
                 }
             };
-        };
-        if let Some(v) = value.label {
+        }
+        if let Some(v) = value.default_unit_id {
             match v {
-                Kind::AlreadyUsed => {
+                Kind::InvalidRef => {
                     ret.push(APIError {
-                        message: "Un régime alimentaire avec ce label existe déjà",
-                        field: Some("label"),
-                        code: None,
-                    });
-                }
-                Kind::Empty => {
-                    ret.push(APIError {
-                        message: "Un régime alimentaire ne peut pas avoir un label vide",
-                        field: Some("label"),
+                        message: "Cette unité est invalide, veuillez en choisir une autre",
+                        field: Some("default_unit_id"),
                         code: None,
                     });
                 }
                 _ => {
                     warn!(
-                        "{:?} error received for diet's label, this should not happen",
+                        "{:?} error received for ingredient's default_unit_id, this should not happen",
                         v
                     );
                 }
@@ -71,40 +64,41 @@ impl From<InvalidDiet> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-struct DietOut {
+struct IngredientOut {
     id: i32,
     name: String,
-    label: Option<String>,
+    default_unit: Option<models::Unit>,
 }
 
 #[derive(Debug, Deserialize)]
-struct DietIn {
+#[serde(deny_unknown_fields)]
+struct IngredientIn {
     name: String,
-    label: Option<String>,
+    default_unit_id: Option<i32>,
 }
 
-impl From<DietIn> for models::NewDiet {
-    fn from(d: DietIn) -> Self {
+impl From<IngredientIn> for models::NewIngredient {
+    fn from(i: IngredientIn) -> Self {
         Self {
-            name: d.name,
-            label: d.label,
+            name: i.name,
+            default_unit_id: i.default_unit_id,
         }
     }
 }
 
-impl From<models::Diet> for DietOut {
-    fn from(d: models::Diet) -> Self {
+impl From<models::Ingredient> for IngredientOut {
+    fn from(i: models::Ingredient) -> Self {
         Self {
-            id: d.id,
-            name: d.name,
-            label: d.label,
+            id: i.id,
+            name: i.name,
+            default_unit: i.default_unit,
         }
     }
 }
 
-#[get("/diets")]
-async fn get_all_diets(app: web::Data<App>) -> impl Responder {
-    let diets: Vec<DietOut> = match app.get_all_diets().await {
+#[get("/ingredients")]
+async fn get_all_ingredients(app: web::Data<App>) -> impl Responder {
+    let ingredients: Vec<IngredientOut> = match app.get_all_ingredients().await {
         Ok(v) => v.into_iter().map(|x| x.into()).collect(),
         Err(e) => {
             error!("{}", e);
@@ -112,25 +106,25 @@ async fn get_all_diets(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&diets) {
+    match serde_json::to_string(&ingredients) {
         Ok(json) => debug!("{}", json),
         Err(e) => error!("{}", e),
     };
 
-    HttpResponse::Ok().json(diets)
+    HttpResponse::Ok().json(ingredients)
 }
 
-#[post("/diets")]
-async fn add_diet(
-    new_diet: web::Json<DietIn>,
+#[post("/ingredients")]
+async fn add_ingredient(
+    new_ingredient: web::Json<IngredientIn>,
     app: web::Data<App>,
-    _admin: Admin,
+    _user: User,
 ) -> impl Responder {
-    debug!("{:?}", new_diet);
+    debug!("{:?}", new_ingredient);
 
-    let mut t: models::NewDiet = new_diet.into_inner().into();
+    let mut i: models::NewIngredient = new_ingredient.into_inner().into();
 
-    let new_id = match app.add_diet(&mut t).await {
+    let new_id = match app.add_ingredient(&mut i).await {
         Ok(v) => v,
         Err(e) => {
             use AppErrorWith::*;
@@ -147,9 +141,9 @@ async fn add_diet(
         .finish()
 }
 
-#[get("/diets/{id}")]
-async fn get_diet(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
-    let diet: DietOut = match app.get_diet(id.into_inner()).await {
+#[get("/ingredients/{id}")]
+async fn get_ingredient(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
+    let ingredient: IngredientOut = match app.get_ingredient(id.into_inner()).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {
             return HttpResponse::NotFound().finish();
@@ -160,25 +154,25 @@ async fn get_diet(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&diet) {
+    match serde_json::to_string(&ingredient) {
         Ok(json) => debug!("{}", json),
         Err(e) => error!("{}", e),
     };
 
-    HttpResponse::Ok().json(diet)
+    HttpResponse::Ok().json(ingredient)
 }
 
-#[put("/diets/{id}")]
-async fn replace_diet(
+#[put("/ingredients/{id}")]
+async fn replace_ingredient(
     id: web::Path<i32>,
-    new_diet: web::Json<DietIn>,
+    new_ingredient: web::Json<IngredientIn>,
     app: web::Data<App>,
     _admin: Admin,
 ) -> impl Responder {
-    debug!("{:?}", new_diet);
+    debug!("{:?}", new_ingredient);
 
-    let mut t: models::NewDiet = new_diet.into_inner().into();
-    match app.replace_diet(id.into_inner(), &mut t).await {
+    let mut i: models::NewIngredient = new_ingredient.into_inner().into();
+    match app.replace_ingredient(id.into_inner(), &mut i).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
@@ -193,9 +187,13 @@ async fn replace_diet(
     HttpResponse::Ok().finish()
 }
 
-#[delete("/diets/{id}")]
-async fn delete_diet(id: web::Path<i32>, app: web::Data<App>, _admin: Admin) -> impl Responder {
-    match app.delete_diet(id.into_inner()).await {
+#[delete("/ingredients/{id}")]
+async fn delete_ingredient(
+    id: web::Path<i32>,
+    app: web::Data<App>,
+    _admin: Admin,
+) -> impl Responder {
+    match app.delete_ingredient(id.into_inner()).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
         Err(e) => {
