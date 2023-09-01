@@ -24,7 +24,7 @@ where
             Ok(t) => return Ok(t),
             Err(e) => {
                 fail_count += 1;
-                if fail_count >= max_tries {
+                if !e.is_retryable() || fail_count >= max_tries {
                     return Err(e);
                 }
             }
