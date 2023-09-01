@@ -3,6 +3,7 @@ use log::*;
 use serde::{Deserialize, Serialize};
 
 use super::{APIError, Admin};
+use crate::api::User;
 use crate::app::{App, AppErrorWith};
 use crate::models::{self, InvalidUnit};
 
@@ -121,11 +122,7 @@ async fn get_all_units(app: web::Data<App>) -> impl Responder {
 }
 
 #[post("/units")]
-async fn add_unit(
-    new_unit: web::Json<UnitIn>,
-    app: web::Data<App>,
-    _admin: Admin,
-) -> impl Responder {
+async fn add_unit(new_unit: web::Json<UnitIn>, app: web::Data<App>, _user: User) -> impl Responder {
     debug!("{:?}", new_unit);
 
     let mut t: models::NewUnit = new_unit.into_inner().into();
