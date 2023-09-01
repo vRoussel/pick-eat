@@ -1,3 +1,4 @@
+use log::warn;
 use sqlx::PgPool;
 use thiserror::Error;
 
@@ -34,12 +35,14 @@ pub enum AppErrorWith<T: InvalidInput> {
 impl<T: InvalidInput> From<StorageError> for AppErrorWith<T> {
     fn from(value: StorageError) -> Self {
         match &value {
-            StorageError::DBError { constraint, .. } => {
-                match constraint.as_ref().and_then(|v| T::try_from(v).ok()) {
-                    Some(t) => {
-                        return Self::InvalidInput(t);
+            StorageError::DBError { constraint, .. } if constraint.is_some() => {
+                match T::try_from(constraint.as_ref().unwrap()) {
+                    Ok(v) => {
+                        return Self::InvalidInput(v);
                     }
-                    None => {}
+                    Err(e) => {
+                        warn!("{}", e);
+                    }
                 };
             }
             _ => {}
