@@ -5,8 +5,8 @@ mod ingredient;
 mod tag;
 //pub mod qingredient;
 //pub mod recipe;
-//pub mod token;
 mod season;
+mod token;
 mod unit;
 
 pub use account::*;
@@ -16,6 +16,7 @@ pub use ingredient::*;
 pub use season::*;
 use sqlx::postgres::PgDatabaseError;
 pub use tag::*;
+pub use token::*;
 pub use unit::*;
 
 use sqlx::{self, Connection, Postgres, Transaction};

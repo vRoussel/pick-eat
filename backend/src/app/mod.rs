@@ -12,6 +12,7 @@ mod diet;
 mod ingredient;
 mod season;
 mod tag;
+mod token;
 mod unit;
 
 pub struct App {
