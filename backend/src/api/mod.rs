@@ -78,6 +78,14 @@ pub struct APIAnswer {
     errors: Vec<APIError>,
 }
 
+impl From<APIError> for APIAnswer {
+    fn from(value: APIError) -> Self {
+        Self {
+            errors: vec![value],
+        }
+    }
+}
+
 impl<T> From<AppErrorWith<T>> for HttpResponse
 where
     T: models::InvalidInput,
