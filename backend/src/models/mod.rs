@@ -7,6 +7,7 @@ use std::convert::TryFrom;
 mod account;
 mod credentials;
 mod ingredient;
+mod token;
 
 pub use account::*;
 pub use category::*;
@@ -15,6 +16,7 @@ pub use diet::*;
 pub use ingredient::*;
 pub use season::*;
 pub use tag::*;
+pub use token::*;
 pub use unit::*;
 
 use crate::{api::APIError, storage::DBConstraint};
