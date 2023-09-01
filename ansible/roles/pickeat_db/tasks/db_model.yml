@@ -10,6 +10,8 @@
           --user pickeat_model
           --passwd "{{ pickeat_model_pwd }}"
           --compare-to pickeat
+          --force-recreate-objs
+          --only-unmodifiable
           --save
           --output /tmp/diff.sql
     delegate_to: localhost
