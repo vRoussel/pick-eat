@@ -7,14 +7,14 @@ use sqlx::{query, query_as};
 use super::{DBConstraint, StorageError};
 
 impl<'a> TryFrom<&DBConstraint> for InvalidCategory {
-    type Error = &'static str;
+    type Error = String;
 
-    fn try_from(value: &DBConstraint) -> Result<Self, &'static str> {
+    fn try_from(value: &DBConstraint) -> Result<Self, String> {
         match value.0.as_str() {
             "categories_uq_name" => Ok(InvalidCategory {
                 name: Some(InvalidityKind::AlreadyUsed),
             }),
-            _ => Err("Unknown DB constraint {value.0}"),
+            _ => Err(format!("Unknown DB constraint {}", value.0)),
         }
     }
 }

@@ -7,14 +7,14 @@ use sqlx::{query, query_as};
 use super::{DBConstraint, StorageError};
 
 impl<'a> TryFrom<&DBConstraint> for InvalidTag {
-    type Error = &'static str;
+    type Error = String;
 
-    fn try_from(value: &DBConstraint) -> Result<Self, &'static str> {
+    fn try_from(value: &DBConstraint) -> Result<Self, String> {
         match value.0.as_str() {
             "tags_uq_name" => Ok(InvalidTag {
                 name: Some(InvalidityKind::AlreadyUsed),
             }),
-            _ => Err("Unknown DB constraint {value.0}"),
+            _ => Err(format!("Unknown DB constraint {}", value.0)),
         }
     }
 }

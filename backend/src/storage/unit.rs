@@ -7,9 +7,9 @@ use sqlx::{query, query_as};
 use super::{DBConstraint, StorageError};
 
 impl<'a> TryFrom<&DBConstraint> for InvalidUnit {
-    type Error = &'static str;
+    type Error = String;
 
-    fn try_from(value: &DBConstraint) -> Result<Self, &'static str> {
+    fn try_from(value: &DBConstraint) -> Result<Self, String> {
         match value.0.as_str() {
             "units_uq_full_name" => Ok(InvalidUnit {
                 full_name: Some(InvalidityKind::AlreadyUsed),
@@ -19,7 +19,7 @@ impl<'a> TryFrom<&DBConstraint> for InvalidUnit {
                 short_name: Some(InvalidityKind::AlreadyUsed),
                 ..Default::default()
             }),
-            _ => Err("Unknown DB constraint {value.0}"),
+            _ => Err(format!("Unknown DB constraint {}", value.0)),
         }
     }
 }

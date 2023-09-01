@@ -16,7 +16,7 @@ pub use unit::*;
 use crate::{api::APIError, storage::DBConstraint};
 
 pub trait InvalidInput:
-    std::fmt::Debug + for<'a> TryFrom<&'a DBConstraint> + Into<Vec<APIError>>
+    std::fmt::Debug + for<'a> TryFrom<&'a DBConstraint, Error = String> + Into<Vec<APIError>>
 {
 }
 
