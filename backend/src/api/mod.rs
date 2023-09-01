@@ -95,29 +95,6 @@ where
 impl From<AppError> for HttpResponse {
     fn from(value: AppError) -> Self {
         match value {
-            AppError::InternalError(_) => HttpResponse::InternalServerError().finish(),
-        }
-    }
-}
-
-impl<T> TryFrom<AppErrorWith<T>> for APIAnswer
-where
-    T: models::InvalidInput,
-{
-    type Error = ();
-    fn try_from(value: AppErrorWith<T>) -> Result<APIAnswer, ()> {
-        match value {
-            AppErrorWith::InvalidInput(v) => Ok(APIAnswer { errors: v.into() }),
-            AppErrorWith::AppError(v) => v.try_into(),
-        }
-    }
-}
-
-impl TryFrom<AppError> for APIAnswer {
-    type Error = ();
-    fn try_from(value: AppError) -> Result<APIAnswer, ()> {
-        match value {
-            AppError::InternalError(_) => Err(()),
         }
     }
 }
