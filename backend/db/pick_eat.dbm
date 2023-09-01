@@ -3,12 +3,12 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="0,0" last-zoom="0.7" max-obj-count="21"
+<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="514,0" last-zoom="1" max-obj-count="22"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
 	 layer-name-colors="#000000"
-	 layer-rect-colors="#95171c"
+	 layer-rect-colors="#b4b4b4"
 	 show-layer-names="false" show-layer-rects="false">
 <role name="pickeat"
  createrole="true"
@@ -791,11 +791,7 @@ END
 <relationship name="rel_recipes_categories_recipes" type="relfk" layers="0"
 	 src-table="public.recipes_categories"
 	 dst-table="public.recipes" reference-fk="recipes_categories_fk_recipe_id"
-	 src-required="false" dst-required="true">
-	<label ref-type="name-label">
-		<position x="5.67255" y="-8.39148"/>
-	</label>
-</relationship>
+	 src-required="false" dst-required="true"/>
 
 <relationship name="rel_recipes_categories_categories" type="relfk" layers="0"
 	 src-table="public.recipes_categories"
@@ -812,15 +808,6 @@ END
 	 dst-table="public.recipes" reference-fk="recipes_seasons_fk_recipe_id"
 	 src-required="false" dst-required="true"/>
 
-<relationship name="rel_recipes_accounts" type="relfk" layers="0"
-	 src-table="public.recipes"
-	 dst-table="public.accounts" reference-fk="recipes_fk_author_id"
-	 src-required="false" dst-required="true">
-	<label ref-type="name-label">
-		<position x="0" y="0"/>
-	</label>
-</relationship>
-
 <relationship name="rel_accounts_fav_recipes_accounts" type="relfk" layers="0"
 	 src-table="public.accounts_fav_recipes"
 	 dst-table="public.accounts" reference-fk="accounts_fav_recipes_fk_account_id"
@@ -831,14 +818,15 @@ END
 	 dst-table="public.recipes" reference-fk="accounts_fav_recipes_fk_recipe_id"
 	 src-required="false" dst-required="true"/>
 
+<relationship name="rel_recipes_accounts" type="relfk" layers="0"
+	 src-table="public.recipes"
+	 dst-table="public.accounts" reference-fk="recipes_fk_author_id"
+	 src-required="false" dst-required="true"/>
+
 <relationship name="rel_recipes_diets_recipes" type="relfk" layers="0"
 	 src-table="public.recipes_diets"
 	 dst-table="public.recipes" reference-fk="recipes_diets_fk_recipe_id"
-	 src-required="false" dst-required="true">
-	<label ref-type="name-label">
-		<position x="-21.5518" y="-4.3624"/>
-	</label>
-</relationship>
+	 src-required="false" dst-required="true"/>
 
 <relationship name="rel_recipes_diets_diets" type="relfk" layers="0"
 	 src-table="public.recipes_diets"
@@ -853,10 +841,6 @@ END
 <relationship name="rel_password_reset_tokens_accounts" type="relfk" layers="0"
 	 src-table="public.password_reset_tokens"
 	 dst-table="public.accounts" reference-fk="password_reset_tokens_fk_account_id"
-	 src-required="false" dst-required="true">
-	<label ref-type="name-label">
-		<position x="-9.30345" y="1.44701"/>
-	</label>
-</relationship>
+	 src-required="false" dst-required="true"/>
 
 </dbmodel>
