@@ -1,6 +1,6 @@
+mod account;
 mod category;
 mod tag;
-//pub mod account;
 pub mod diet;
 //pub mod ingredient;
 pub mod ingredient;
@@ -10,6 +10,7 @@ pub mod season;
 //pub mod token;
 pub mod unit;
 
+pub use account::*;
 pub use category::*;
 pub use diet::*;
 pub use ingredient::*;

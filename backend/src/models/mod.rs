@@ -4,9 +4,13 @@ mod season;
 mod tag;
 mod unit;
 use std::convert::TryFrom;
+mod account;
+mod credentials;
 mod ingredient;
 
+pub use account::*;
 pub use category::*;
+pub use credentials::*;
 pub use diet::*;
 pub use ingredient::*;
 pub use season::*;

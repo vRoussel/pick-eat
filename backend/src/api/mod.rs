@@ -1,3 +1,4 @@
+pub mod accounts;
 pub mod ingredients;
 pub mod categories;
 pub mod diets;
@@ -103,6 +104,9 @@ where
 impl From<AppError> for HttpResponse {
     fn from(value: AppError) -> Self {
         match value {
+            AppError::StorageError(_) => HttpResponse::InternalServerError().finish(),
+            AppError::PasswordHashingError(_) => HttpResponse::InternalServerError().finish(),
+            AppError::Other(_) => HttpResponse::InternalServerError().finish(),
         }
     }
 }
