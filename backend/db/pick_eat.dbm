@@ -623,6 +623,39 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.recipes"
 	 src-required="false" dst-required="false"/>
 
+<view name="ingredients_full" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="pickeat"/>
+	<position x="1960" y="140"/>
+	<reference table="public.ingredients" column="id" alias="i"/>
+	<reference table="public.ingredients" column="name" alias="i"/>
+	<reference alias="default_unit">
+		<expression> <![CDATA[CASE WHEN i.default_unit_id is null THEN
+    null
+ELSE
+    (
+    u.id,
+    u.full_name,
+    u.short_name
+    )::units
+END
+]]> </expression>
+	</reference>
+	<reference table="public.ingredients" alias="i"/>
+	<reference table="public.units" alias="u"/>
+	<reference>
+		<expression> <![CDATA[i.default_unit_id = u.id]]> </expression>
+	</reference>
+	<expression type="select-exp">0,1,2</expression>
+	<expression type="from-exp">3,4</expression>
+	<expression type="simple-exp">5</expression>
+</view>
+
+<relationship name="rel_ingredients_full_ingredients" type="reltv" layers="0"
+	 src-table="public.ingredients_full"
+	 dst-table="public.ingredients"
+	 src-required="false" dst-required="false"/>
+
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
 	<columns names="tag_id" ref-type="src-columns"/>

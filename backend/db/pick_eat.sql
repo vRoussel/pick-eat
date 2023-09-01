@@ -459,6 +459,33 @@ FROM
 ALTER VIEW public.recipes_full OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.ingredients_full | type: VIEW --
+-- DROP VIEW IF EXISTS public.ingredients_full CASCADE;
+CREATE VIEW public.ingredients_full
+AS 
+
+SELECT
+   i.id,
+   i.name,
+   CASE WHEN i.default_unit_id is null THEN
+    null
+ELSE
+    (
+    u.id,
+    u.full_name,
+    u.short_name
+    )::units
+END
+ AS default_unit
+FROM
+   public.ingredients AS i,
+   public.units AS u
+WHERE
+   i.default_unit_id = u.id;
+-- ddl-end --
+ALTER VIEW public.ingredients_full OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
