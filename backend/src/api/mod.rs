@@ -3,6 +3,7 @@ pub mod ingredients;
 pub mod categories;
 pub mod diets;
 pub mod seasons;
+pub mod sessions;
 pub mod tags;
 pub mod units;
 
