@@ -34,3 +34,8 @@
     scope: system
     state: started
     name: certbot.timer
+
+- name: Make sure nginx gets reloaded after certificate renewal
+  lineinfile:
+    path: /etc/letsencrypt/cli.ini
+    line: deploy-hook = systemctl reload nginx
