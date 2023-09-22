@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE recipes SET\n                name = $1,\n                notes = $2,\n                preparation_time_min = $3,\n                cooking_time_min = $4,\n                image = $5,\n                instructions = $6,\n                n_shares = $7,\n                is_private = $8\n            WHERE id = $9\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Int2",
+        "Int2",
+        "Text",
+        "TextArray",
+        "Int2",
+        "Bool",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "67129eac41ccf616d915e0ba1ddf72feab702c04f4d86f6dc17e0a923d947190"
+}
