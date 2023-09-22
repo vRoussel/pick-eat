@@ -47,7 +47,7 @@ impl From<InvalidCategory> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-struct CategoryOut {
+pub struct CategoryOut {
     id: i32,
     name: String,
 }

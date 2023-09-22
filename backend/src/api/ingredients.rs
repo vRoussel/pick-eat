@@ -2,6 +2,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::{Deserialize, Serialize};
 
+use super::units::UnitOut;
 use super::{APIError, Admin, User};
 use crate::app::{App, AppErrorWith};
 use crate::models::{self, InvalidIngredient};
@@ -67,7 +68,7 @@ impl From<InvalidIngredient> for Vec<APIError> {
 struct IngredientOut {
     id: i32,
     name: String,
-    default_unit: Option<models::Unit>,
+    default_unit: Option<UnitOut>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -91,7 +92,7 @@ impl From<models::Ingredient> for IngredientOut {
         Self {
             id: i.id,
             name: i.name,
-            default_unit: i.default_unit,
+            default_unit: i.default_unit.map(|u| u.into()),
         }
     }
 }

@@ -7,6 +7,8 @@ use std::convert::TryFrom;
 mod account;
 mod credentials;
 mod ingredient;
+mod range;
+mod recipe;
 mod token;
 
 pub use account::*;
@@ -14,6 +16,8 @@ pub use category::*;
 pub use credentials::*;
 pub use diet::*;
 pub use ingredient::*;
+pub use range::*;
+pub use recipe::*;
 pub use season::*;
 pub use tag::*;
 pub use token::*;
@@ -36,4 +40,5 @@ pub enum InvalidityKind {
     Mismatch,
     Expired,
     NotFound,
+    BadValue,
 }

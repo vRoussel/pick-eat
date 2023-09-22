@@ -1,9 +1,10 @@
 use serde::Serialize;
-use sqlx::Decode;
+use sqlx::{Decode, Type};
 
 use super::{InvalidInput, InvalidityKind};
 
-#[derive(Debug, Serialize, Decode)]
+#[derive(Debug, Type)]
+#[sqlx(type_name = "units")]
 pub struct Unit {
     pub id: i32,
     pub full_name: String,

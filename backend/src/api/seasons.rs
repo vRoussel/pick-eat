@@ -8,7 +8,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 #[derive(Debug, Serialize)]
-struct SeasonOut {
+pub struct SeasonOut {
     id: i32,
     name: String,
     label: String,

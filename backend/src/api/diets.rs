@@ -71,7 +71,7 @@ impl From<InvalidDiet> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-struct DietOut {
+pub struct DietOut {
     id: i32,
     name: String,
     label: Option<String>,

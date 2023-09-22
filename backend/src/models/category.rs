@@ -1,6 +1,8 @@
+use sqlx::Type;
+
 use super::{InvalidInput, InvalidityKind};
 
-#[derive(Debug)]
+#[derive(Debug, Type)]
 pub struct Category {
     pub id: i32,
     pub name: String,
