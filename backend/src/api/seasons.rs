@@ -25,7 +25,7 @@ impl From<models::Season> for SeasonOut {
 }
 
 #[get("/seasons")]
-pub async fn get_all_seasons(app: web::Data<App>) -> impl Responder {
+async fn get_all_seasons(app: web::Data<App>) -> impl Responder {
     let seasons: Vec<SeasonOut> = match app.get_all_seasons().await {
         Ok(v) => v.into_iter().map(|x| x.into()).collect(),
         Err(e) => {
@@ -43,7 +43,7 @@ pub async fn get_all_seasons(app: web::Data<App>) -> impl Responder {
 }
 
 #[get("/seasons/{id}")]
-pub async fn get_season(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
+async fn get_season(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
     let season: SeasonOut = match app.get_season(id.into_inner()).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {

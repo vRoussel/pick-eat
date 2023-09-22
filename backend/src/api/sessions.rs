@@ -4,7 +4,6 @@ use actix_web::{delete, post, web, HttpMessage, HttpRequest, HttpResponse, Respo
 use log::*;
 use serde::Deserialize;
 
-
 use crate::{
     api::{APIAnswer, APIError, User},
     app::App,
@@ -17,7 +16,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct CredentialsIn {
+struct CredentialsIn {
     email: String,
     password: String,
 }
@@ -32,7 +31,7 @@ impl From<CredentialsIn> for models::Credentials {
 }
 
 #[post("/sessions")]
-pub async fn login(
+async fn login(
     request: HttpRequest,
     cred: web::Json<CredentialsIn>,
     session: Session,
@@ -82,7 +81,7 @@ pub async fn login(
 }
 
 #[delete("/sessions/current")]
-pub async fn logout(user: Identity) -> impl Responder {
+async fn logout(user: Identity) -> impl Responder {
     user.logout();
     HttpResponse::NoContent().finish()
 }

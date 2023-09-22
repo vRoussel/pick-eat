@@ -171,7 +171,7 @@ impl From<InvalidRecipe> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RecipeOut {
+struct RecipeOut {
     id: i32,
     name: String,
     notes: String,
@@ -193,7 +193,7 @@ pub struct RecipeOut {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RecipeSummaryOut {
+struct RecipeSummaryOut {
     id: i32,
     name: String,
     image: String,
@@ -205,7 +205,7 @@ pub struct RecipeSummaryOut {
 }
 
 #[derive(Debug, Serialize)]
-pub struct QIngredientOut {
+struct QIngredientOut {
     id: i32,
     name: String,
     quantity: Option<f32>,
@@ -213,7 +213,7 @@ pub struct QIngredientOut {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct RecipeIn {
+struct RecipeIn {
     name: String,
     notes: String,
     prep_time_min: i16,
@@ -230,7 +230,7 @@ pub struct RecipeIn {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct QIngredientIn {
+struct QIngredientIn {
     id: i32,
     quantity: Option<f32>,
     unit_id: Option<i32>,
@@ -471,11 +471,7 @@ async fn add_recipe(
 }
 
 #[get("/recipes/{id}")]
-pub async fn get_recipe(
-    id: web::Path<i32>,
-    app: web::Data<App>,
-    user: Option<User>,
-) -> impl Responder {
+async fn get_recipe(id: web::Path<i32>, app: web::Data<App>, user: Option<User>) -> impl Responder {
     let recipe: RecipeOut = match app.get_recipe(id.into_inner(), user.map(|u| u.id)).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {
