@@ -1,7 +1,7 @@
-use actix_identity::{Identity, IdentityMiddleware};
+use actix_identity::{IdentityMiddleware};
 use actix_session::config::CookieContentSecurity;
 use actix_session::storage::RedisSessionStore;
-use actix_session::{Session, SessionMiddleware};
+use actix_session::{SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};

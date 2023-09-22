@@ -1,5 +1,5 @@
-use serde::Serialize;
-use sqlx::{Decode, Type};
+
+use sqlx::{Type};
 
 use super::{InvalidInput, InvalidityKind};
 

@@ -6,7 +6,7 @@ use crate::models::{
     RecipeFilters, RecipeSummary, Season, SortMethod, Tag,
 };
 use sqlx::postgres::PgConnection;
-use sqlx::{query, query_as, query_unchecked, Connection, Error};
+use sqlx::{query, query_as, query_unchecked, Connection};
 use sqlx_conditional_queries::conditional_query_as;
 
 impl<'a> TryFrom<&DBConstraint> for InvalidRecipe {

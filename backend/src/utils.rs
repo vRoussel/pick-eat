@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use argon2::{
-    password_hash::{self, rand_core::OsRng, SaltString},
+    password_hash::{rand_core::OsRng, SaltString},
     Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
 };
 use thiserror::Error;
@@ -87,7 +87,7 @@ pub fn is_password_correct(pwd: &Password, hash_str: &str) -> Result<bool, Passw
             return Err(PasswordHashingError::BadHash(e.to_string()));
         }
     };
-    if let Err(e) = Argon2::default().verify_password(pwd_clear.as_bytes(), &hash) {
+    if let Err(_e) = Argon2::default().verify_password(pwd_clear.as_bytes(), &hash) {
         return Ok(false);
     }
     Ok(true)
