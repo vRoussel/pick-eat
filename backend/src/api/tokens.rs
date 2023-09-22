@@ -118,19 +118,19 @@ impl From<InvalidPasswordResetTokenUseRequest> for Vec<APIError> {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct TokenNewRequestIn {
+struct TokenNewRequestIn {
     email: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct AccountValidationTokenUseRequestIn {
+struct AccountValidationTokenUseRequestIn {
     token: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct PasswordResetTokenUseRequestIn {
+struct PasswordResetTokenUseRequestIn {
     token: String,
     new_password: String,
 }
@@ -186,7 +186,7 @@ async fn create_token(
 }
 
 #[post("/accounts/validation/tokenrequest")]
-pub async fn create_account_validation_token(
+async fn create_account_validation_token(
     app: web::Data<App>,
     token_req: web::Json<TokenNewRequestIn>,
     req: HttpRequest,
@@ -195,7 +195,7 @@ pub async fn create_account_validation_token(
 }
 
 #[post("/accounts/passwordreset/tokenrequest")]
-pub async fn create_password_reset_token(
+async fn create_password_reset_token(
     app: web::Data<App>,
     token_req: web::Json<TokenNewRequestIn>,
     req: HttpRequest,

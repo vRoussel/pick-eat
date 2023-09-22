@@ -246,12 +246,12 @@ impl From<models::PublicAccountData> for PublicAccountDataOut {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct GetAllQueryParams {
+struct GetAllQueryParams {
     withrecipes: bool,
 }
 
 #[get("/accounts")]
-pub async fn get_all_public_accounts_data(
+async fn get_all_public_accounts_data(
     app: web::Data<App>,
     params: web::Query<GetAllQueryParams>,
 ) -> impl Responder {
@@ -299,7 +299,7 @@ async fn add_account(new_account: web::Json<NewAccountIn>, app: web::Data<App>) 
 }
 
 #[get("/accounts/me")]
-pub async fn get_current_account(user: User, app: web::Data<App>) -> impl Responder {
+async fn get_current_account(user: User, app: web::Data<App>) -> impl Responder {
     let account: AccountOut = match app.get_account_by_id(user.id).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {
@@ -344,11 +344,7 @@ async fn replace_current_account(
 }
 
 #[delete("/accounts/{id}")]
-pub async fn delete_account(
-    id: web::Path<i32>,
-    app: web::Data<App>,
-    _admin: Admin,
-) -> impl Responder {
+async fn delete_account(id: web::Path<i32>, app: web::Data<App>, _admin: Admin) -> impl Responder {
     match app.delete_account(id.into_inner()).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
@@ -361,7 +357,7 @@ pub async fn delete_account(
 }
 
 #[delete("/accounts/me")]
-pub async fn delete_current_account(user: User, app: web::Data<App>) -> impl Responder {
+async fn delete_current_account(user: User, app: web::Data<App>) -> impl Responder {
     match app.delete_account(user.id).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),
@@ -374,7 +370,7 @@ pub async fn delete_current_account(user: User, app: web::Data<App>) -> impl Res
 }
 
 #[put("/accounts/me/favorites/{recipe_id}")]
-pub async fn add_recipe_to_account_favs(
+async fn add_recipe_to_account_favs(
     user: User,
     recipe_id: web::Path<i32>,
     app: web::Data<App>,
@@ -391,7 +387,7 @@ pub async fn add_recipe_to_account_favs(
 }
 
 #[delete("/accounts/me/favorites/{recipe_id}")]
-pub async fn remove_recipe_from_account_favs(
+async fn remove_recipe_from_account_favs(
     user: User,
     recipe_id: web::Path<i32>,
     app: web::Data<App>,
