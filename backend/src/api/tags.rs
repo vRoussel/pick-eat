@@ -47,7 +47,7 @@ impl From<InvalidTag> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-struct TagOut {
+pub struct TagOut {
     id: i32,
     name: String,
 }

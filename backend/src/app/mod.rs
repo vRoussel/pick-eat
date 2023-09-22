@@ -13,6 +13,7 @@ mod account;
 mod category;
 mod diet;
 mod ingredient;
+mod recipe;
 mod season;
 mod tag;
 mod token;
@@ -31,6 +32,10 @@ pub enum AppError {
     StorageError(#[from] StorageError),
     #[error(transparent)]
     PasswordHashingError(#[from] PasswordHashingError),
+    #[error("Invalid input param ({0})")]
+    InvalidInputParam(String),
+    #[error("Operation not allowed")]
+    NotAllowed,
     #[error("Unknown App Error ({0})")]
     Other(String),
 }

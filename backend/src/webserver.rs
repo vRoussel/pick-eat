@@ -48,8 +48,8 @@ pub async fn start_web_server(
                     .configure(api::ingredients::config)
                     .configure(api::accounts::config)
                     .configure(api::sessions::config)
-                    .configure(api::tokens::config),
-                //.configure(api::recipes::config)
+                    .configure(api::tokens::config)
+                    .configure(api::recipes::config),
             )
     })
     .bind("127.0.0.1:8080")?

@@ -1,7 +1,9 @@
 pub mod accounts;
-pub mod ingredients;
 pub mod categories;
 pub mod diets;
+pub mod ingredients;
+pub mod query_params;
+pub mod recipes;
 pub mod seasons;
 pub mod sessions;
 pub mod tags;
@@ -23,6 +25,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::app::{AppError, AppErrorWith};
 use crate::models;
+
+use self::query_params::QueryParamError;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct User {
@@ -109,6 +113,14 @@ impl From<AppError> for HttpResponse {
             AppError::StorageError(_) => HttpResponse::InternalServerError().finish(),
             AppError::PasswordHashingError(_) => HttpResponse::InternalServerError().finish(),
             AppError::Other(_) => HttpResponse::InternalServerError().finish(),
+            AppError::InvalidInputParam(_) => HttpResponse::BadRequest().finish(),
+            AppError::NotAllowed => HttpResponse::Forbidden().finish(),
         }
+    }
+}
+
+impl From<QueryParamError> for HttpResponse {
+    fn from(value: QueryParamError) -> Self {
+        HttpResponse::BadRequest().body(value.to_string())
     }
 }

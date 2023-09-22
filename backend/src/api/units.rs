@@ -72,7 +72,7 @@ impl From<InvalidUnit> for Vec<APIError> {
 }
 
 #[derive(Debug, Serialize)]
-struct UnitOut {
+pub struct UnitOut {
     id: i32,
     full_name: String,
     short_name: String,
