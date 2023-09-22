@@ -78,7 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     database::add_default_data(&db_pool)
         .await
         .expect("Error while initializing DB");
-    let app = App::new(db_pool, email_sender);
+    let app = App::new(db_pool, email_sender).await?;
     start_web_server(app, conf.sessions, conf.redis).await?;
     Ok(())
 }

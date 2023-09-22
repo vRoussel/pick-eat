@@ -1,9 +1,12 @@
+use std::sync::atomic::{AtomicI64, Ordering};
+
 use log::warn;
 use sqlx::PgPool;
 use thiserror::Error;
 
 use crate::models::InvalidInput;
-use crate::utils::PasswordHashingError;
+use crate::storage;
+use crate::utils::{retry_up_to_n_times, PasswordHashingError};
 use crate::{email::EmailSender, storage::StorageError};
 
 mod account;
@@ -19,6 +22,7 @@ pub struct App {
     db_pool: PgPool,
     email_sender: EmailSender,
     max_retry: usize,
+    recipe_count: AtomicI64,
 }
 
 #[derive(Debug, Error)]
@@ -59,11 +63,24 @@ impl<T: InvalidInput> From<StorageError> for AppErrorWith<T> {
 }
 
 impl App {
-    pub fn new(db_pool: PgPool, email_sender: EmailSender) -> Self {
-        Self {
+    pub async fn new(db_pool: PgPool, email_sender: EmailSender) -> Result<Self, AppError> {
+        let total_count = retry_up_to_n_times(
+            || async {
+                let mut db_conn = db_pool.acquire().await?;
+                storage::get_recipes_count(&mut db_conn).await
+            },
+            3,
+        )
+        .await?;
+        Ok(Self {
             db_pool,
             email_sender,
             max_retry: 3,
-        }
+            recipe_count: AtomicI64::new(total_count),
+        })
+    }
+
+    pub fn get_recipe_count(&self) -> i64 {
+        return self.recipe_count.load(Ordering::Relaxed);
     }
 }
