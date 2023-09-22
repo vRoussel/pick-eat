@@ -9,7 +9,6 @@ mod conf;
 mod database;
 mod email;
 mod models;
-mod query_params;
 mod storage;
 mod utils;
 mod webserver;
