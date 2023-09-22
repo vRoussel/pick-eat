@@ -3,7 +3,7 @@ use actix_session::Session;
 use actix_web::{delete, post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
-use sqlx::postgres::PgPool;
+
 
 use crate::{
     api::{APIAnswer, APIError, User},
