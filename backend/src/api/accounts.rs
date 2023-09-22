@@ -95,7 +95,6 @@ fn password_invalidity_to_api_error(
 
 impl From<InvalidNewAccount> for Vec<APIError> {
     fn from(value: InvalidNewAccount) -> Self {
-        type Kind = models::InvalidityKind;
         let mut ret = Vec::new();
         if let Some(v) = value.display_name {
             display_name_invalidity_to_api_error(v).map(|e| ret.push(e));
@@ -112,7 +111,6 @@ impl From<InvalidNewAccount> for Vec<APIError> {
 
 impl From<InvalidAccountUpdate> for Vec<APIError> {
     fn from(value: InvalidAccountUpdate) -> Self {
-        type Kind = models::InvalidityKind;
         let mut ret = Vec::new();
         if let Some(v) = value.display_name {
             display_name_invalidity_to_api_error(v).map(|e| ret.push(e));
@@ -278,10 +276,7 @@ pub async fn get_all_public_accounts_data(
 }
 
 #[post("/accounts")]
-pub async fn add_account(
-    new_account: web::Json<NewAccountIn>,
-    app: web::Data<App>,
-) -> impl Responder {
+async fn add_account(new_account: web::Json<NewAccountIn>, app: web::Data<App>) -> impl Responder {
     debug!("{:?}", new_account);
 
     let mut a: models::NewAccount = new_account.into_inner().into();
@@ -325,7 +320,7 @@ pub async fn get_current_account(user: User, app: web::Data<App>) -> impl Respon
 }
 
 #[put("/accounts/me")]
-pub async fn replace_current_account(
+async fn replace_current_account(
     account: web::Json<AccountUpdateIn>,
     app: web::Data<App>,
     user: User,
