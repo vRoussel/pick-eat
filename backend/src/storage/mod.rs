@@ -21,7 +21,7 @@ pub use token::*;
 pub use unit::*;
 
 use sqlx::{self, Connection, Postgres, Transaction};
-use sqlx::{postgres::PgConnection, query, Row};
+use sqlx::{postgres::PgConnection, query};
 use thiserror::Error;
 
 use crate::utils::RetryBehavior;
@@ -78,16 +78,7 @@ impl From<sqlx::Error> for StorageError {
     }
 }
 
-pub async fn get_total_count(
-    db_conn: &mut PgConnection,
-    table_name: &str,
-) -> Result<i64, Box<dyn std::error::Error>> {
-    let q = format!("SELECT count(*) from {}", table_name);
-    let count: i64 = query(&q).fetch_one(db_conn).await?.get(0);
-
-    Ok(count)
-}
-
+#[allow(dead_code)]
 pub enum IsolationLevel {
     RepeatableRead,
     Default,
@@ -113,6 +104,7 @@ pub async fn commit_transaction(trans: Transaction<'_, Postgres>) -> Result<(), 
     trans.commit().await.map_err(|e| e.into())
 }
 
+#[allow(dead_code)]
 pub async fn rollback_transaction(trans: Transaction<'_, Postgres>) -> Result<(), StorageError> {
     trans.rollback().await.map_err(|e| e.into())
 }
