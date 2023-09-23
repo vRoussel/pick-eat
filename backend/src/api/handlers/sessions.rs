@@ -2,32 +2,19 @@ use actix_identity::Identity;
 use actix_session::Session;
 use actix_web::{delete, post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use log::*;
-use serde::Deserialize;
 
 use crate::{
-    api::{APIAnswer, APIError, User},
+    api::{
+        errors::{APIAnswer, APIError},
+        models::CredentialsIn,
+        User,
+    },
     app::App,
     models,
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(login).service(logout);
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct CredentialsIn {
-    email: String,
-    password: String,
-}
-
-impl From<CredentialsIn> for models::Credentials {
-    fn from(c: CredentialsIn) -> Self {
-        Self {
-            email: c.email,
-            password: models::Password::ClearText(c.password),
-        }
-    }
 }
 
 #[post("/sessions")]
@@ -62,7 +49,6 @@ async fn login(
         };
         return HttpResponse::Unauthorized().json(APIAnswer::from(api_error));
     }
-
     if let Err(e) = Identity::login(&request.extensions(), account.id.to_string()) {
         error!("{}", e);
         return HttpResponse::InternalServerError().finish();

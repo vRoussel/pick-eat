@@ -1,7 +1,7 @@
-use actix_identity::{IdentityMiddleware};
+use actix_identity::IdentityMiddleware;
 use actix_session::config::CookieContentSecurity;
 use actix_session::storage::RedisSessionStore;
-use actix_session::{SessionMiddleware};
+use actix_session::SessionMiddleware;
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
@@ -40,16 +40,16 @@ pub async fn start_web_server(
             .app_data(app_data.clone())
             .service(
                 web::scope("/v1")
-                    .configure(api::tags::config)
-                    .configure(api::categories::config)
-                    .configure(api::seasons::config)
-                    .configure(api::diets::config)
-                    .configure(api::units::config)
-                    .configure(api::ingredients::config)
-                    .configure(api::accounts::config)
-                    .configure(api::sessions::config)
-                    .configure(api::tokens::config)
-                    .configure(api::recipes::config),
+                    .configure(api::handlers::tags::config)
+                    .configure(api::handlers::categories::config)
+                    .configure(api::handlers::seasons::config)
+                    .configure(api::handlers::diets::config)
+                    .configure(api::handlers::units::config)
+                    .configure(api::handlers::ingredients::config)
+                    .configure(api::handlers::accounts::config)
+                    .configure(api::handlers::sessions::config)
+                    .configure(api::handlers::tokens::config)
+                    .configure(api::handlers::recipes::config),
             )
     })
     .bind("127.0.0.1:8080")?

@@ -1,10 +1,10 @@
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
-use serde::{Deserialize, Serialize};
 
-use super::{APIError, Admin};
-use crate::app::{App, AppErrorWith};
-use crate::models::{self, InvalidTag};
+use crate::{
+    api::{models, Admin},
+    app::{App, AppErrorWith},
+};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_tags)
@@ -14,67 +14,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(delete_tag);
 }
 
-impl From<InvalidTag> for Vec<APIError> {
-    fn from(value: InvalidTag) -> Self {
-        type Kind = models::InvalidityKind;
-        let mut ret = Vec::new();
-        if let Some(v) = value.name {
-            match v {
-                Kind::AlreadyUsed => {
-                    ret.push(APIError {
-                        message: "Un tag avec ce nom existe déjà",
-                        field: Some("name"),
-                        code: None,
-                    });
-                }
-                Kind::Empty => {
-                    ret.push(APIError {
-                        message: "Un tag ne peut pas avoir un nom vide",
-                        field: Some("name"),
-                        code: None,
-                    });
-                }
-                _ => {
-                    warn!(
-                        "{:?} error received for tag's name, this should not happen",
-                        v
-                    );
-                }
-            };
-        };
-        ret
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct TagOut {
-    id: i32,
-    name: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct TagIn {
-    name: String,
-}
-
-impl From<TagIn> for models::NewTag {
-    fn from(t: TagIn) -> Self {
-        Self { name: t.name }
-    }
-}
-
-impl From<models::Tag> for TagOut {
-    fn from(t: models::Tag) -> Self {
-        Self {
-            id: t.id,
-            name: t.name,
-        }
-    }
-}
-
 #[get("/tags")]
 async fn get_all_tags(app: web::Data<App>) -> impl Responder {
-    let tags: Vec<TagOut> = match app.get_all_tags().await {
+    let tags: Vec<models::TagOut> = match app.get_all_tags().await {
         Ok(v) => v.into_iter().map(|x| x.into()).collect(),
         Err(e) => {
             error!("{}", e);
@@ -91,10 +33,14 @@ async fn get_all_tags(app: web::Data<App>) -> impl Responder {
 }
 
 #[post("/tags")]
-async fn add_tag(new_tag: web::Json<TagIn>, app: web::Data<App>, _admin: Admin) -> impl Responder {
+async fn add_tag(
+    new_tag: web::Json<models::TagIn>,
+    app: web::Data<App>,
+    _admin: Admin,
+) -> impl Responder {
     debug!("{:?}", new_tag);
 
-    let mut t: models::NewTag = new_tag.into_inner().into();
+    let mut t: crate::models::NewTag = new_tag.into_inner().into();
 
     let new_id = match app.add_tag(&mut t).await {
         Ok(v) => v,
@@ -115,7 +61,7 @@ async fn add_tag(new_tag: web::Json<TagIn>, app: web::Data<App>, _admin: Admin) 
 
 #[get("/tags/{id}")]
 async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
-    let tag: TagOut = match app.get_tag(id.into_inner()).await {
+    let tag: models::TagOut = match app.get_tag(id.into_inner()).await {
         Ok(Some(v)) => v.into(),
         Ok(None) => {
             return HttpResponse::NotFound().finish();
@@ -137,13 +83,13 @@ async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
 #[put("/tags/{id}")]
 async fn replace_tag(
     id: web::Path<i32>,
-    new_tag: web::Json<TagIn>,
+    new_tag: web::Json<models::TagIn>,
     app: web::Data<App>,
     _admin: Admin,
 ) -> impl Responder {
     debug!("{:?}", new_tag);
 
-    let mut t: models::NewTag = new_tag.into_inner().into();
+    let mut t: crate::models::NewTag = new_tag.into_inner().into();
     match app.replace_tag(id.into_inner(), &mut t).await {
         Ok(Some(_)) => (),
         Ok(None) => return HttpResponse::NotFound().finish(),

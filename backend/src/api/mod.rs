@@ -1,16 +1,9 @@
-pub mod accounts;
-pub mod categories;
-pub mod diets;
-pub mod ingredients;
+pub mod errors;
+pub mod handlers;
+pub mod models;
 pub mod query_params;
-pub mod recipes;
-pub mod seasons;
-pub mod sessions;
-pub mod tags;
-pub mod tokens;
-pub mod units;
 
-
+use core::fmt;
 use std::{future::Future, pin::Pin};
 
 use actix_identity::Identity;
@@ -21,12 +14,17 @@ use actix_web::{
     FromRequest, HttpRequest,
 };
 use actix_web::{Error, HttpResponse};
-use serde::{Deserialize, Serialize};
+use serde::{
+    de::{self, Visitor},
+    Deserialize, Deserializer, Serialize,
+};
 
-use crate::app::{AppError, AppErrorWith};
-use crate::models;
+use crate::{
+    app::{AppError, AppErrorWith},
+    models::Range,
+};
 
-use self::query_params::QueryParamError;
+use self::{errors::APIAnswer, query_params::QueryParamError};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct User {
@@ -73,29 +71,9 @@ impl FromRequest for Admin {
     }
 }
 
-#[derive(Serialize, Default)]
-pub struct APIError {
-    message: &'static str,
-    field: Option<&'static str>,
-    code: Option<&'static str>,
-}
-
-#[derive(Serialize)]
-pub struct APIAnswer {
-    errors: Vec<APIError>,
-}
-
-impl From<APIError> for APIAnswer {
-    fn from(value: APIError) -> Self {
-        Self {
-            errors: vec![value],
-        }
-    }
-}
-
 impl<T> From<AppErrorWith<T>> for HttpResponse
 where
-    T: models::InvalidInput,
+    T: crate::models::InvalidInput,
 {
     fn from(value: AppErrorWith<T>) -> Self {
         match value {
@@ -122,5 +100,40 @@ impl From<AppError> for HttpResponse {
 impl From<QueryParamError> for HttpResponse {
     fn from(value: QueryParamError) -> Self {
         HttpResponse::BadRequest().body(value.to_string())
+    }
+}
+
+struct RangeVisitor;
+impl<'de> Visitor<'de> for RangeVisitor {
+    type Value = Range;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a strictly positive range such as 1-10")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        let pair: Vec<i64> = value
+            .split('-')
+            .map(|s| s.parse::<i64>())
+            .collect::<Result<_, _>>()
+            .map_err(|e| E::custom(e))?;
+
+        if pair.len() != 2 {
+            return Err(E::custom("not a valid range format"));
+        }
+
+        Range::new(pair[0], pair[1]).map_err(E::custom)
+    }
+}
+
+impl<'de> Deserialize<'de> for Range {
+    fn deserialize<D>(deserializer: D) -> Result<Range, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(RangeVisitor)
     }
 }
