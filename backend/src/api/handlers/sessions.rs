@@ -31,7 +31,7 @@ async fn login(
             let api_error = APIError {
                 message: "Email ou mot de passe incorrect",
                 field: None,
-                code: Some("account_pending_validation"),
+                code: None,
             };
             return HttpResponse::Unauthorized().json(APIAnswer::from(api_error));
         }
