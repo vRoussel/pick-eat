@@ -23,7 +23,7 @@ pub use tag::*;
 pub use token::*;
 pub use unit::*;
 
-use crate::{api::APIError, storage::DBConstraint};
+use crate::{api::errors::APIError, storage::DBConstraint};
 
 pub trait InvalidInput:
     std::fmt::Debug + for<'a> TryFrom<&'a DBConstraint, Error = String> + Into<Vec<APIError>>
