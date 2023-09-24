@@ -2,6 +2,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde::Deserialize;
 
+use crate::api::handlers::set_and_log_json_body;
 use crate::api::models::{AccountOut, AccountUpdateIn, NewAccountIn, PublicAccountDataOut};
 use crate::api::{Admin, User};
 use crate::app::{App, AppErrorWith};
@@ -40,12 +41,7 @@ async fn get_all_public_accounts_data(
         }
     };
 
-    match serde_json::to_string(&accounts) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(accounts)
+    set_and_log_json_body(HttpResponse::Ok(), accounts)
 }
 
 #[post("/accounts")]
@@ -84,12 +80,7 @@ async fn get_current_account(user: User, app: web::Data<App>) -> impl Responder 
         }
     };
 
-    match serde_json::to_string(&account) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(account)
+    set_and_log_json_body(HttpResponse::Ok(), account)
 }
 
 #[put("/accounts/me")]

@@ -2,7 +2,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 
 use crate::{
-    api::{models, Admin, User},
+    api::{handlers::set_and_log_json_body, models, Admin, User},
     app::{App, AppErrorWith},
 };
 
@@ -24,12 +24,7 @@ async fn get_all_ingredients(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&ingredients) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(ingredients)
+    set_and_log_json_body(HttpResponse::Ok(), ingredients)
 }
 
 #[post("/ingredients")]
@@ -72,12 +67,7 @@ async fn get_ingredient(id: web::Path<i32>, app: web::Data<App>) -> impl Respond
         }
     };
 
-    match serde_json::to_string(&ingredient) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(ingredient)
+    set_and_log_json_body(HttpResponse::Ok(), ingredient)
 }
 
 #[put("/ingredients/{id}")]

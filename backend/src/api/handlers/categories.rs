@@ -2,7 +2,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 
 use crate::{
-    api::{models, Admin},
+    api::{handlers::set_and_log_json_body, models, Admin},
     app::{App, AppErrorWith},
 };
 
@@ -24,12 +24,7 @@ async fn get_all_categories(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&categories) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(categories)
+    set_and_log_json_body(HttpResponse::Ok(), categories)
 }
 
 #[post("/categories")]
@@ -72,12 +67,7 @@ async fn get_category(id: web::Path<i32>, app: web::Data<App>) -> impl Responder
         }
     };
 
-    match serde_json::to_string(&category) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(category)
+    set_and_log_json_body(HttpResponse::Ok(), category)
 }
 
 #[put("/categories/{id}")]
