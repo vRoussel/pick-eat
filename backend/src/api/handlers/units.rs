@@ -1,6 +1,7 @@
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 
+use crate::api::handlers::set_and_log_json_body;
 use crate::api::{models, Admin, User};
 use crate::app::{App, AppErrorWith};
 
@@ -22,12 +23,7 @@ async fn get_all_units(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&units) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(units)
+    set_and_log_json_body(HttpResponse::Ok(), units)
 }
 
 #[post("/units")]
@@ -70,12 +66,7 @@ async fn get_unit(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&unit) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(unit)
+    set_and_log_json_body(HttpResponse::Ok(), unit)
 }
 
 #[put("/units/{id}")]

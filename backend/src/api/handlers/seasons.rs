@@ -1,4 +1,7 @@
-use crate::{api::models, app::App};
+use crate::{
+    api::{handlers::set_and_log_json_body, models},
+    app::App,
+};
 use actix_web::{get, web, HttpResponse, Responder};
 use log::*;
 
@@ -16,12 +19,7 @@ async fn get_all_seasons(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&seasons) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(seasons)
+    set_and_log_json_body(HttpResponse::Ok(), seasons)
 }
 
 #[get("/seasons/{id}")]
@@ -37,10 +35,5 @@ async fn get_season(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&season) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(season)
+    set_and_log_json_body(HttpResponse::Ok(), season)
 }

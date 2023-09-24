@@ -4,6 +4,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 use serde_json;
 
+use crate::api::handlers::set_and_log_json_body;
 use crate::api::query_params::{RangeQueryParams, RecipeFiltersQueryParams, SortMethodQueryParams};
 use crate::api::{models, Admin, User};
 use crate::app::{App, AppErrorWith};
@@ -98,14 +99,9 @@ async fn get_many_recipes(
         first_fetched, last_fetched, total_count_filtered
     );
 
-    match serde_json::to_string(&recipes) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
     ret.insert_header((http::header::CONTENT_RANGE, content_range))
-        .insert_header((http::header::ACCEPT_RANGES, accept_range))
-        .json(recipes)
+        .insert_header((http::header::ACCEPT_RANGES, accept_range));
+    set_and_log_json_body(ret, recipes)
 }
 
 #[post("/recipes")]
@@ -149,12 +145,7 @@ async fn get_recipe(id: web::Path<i32>, app: web::Data<App>, user: Option<User>)
         }
     };
 
-    match serde_json::to_string(&recipe) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(recipe)
+    set_and_log_json_body(HttpResponse::Ok(), recipe)
 }
 
 #[put("/recipes/{id}")]

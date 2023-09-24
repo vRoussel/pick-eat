@@ -1,6 +1,7 @@
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 
+use crate::api::handlers::set_and_log_json_body;
 use crate::api::{models, Admin};
 use crate::app::{App, AppErrorWith};
 
@@ -22,12 +23,7 @@ async fn get_all_diets(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&diets) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(diets)
+    set_and_log_json_body(HttpResponse::Ok(), diets)
 }
 
 #[post("/diets")]
@@ -70,12 +66,7 @@ async fn get_diet(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&diet) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(diet)
+    set_and_log_json_body(HttpResponse::Ok(), diet)
 }
 
 #[put("/diets/{id}")]

@@ -6,6 +6,7 @@ use log::*;
 use crate::{
     api::{
         errors::{APIAnswer, APIError},
+        handlers::set_and_log_json_body,
         models::CredentialsIn,
         User,
     },
@@ -33,7 +34,7 @@ async fn login(
                 field: None,
                 code: None,
             };
-            return HttpResponse::Unauthorized().json(APIAnswer::from(api_error));
+            return set_and_log_json_body(HttpResponse::Unauthorized(), APIAnswer::from(api_error));
         }
         Err(e) => {
             error!("{}", e);
@@ -47,7 +48,7 @@ async fn login(
             field: None,
             code: Some("account_pending_validation"),
         };
-        return HttpResponse::Unauthorized().json(APIAnswer::from(api_error));
+        return set_and_log_json_body(HttpResponse::Unauthorized(), APIAnswer::from(api_error));
     }
     if let Err(e) = Identity::login(&request.extensions(), account.id.to_string()) {
         error!("{}", e);

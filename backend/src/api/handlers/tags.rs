@@ -2,7 +2,7 @@ use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
 
 use crate::{
-    api::{models, Admin},
+    api::{handlers::set_and_log_json_body, models, Admin},
     app::{App, AppErrorWith},
 };
 
@@ -24,12 +24,7 @@ async fn get_all_tags(app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&tags) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(tags)
+    set_and_log_json_body(HttpResponse::Ok(), tags)
 }
 
 #[post("/tags")]
@@ -72,12 +67,7 @@ async fn get_tag(id: web::Path<i32>, app: web::Data<App>) -> impl Responder {
         }
     };
 
-    match serde_json::to_string(&tag) {
-        Ok(json) => debug!("{}", json),
-        Err(e) => error!("{}", e),
-    };
-
-    HttpResponse::Ok().json(tag)
+    set_and_log_json_body(HttpResponse::Ok(), tag)
 }
 
 #[put("/tags/{id}")]
