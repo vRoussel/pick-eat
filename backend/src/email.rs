@@ -1,10 +1,10 @@
-use log::info;
+use log::*;
 use reqwest;
 use serde::Serialize;
 
 const SMTP2GO_API_ROOT: &str = "https://api.smtp2go.com/v3";
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 struct EmailReq {
     api_key: String,
     to: Vec<String>,
@@ -13,6 +13,17 @@ struct EmailReq {
     text_body: String,
 }
 
+impl std::fmt::Debug for EmailReq {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "EmailReq {{ api_key: <hidden>, to: {:?}, sender: {}, subject: {}, text_body: {} }}",
+            self.to, self.sender, self.subject, self.text_body
+        )
+    }
+}
+
+#[derive(Clone)]
 pub struct EmailSender {
     api_key: String,
 }
@@ -46,7 +57,7 @@ impl EmailSender {
         };
 
         let endpoint = format!("{}/email/send", SMTP2GO_API_ROOT);
-        info!("{:?}", body);
+        debug!("{:?}", body);
         let client = reqwest::Client::new();
         client
             .post(endpoint)
@@ -82,7 +93,7 @@ impl EmailSender {
         };
 
         let endpoint = format!("{}/email/send", SMTP2GO_API_ROOT);
-        info!("{:?}", body);
+        debug!("{:?}", body);
         let client = reqwest::Client::new();
         client
             .post(endpoint)

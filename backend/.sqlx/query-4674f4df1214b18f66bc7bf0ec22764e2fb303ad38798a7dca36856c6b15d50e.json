@@ -1,0 +1,276 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                r.id,\n                r.name,\n                r.notes,\n                r.preparation_time_min,\n                r.cooking_time_min,\n                r.image,\n                r.publication_date,\n                r.instructions,\n                r.n_shares,\n                r.is_private,\n                r.author_id,\n                is_recipe_in_account_favs(r.id, $1) as \"is_favorite!\",\n                a.display_name as author_name,\n                r.tags as \"tags: Vec<Tag>\",\n                r.categories as \"categories: Vec<Category>\",\n                r.diets as \"diets: Vec<Diet>\",\n                r.seasons as \"seasons: Vec<Season>\",\n                r.ingredients as \"ingredients: Vec<QIngredient>\"\n            FROM\n                recipes_full r\n                INNER JOIN accounts a\n                    ON a.id = r.author_id\n            WHERE r.id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "preparation_time_min",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 4,
+        "name": "cooking_time_min",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 5,
+        "name": "image",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "publication_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 7,
+        "name": "instructions",
+        "type_info": "TextArray"
+      },
+      {
+        "ordinal": 8,
+        "name": "n_shares",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 9,
+        "name": "is_private",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 10,
+        "name": "author_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "is_favorite!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "author_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "tags: Vec<Tag>",
+        "type_info": {
+          "Custom": {
+            "name": "_tags",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "tags",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "categories: Vec<Category>",
+        "type_info": {
+          "Custom": {
+            "name": "_categories",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "categories",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "diets: Vec<Diet>",
+        "type_info": {
+          "Custom": {
+            "name": "_diets",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "diets",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "label",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "seasons: Vec<Season>",
+        "type_info": {
+          "Custom": {
+            "name": "_seasons",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "seasons",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "label",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 17,
+        "name": "ingredients: Vec<QIngredient>",
+        "type_info": {
+          "Custom": {
+            "name": "_qingredient",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "qingredient",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "quantity",
+                        "Float4"
+                      ],
+                      [
+                        "unit",
+                        {
+                          "Custom": {
+                            "name": "units",
+                            "kind": {
+                              "Composite": [
+                                [
+                                  "id",
+                                  "Int4"
+                                ],
+                                [
+                                  "full_name",
+                                  "Text"
+                                ],
+                                [
+                                  "short_name",
+                                  "Text"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "4674f4df1214b18f66bc7bf0ec22764e2fb303ad38798a7dca36856c6b15d50e"
+}
