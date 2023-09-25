@@ -6,7 +6,8 @@ use crate::{api::models, app::App};
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(create_account_validation_token)
         .service(create_password_reset_token)
-        .service(use_account_validation_token);
+        .service(use_account_validation_token)
+        .service(use_password_reset_token);
 }
 
 async fn create_token(
