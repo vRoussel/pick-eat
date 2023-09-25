@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="275,163" last-zoom="0.9" max-obj-count="24"
+<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="0,0" last-zoom="0.9" max-obj-count="24"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -512,6 +512,9 @@ WHERE rd.recipe_id = recipe_id_in]]> </definition>
 	<column name="valid_until" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
+	<constraint name="account_validation_tokens_pk" type="pk-constr" table="public.account_validation_tokens">
+		<columns names="account_id" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <table name="password_reset_tokens" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
@@ -527,6 +530,9 @@ WHERE rd.recipe_id = recipe_id_in]]> </definition>
 	<column name="valid_until" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
+	<constraint name="password_reset_tokens_pk" type="pk-constr" table="public.password_reset_tokens">
+		<columns names="account_id" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <function name="is_recipe_in_account_favs"

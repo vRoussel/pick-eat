@@ -68,6 +68,9 @@ async fn insert_new_validation_token(
         "
             INSERT INTO account_validation_tokens (account_id, token, valid_until)
             VALUES ($1, $2, $3)
+            ON CONFLICT (account_id) DO UPDATE SET
+                token = excluded.token,
+                valid_until = excluded.valid_until
         ",
         account_id,
         token_id,
@@ -88,6 +91,9 @@ async fn insert_password_reset_token(
         "
             INSERT INTO password_reset_tokens (account_id, token, valid_until)
             VALUES ($1, $2, $3)
+            ON CONFLICT (account_id) DO UPDATE SET
+                token = excluded.token,
+                valid_until = excluded.valid_until
         ",
         account_id,
         token_id,
