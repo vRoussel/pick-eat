@@ -1,0 +1,153 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH\n                dummy as (SELECT 1)\n                \n                \n                \n                \n                    , tag_filter as (\n                        SELECT\n                            recipe_id as id,\n                            count(*) as rank\n                        FROM\n                            recipes_tags\n                        WHERE tag_id = any($1)\n                        GROUP BY id\n                    )\n                \n                \n                    , diet_filter as (\n                        SELECT\n                            distinct(recipe_id) as id\n                        FROM\n                            recipes_diets\n                        WHERE diet_id = any($2)\n                    )\n                \n                \n                \n            SELECT\n                r.id,\n                r.name,\n                r.image,\n                is_recipe_in_account_favs(r.id, $3) as \"is_favorite!\",\n                r.ingredients as \"ingredients: Vec<QIngredient>\",\n                r.diets as \"diets: Vec<Diet>\",\n                n_shares,\n                is_private,\n                count(*) OVER() AS \"total_count!\"\n            FROM recipes_full AS r\n                \n                \n                \n                 INNER JOIN tag_filter as tf USING (id)\n                 INNER JOIN diet_filter USING (id)\n                \n                \n            WHERE\n                is_private = 'f' OR author_id = $3\n            ORDER BY\n                \n                \n                tf.rank DESC, \n                (extract(epoch from publication_date)+id)::bigint % $4\n            OFFSET $5\n            LIMIT $6\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "image",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "is_favorite!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "ingredients: Vec<QIngredient>",
+        "type_info": {
+          "Custom": {
+            "name": "_qingredient",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "qingredient",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "quantity",
+                        "Float4"
+                      ],
+                      [
+                        "unit",
+                        {
+                          "Custom": {
+                            "name": "units",
+                            "kind": {
+                              "Composite": [
+                                [
+                                  "id",
+                                  "Int4"
+                                ],
+                                [
+                                  "full_name",
+                                  "Text"
+                                ],
+                                [
+                                  "short_name",
+                                  "Text"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "diets: Vec<Diet>",
+        "type_info": {
+          "Custom": {
+            "name": "_diets",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "diets",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "id",
+                        "Int4"
+                      ],
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "label",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "n_shares",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 7,
+        "name": "is_private",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "total_count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "Int4",
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "eaf8266963d64d2ad51ab96de2c0960b59d3843369fb2bec829244c17562d7d9"
+}

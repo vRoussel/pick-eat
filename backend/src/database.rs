@@ -22,7 +22,7 @@ pub async fn get_pool(db_conf: &DBConf) -> Result<PgPool, Box<dyn std::error::Er
     Ok(pool)
 }
 
-pub async fn init_database(db_conn: &PgPool) -> Result<(), Error> {
+pub async fn add_default_data(db_conn: &PgPool) -> Result<(), Error> {
     let mut transaction = db_conn.begin().await?;
 
     // Seasons

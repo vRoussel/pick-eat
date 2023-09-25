@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.4
+-- pgModeler version: 1.0.5
 -- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
@@ -127,7 +127,7 @@ ALTER TABLE public.units OWNER TO pickeat;
 CREATE TABLE public.seasons (
 	id integer NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	name text NOT NULL,
-	label text,
+	label text NOT NULL,
 	CONSTRAINT seasons_pk PRIMARY KEY (id),
 	CONSTRAINT seasons_uq_name UNIQUE (name),
 	CONSTRAINT seasons_uq_label UNIQUE (label)
@@ -157,23 +157,6 @@ WITH SCHEMA public;
 -- DROP EXTENSION IF EXISTS unaccent CASCADE;
 CREATE EXTENSION unaccent
 WITH SCHEMA public;
--- ddl-end --
-
--- object: public.sentence_case | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.sentence_case(text) CASCADE;
-CREATE FUNCTION public.sentence_case (s text)
-	RETURNS text
-	LANGUAGE sql
-	IMMUTABLE 
-	RETURNS NULL ON NULL INPUT
-	SECURITY INVOKER
-	PARALLEL UNSAFE
-	COST 1
-	AS $$
-select upper(left($1, 1)) || lower(right($1, -1));
-$$;
--- ddl-end --
-ALTER FUNCTION public.sentence_case(text) OWNER TO pickeat;
 -- ddl-end --
 
 -- -- object: public.gist_trgm_ops | type: OPERATOR CLASS --
@@ -235,10 +218,10 @@ CREATE TABLE public.recipes (
 ALTER TABLE public.recipes OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_ingredients_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_ingredients_json(integer) CASCADE;
-CREATE FUNCTION public.get_ingredients_json (IN recipe_id_in integer)
-	RETURNS json
+-- object: public.get_recipe_tags | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_tags(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_tags (IN recipe_id_in integer)
+	RETURNS public.tags[]
 	LANGUAGE sql
 	STABLE 
 	CALLED ON NULL INPUT
@@ -246,37 +229,26 @@ CREATE FUNCTION public.get_ingredients_json (IN recipe_id_in integer)
 	PARALLEL SAFE
 	COST 1
 	AS $$
-SELECT coalesce(json_agg(result), '[]'::json) FROM
-    (
-        SELECT
-            i.id,
-            i.name,
-            ri.quantity,
-            CASE WHEN ri.unit_id is null THEN
-                null
-            ELSE
-                json_build_object(
-                    'id', u.id,
-                    'full_name', u.full_name,
-                    'short_name', u.short_name
-                )
-            END as "unit"
-        FROM
-            ingredients AS i INNER JOIN recipes_ingredients AS ri
-            ON i.id = ri.ingredient_id
-            LEFT JOIN units as u
-            ON u.id = ri.unit_id
-        WHERE ri.recipe_id = recipe_id_in
-    ) as result
+SELECT
+    coalesce(
+		array_agg(
+			(t.id, t.name)::tags
+		),
+		'{}'
+	) as tags
+FROM
+    tags AS t INNER JOIN recipes_tags AS rt
+    ON t.id = rt.tag_id
+WHERE rt.recipe_id = recipe_id_in
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_ingredients_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_tags(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_tags_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_tags_json(integer) CASCADE;
-CREATE FUNCTION public.get_tags_json (IN recipe_id_in integer)
-	RETURNS json
+-- object: public.get_recipe_categories | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_categories(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_categories (IN recipe_id_in integer)
+	RETURNS public.categories[]
 	LANGUAGE sql
 	STABLE 
 	CALLED ON NULL INPUT
@@ -284,26 +256,26 @@ CREATE FUNCTION public.get_tags_json (IN recipe_id_in integer)
 	PARALLEL SAFE
 	COST 1
 	AS $$
-SELECT coalesce(json_agg(result), '[]'::json) FROM
-(
-	SELECT
-		t.id,
-    		t.name
-    FROM
-    		tags AS t INNER JOIN recipes_tags AS rt
-    		ON t.id = rt.tag_id
-    WHERE rt.recipe_id = recipe_id_in
-) as result
-
+SELECT
+    coalesce(
+		array_agg(
+			(c.id, c.name)::categories
+		),
+		'{}'
+	) as categories
+FROM
+    categories AS c INNER JOIN recipes_categories AS ct
+    ON c.id = ct.category_id
+WHERE ct.recipe_id = recipe_id_in
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_tags_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_categories(integer) OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_categories_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_categories_json(integer) CASCADE;
-CREATE FUNCTION public.get_categories_json (IN recipe_id_in integer)
-	RETURNS json
+-- object: public.get_recipe_seasons | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_seasons(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_seasons (IN recipe_id_in integer)
+	RETURNS public.seasons[]
 	LANGUAGE sql
 	STABLE 
 	CALLED ON NULL INPUT
@@ -311,48 +283,20 @@ CREATE FUNCTION public.get_categories_json (IN recipe_id_in integer)
 	PARALLEL SAFE
 	COST 1
 	AS $$
-SELECT coalesce(json_agg(result), '[]'::json) FROM
-(
-	SELECT
-		c.id,
-    		c.name
-    FROM
-    		categories AS c INNER JOIN recipes_categories AS rc
-    		ON c.id = rc.category_id
-    WHERE rc.recipe_id = recipe_id_in
-) as result
-
+SELECT
+    coalesce(
+		array_agg(
+			(s.id, s.name, s.label)::seasons
+		),
+		'{}'
+	) as seasons
+FROM
+    seasons AS s INNER JOIN recipes_seasons AS rs
+    ON s.id = rs.season_id
+WHERE rs.recipe_id = recipe_id_in
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_categories_json(integer) OWNER TO pickeat;
--- ddl-end --
-
--- object: public.get_seasons_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_seasons_json(integer) CASCADE;
-CREATE FUNCTION public.get_seasons_json (IN recipe_id_in integer)
-	RETURNS json
-	LANGUAGE sql
-	STABLE 
-	CALLED ON NULL INPUT
-	SECURITY INVOKER
-	PARALLEL SAFE
-	COST 1
-	AS $$
-SELECT coalesce(json_agg(result), '[]'::json) FROM
-(
-	SELECT
-		s.id,
-    		s.name,
-		s.label
-    FROM
-    		seasons AS s INNER JOIN recipes_seasons AS rs
-    		ON s.id = rs.season_id
-    WHERE rs.recipe_id = recipe_id_in
-) as result
-
-$$;
--- ddl-end --
-ALTER FUNCTION public.get_seasons_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_seasons(integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: trgm_idx | type: INDEX --
@@ -389,10 +333,10 @@ CREATE TABLE public.recipes_diets (
 ALTER TABLE public.recipes_diets OWNER TO pickeat;
 -- ddl-end --
 
--- object: public.get_diets_json | type: FUNCTION --
--- DROP FUNCTION IF EXISTS public.get_diets_json(integer) CASCADE;
-CREATE FUNCTION public.get_diets_json (IN recipe_id_in integer)
-	RETURNS json
+-- object: public.get_recipe_diets | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_diets(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_diets (IN recipe_id_in integer)
+	RETURNS public.diets[]
 	LANGUAGE sql
 	STABLE 
 	CALLED ON NULL INPUT
@@ -400,21 +344,20 @@ CREATE FUNCTION public.get_diets_json (IN recipe_id_in integer)
 	PARALLEL SAFE
 	COST 1
 	AS $$
-SELECT coalesce(json_agg(result), '[]'::json) FROM
-(
-	SELECT
-		d.id,
-    		d.name,
-		d.label
-    FROM
-    		diets AS d INNER JOIN recipes_diets AS rd
-    		ON d.id = rd.diet_id
-    WHERE rd.recipe_id = recipe_id_in
-) as result
-
+SELECT
+    coalesce(
+		array_agg(
+			(d.id, d.name, d.label)::diets
+		),
+		'{}'
+	) as diets
+FROM
+    diets AS d INNER JOIN recipes_diets AS rd
+    ON d.id = rd.diet_id
+WHERE rd.recipe_id = recipe_id_in
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_diets_json(integer) OWNER TO pickeat;
+ALTER FUNCTION public.get_recipe_diets(integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.account_validation_tokens | type: TABLE --
@@ -422,8 +365,8 @@ ALTER FUNCTION public.get_diets_json(integer) OWNER TO pickeat;
 CREATE TABLE public.account_validation_tokens (
 	account_id integer NOT NULL,
 	token text NOT NULL,
-	valid_until timestamptz NOT NULL
-
+	valid_until timestamptz NOT NULL,
+	CONSTRAINT account_validation_tokens_pk PRIMARY KEY (account_id)
 );
 -- ddl-end --
 ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
@@ -434,11 +377,209 @@ ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
 CREATE TABLE public.password_reset_tokens (
 	account_id integer NOT NULL,
 	token text NOT NULL,
-	valid_until timestamptz NOT NULL
-
+	valid_until timestamptz NOT NULL,
+	CONSTRAINT password_reset_tokens_pk PRIMARY KEY (account_id)
 );
 -- ddl-end --
 ALTER TABLE public.password_reset_tokens OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.is_recipe_in_account_favs | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.is_recipe_in_account_favs(integer,integer) CASCADE;
+CREATE FUNCTION public.is_recipe_in_account_favs (IN recipe_id_in integer, IN account_id_in integer)
+	RETURNS bool
+	LANGUAGE sql
+	VOLATILE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+SELECT EXISTS(
+    SELECT FROM accounts_fav_recipes
+    WHERE
+        recipe_id = recipe_id_in
+        AND account_id = account_id_in
+);
+
+$$;
+-- ddl-end --
+ALTER FUNCTION public.is_recipe_in_account_favs(integer,integer) OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.get_unit | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_unit(integer) CASCADE;
+CREATE FUNCTION public.get_unit (IN unit_id_in integer)
+	RETURNS public.units
+	LANGUAGE sql
+	VOLATILE 
+	RETURNS NULL ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+SELECT *
+FROM units u
+WHERE u.id = unit_id_in
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_unit(integer) OWNER TO postgres;
+-- ddl-end --
+COMMENT ON FUNCTION public.get_unit(integer) IS E'If unit_id is null return null\nelse return (select * from units)';
+-- ddl-end --
+
+-- object: public.qingredient | type: TYPE --
+-- DROP TYPE IF EXISTS public.qingredient CASCADE;
+CREATE TYPE public.qingredient AS
+(
+ id integer,
+ name text,
+ quantity real,
+ unit public.units
+);
+-- ddl-end --
+ALTER TYPE public.qingredient OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_recipe_ingredients | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_recipe_ingredients(integer) CASCADE;
+CREATE FUNCTION public.get_recipe_ingredients (IN recipe_id_in integer)
+	RETURNS public.qingredient[]
+	LANGUAGE sql
+	STABLE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL SAFE
+	COST 1
+	AS $$
+SELECT
+    coalesce(
+    array_agg(
+        (
+            i.id,
+            i.name,
+            ri.quantity,
+            get_unit(ri.unit_id)
+        )::qingredient
+    ),
+    '{}'
+) as ingredients
+FROM
+    ingredients AS i INNER JOIN recipes_ingredients AS ri
+    ON i.id = ri.ingredient_id
+WHERE ri.recipe_id = recipe_id_in
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_recipe_ingredients(integer) OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.ingredients_full | type: VIEW --
+-- DROP VIEW IF EXISTS public.ingredients_full CASCADE;
+CREATE VIEW public.ingredients_full
+AS 
+
+SELECT
+   i.id,
+   i.name,
+   get_unit(i.default_unit_id) AS default_unit
+FROM
+   public.ingredients AS i;
+-- ddl-end --
+ALTER VIEW public.ingredients_full OWNER TO pickeat;
+-- ddl-end --
+
+-- Appended SQL commands --
+update pg_attribute pa
+set attnotnull = 't'
+from pg_class pg
+where
+    pa.attrelid = pg.oid
+    and relname = 'ingredients_full'
+    and attname in ('id', 'name');
+-- ddl-end --
+
+-- object: public.recipes_full | type: VIEW --
+-- DROP VIEW IF EXISTS public.recipes_full CASCADE;
+CREATE VIEW public.recipes_full
+AS 
+
+SELECT
+   r.*,
+   get_recipe_tags(r.id) AS tags,
+   get_recipe_categories(r.id) AS categories,
+   get_recipe_diets(r.id) AS diets,
+   get_recipe_seasons(r.id) AS seasons,
+   get_recipe_ingredients(r.id) AS ingredients
+FROM
+   public.recipes AS r;
+-- ddl-end --
+ALTER VIEW public.recipes_full OWNER TO pickeat;
+-- ddl-end --
+
+-- Appended SQL commands --
+update pg_attribute pa
+set attnotnull = 't'
+from pg_class pg
+where
+    pa.attrelid = pg.oid
+    and relname = 'recipes_full'
+    and attname in (
+        'id',
+        'name',
+        'notes',
+        'preparation_time_min',
+        'cooking_time_min',
+        'image',
+        'publication_date',
+        'instructions',
+        'n_shares',
+        'author_id',
+        'is_private',
+        'tags',
+		'categories',
+		'diets',
+		'seasons',
+		'ingredients'
+	);
+
+-- ddl-end --
+
+-- object: public.recipes_full_overview | type: VIEW --
+-- DROP VIEW IF EXISTS public.recipes_full_overview CASCADE;
+CREATE VIEW public.recipes_full_overview
+AS 
+
+SELECT
+   get_recipe_diets(r.id) AS diets,
+   get_recipe_ingredients(r.id) AS ingredients,
+   r.id,
+   r.name,
+   r.image,
+   r.n_shares,
+   r.is_private
+FROM
+   public.recipes AS r;
+-- ddl-end --
+ALTER VIEW public.recipes_full_overview OWNER TO pickeat;
+-- ddl-end --
+
+-- Appended SQL commands --
+update pg_attribute pa
+set attnotnull = 't'
+from pg_class pg
+where
+    pa.attrelid = pg.oid
+    and relname = 'recipes_full_overview'
+    and attname in (
+        'id',
+        'name',
+        'image',
+        'n_shares',
+        'is_private',
+		'diets',
+		'ingredients'
+	);
+
 -- ddl-end --
 
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --

@@ -64,10 +64,10 @@
           /> Végétarien</span>
         </p>
         <p class="text-xs sm:text-sm italic text-center">
-          Ajoutée par {{ recipe.author.display_name }}
+          Ajoutée par {{ recipe.author_name }}
           <br><router-link
             class="link-primary"
-            :to="'/recipes?a=' + recipe.author.id"
+            :to="'/recipes?a=' + recipe.author_id"
           >
             voir toutes ses recettes
           </router-link>
@@ -154,7 +154,7 @@
       <p class="text-gray-400 whitespace-pre-wrap break-words">
         <em>
           « {{ recipe.notes }} »
-          <p class="text-right mr-6">{{ recipe.author.display_name }}</p>
+          <p class="text-right mr-6">{{ recipe.author_name }}</p>
         </em>
       </p>
     </blockquote>
@@ -200,7 +200,7 @@ export default {
         },
         allowed_to_modify() {
             return this.authStore.is_logged_in
-                   && (this.authStore.account.id == this.recipe.author.id
+                   && (this.authStore.account.id == this.recipe.author_id
                        || this.authStore.is_admin
                    )
         }

@@ -8,7 +8,7 @@
         Connexion
       </h1>
       <p class="text-center">
-        Vous n'avez pas encore de compte ? <router-link to="/register">
+        Vous n'avez pas encore de compte ? <router-link to="/register" class="text-primary">
           Créer un compte
         </router-link>
       </p>
@@ -118,7 +118,7 @@ export default {
                     })
                     .catch(err => {
                         handle_form_api_errors(err.response, this.errors, this.notifStore)
-                        if (err.response.data.errors.find(x => x.key == "account_pending_validation"))
+                        if (err.response.data.errors.find(x => x.code == "account_pending_validation"))
                             this.show_resend_validation_email = true
                     });
                 })
