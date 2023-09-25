@@ -8,7 +8,7 @@
         Inscription
       </h1>
       <p class="text-center">
-        Vous avez déjà un compte ? <router-link to="/login">
+        Vous avez déjà un compte ? <router-link class="text-primary" to="/login">
           Se connecter
         </router-link>
       </p>
