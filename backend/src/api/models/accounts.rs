@@ -29,8 +29,8 @@ pub struct NewAccountIn {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AccountUpdateIn {
-    display_name: String,
-    email: String,
+    new_display_name: String,
+    new_email: String,
     old_password: String,
     new_password: Option<String>,
 }
@@ -50,7 +50,7 @@ impl std::fmt::Debug for AccountUpdateIn {
         write!(
             f,
             "AccountUpdateIn {{ display_name: {}, email: <hidden>, old_password: <hidden>, new_password: <hidden> }}",
-            self.display_name
+            self.new_display_name
         )
     }
 }
@@ -68,8 +68,8 @@ impl From<NewAccountIn> for models::NewAccount {
 impl From<AccountUpdateIn> for models::AccountUpdate {
     fn from(a: AccountUpdateIn) -> Self {
         Self {
-            display_name: a.display_name,
-            email: a.email,
+            display_name: a.new_display_name,
+            email: a.new_email,
             old_password: models::Password::ClearText(a.old_password),
             new_password: a.new_password.map(|v| models::Password::ClearText(v)),
         }
