@@ -8,7 +8,7 @@
         Connexion
       </h1>
       <p class="text-center">
-        Vous n'avez pas encore de compte ? <router-link to="/register">
+        Vous n'avez pas encore de compte ? <router-link to="/register" class="text-primary">
           Créer un compte
         </router-link>
       </p>
