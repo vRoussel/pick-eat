@@ -365,8 +365,8 @@ ALTER FUNCTION public.get_recipe_diets(integer) OWNER TO pickeat;
 CREATE TABLE public.account_validation_tokens (
 	account_id integer NOT NULL,
 	token text NOT NULL,
-	valid_until timestamptz NOT NULL
-
+	valid_until timestamptz NOT NULL,
+	CONSTRAINT account_validation_tokens_pk PRIMARY KEY (account_id)
 );
 -- ddl-end --
 ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
@@ -377,8 +377,8 @@ ALTER TABLE public.account_validation_tokens OWNER TO pickeat;
 CREATE TABLE public.password_reset_tokens (
 	account_id integer NOT NULL,
 	token text NOT NULL,
-	valid_until timestamptz NOT NULL
-
+	valid_until timestamptz NOT NULL,
+	CONSTRAINT password_reset_tokens_pk PRIMARY KEY (account_id)
 );
 -- ddl-end --
 ALTER TABLE public.password_reset_tokens OWNER TO pickeat;
