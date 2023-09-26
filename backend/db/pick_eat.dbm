@@ -723,47 +723,6 @@ where
 	 dst-table="public.recipes"
 	 src-required="false" dst-required="false"/>
 
-<view name="recipes_full_overview" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
-	<schema name="public"/>
-	<role name="pickeat"/>
-	<appended-sql> <![CDATA[update pg_attribute pa
-set attnotnull = 't'
-from pg_class pg
-where
-    pa.attrelid = pg.oid
-    and relname = 'recipes_full_overview'
-    and attname in (
-        'id',
-        'name',
-        'image',
-        'n_shares',
-        'is_private',
-		'diets',
-		'ingredients'
-	);
-]]> </appended-sql>
-	<position x="2020" y="800"/>
-	<reference alias="diets">
-		<expression> <![CDATA[get_recipe_diets(r.id)]]> </expression>
-	</reference>
-	<reference alias="ingredients">
-		<expression> <![CDATA[get_recipe_ingredients(r.id)]]> </expression>
-	</reference>
-	<reference table="public.recipes" column="id" alias="r"/>
-	<reference table="public.recipes" column="name" alias="r"/>
-	<reference table="public.recipes" column="image" alias="r"/>
-	<reference table="public.recipes" column="n_shares" alias="r"/>
-	<reference table="public.recipes" column="is_private" alias="r"/>
-	<reference table="public.recipes" alias="r"/>
-	<expression type="select-exp">0,1,2,3,4,5,6</expression>
-	<expression type="from-exp">7</expression>
-</view>
-
-<relationship name="rel_recipes_full_cp_recipes" type="reltv" layers="0"
-	 src-table="public.recipes_full_overview"
-	 dst-table="public.recipes"
-	 src-required="false" dst-required="false"/>
-
 <constraint name="recipes_tags_fk_tag_id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.tags" table="public.recipes_tags">
 	<columns names="tag_id" ref-type="src-columns"/>
