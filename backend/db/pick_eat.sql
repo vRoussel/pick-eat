@@ -423,7 +423,7 @@ FROM units u
 WHERE u.id = unit_id_in
 $$;
 -- ddl-end --
-ALTER FUNCTION public.get_unit(integer) OWNER TO postgres;
+ALTER FUNCTION public.get_unit(integer) OWNER TO pickeat;
 -- ddl-end --
 COMMENT ON FUNCTION public.get_unit(integer) IS E'If unit_id is null return null\nelse return (select * from units)';
 -- ddl-end --
