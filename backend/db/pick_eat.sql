@@ -404,7 +404,7 @@ SELECT EXISTS(
 
 $$;
 -- ddl-end --
-ALTER FUNCTION public.is_recipe_in_account_favs(integer,integer) OWNER TO postgres;
+ALTER FUNCTION public.is_recipe_in_account_favs(integer,integer) OWNER TO pickeat;
 -- ddl-end --
 
 -- object: public.get_unit | type: FUNCTION --
