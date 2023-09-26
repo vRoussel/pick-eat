@@ -2,7 +2,6 @@ use std::convert::TryInto;
 
 use actix_web::{delete, get, http, post, put, web, HttpResponse, Responder};
 use log::*;
-use serde_json;
 
 use crate::api::handlers::set_and_log_json_body;
 use crate::api::query_params::{RangeQueryParams, RecipeFiltersQueryParams, SortMethodQueryParams};
