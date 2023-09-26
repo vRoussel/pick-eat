@@ -31,9 +31,9 @@ pub async fn get_all_ingredients(
         Ingredient,
         r#"
             SELECT
-                id,
-                name,
-                default_unit as "default_unit: Unit"
+                id as "id!",
+                name as "name!",
+                default_unit as "default_unit!: Unit"
             FROM ingredients_full
             ORDER BY name
         "#,
@@ -72,9 +72,9 @@ pub async fn get_ingredient_by_id(
         Ingredient,
         r#"
             SELECT
-                id,
-                name,
-                default_unit as "default_unit: Unit"
+                id as "id!",
+                name as "name!",
+                default_unit as "default_unit!: Unit"
             FROM ingredients_full
             WHERE id = $1
         "#,
