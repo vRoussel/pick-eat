@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="0,0" last-zoom="0.9" max-obj-count="24"
+<dbmodel pgmodeler-ver="1.0.5" use-changelog="false" last-position="772,6" last-zoom="0.9" max-obj-count="22"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -646,13 +646,6 @@ WHERE ri.recipe_id = recipe_id_in]]> </definition>
 <view name="ingredients_full" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<appended-sql> <![CDATA[update pg_attribute pa
-set attnotnull = 't'
-from pg_class pg
-where
-    pa.attrelid = pg.oid
-    and relname = 'ingredients_full'
-    and attname in ('id', 'name');]]> </appended-sql>
 	<position x="1960" y="140"/>
 	<reference table="public.ingredients" column="id" alias="i"/>
 	<reference table="public.ingredients" column="name" alias="i"/>
@@ -672,31 +665,6 @@ where
 <view name="recipes_full" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
-	<appended-sql> <![CDATA[update pg_attribute pa
-set attnotnull = 't'
-from pg_class pg
-where
-    pa.attrelid = pg.oid
-    and relname = 'recipes_full'
-    and attname in (
-        'id',
-        'name',
-        'notes',
-        'preparation_time_min',
-        'cooking_time_min',
-        'image',
-        'publication_date',
-        'instructions',
-        'n_shares',
-        'author_id',
-        'is_private',
-        'tags',
-		'categories',
-		'diets',
-		'seasons',
-		'ingredients'
-	);
-]]> </appended-sql>
 	<position x="1980" y="360"/>
 	<reference table="public.recipes" alias="r"/>
 	<reference alias="tags">

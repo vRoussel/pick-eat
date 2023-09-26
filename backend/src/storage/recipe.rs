@@ -50,14 +50,14 @@ pub async fn get_many_recipes(
                 {#ingredient_filter}
                 {#account_filter}
             SELECT
-                r.id,
-                r.name,
-                r.image,
+                r.id as "id!",
+                r.name as "name!",
+                r.image as "image!",
                 is_recipe_in_account_favs(r.id, {account_id}) as "is_favorite!",
-                r.ingredients as "ingredients: Vec<QIngredient>",
-                r.diets as "diets: Vec<Diet>",
-                n_shares,
-                is_private,
+                r.ingredients as "ingredients!: Vec<QIngredient>",
+                r.diets as "diets!: Vec<Diet>",
+                n_shares as "n_shares!",
+                is_private as "is_private!",
                 count(*) OVER() AS "total_count!"
             FROM recipes_full AS r
                 {#search_filter_join}
@@ -361,24 +361,24 @@ pub async fn get_recipe_by_id(
         Recipe,
         r#"
             SELECT
-                r.id,
-                r.name,
-                r.notes,
-                r.preparation_time_min,
-                r.cooking_time_min,
-                r.image,
-                r.publication_date,
-                r.instructions,
-                r.n_shares,
-                r.is_private,
-                r.author_id,
+                r.id as "id!",
+                r.name as "name!",
+                r.notes as "notes!",
+                r.preparation_time_min as "preparation_time_min!",
+                r.cooking_time_min as "cooking_time_min!",
+                r.image as "image!",
+                r.publication_date as "publication_date!",
+                r.instructions as "instructions!",
+                r.n_shares as "n_shares!",
+                r.is_private as "is_private!",
+                r.author_id as "author_id!",
                 is_recipe_in_account_favs(r.id, $1) as "is_favorite!",
-                a.display_name as author_name,
-                r.tags as "tags: Vec<Tag>",
-                r.categories as "categories: Vec<Category>",
-                r.diets as "diets: Vec<Diet>",
-                r.seasons as "seasons: Vec<Season>",
-                r.ingredients as "ingredients: Vec<QIngredient>"
+                a.display_name as "author_name!",
+                r.tags as "tags!: Vec<Tag>",
+                r.categories as "categories!: Vec<Category>",
+                r.diets as "diets!: Vec<Diet>",
+                r.seasons as "seasons!: Vec<Season>",
+                r.ingredients as "ingredients!: Vec<QIngredient>"
             FROM
                 recipes_full r
                 INNER JOIN accounts a

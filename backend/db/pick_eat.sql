@@ -488,16 +488,6 @@ FROM
 ALTER VIEW public.ingredients_full OWNER TO pickeat;
 -- ddl-end --
 
--- Appended SQL commands --
-update pg_attribute pa
-set attnotnull = 't'
-from pg_class pg
-where
-    pa.attrelid = pg.oid
-    and relname = 'ingredients_full'
-    and attname in ('id', 'name');
--- ddl-end --
-
 -- object: public.recipes_full | type: VIEW --
 -- DROP VIEW IF EXISTS public.recipes_full CASCADE;
 CREATE VIEW public.recipes_full
@@ -516,33 +506,6 @@ FROM
 ALTER VIEW public.recipes_full OWNER TO pickeat;
 -- ddl-end --
 
--- Appended SQL commands --
-update pg_attribute pa
-set attnotnull = 't'
-from pg_class pg
-where
-    pa.attrelid = pg.oid
-    and relname = 'recipes_full'
-    and attname in (
-        'id',
-        'name',
-        'notes',
-        'preparation_time_min',
-        'cooking_time_min',
-        'image',
-        'publication_date',
-        'instructions',
-        'n_shares',
-        'author_id',
-        'is_private',
-        'tags',
-		'categories',
-		'diets',
-		'seasons',
-		'ingredients'
-	);
-
--- ddl-end --
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
