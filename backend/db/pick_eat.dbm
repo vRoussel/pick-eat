@@ -545,7 +545,7 @@ WHERE rd.recipe_id = recipe_id_in]]> </definition>
 		execution-cost="1"
 		row-amount="1">
 	<schema name="public"/>
-	<role name="postgres"/>
+	<role name="pickeat"/>
 	<language name="sql"/>
 	<return-type>
 	<type name="bool" length="0"/>
