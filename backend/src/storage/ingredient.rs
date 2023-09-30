@@ -33,7 +33,7 @@ pub async fn get_all_ingredients(
             SELECT
                 id as "id!",
                 name as "name!",
-                default_unit as "default_unit!: Unit"
+                default_unit as "default_unit: Unit"
             FROM ingredients_full
             ORDER BY name
         "#,
