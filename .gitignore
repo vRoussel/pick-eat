@@ -4,6 +4,8 @@ todo
 #backend
 backend/target
 backend/**/*.rs.bk
+backend/local.conf
+backend/.env
 
 #frontend
 frontend/.DS_Store
