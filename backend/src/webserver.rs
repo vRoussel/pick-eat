@@ -49,7 +49,8 @@ pub async fn start_web_server(
                     .configure(api::handlers::accounts::config)
                     .configure(api::handlers::sessions::config)
                     .configure(api::handlers::tokens::config)
-                    .configure(api::handlers::recipes::config),
+                    .configure(api::handlers::recipes::config)
+                    .configure(api::handlers::bundle::config),
             )
     })
     .bind("127.0.0.1:8080")?

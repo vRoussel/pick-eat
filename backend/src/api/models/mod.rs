@@ -1,4 +1,5 @@
 pub mod accounts;
+pub mod bundle;
 pub mod categories;
 pub mod credentials;
 pub mod diets;
@@ -10,6 +11,7 @@ pub mod tokens;
 pub mod units;
 
 pub use accounts::*;
+pub use bundle::*;
 pub use categories::*;
 pub use credentials::*;
 pub use diets::*;

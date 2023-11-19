@@ -3,6 +3,7 @@ use log::*;
 use serde::Serialize;
 
 pub mod accounts;
+pub mod bundle;
 pub mod categories;
 pub mod diets;
 pub mod ingredients;

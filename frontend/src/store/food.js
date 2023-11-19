@@ -99,15 +99,15 @@ export const useFoodStore = defineStore('food', {
         },
 
         async fetchAll() {
-            await Promise.allSettled([
-                this.fetchTags(),
-                this.fetchCategories(),
-                this.fetchIngredients(),
-                this.fetchUnits(),
-                this.fetchSeasons(),
-                this.fetchDiets(),
-                this.fetchAccountsWithRecipes()
-            ])
+            return axios.get(`${API_ROOT}/bundle`).then(resp => {
+                this.tags = resp.data.tags
+                this.categories = resp.data.categories
+                this.ingredients = resp.data.ingredients
+                this.units = resp.data.units
+                this.seasons = resp.data.seasons
+                this.diets = resp.data.diets
+                this.accounts_with_recipes = resp.data.accounts_with_recipes
+            })
         },
 
         async getRecipes(from, to, filters) {
