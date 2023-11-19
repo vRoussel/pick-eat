@@ -5,7 +5,7 @@
   >
     <figure class="relative">
       <img
-        class="rounded-t-xl w-[512px]"
+        class="rounded-t-xl w-[512px] aspect-square"
         :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"
       >
     </figure>
