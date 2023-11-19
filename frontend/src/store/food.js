@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {insert_sorted} from '@/utils/utils.js'
+import { insert_sorted } from '@/utils/utils.js'
 import axios from 'axios';
 
 const API_PROTO = window.location.protocol
@@ -19,7 +19,7 @@ async function sendNewThing(post, endpoint) {
     return resp2.data
 }
 
-let seeds = [7,11,13,17,19,23,29,31,37,42];
+let seeds = [7, 11, 13, 17, 19, 23, 29, 31, 37, 42];
 let random_seed = seeds[Math.floor(Math.random() * seeds.length)];
 
 
@@ -170,37 +170,37 @@ export const useFoodStore = defineStore('food', {
 
         async sendNewTag(tag) {
             let new_tag = await sendNewThing(tag, '/tags')
-            insert_sorted(this.tags, new_tag, (a,b) => a.name.localeCompare(b.name))
+            insert_sorted(this.tags, new_tag, (a, b) => a.name.localeCompare(b.name))
             return new_tag
         },
 
         async sendNewCategory(category) {
             let new_categ = await sendNewThing(category, '/categories')
-            insert_sorted(this.categories, new_categ, (a,b) => a.name.localeCompare(b.name))
+            insert_sorted(this.categories, new_categ, (a, b) => a.name.localeCompare(b.name))
             return new_categ
         },
 
         async sendNewSeason(season) {
             let new_season = await sendNewThing(season, '/seasons')
-            insert_sorted(this.seasons, new_season, (a,b) => a.name.localeCompare(b.name))
+            insert_sorted(this.seasons, new_season, (a, b) => a.name.localeCompare(b.name))
             return new_season
         },
 
         async sendNewDiet(diet) {
             let new_diet = await sendNewThing(diet, '/diets')
-            insert_sorted(this.diets, new_diet, (a,b) => a.name.localeCompare(b.name))
+            insert_sorted(this.diets, new_diet, (a, b) => a.name.localeCompare(b.name))
             return new_diet
         },
 
         async sendNewIngredient(ingredient) {
             let new_ingredient = await sendNewThing(ingredient, '/ingredients')
-            insert_sorted(this.ingredients, new_ingredient, (a,b) => a.name.localeCompare(b.name))
+            insert_sorted(this.ingredients, new_ingredient, (a, b) => a.name.localeCompare(b.name))
             return new_ingredient
         },
 
         async sendNewUnit(unit) {
             let new_unit = await sendNewThing(unit, '/units')
-            insert_sorted(this.units, new_unit, (a,b) => a.full_name.localeCompare(b.full_name))
+            insert_sorted(this.units, new_unit, (a, b) => a.full_name.localeCompare(b.full_name))
             return new_unit
         },
 
@@ -229,7 +229,7 @@ export const useFoodStore = defineStore('food', {
             if (recipe.is_favorite) {
                 f = axios.put
             } else {
-                f= axios.delete
+                f = axios.delete
             }
             return f(`${API_ROOT}/accounts/me/favorites/${recipe.id}`, { 'headers': headers }).catch(() => {
                 recipe.is_favorite = !recipe.is_favorite
