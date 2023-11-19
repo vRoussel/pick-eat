@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { loadScript } from '@/utils/utils.js'
 
 export default {
     name: 'ImageChooser',
@@ -28,7 +29,7 @@ export default {
     emits: ['update:image_url'],
     data: function() {
         return {
-            imageWidget: this.createImageWidget(),
+            imageWidget: null,
         }
     },
     computed: {
@@ -38,6 +39,13 @@ export default {
             else
                 return this.image_url.replace("/upload", "/upload/c_limit,h_512,w_512");
         },
+    },
+    mounted() {
+        if (window.cloudinary === undefined) {
+            loadScript("https://upload-widget.cloudinary.com/global/all.js", () => {
+                this.imageWidget = this.createImageWidget()
+            })
+        }
     },
     methods: {
         createImageWidget() {
