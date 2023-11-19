@@ -38,12 +38,15 @@
         </ul>
       </div>
       <router-link
-        class="min-w-[150px]"
+        class="xs:min-w-[150px]"
+        class="sm:min-w-[200px]"
         to="/recipes"
       >
         <img
           :src="pickeat_logo"
-          width="200"
+          class="aspect-[200/84]"
+          width="150"
+          sm:width="200"
         >
       </router-link>
       <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
