@@ -54,3 +54,12 @@ export function handle_form_local_errors(errors, errors_map, toast_elem) {
     });
     toast_elem.show_error("Veuillez corriger les erreurs et réessayer")
 }
+
+export function loadScript(src, callback) {
+    var script = document.createElement("script");
+    script.src = src;
+    if (callback)
+        script.onload = callback;
+    var doc = document.head || document.body;
+    doc.appendChild(script);
+}
