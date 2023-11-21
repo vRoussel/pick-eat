@@ -13,10 +13,10 @@
         -->
       <div class="p-4 gap-x-4 gap-y-6 lg:p-6 lg:gap-x-6 lg:gap-y-9 shadow-md shadow-accent rounded-md grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         <div
-          v-for="recipe in recipes"
+          v-for="(recipe, idx) in recipes"
           :key="'r' + recipe.id"
         >
-          <recipe-list-item :recipe="recipe" />
+          <recipe-list-item :recipe="recipe" :lazy="idx >= 2 && this.on_mobile()"/>
         </div>
       </div>
       <div class="max-w-fit mx-auto my-8">
@@ -160,7 +160,7 @@ export default {
             this.last_query = this.$route.query
         },
         on_mobile() {
-            return screen.width < 768;
+            return window.innerWidth < 768;
         }
     }
 }

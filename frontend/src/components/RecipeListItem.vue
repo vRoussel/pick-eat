@@ -3,12 +3,22 @@
     class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2 cursor-pointer"
     @click="openRecipe(recipe.id)"
   >
-    <figure class="relative">
+    <picture v-if="recipe.image" class="relative">
+        <source type="image/avif" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512,f_avif')" />
+        <source type="image/webp" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512,f_webp')" />
+        <img
+          class="rounded-t-xl w-[512px] aspect-square"
+          :loading="this.lazy ? 'lazy' : 'eager'"
+          :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')"
+        />
+    </picture>
+    <picture v-else class="relative">
       <img
         class="rounded-t-xl w-[512px] aspect-square"
-        :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512') || icons.camera"
-      >
-    </figure>
+        :loading="this.lazy ? 'lazy' : 'eager'"
+        :src="icons.camera"
+      />
+    </picture>
     <Icon
       v-if="recipe.is_private"
       :icon="icons.private"
@@ -69,6 +79,10 @@ export default {
         recipe: {
             type: Object,
             default: null,
+        },
+        lazy: {
+            type: Boolean,
+            default: false,
         }
     },
     data: function() {
