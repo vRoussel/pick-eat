@@ -193,6 +193,7 @@ export default {
     @font-face {
       font-family: "Rounded_Elegance";
       src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");
+      font-display: swap
     }
 
     .fade-enter-active,
