@@ -10,6 +10,9 @@ server {
     limit_req zone=mylimit burst=20 nodelay;
 
     location / {
+        location ~*  \.(jpg|jpeg|png|gif|ico|css|js|ttf|mp4|svg)$ {
+            expires 365d;
+        }
         root /var/www/{{ pickeat_site_url }};
         try_files $uri $uri/ /index.html;
     }
