@@ -30,16 +30,14 @@
           <label class="label">
             <span class="label-text">Temps de préparation</span>
           </label>
-          <label class="input-group">
             <input
               v-model="prep_time"
               type="number"
               class="input input-bordered w-full"
+              placeholder="(en minutes)"
               :class="errors.prep_time && '!input-error'"
               @blur="validate('prep_time')"
             >
-            <span class="bg-accent text-accent-content">minutes</span>
-          </label>
           <label
             v-if="errors.prep_time"
             class="label"
@@ -52,16 +50,14 @@
           <label class="label">
             <span class="label-text">Temps de cuisson</span>
           </label>
-          <label class="input-group">
             <input
               v-model="cook_time"
               type="number"
               class="input input-bordered w-full"
+              placeholder="(en minutes)"
               :class="errors.cook_time && '!input-error'"
               @blur="validate('cook_time')"
             >
-            <span class="bg-accent text-accent-content">minutes</span>
-          </label>
           <label
             v-if="errors.cook_time"
             class="label"
