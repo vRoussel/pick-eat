@@ -38,8 +38,7 @@
         </ul>
       </div>
       <router-link
-        class="xs:min-w-[150px]"
-        class="sm:min-w-[200px]"
+        class="xs:min-w-[150px] sm:min-w-[200px]"
         to="/recipes"
       >
         <img
