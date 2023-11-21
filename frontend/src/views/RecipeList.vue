@@ -26,7 +26,7 @@
         />
       </div>
     </div>
-    <div v-else>
+    <div v-else-if="total_count == 0">
       <p class="text-xl mb-2">
         Aucune recette trouvée :(
       </p>
@@ -64,7 +64,7 @@ export default {
         return {
             recipes: [],
             per_page: 12,
-            total_count: 0,
+            total_count: null,
             no_recipe_video: no_recipe_video
         }
     },
