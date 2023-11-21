@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="btn-group"
+    class="join"
     role="navigation"
     aria-label="pagination"
   >
@@ -100,6 +100,7 @@ export default {
         buttonClass(page) {
             return {
                 "btn": true,
+                "join-item": this.max_page > 1,
                 "w-9": true,
                 "sm:w-10": true,
                 "lg:w-16": true,
@@ -110,6 +111,7 @@ export default {
                 "border-x-0": true,
                 "border-l": page == this.min_page,
                 "border-r": page == this.max_page,
+                "!border-opacity-100": true
             }
         },
     },
