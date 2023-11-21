@@ -112,7 +112,7 @@ const router = createRouter({
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(savedPosition)
-                    }, 300)
+                }, 300)
             })
         }
         else if (to.query.ns !== undefined) {
@@ -120,8 +120,8 @@ const router = createRouter({
         } else {
             return new Promise((resolve) => {
                 setTimeout(() => {
-                    resolve({left: 0,top: 0})
-                    }, 300)
+                    resolve({ left: 0, top: 0 })
+                }, 300)
             })
         }
     }
