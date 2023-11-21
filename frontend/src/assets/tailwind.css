@@ -64,3 +64,8 @@ input[type=number] {
     @apply !bg-primary;
     @apply !text-primary-content;
 }
+
+.multiselect-option.is-selected {
+    @apply !bg-primary;
+    @apply !text-primary-content;
+}
