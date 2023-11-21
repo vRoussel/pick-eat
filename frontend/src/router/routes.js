@@ -1,15 +1,15 @@
-import { createRouter, createWebHistory} from 'vue-router';
-
-import NewRecipe from '@/views/NewRecipe.vue'
-import Recipe from '@/views/Recipe.vue'
-import RecipeList from '@/views/RecipeList.vue'
-import Login from '@/views/Login.vue'
-import Account from '@/views/Account.vue'
-import AccountValidation from '@/views/AccountValidation.vue'
-import ForgottenPassword from '@/views/ForgottenPassword.vue'
-import PasswordReset from '@/views/PasswordReset.vue'
-import Register from '@/views/Register.vue'
+import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/store/auth.js'
+
+const NewRecipe = () => import('@/views/NewRecipe.vue')
+const Recipe = () => import('@/views/Recipe.vue')
+const RecipeList = () => import('@/views/RecipeList.vue')
+const Login = () => import('@/views/Login.vue')
+const Account = () => import('@/views/Account.vue')
+const AccountValidation = () => import('@/views/AccountValidation.vue')
+const ForgottenPassword = () => import('@/views/ForgottenPassword.vue')
+const PasswordReset = () => import('@/views/PasswordReset.vue')
+const Register = () => import('@/views/Register.vue')
 
 const routes = [
     {
