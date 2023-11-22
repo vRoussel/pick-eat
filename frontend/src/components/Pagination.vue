@@ -86,7 +86,7 @@ export default {
     emits: ['update:current_page'],
     methods: {
         go_page(page) {
-            if (page === null) return;
+            if (page === null || page === this.current_page) return;
             this.$emit('update:current_page', page);
         },
         page(position) {
@@ -105,13 +105,13 @@ export default {
                 "sm:w-10": true,
                 "lg:w-16": true,
                 "btn-active": page == this.current_page,
-                "btn-disabled": page == this.current_page || page == '...',
+                "cursor-default": page == this.current_page,
+                "btn-disabled": page == '...',
                 "btn-primary": true,
                 "!btn-outline": page != this.current_page,
                 "border-x-0": true,
                 "border-l": page == this.min_page,
                 "border-r": page == this.max_page,
-                "!border-opacity-100": true
             }
         },
     },
