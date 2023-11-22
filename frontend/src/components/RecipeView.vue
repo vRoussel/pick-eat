@@ -23,10 +23,14 @@
     </span>
     <div class="flex flex-wrap sm:flex-nowrap gap-y-12 gap-x-4 md:gap-x-6">
       <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2 sm:p-0">
+        <picture>
+        <source type="image/avif" :srcset="image('avif')" />
+        <source type="image/webp" :srcset="image('webp')" />
         <img
-          :src="image"
+          :src="image()"
           class="rounded-xl w-[512px] aspect-square"
         >
+        </picture>
       </div>
       <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
         <p
@@ -186,12 +190,6 @@ export default {
     },
     computed : {
         ...mapStores(useAuthStore),
-        image() {
-            if (this.recipe == null || this.recipe.image === "")
-                return this.icons.camera
-            else
-                return this.recipe.image.replace("/upload", "/upload/c_limit,h_512,w_512");
-        },
         is_vege() {
             return this.recipe.diets.find(d => d.label == 'vegetarian')
         },
@@ -217,7 +215,17 @@ export default {
     methods: {
         editRecipe() {
             this.$emit('edit')
-        }
+        },
+        image(format = null) {
+            let replacement = '/upload/c_limit,h_512,w_512'
+            if (format == "avif" || format == "webp") {
+                replacement += `,f_${format}`
+            }
+            if (this.recipe == null || this.recipe.image === "")
+                return this.icons.camera
+            else
+                return this.recipe.image.replace("/upload", replacement)
+        },
     }
 }
 </script>
