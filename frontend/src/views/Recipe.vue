@@ -14,8 +14,14 @@
 </template>
 
 <script>
-import RecipeForm from '@/components/RecipeForm.vue'
-import RecipeView from '@/components/RecipeView.vue'
+import { defineAsyncComponent } from 'vue'
+
+const RecipeForm = defineAsyncComponent(() =>
+  import('@/components/RecipeForm.vue')
+)
+const RecipeView = defineAsyncComponent(() =>
+  import('@/components/RecipeView.vue')
+)
 
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
