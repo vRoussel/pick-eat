@@ -74,7 +74,7 @@ pub async fn get_ingredient_by_id(
             SELECT
                 id as "id!",
                 name as "name!",
-                default_unit as "default_unit!: Unit"
+                default_unit as "default_unit: Unit"
             FROM ingredients_full
             WHERE id = $1
         "#,
