@@ -271,7 +271,7 @@ const validator = object().shape({
             .transform((value) => Array.from(value))
             .min(1, "Ajoutez au moins un ingrédient"),
     instructions: string()
-            .required("Ajouter les étapes pour réaliser la recette")
+            .required("Ajoutez les étapes pour réaliser la recette")
     // Mandatory image is too annoying, find a better way
     //image_url: string()
     //        .required("Ajoutez une photo de la recette")
