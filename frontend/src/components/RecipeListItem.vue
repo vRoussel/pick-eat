@@ -4,12 +4,12 @@
     @click="openRecipe(recipe.id)"
   >
     <picture v-if="recipe.image" class="relative">
-        <source type="image/avif" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512,f_avif')" />
-        <source type="image/webp" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512,f_webp')" />
+        <source type="image/avif" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_512,f_avif')" />
+        <source type="image/webp" :srcset="recipe.image.replace('upload', 'upload/c_limit,h_512,w_512,f_webp')" />
         <img
           class="rounded-t-xl w-[512px] aspect-square"
           :loading="this.lazy ? 'lazy' : 'eager'"
-          :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_limit,w_512')"
+          :src="recipe.image.replace('upload', 'upload/c_limit,h_512,w_512')"
         />
     </picture>
     <picture v-else class="relative">
