@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.5
+-- pgModeler version: 1.0.6
 -- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
@@ -504,6 +504,30 @@ FROM
    public.recipes AS r;
 -- ddl-end --
 ALTER VIEW public.recipes_full OWNER TO pickeat;
+-- ddl-end --
+
+-- object: public.get_weekly_seed | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.get_weekly_seed() CASCADE;
+CREATE FUNCTION public.get_weekly_seed ()
+	RETURNS integer
+	LANGUAGE plpgsql
+	VOLATILE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+declare
+    ret integer;
+    idx integer;
+    primes integer[] := ARRAY[7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
+begin
+    idx = extract('week' from current_date + interval '7 days') % ARRAY_LENGTH(primes, 1);
+    return primes[idx];
+end;
+$$;
+-- ddl-end --
+ALTER FUNCTION public.get_weekly_seed() OWNER TO pickeat;
 -- ddl-end --
 
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
