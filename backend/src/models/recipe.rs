@@ -102,7 +102,7 @@ pub struct RecipeFilters {
 
 #[derive(Debug, Clone)]
 pub enum SortMethod {
-    Random { seed: i32 },
+    Random,
 }
 
 // We can't use #[derive(Type)] here

@@ -200,8 +200,8 @@ pub async fn get_many_recipes(
             )
         },
         #base_order = match sort_method {
-            SortMethod::Random { seed } =>
-                "(extract(epoch from publication_date)+id)::bigint % {seed: i64}"
+            SortMethod::Random =>
+                "(extract(epoch from publication_date)+id)::bigint % get_weekly_seed()"
         }
     )
     .fetch_all(db_conn)
