@@ -8,7 +8,6 @@ use crate::models::{Range, RecipeFilters, SortMethod};
 #[derive(Debug, Deserialize, Clone)]
 pub struct SortMethodQueryParams {
     sort: String,
-    seed: Option<i32>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -136,13 +135,7 @@ impl TryFrom<SortMethodQueryParams> for SortMethod {
 
     fn try_from(value: SortMethodQueryParams) -> Result<Self, Self::Error> {
         match value.sort.as_ref() {
-            "random" => match value.seed {
-                Some(s) => Ok(SortMethod::Random { seed: s }),
-                None => Err(QueryParamError::Missing {
-                    param: "seed",
-                    error: "seed param is needed with random sort".to_owned(),
-                }),
-            },
+            "random" => Ok(SortMethod::Random),
             _ => Err(QueryParamError::WrongValue {
                 param: "sort",
                 error: "unhandled sort query param value".to_owned(),
