@@ -15,6 +15,8 @@ server {
         }
         root /var/www/{{ pickeat_site_url }};
         try_files $uri $uri/ /index.html;
+        gzip_static on;
+        brotli_static on;
     }
 
     location /api {

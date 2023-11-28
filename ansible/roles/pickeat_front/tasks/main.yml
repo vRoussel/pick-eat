@@ -4,6 +4,7 @@
     cache_valid_time: 86400
     name:
       - nginx
+      - libnginx-mod-http-brotli-static
 
 - name: Make sure nginx service is enabled and running
   systemd:
