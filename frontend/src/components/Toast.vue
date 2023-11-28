@@ -25,10 +25,10 @@
     export default {
         props: {
             error_queue: {
-                type: Array()
+                type: Array
             },
             info_queue: {
-                type: Array()
+                type: Array
             }
         }
     }
