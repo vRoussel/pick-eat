@@ -1,3 +1,4 @@
+#!/bin/bash
 export DOCKER_BUILDKIT=1
 script_dir="$(dirname "$(realpath "$0")")"
 out_dir="../ansible/to_deploy/backend"
