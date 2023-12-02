@@ -99,6 +99,10 @@ const routes = [
         name: 'default',
         path: '/',
         redirect: '/recipes',
+        meta: {
+            title: 'PickEat',
+            public: true
+        }
     },
 ];
 
