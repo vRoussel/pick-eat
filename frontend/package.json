@@ -39,7 +39,6 @@
     "@vue/compiler-sfc": "^3.3.8",
     "eslint": "^8.54.0",
     "eslint-plugin-vue": "^9.18.1",
-    "mini-svg-data-uri": "^1.4.4",
     "npm-check-updates": "^16.14.11",
     "vite": "^5.0.2",
     "vite-plugin-eslint": "^1.8.1"
