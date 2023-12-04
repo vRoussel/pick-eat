@@ -1,14 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import FloatingVue from 'floating-vue'
-
-import router from './router/routes';
-import 'floating-vue/dist/style.css'
 import './assets/tailwind.css'
-import '@vueform/multiselect/themes/default.css';
-import { Icon } from '@iconify/vue/dist/offline';
-import { createPinia } from 'pinia'
 
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import FloatingVue from 'floating-vue'
+import 'floating-vue/dist/style.css'
+import { Icon } from '@iconify/vue/dist/offline';
+import '@vueform/multiselect/themes/default.css';
+
+import App from './App.vue'
+import router from './router/routes';
 import { useAuthStore } from '@/store/auth.js'
 
 FloatingVue.options.themes.tooltip.triggers = ['hover', 'click']
