@@ -187,21 +187,3 @@ export default {
   }
 }
 </script>
-
-<style>
-    @font-face {
-      font-family: "Rounded_Elegance";
-      src: local("Rounded_Elegance"),   url(./fonts/Rounded_Elegance.ttf) format("truetype");
-      font-display: swap
-    }
-
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: opacity 0.2s ease;
-    }
-
-    .fade-enter-from,
-    .fade-leave-to {
-      opacity: 0;
-    }
-</style>
