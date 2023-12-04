@@ -1,79 +1,68 @@
 <template>
-  <div
-    class="modal cursor-pointer"
-    :class="{'modal-open': opened}"
-    tabindex="-1"
-    @click.self="close"
-    @keyup.esc.stop="close"
-  >
-    <div class="modal-box relative overflow-visible cursor-default">
-      <form
-        autocomplete="off"
-        @submit.prevent="sendIngredient"
-      >
-        <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text">Nom</span>
-          </label>
-          <input
-            id="name"
-            ref="ingrName"
-            v-model="name"
-            class="input input-bordered w-full"
-            type="text"
-            name="name"
-            :class="errors.name && '!input-error'"
-            @blur="validate('name')"
-          >
-          <label
-            v-if="errors.name"
-            class="label"
-          >
-            <span class="label-text-alt text-error">{{ errors.name }}</span>
-          </label>
+    <div
+        class="modal cursor-pointer"
+        :class="{ 'modal-open': opened }"
+        tabindex="-1"
+        @click.self="close"
+        @keyup.esc.stop="close"
+    >
+        <div class="modal-box relative overflow-visible cursor-default">
+            <form autocomplete="off" @submit.prevent="sendIngredient">
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">Nom</span>
+                    </label>
+                    <input
+                        id="name"
+                        ref="ingrName"
+                        v-model="name"
+                        class="input input-bordered w-full"
+                        type="text"
+                        name="name"
+                        :class="errors.name && '!input-error'"
+                        @blur="validate('name')"
+                    />
+                    <label v-if="errors.name" class="label">
+                        <span class="label-text-alt text-error">{{ errors.name }}</span>
+                    </label>
+                </div>
+                <div class="form-control w-full">
+                    <label for="" class="label">
+                        <span class="label-text">Unité par défaut</span>
+                        <button
+                            class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+                            type="button"
+                            tabindex="-1"
+                            @mousedown="save_unit_search"
+                            @click="open_unit_modal"
+                        >
+                            Unité manquante ?
+                        </button>
+                    </label>
+                    <multiselect
+                        ref="multiselect"
+                        v-model="default_unit"
+                        :options="foodStore.units"
+                        :strict="false"
+                        label="full_name"
+                        searchable
+                        track-by="full_name"
+                        value-prop="id"
+                        @keydown.ctrl.enter.prevent="save_unit_search(), open_unit_modal()"
+                    />
+                </div>
+                <div class="modal-action">
+                    <button class="btn btn-primary btn-sm btn-wide mx-auto">Ajouter</button>
+                </div>
+            </form>
         </div>
-        <div class="form-control w-full">
-          <label
-            for=""
-            class="label"
-          >
-            <span class="label-text">Unité par défaut</span>
-            <button
-              class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
-              type="button"
-              tabindex="-1"
-              @mousedown="save_unit_search"
-              @click="open_unit_modal"
-            >Unité manquante ?</button>
-          </label>
-          <multiselect
-            ref="multiselect"
-            v-model="default_unit"
-            :options="foodStore.units"
-            :strict="false"
-            label="full_name"
-            searchable
-            track-by="full_name"
-            value-prop="id"
-            @keydown.ctrl.enter.prevent="save_unit_search(), open_unit_modal()"
-          />
-        </div>
-        <div class="modal-action">
-          <button
-            class="btn btn-primary btn-sm btn-wide mx-auto"
-          >
-            Ajouter
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
-  <new-unit-modal
-    ref="unit_modal_inner"
-    :input="unit_search"
-    @created="set_unit"
-    @closed="$refs.ingrName.focus()"
-  />
+    <new-unit-modal
+        ref="unit_modal_inner"
+        :input="unit_search"
+        @created="set_unit"
+        @closed="$refs.ingrName.focus()"
+    />
 </template>
 
 <script>
@@ -83,65 +72,65 @@ import NewUnitModal from '@/components/NewUnitModal.vue'
 import { mapStores } from 'pinia'
 import { useFoodStore } from '@/store/food.js'
 import { useNotifStore } from '@/store/notif.js'
-import {handle_form_api_errors, handle_form_local_errors} from '@/utils/utils.js'
-import { object, string } from "yup";
+import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.js'
+import { object, string } from 'yup'
 
 const validator = object().shape({
-    name: string()
-            .required("Le nom de l'ingrédient est obligatoire"),
+    name: string().required("Le nom de l'ingrédient est obligatoire"),
 })
 
 export default {
     name: 'NewIngredientModal',
     components: {
         Multiselect,
-        NewUnitModal
+        NewUnitModal,
     },
     props: {
-        input: null
+        input: null,
     },
     emits: ['closed', 'created'],
-    data: function() {
+    data: function () {
         return {
             name: null,
             default_unit: null,
             unit_search: null,
             opened: false,
             errors: {
-                name: null
-            }
+                name: null,
+            },
         }
     },
     computed: {
         ...mapStores(useFoodStore, useNotifStore),
     },
     watch: {
-        input: function() {
-            this.name = this.input;
-        }
+        input: function () {
+            this.name = this.input
+        },
     },
     methods: {
         sendIngredient() {
             validator
                 .validate(this, { abortEarly: false })
                 .then(() => {
-                    this.errors = {};
+                    this.errors = {}
                     let ingredient = {
-                        "name": this.name,
-                        "default_unit_id": this.default_unit
+                        name: this.name,
+                        default_unit_id: this.default_unit,
                     }
-                    this.foodStore.sendNewIngredient(ingredient)
+                    this.foodStore
+                        .sendNewIngredient(ingredient)
                         .then((new_ingr) => {
                             this.$emit('created', new_ingr)
                             this.close()
                         })
-                    .catch(err => {
-                        handle_form_api_errors(err.response, this.errors, this.notifStore)
-                    });
+                        .catch((err) => {
+                            handle_form_api_errors(err.response, this.errors, this.notifStore)
+                        })
                 })
-                .catch(err => {
+                .catch((err) => {
                     handle_form_local_errors(err.inner, this.errors, this.notifStore)
-                });
+                })
         },
         save_unit_search() {
             this.unit_search = this.$refs.multiselect.search
@@ -167,14 +156,15 @@ export default {
             this.$refs.unit_modal_inner.open()
         },
         validate(field) {
-            validator.validateAt(field, this)
-            .then(() => {
-                this.errors[field] = null;
-            })
-            .catch(err => {
-                setTimeout(() => this.errors[field] = err.message, 200)
-            });
-        }
-    }
+            validator
+                .validateAt(field, this)
+                .then(() => {
+                    this.errors[field] = null
+                })
+                .catch((err) => {
+                    setTimeout(() => (this.errors[field] = err.message), 200)
+                })
+        },
+    },
 }
 </script>

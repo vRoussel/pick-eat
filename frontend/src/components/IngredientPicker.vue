@@ -1,67 +1,56 @@
 <template>
-  <div
-    v-bind="$attrs"
-    class="rounded-md"
-  >
-    <Multiselect
-      ref="multiselect"
-      v-model="dummy"
-      mode="multiple"
-      :options="ingr_remaining"
-      label="name"
-      searchable
-      track-by="name"
-      :strict="false"
-      object
-      value-prop="id"
-      placeholder="Ajouter un ingrédient"
-      open-direction="top"
-      @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
-      @select="pick_ingr"
-    />
-  </div>
-  <div class="flex gap-1 my-2">
-    <button
-      class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
-      type="button"
-      tabindex="-1"
-      @mousedown="save_ingredient_search"
-      @click="open_ingr_modal"
-    >
-      Ingrédient manquant ?
-    </button>
-    <button
-      class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
-      type="button"
-      tabindex="-1"
-      @mousedown="save_unit_search"
-      @click="open_unit_modal"
-    >
-      Unité manquante ?
-    </button>
-  </div>
-  <div class="flex flex-col items-center mt-2 gap-y-5">
-    <ingredient-list-item
-      v-for="ingr in picked.values()"
-      :id="ingr.id"
-      :key="ingr.id"
-      v-model:quantity="ingr.quantity"
-      v-model:unit_id="ingr.unit_id"
-      @delete="del_ingr(ingr.id)"
-      @createUnit="save_unit_search(), open_unit_modal()"
-      @unit-input-selected="save_current_unit_input"
-    />
-  </div>
-  <new-ingredient-modal
-    ref="ingr_modal"
-    :input="ingredient_search"
-    @created="add_ingr"
-  />
-  <new-unit-modal
-    ref="unit_modal"
-    :input="unit_search"
-    @created="set_current_unit"
-  />
+    <div v-bind="$attrs" class="rounded-md">
+        <Multiselect
+            ref="multiselect"
+            v-model="dummy"
+            mode="multiple"
+            :options="ingr_remaining"
+            label="name"
+            searchable
+            track-by="name"
+            :strict="false"
+            object
+            value-prop="id"
+            placeholder="Ajouter un ingrédient"
+            open-direction="top"
+            @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()"
+            @select="pick_ingr"
+        />
+    </div>
+    <div class="flex gap-1 my-2">
+        <button
+            class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+            type="button"
+            tabindex="-1"
+            @mousedown="save_ingredient_search"
+            @click="open_ingr_modal"
+        >
+            Ingrédient manquant ?
+        </button>
+        <button
+            class="btn rounded-full btn-primary btn-outline btn-sm modal-button"
+            type="button"
+            tabindex="-1"
+            @mousedown="save_unit_search"
+            @click="open_unit_modal"
+        >
+            Unité manquante ?
+        </button>
+    </div>
+    <div class="flex flex-col items-center mt-2 gap-y-5">
+        <ingredient-list-item
+            v-for="ingr in picked.values()"
+            :id="ingr.id"
+            :key="ingr.id"
+            v-model:quantity="ingr.quantity"
+            v-model:unit_id="ingr.unit_id"
+            @delete="del_ingr(ingr.id)"
+            @createUnit="save_unit_search(), open_unit_modal()"
+            @unit-input-selected="save_current_unit_input"
+        />
+    </div>
+    <new-ingredient-modal ref="ingr_modal" :input="ingredient_search" @created="add_ingr" />
+    <new-unit-modal ref="unit_modal" :input="unit_search" @created="set_current_unit" />
 </template>
 
 <script>
@@ -75,19 +64,19 @@ import { useFoodStore } from '@/store/food.js'
 
 export default {
     name: 'IngredientPicker',
-    components : {
+    components: {
         Multiselect,
         IngredientListItem,
         NewIngredientModal,
-        NewUnitModal
+        NewUnitModal,
     },
     props: {
         picked: {
-            type: Map
-        }
+            type: Map,
+        },
     },
     emits: ['update:picked', 'createIngredient', 'createUnit'],
-    data: function() {
+    data: function () {
         return {
             dummy: null,
             ingredient_search: null,
@@ -98,12 +87,11 @@ export default {
     computed: {
         ...mapStores(useFoodStore),
         ingr_remaining() {
-            return this.foodStore.ingredients
-                .filter(ingr => !this.picked.has(ingr.id))
+            return this.foodStore.ingredients.filter((ingr) => !this.picked.has(ingr.id))
         },
         _picked() {
             return new Map(this.picked)
-        }
+        },
     },
     methods: {
         pick_ingr(ingr) {
@@ -129,22 +117,20 @@ export default {
             this.ingredient_search = this.$refs.multiselect.search
         },
         save_unit_search() {
-            if (this.current_unit_input !== null)
-                this.unit_search = this.current_unit_input.search
+            if (this.current_unit_input !== null) this.unit_search = this.current_unit_input.search
         },
         save_current_unit_input(elem) {
             this.current_unit_input = elem
         },
         set_current_unit(unit) {
-            if (this.current_unit_input !== null)
-                this.current_unit_input.select(unit)
+            if (this.current_unit_input !== null) this.current_unit_input.select(unit)
         },
         open_ingr_modal() {
             this.$refs.ingr_modal.open()
         },
         open_unit_modal() {
             this.$refs.unit_modal.open()
-        }
-    }
+        },
+    },
 }
 </script>

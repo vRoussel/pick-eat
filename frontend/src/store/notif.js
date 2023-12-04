@@ -1,10 +1,10 @@
-import {defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 
 export const useNotifStore = defineStore('notif', {
     state: () => {
         return {
             error_msgs: new Array(),
-            info_msgs: new Array()
+            info_msgs: new Array(),
         }
     },
     actions: {
@@ -15,7 +15,6 @@ export const useNotifStore = defineStore('notif', {
         show_info(msg) {
             this.info_msgs.push(msg)
             setTimeout(() => this.info_msgs.shift(), 5000)
-        }
-    }
+        },
+    },
 })
-

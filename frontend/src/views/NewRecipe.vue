@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <recipe-form @done="afterInsert" />
-  </div>
+    <div>
+        <recipe-form @done="afterInsert" />
+    </div>
 </template>
 
 <script>
@@ -12,19 +12,19 @@ import { useFoodStore } from '@/store/food.js'
 export default {
     name: 'NewRecipe',
     components: {
-      RecipeForm,
+        RecipeForm,
     },
     methods: {
         afterInsert(recipe) {
             let id = recipe.id
             this.$router.push({ name: 'recipe', params: { id } })
-        }
+        },
     },
     computed: {
-      ...mapStores(useFoodStore)
+        ...mapStores(useFoodStore),
     },
     activated() {
         this.foodStore.fetchAll()
-    }
+    },
 }
 </script>

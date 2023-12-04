@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { insert_sorted } from '@/utils/utils.js'
-import axios from 'axios';
+import axios from 'axios'
 
 const API_PROTO = window.location.protocol
 const API_HOST = window.location.hostname
@@ -8,11 +8,11 @@ const API_ROOT = `${API_PROTO}//${API_HOST}/api/v1`
 
 async function sendNewThing(post, endpoint) {
     let headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json;charset=UTF-8'
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
     }
 
-    let resp = await axios.post(`${API_ROOT}${endpoint}`, post, { 'headers': headers })
+    let resp = await axios.post(`${API_ROOT}${endpoint}`, post, { headers: headers })
     let location = resp.headers['location']
 
     let resp2 = await axios.get(`${API_ROOT}${endpoint}${location}`)
@@ -28,74 +28,74 @@ export const useFoodStore = defineStore('food', {
             ingredients: [],
             units: [],
             diets: [],
-            accounts_with_recipes: []
+            accounts_with_recipes: [],
         }
     },
     getters: {
         tagsById(state) {
-            return new Map(state.tags.map(t => [t.id, t]))
+            return new Map(state.tags.map((t) => [t.id, t]))
         },
         categoriesById(state) {
-            return new Map(state.categories.map(c => [c.id, c]))
+            return new Map(state.categories.map((c) => [c.id, c]))
         },
         seasonsById(state) {
-            return new Map(state.seasons.map(s => [s.id, s]))
+            return new Map(state.seasons.map((s) => [s.id, s]))
         },
         ingredientsById(state) {
-            return new Map(state.ingredients.map(i => [i.id, i]))
+            return new Map(state.ingredients.map((i) => [i.id, i]))
         },
         unitsById(state) {
-            return new Map(state.units.map(u => [u.id, u]))
+            return new Map(state.units.map((u) => [u.id, u]))
         },
         dietsById(state) {
-            return new Map(state.diets.map(d => [d.id, d]))
-        }
+            return new Map(state.diets.map((d) => [d.id, d]))
+        },
     },
     actions: {
         async fetchTags() {
-            return axios.get(`${API_ROOT}/tags`).then(resp => {
+            return axios.get(`${API_ROOT}/tags`).then((resp) => {
                 this.tags = resp.data
             })
         },
 
         async fetchCategories() {
-            return axios.get(`${API_ROOT}/categories`).then(resp => {
+            return axios.get(`${API_ROOT}/categories`).then((resp) => {
                 this.categories = resp.data
             })
         },
 
         async fetchSeasons() {
-            return axios.get(`${API_ROOT}/seasons`).then(resp => {
+            return axios.get(`${API_ROOT}/seasons`).then((resp) => {
                 this.seasons = resp.data
             })
         },
 
         async fetchIngredients() {
-            return axios.get(`${API_ROOT}/ingredients`).then(resp => {
+            return axios.get(`${API_ROOT}/ingredients`).then((resp) => {
                 this.ingredients = resp.data
             })
         },
 
         async fetchUnits() {
-            return axios.get(`${API_ROOT}/units`).then(resp => {
+            return axios.get(`${API_ROOT}/units`).then((resp) => {
                 this.units = resp.data
             })
         },
 
         async fetchDiets() {
-            return axios.get(`${API_ROOT}/diets`).then(resp => {
+            return axios.get(`${API_ROOT}/diets`).then((resp) => {
                 this.diets = resp.data
             })
         },
 
         async fetchAccountsWithRecipes() {
-            return axios.get(`${API_ROOT}/accounts?withrecipes=true`).then(resp => {
+            return axios.get(`${API_ROOT}/accounts?withrecipes=true`).then((resp) => {
                 this.accounts_with_recipes = resp.data
             })
         },
 
         async fetchAll() {
-            return axios.get(`${API_ROOT}/bundle`).then(resp => {
+            return axios.get(`${API_ROOT}/bundle`).then((resp) => {
                 this.tags = resp.data.tags
                 this.categories = resp.data.categories
                 this.ingredients = resp.data.ingredients
@@ -107,32 +107,23 @@ export const useFoodStore = defineStore('food', {
         },
 
         async getRecipes(from, to, filters) {
-            let f = filters;
+            let f = filters
             let url = `${API_ROOT}/recipes`
             let params = {
-                'range': `${from}-${to}`,
-                'sort': 'random',
+                range: `${from}-${to}`,
+                sort: 'random',
             }
-            if (f.search_query)
-                params.search = f.search_query
-            if (f.ingredients.length > 0)
-                params.ingredients = f.ingredients.join(',')
-            if (f.tags.length > 0)
-                params.tags = f.tags.join(',')
-            if (f.categories.length > 0)
-                params.categories = f.categories.join(',')
-            if (f.seasons.length > 0)
-                params.seasons = f.seasons.join(',')
-            if (f.account)
-                params.account = f.account
-            if (f.diets.length > 0)
-                params.diets = f.diets.join(',')
-            let resp = await axios.get(url, { 'params': params })
+            if (f.search_query) params.search = f.search_query
+            if (f.ingredients.length > 0) params.ingredients = f.ingredients.join(',')
+            if (f.tags.length > 0) params.tags = f.tags.join(',')
+            if (f.categories.length > 0) params.categories = f.categories.join(',')
+            if (f.seasons.length > 0) params.seasons = f.seasons.join(',')
+            if (f.account) params.account = f.account
+            if (f.diets.length > 0) params.diets = f.diets.join(',')
+            let resp = await axios.get(url, { params: params })
             let total_count = parseInt(resp.headers['content-range'].split('/')[1])
             return [resp.data, total_count]
         },
-
-
 
         getTagById(id) {
             return this.tagsById.get(id)
@@ -203,22 +194,20 @@ export const useFoodStore = defineStore('food', {
             return sendNewThing(recipe, '/recipes')
         },
 
-
-
         async updateRecipe(id, recipe) {
             let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
             }
 
-            return axios.put(`${API_ROOT}/recipes/${id}`, recipe, { 'headers': headers })
+            return axios.put(`${API_ROOT}/recipes/${id}`, recipe, { headers: headers })
         },
 
         async toggleFavorite(recipe) {
             recipe.is_favorite = !recipe.is_favorite
             let headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
             }
             let f = null
             if (recipe.is_favorite) {
@@ -226,9 +215,11 @@ export const useFoodStore = defineStore('food', {
             } else {
                 f = axios.delete
             }
-            return f(`${API_ROOT}/accounts/me/favorites/${recipe.id}`, { 'headers': headers }).catch(() => {
-                recipe.is_favorite = !recipe.is_favorite
-            })
-        }
-    }
+            return f(`${API_ROOT}/accounts/me/favorites/${recipe.id}`, { headers: headers }).catch(
+                () => {
+                    recipe.is_favorite = !recipe.is_favorite
+                },
+            )
+        },
+    },
 })
