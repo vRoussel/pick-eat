@@ -1,25 +1,17 @@
 <template>
-  <div class="my-8">
-    <form
-      class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
-      @submit.prevent="validate_account"
-    >
-      <div>
-        <video
-          :src="welcome_video"
-          autoplay
-          loop
-          muted
-          playsinline
-        />
-      </div>
-      <div class="form-control">
-        <button class="btn btn-primary w-full">
-          Valider mon compte
-        </button>
-      </div>
-    </form>
-  </div>
+    <div class="my-8">
+        <form
+            class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+            @submit.prevent="validate_account"
+        >
+            <div>
+                <video :src="welcome_video" autoplay loop muted playsinline />
+            </div>
+            <div class="form-control">
+                <button class="btn btn-primary w-full">Valider mon compte</button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script>
@@ -27,40 +19,41 @@ import { mapStores } from 'pinia'
 import { useNotifStore } from '@/store/notif.js'
 import { useAuthStore } from '@/store/auth.js'
 import Swal from 'sweetalert2'
-import {handle_form_api_errors} from '@/utils/utils.js'
+import { handle_form_api_errors } from '@/utils/utils.js'
 import welcome_video from '@/assets/gatsby_welcome.mp4'
-
 
 export default {
     name: 'Register',
     props: {
         token: {
-            type: String
-        }
+            type: String,
+        },
     },
-    data: function() {
+    data: function () {
         return {
-            welcome_video: welcome_video
+            welcome_video: welcome_video,
         }
     },
     computed: {
-      ...mapStores(useNotifStore, useAuthStore)
+        ...mapStores(useNotifStore, useAuthStore),
     },
     methods: {
         async validate_account() {
-            this.authStore.validate_account(this.token).then(() => {
-                Swal.fire({
-                  title: 'Bienvenue !',
-                  icon: 'success',
-                  text: 'Votre compte a bien été validé'
+            this.authStore
+                .validate_account(this.token)
+                .then(() => {
+                    Swal.fire({
+                        title: 'Bienvenue !',
+                        icon: 'success',
+                        text: 'Votre compte a bien été validé',
+                    })
+                    this.$router.push('/login')
                 })
-                this.$router.push('/login')
-            })
-            .catch(err => {
-                console.error(err)
-                handle_form_api_errors(err.response, {}, this.notifStore)
-            });
+                .catch((err) => {
+                    console.error(err)
+                    handle_form_api_errors(err.response, {}, this.notifStore)
+                })
         },
-    }
+    },
 }
 </script>
