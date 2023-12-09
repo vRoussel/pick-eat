@@ -143,6 +143,9 @@ router.beforeEach(async (to) => {
         auth.return_url = to.fullPath
         return '/login'
     }
+
+    document.title = to.meta.title || 'Pickeat'
+
 })
 
 export default router
