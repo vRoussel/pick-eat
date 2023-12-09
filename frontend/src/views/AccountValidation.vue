@@ -1,12 +1,11 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 
 import { useNotifStore } from '@/store/notif.js'
 import { useAuthStore } from '@/store/auth.js'
 
-import Swal from 'sweetalert2'
 import { handle_form_api_errors } from '@/utils/utils.js'
-
 import welcome_video from '@/assets/gatsby_welcome.mp4'
 
 
