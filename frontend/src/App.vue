@@ -39,13 +39,6 @@ function set_logo(theme) {
         pickeat_logo.value = pickeat_logo_dark
 }
 
-function unfocus(e) {
-    let targetEl = e.currentTarget
-    setTimeout(function () {
-        targetEl.blur()
-    }, 0)
-}
-
 function close_dropdown_if_opened() {
     if (dropdown_main_opened.value) {
         setTimeout(function () {
@@ -66,10 +59,10 @@ function close_dropdown_if_opened() {
                 <ul tabindex="0"
                     class="z-10 menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                     <li>
-                        <router-link to="/recipes" @mouseup="unfocus"> Recettes </router-link>
+                        <router-link to="/recipes"> Recettes </router-link>
                     </li>
                     <li>
-                        <router-link to="/new-recipe" @mouseup="unfocus">
+                        <router-link to="/new-recipe">
                             Nouvelle recette
                         </router-link>
                     </li>
