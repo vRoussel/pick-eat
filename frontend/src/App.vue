@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch, onMounted } from 'vue'
+import { inject, ref, onMounted } from 'vue'
 
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
