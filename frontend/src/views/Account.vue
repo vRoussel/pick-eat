@@ -1,7 +1,9 @@
 <script setup>
+import { useRouter, useRoute } from 'vue-router'
+
 import AccountUpdateForm from '@/components/AccountUpdateForm.vue'
 import AccountView from '@/components/AccountView.vue'
-import { useRouter, useRoute } from 'vue-router'
+
 
 const router = useRouter()
 const route = useRoute()
