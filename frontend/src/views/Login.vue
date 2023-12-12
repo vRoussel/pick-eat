@@ -36,17 +36,15 @@ onMounted(async () => {
 
 const show_resend_validation_email = ref(false)
 async function login() {
+    errors.value = {}
     validator
         .validate(fields.value, { abortEarly: false })
         .then(() => {
-            errors.value = {}
             authStore
                 .login(fields.value.email, fields.value.password)
                 .then(() => {
                     router.push(authStore.return_url || '/account')
                     authStore.return_url = null
-                    fields.value.email = null
-                    fields.value.password = null
                 })
                 .catch((err) => {
                     handle_form_api_errors(err.response, errors.value, notifStore)
