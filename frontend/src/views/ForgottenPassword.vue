@@ -33,17 +33,16 @@ onMounted(async () => {
 
 
 async function send_password_reset_token_request() {
+    errors.value = {}
     validator
         .validate(fields.value, { abortEarly: false })
         .then(() => {
-            errors.value = {}
             authStore
                 .ask_password_reset_token(fields.value.email)
                 .then(() => {
                     notifStore.show_info(
                         "Si l'adresse mail correspond bien a votre compte, un email vous a été envoyé",
                     )
-                    fields.value.email = null
                     router.push('/login')
                 })
                 .catch((err) => {
