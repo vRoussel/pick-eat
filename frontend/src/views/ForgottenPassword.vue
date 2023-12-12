@@ -54,11 +54,6 @@ async function send_password_reset_token_request() {
             handle_form_local_errors(err.inner, errors.value, notifStore)
         })
 }
-
-function resend_validation_email() {
-    this.authStore.ask_account_validation_token(fields.value.email)
-    this.notifStore.show_info('Nouvel email de confirmation envoyé')
-}
 </script>
 
 <template>
