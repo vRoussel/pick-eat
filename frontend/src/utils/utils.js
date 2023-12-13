@@ -38,7 +38,7 @@ export function handle_form_api_errors(api_answer, errors_map, toast_elem) {
     let popup_shown = false
     api_answer.data.errors.forEach((error) => {
         if (Object.hasOwn(error, 'field') && error.field !== null) {
-            errors_map[error.field_name] = error.message
+            errors_map[error.field] = error.message
         } else {
             toast_elem.show_error(error.message)
             popup_shown = true
