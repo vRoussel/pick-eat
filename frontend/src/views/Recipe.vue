@@ -1,3 +1,43 @@
+<script setup>
+import { onMounted, defineProps, defineAsyncComponent, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
+const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
+import { useFoodStore } from '@/store/food.js'
+
+const foodStore = useFoodStore()
+const router = useRouter()
+const route = useRoute()
+
+const props = defineProps({
+    id: Number,
+    edit: Boolean
+});
+
+const recipe = ref(null)
+
+onMounted(() => {
+    loadRecipe()
+})
+
+function loadRecipe() {
+    foodStore.getRecipeById(props.id).then((result) => {
+        recipe.value = result
+        document.title = recipe.value.name + ' - Pickeat'
+    })
+}
+
+function editRecipe() {
+    router.push({ query: { ...route.query, edit: null } })
+}
+
+function afterEdit() {
+    loadRecipe()
+    router.go(-1)
+}
+</script>
+
 <template>
     <div class="container px-4 my-4">
         <recipe-view v-if="!edit" :recipe="recipe" @edit="editRecipe" />
@@ -5,54 +45,3 @@
     </div>
 </template>
 
-<script>
-import { defineAsyncComponent } from 'vue'
-
-const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
-const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
-
-import { mapStores } from 'pinia'
-import { useFoodStore } from '@/store/food.js'
-
-export default {
-    name: 'Recipe',
-    components: {
-        RecipeForm,
-        RecipeView,
-    },
-    props: {
-        id: {
-            type: Number,
-        },
-        edit: {
-            type: Boolean,
-        },
-    },
-    data: function () {
-        return {
-            recipe: null,
-        }
-    },
-    computed: {
-        ...mapStores(useFoodStore),
-    },
-    mounted() {
-        this.loadRecipe()
-    },
-    methods: {
-        loadRecipe() {
-            this.foodStore.getRecipeById(this.id).then((result) => {
-                this.recipe = result
-                document.title = this.recipe.name + ' - Pickeat'
-            })
-        },
-        editRecipe() {
-            this.$router.push({ query: { ...this.$route.query, edit: null } })
-        },
-        afterEdit() {
-            this.loadRecipe()
-            this.$router.go(-1)
-        },
-    },
-}
-</script>
