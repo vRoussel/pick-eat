@@ -8,12 +8,6 @@ import { useNotifStore } from '@/store/notif.js'
 
 import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.js'
 
-const validator = object().shape({
-    password: string()
-        .required('Le mot de passe est obligatoire')
-        .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
-})
-
 const authStore = useAuthStore()
 const notifStore = useNotifStore()
 const router = useRouter()
@@ -28,6 +22,12 @@ const fields = ref({
 const errors = ref({
     password: null,
 })
+const validator = object().shape({
+    password: string()
+        .required('Le mot de passe est obligatoire')
+        .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
+})
+
 
 const password_input_el = ref(null)
 onMounted(async () => {
