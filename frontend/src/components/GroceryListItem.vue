@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import NumberInput from '@/components/NumberInput.vue'
 
+import NumberInput from '@/components/NumberInput.vue'
 import { useCartStore } from '@/store/cart.js'
 
 import { isOverflown } from '@/utils/utils.js'
