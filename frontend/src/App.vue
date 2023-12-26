@@ -13,14 +13,14 @@ import pickeat_logo_light from '@/assets/pickeat_light.png'
 import pickeat_logo_dark from '@/assets/pickeat_dark.png'
 
 
+const cartStore = useCartStore()
+const foodStore = useFoodStore()
+const notifStore = useNotifStore()
+
 const icons = inject('icons')
 
 const pickeat_logo = ref(null)
 const dropdown_main_opened = ref(false)
-
-const cartStore = useCartStore()
-const foodStore = useFoodStore()
-const notifStore = useNotifStore()
 const grocery_list_modal_el = ref(null);
 
 onMounted(() => {
