@@ -21,6 +21,7 @@ const dropdown_main_opened = ref(false)
 const cartStore = useCartStore()
 const foodStore = useFoodStore()
 const notifStore = useNotifStore()
+const grocery_list_modal_el = ref(null);
 
 onMounted(() => {
     foodStore.fetchAll()
@@ -81,7 +82,7 @@ function close_dropdown_if_opened() {
             </ul>
         </div>
         <div class="navbar-end space-x-3">
-            <button class="indicator" type="button" @click="$refs.grocery_list_modal.open()">
+            <button class="indicator" type="button" @click="grocery_list_modal_el.open()">
                 <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline" />
                 <span v-if="cartStore.recipeCount > 0" class="indicator-item badge badge-primary">{{
                     cartStore.recipeCount
@@ -100,6 +101,6 @@ function close_dropdown_if_opened() {
             </KeepAlive>
         </transition>
     </router-view>
-    <grocery-list-modal ref="grocery_list_modal" />
+    <grocery-list-modal ref="grocery_list_modal_el" />
     <toast :error_queue="notifStore.error_msgs" :info_queue="notifStore.info_msgs" />
 </template>
