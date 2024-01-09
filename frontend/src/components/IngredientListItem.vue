@@ -8,29 +8,36 @@ import { useFoodStore } from '@/store/food.js'
 const foodStore = useFoodStore()
 
 const icons = inject('icons')
+
+const model_unit_id = defineModel('unit_id', {
+    type: Number
+})
+
+const model_quantity = defineModel('quantity', {
+    type: Number
+})
+
 const props = defineProps({
     id: Number,
-    quantity: Number,
-    unit_id: Number
 });
 
-const emit = defineEmits(['update:quantity', 'update:unit_id', 'delete', 'createUnit', 'unit-input-selected'])
+const emit = defineEmits(['delete', 'createUnit', 'unit-input-selected'])
 
 const ingredient_unit = computed({
     get() {
-        return props.unit_id
+        return model_unit_id.value
     },
     set(v) {
-        emit('update:unit_id', v)
+        model_unit_id.value = v
     },
 })
 
 const ingredient_quantity = computed({
     get() {
-        return props.quantity
+        return model_quantity.value
     },
     set(v) {
-        emit('update:quantity', v == '' ? null : v)
+        model_quantity.value = (v == '' ? null : v)
     }
 })
 
