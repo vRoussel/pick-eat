@@ -66,9 +66,8 @@ function notify_input_selected() {
             <number-input v-model.number="ingredient_quantity" :min="0" placeholder="Quantité"
                 class="basis-5/12 sm:basis-3/12" />
             <multiselect ref="multiselect_el" v-model="ingredient_unit" class="basis-5/12 sm:basis-1/3 flex-grow"
-                :options="foodStore.units" :strict="false" label="full_name" searchable track-by="full_name"
-                value-prop="props.id" placeholder="Unité" @keydown.ctrl.enter.prevent="create_unit()"
-                @open="notify_input_selected" />
+                :options="foodStore.units" :strict="false" label="full_name" searchable track-by="full_name" value-prop="id"
+                placeholder="Unité" @keydown.ctrl.enter.prevent="create_unit()" @open="notify_input_selected" />
         </div>
     </div>
 </template>
