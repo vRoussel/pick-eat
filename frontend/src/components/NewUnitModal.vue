@@ -30,7 +30,7 @@ const validator = object().shape({
     full_name: string().required("Le nom complet de l'unité est obligatoire"),
 })
 
-watch(() => fields.full_name, () => {
+watch(() => props.input, () => {
     fields.value.full_name = props.input
 })
 

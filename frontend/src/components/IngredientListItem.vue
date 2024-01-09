@@ -51,7 +51,7 @@ function create_unit() {
 
 const multiselect_el = ref(null)
 function notify_input_selected() {
-    emit('unit-input-selected', multiselect_el)
+    emit('unit-input-selected', multiselect_el.value)
 }
 </script>
 
