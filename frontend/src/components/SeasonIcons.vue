@@ -1,3 +1,28 @@
+<script setup>
+import { inject, computed } from 'vue'
+
+const icons = inject('icons')
+const props = defineProps({
+    seasons: Array
+});
+
+const season_labels = computed(() => {
+    return props.seasons.map((r) => r.label)
+})
+
+function dynClass(label) {
+    return {
+        'text-primary': has_season(label),
+        'text-base-300': !has_season(label),
+        'opacity-50': !has_season(label),
+    }
+}
+
+function has_season(label) {
+    return season_labels.value.includes(label)
+}
+</script>
+
 <template>
     <div class="flex">
         <span class="icon">
@@ -15,31 +40,3 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'SeasonIcons',
-    inject: ['icons'],
-    props: {
-        seasons: {
-            type: Array,
-        },
-    },
-    computed: {
-        season_labels() {
-            return this.seasons.map((r) => r.label)
-        },
-    },
-    methods: {
-        dynClass(label) {
-            return {
-                'text-primary': this.has_season(label),
-                'text-base-300': !this.has_season(label),
-                'opacity-50': !this.has_season(label),
-            }
-        },
-        has_season(label) {
-            return this.season_labels.includes(label)
-        },
-    },
-}
-</script>
