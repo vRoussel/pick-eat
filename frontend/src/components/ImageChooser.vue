@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted, computed } from 'vue'
+import { inject, ref, computed } from 'vue'
 
 import { loadScript } from '@/utils/utils.js'
 
@@ -10,7 +10,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:image_url'])
-const image_widget = ref(null)
+const image_widget = ref(createImageWidget())
 const image_preview = computed(() => {
     if (props.image_url === '')
         return icons.camera
@@ -18,34 +18,28 @@ const image_preview = computed(() => {
         return props.image_url.replace('/upload', '/upload/c_limit,h_512,w_512')
 })
 
-onMounted(() => {
-    if (window.cloudinary === undefined) {
-        loadScript('https://upload-widget.cloudinary.com/global/all.js', () => {
-            image_widget.value = createImageWidget()
-        })
-    }
-})
-
 function createImageWidget() {
-    return window.cloudinary.createUploadWidget(
-        {
-            cloudName: 'pickeat',
-            uploadPreset: 'devel1',
-            cropping: true,
-            multiple: false,
-            showSkipCropButton: false,
-            croppingAspectRatio: 1.0,
-            maxFileSize: 10000000,
-            maxImageWidth: 2000,
-            thumbnails: false,
-            croppingShowDimensions: true,
-        },
-        (error, result) => {
-            if (result.event == 'success') {
-                emit('update:image_url', result.info.secure_url)
-            }
-        },
-    )
+    loadScript('https://upload-widget.cloudinary.com/global/all.js', () => {
+        image_widget.value = window.cloudinary.createUploadWidget(
+            {
+                cloudName: 'pickeat',
+                uploadPreset: 'devel1',
+                cropping: true,
+                multiple: false,
+                showSkipCropButton: false,
+                croppingAspectRatio: 1.0,
+                maxFileSize: 10000000,
+                maxImageWidth: 2000,
+                thumbnails: false,
+                croppingShowDimensions: true,
+            },
+            (error, result) => {
+                if (result.event == 'success') {
+                    emit('update:image_url', result.info.secure_url)
+                }
+            },
+        )
+    })
 }
 
 function clear() {
