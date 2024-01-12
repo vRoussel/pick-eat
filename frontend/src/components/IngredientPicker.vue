@@ -15,8 +15,6 @@ const model = defineModel('picked', {
     required: true
 })
 
-const emit = defineEmits(['createIngredient', 'createUnit'])
-
 const dummy = ref(null)
 const ingredient_search = ref(null)
 const unit_search = ref(null)
