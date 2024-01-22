@@ -1,6 +1,8 @@
 <script setup>
 import { inject, ref, onMounted } from 'vue'
 import { useHead } from '@unhead/vue'
+import { useSchemaOrg, defineWebSite, defineOrganization } from '@unhead/schema-org'
+import { useRoute } from 'vue-router'
 
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
@@ -13,6 +15,10 @@ import { useNotifStore } from '@/store/notif.js'
 import pickeat_logo_light from '@/assets/pickeat_light.png'
 import pickeat_logo_dark from '@/assets/pickeat_dark.png'
 
+const WEBSITE_PROTO = window.location.protocol
+const WEBSITE_HOST = window.location.hostname
+const WEBSITE_URL = `${WEBSITE_PROTO}//${WEBSITE_HOST}`
+
 
 const cartStore = useCartStore()
 const foodStore = useFoodStore()
@@ -21,6 +27,27 @@ const notifStore = useNotifStore()
 useHead({
     titleTemplate: (title) => !title ? 'Pickeat' : `${title} - Pickeat`,
 })
+
+useHead({
+    templateParams: {
+        schemaOrg: {
+            host: WEBSITE_URL,
+            path: useRoute().path,
+            inLanguage: 'fr-FR'
+        }
+    }
+})
+
+useSchemaOrg([
+    defineOrganization({
+        name: 'Pickeat',
+        logo: () => pickeat_logo.value,
+    }),
+    defineWebSite({
+        name: 'Pickeat',
+    })
+])
+
 const icons = inject('icons')
 
 const pickeat_logo = ref(null)
