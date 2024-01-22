@@ -1,71 +1,53 @@
-<template>
-  <div class="buttons flex gap-2 flex-wrap">
-    <template
-      v-for="el in choices"
-      :key="el.id"
-    >
-      <toggle-button
-        :state="picked.has(el.id)"
-        v-bind="$attrs"
-        @update:state="toggle(el.id)"
-      >
-        {{ el.name }}
-      </toggle-button>
-    </template>
-    <button
-      v-if="extendable && extendModalComponent"
-      class="btn rounded-full btn-primary btn-outline btn-sm"
-      type="button"
-      @click="$refs.modal.open()"
-    >
-      +
-    </button>
-  </div>
-  <component
-    :is="extendModalComponent"
-    ref="modal"
-    @created="created"
-  />
-</template>
+<script setup>
+import { computed } from 'vue'
 
-<script>
 import ToggleButton from '@/components/ToggleButton.vue'
-export default {
-    name: 'ToggleButtons',
-    components : {
-        ToggleButton
+
+const model = defineModel('picked', {
+    type: Set,
+    required: true
+})
+
+const props = defineProps({
+    choices: {
+        type: Array,
     },
-    props: {
-        choices: {
-            type: Array
-        },
-        picked: {
-            type: Set
-        },
-        extendable: {
-            type: Boolean
-        },
-        extendModalComponent : {
-            type: Object
-        },
+    extendable: {
+        type: Boolean,
     },
-    emits: ['update:picked'],
-    computed: {
-        _picked() {
-            return new Set(this.picked)
-        }
+    extendModalComponent: {
+        type: Object,
     },
-    methods: {
-        toggle(id) {
-            if (this._picked.has(id))
-                this._picked.delete(id)
-            else
-                this._picked.add(id)
-            this.$emit('update:picked', this._picked)
-        },
-        created(new_choice) {
-            this.toggle(new_choice.id)
-        }
-    },
+});
+
+const _picked = computed(() => {
+    return new Set(model.value)
+})
+
+function toggle(id) {
+    if (_picked.value.has(id))
+        _picked.value.delete(id)
+    else
+        _picked.value.add(id)
+    model.value = _picked.value
+}
+
+function created(new_choice) {
+    toggle(new_choice.id)
 }
 </script>
+
+<template>
+    <div class="buttons flex gap-2 flex-wrap">
+        <template v-for="el in choices" :key="el.id">
+            <toggle-button :state="model.has(el.id)" v-bind="$attrs" @update:state="toggle(el.id)">
+                {{ el.name }}
+            </toggle-button>
+        </template>
+        <button v-if="extendable && extendModalComponent" class="btn rounded-full btn-primary btn-outline btn-sm"
+            type="button" @click="$refs.modal.open()">
+            +
+        </button>
+    </div>
+    <component :is="extendModalComponent" ref="modal" @created="created" />
+</template>
