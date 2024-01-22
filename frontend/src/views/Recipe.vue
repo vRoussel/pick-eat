@@ -5,8 +5,10 @@ import { useRouter, useRoute } from 'vue-router'
 const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
 const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
 
 const foodStore = useFoodStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -19,6 +21,10 @@ const recipe = ref(null)
 
 onMounted(() => {
     loadRecipe()
+    if (!authStore.is_logged_in && props.edit) {
+        authStore.return_url = route.fullPath
+        router.push('/login')
+    }
 })
 
 function loadRecipe() {
@@ -29,7 +35,12 @@ function loadRecipe() {
 }
 
 function editRecipe() {
-    router.push({ query: { ...route.query, edit: null } })
+    if (authStore.is_logged_in) {
+        router.push({ query: { ...route.query, edit: null } })
+    } else {
+        authStore.return_url = route.fullPath
+        router.push('/login')
+    }
 }
 
 function afterEdit() {
