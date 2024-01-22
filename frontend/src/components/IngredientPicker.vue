@@ -32,13 +32,6 @@ const _picked = computed(() => {
     return new Map(model.value)
 })
 
-function pick_ingr(ingr) {
-    add_ingr(ingr)
-    nextTick(() => {
-        multiselect_el.value.$el.focus()
-    })
-}
-
 function add_ingr(ingr) {
     _picked.value.set(ingr.id, {
         id: ingr.id,
@@ -47,6 +40,9 @@ function add_ingr(ingr) {
     })
     model.value = _picked.value
     multiselect_el.value.clear()
+    nextTick(() => {
+        multiselect_el.value.focus()
+    })
 }
 
 function del_ingr(id) {
@@ -85,7 +81,7 @@ function open_unit_modal() {
     <div v-bind="$attrs" class="rounded-md">
         <Multiselect ref="multiselect_el" v-model="dummy" mode="multiple" :options="ingr_remaining" label="name" searchable
             track-by="name" :strict="false" object value-prop="id" placeholder="Ajouter un ingrédient" open-direction="top"
-            @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()" @select="pick_ingr" />
+            @keydown.ctrl.enter.prevent="save_ingredient_search(), open_ingr_modal()" @select="add_ingr" />
     </div>
     <div class="flex gap-1 my-2">
         <button class="btn rounded-full btn-primary btn-outline btn-sm modal-button" type="button" tabindex="-1"
