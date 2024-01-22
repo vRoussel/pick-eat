@@ -53,7 +53,7 @@ async function login() {
                             (x) => x.code == 'account_pending_validation',
                         )
                     )
-                        show_resend_validation_email = true
+                        show_resend_validation_email.value = true
                 })
         })
         .catch((err) => {
@@ -62,7 +62,7 @@ async function login() {
 }
 
 function resend_validation_email() {
-    show_resend_validation_email = false
+    show_resend_validation_email.value = false
     authStore.ask_account_validation_token(fields.value.email)
     notifStore.show_info('Nouvel email de confirmation envoyé')
 }
