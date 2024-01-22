@@ -1,70 +1,58 @@
-<template>
-  <div class="container px-4 my-4">
-    <recipe-view
-      v-if="!edit"
-      :recipe="recipe"
-      @edit="editRecipe"
-    />
-    <recipe-form
-      v-else
-      :existing_recipe="recipe"
-      @done="afterEdit"
-    />
-  </div>
-</template>
+<script setup>
+import { onMounted, defineProps, defineAsyncComponent, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-<script>
-import { defineAsyncComponent } from 'vue'
-
-const RecipeForm = defineAsyncComponent(() =>
-  import('@/components/RecipeForm.vue')
-)
-const RecipeView = defineAsyncComponent(() =>
-  import('@/components/RecipeView.vue')
-)
-
-import { mapStores } from 'pinia'
+const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
+const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
 
-export default {
-    name: 'Recipe',
-    components: {
-      RecipeForm,
-      RecipeView,
-    },
-    props: {
-        id: {
-            type: Number,
-        },
-        edit: {
-            type: Boolean
-        }
-    },
-    data: function() {
-        return {
-            recipe: null
-        }
-    },
-    computed: {
-        ...mapStores(useFoodStore),
-    },
-    mounted() {
-        this.loadRecipe()
-    },
-    methods: {
-        loadRecipe() {
-            this.foodStore.getRecipeById(this.id).then(result => {
-                this.recipe = result
-                document.title = this.recipe.name + ' - Pickeat'
-            });
-        },
-        editRecipe() {
-            this.$router.push({ query: { ...this.$route.query, edit: null} });
-        },
-        afterEdit() {
-            this.loadRecipe()
-            this.$router.go(-1)
-        }
-    },
+const foodStore = useFoodStore()
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
+
+const props = defineProps({
+    id: Number,
+    edit: Boolean
+});
+
+const recipe = ref(null)
+
+onMounted(() => {
+    loadRecipe()
+    if (!authStore.is_logged_in && props.edit) {
+        authStore.return_url = route.fullPath
+        router.push('/login')
+    }
+})
+
+function loadRecipe() {
+    foodStore.getRecipeById(props.id).then((result) => {
+        recipe.value = result
+        document.title = recipe.value.name + ' - Pickeat'
+    })
+}
+
+function editRecipe() {
+    if (authStore.is_logged_in) {
+        router.push({ query: { ...route.query, edit: null } })
+    } else {
+        authStore.return_url = route.fullPath
+        router.push('/login')
+    }
+}
+
+function afterEdit() {
+    loadRecipe()
+    router.go(-1)
 }
 </script>
+
+<template>
+    <div class="container px-4 my-4">
+        <recipe-view v-if="!edit" :recipe="recipe" @edit="editRecipe" />
+        <recipe-form v-else :existing_recipe="recipe" @done="afterEdit" />
+    </div>
+</template>
+
