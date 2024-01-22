@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, onMounted, watch, onActivated, onDeactivated } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import isEqual from 'lodash.isequal'
 
 import Pagination from '@/components/Pagination.vue'
@@ -18,6 +19,10 @@ const route = useRoute()
 const recipes = ref([])
 const per_page = ref(12)
 const total_count = ref(null)
+
+useHead({
+    title: "Liste des recettes"
+})
 
 const page = computed({
     get() {

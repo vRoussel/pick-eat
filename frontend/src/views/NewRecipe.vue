@@ -1,12 +1,17 @@
 <script setup>
 import { onActivated } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 
 import RecipeForm from '@/components/RecipeForm.vue'
 import { useFoodStore } from '@/store/food.js'
 
 const foodStore = useFoodStore()
 const router = useRouter()
+
+useHead({
+    title: "Ajouter une recette"
+})
 
 function viewRecipe(recipe) {
     let id = recipe.id
