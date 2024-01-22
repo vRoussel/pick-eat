@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import Swal from 'sweetalert2'
 
 import { useNotifStore } from '@/store/notif.js'
@@ -12,6 +13,10 @@ import welcome_video from '@/assets/gatsby_welcome.mp4'
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
 const router = useRouter()
+
+useHead({
+    title: 'Validation de compte',
+})
 
 const props = defineProps({
     token: String,

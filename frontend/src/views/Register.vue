@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import Swal from 'sweetalert2'
 import { object, string } from 'yup'
 
@@ -12,6 +13,10 @@ import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.
 const authStore = useAuthStore()
 const notifStore = useNotifStore()
 const router = useRouter()
+
+useHead({
+    title: 'Inscription',
+})
 
 const validator = object().shape({
     email: string()

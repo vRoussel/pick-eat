@@ -16,17 +16,13 @@ const routes = [
         name: 'new-recipe',
         path: '/new-recipe',
         component: NewRecipe,
-        meta: {
-            title: 'Ajouter une recette - PickEat',
-        },
     },
     {
         name: 'recipe-list',
         path: '/recipes',
         component: RecipeList,
         meta: {
-            title: 'Liste des recettes - PickEat',
-            public: true,
+            public: true
         },
     },
     {
@@ -35,8 +31,7 @@ const routes = [
         component: Recipe,
         props: (route) => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
         meta: {
-            title: 'Recette - PickEat',
-            public: true,
+            public: true
         },
     },
     {
@@ -44,7 +39,6 @@ const routes = [
         path: '/register',
         component: Register,
         meta: {
-            title: 'Inscription - PickEat',
             public: true,
         },
     },
@@ -53,18 +47,14 @@ const routes = [
         path: '/login',
         component: Login,
         meta: {
-            title: 'Connection - PickEat',
-            public: true,
+            public: true
         },
     },
     {
         name: 'account',
         path: '/account',
         component: Account,
-        props: (route) => ({ edit: 'edit' in route.query }),
-        meta: {
-            title: 'Mon Compte - PickEat',
-        },
+        props: (route) => ({ edit: 'edit' in route.query })
     },
     {
         name: 'account_validation',
@@ -72,7 +62,6 @@ const routes = [
         component: AccountValidation,
         props: (route) => ({ token: route.query.token }),
         meta: {
-            title: 'Validation de compte - PickEat',
             public: true,
         },
     },
@@ -81,8 +70,7 @@ const routes = [
         path: '/forgotten_password',
         component: ForgottenPassword,
         meta: {
-            title: 'Mot de passe oublié - PickEat',
-            public: true,
+            public: true
         },
     },
     {
@@ -91,8 +79,7 @@ const routes = [
         component: PasswordReset,
         props: (route) => ({ token: route.query.token }),
         meta: {
-            title: 'Réinitialisation du mot de passe - PickEat',
-            public: true,
+            public: true
         },
     },
     {
@@ -100,8 +87,7 @@ const routes = [
         path: '/',
         redirect: '/recipes',
         meta: {
-            title: 'PickEat',
-            public: true,
+            public: true
         },
     },
 ]
@@ -143,9 +129,6 @@ router.beforeEach(async (to) => {
         auth.return_url = to.fullPath
         return '/login'
     }
-
-    document.title = to.meta.title || 'Pickeat'
-
 })
 
 export default router

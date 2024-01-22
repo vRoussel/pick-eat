@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, defineProps, defineAsyncComponent, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useHead } from '@unhead/vue'
 
 const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
 const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
@@ -19,6 +20,10 @@ const props = defineProps({
 
 const recipe = ref(null)
 
+useHead({
+    title: () => recipe.value ? recipe.value.name : null
+})
+
 onMounted(() => {
     loadRecipe()
     if (!authStore.is_logged_in && props.edit) {
@@ -30,7 +35,6 @@ onMounted(() => {
 function loadRecipe() {
     foodStore.getRecipeById(props.id).then((result) => {
         recipe.value = result
-        document.title = recipe.value.name + ' - Pickeat'
     })
 }
 

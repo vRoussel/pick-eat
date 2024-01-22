@@ -1,5 +1,6 @@
 <script setup>
 import { inject, ref, onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
 
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import GroceryListModal from '@/components/GroceryListModal.vue'
@@ -17,6 +18,9 @@ const cartStore = useCartStore()
 const foodStore = useFoodStore()
 const notifStore = useNotifStore()
 
+useHead({
+    titleTemplate: (title) => !title ? 'Pickeat' : `${title} - Pickeat`,
+})
 const icons = inject('icons')
 
 const pickeat_logo = ref(null)

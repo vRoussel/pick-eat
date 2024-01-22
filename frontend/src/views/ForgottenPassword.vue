@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import { object, string } from 'yup'
 
 import { useAuthStore } from '@/store/auth.js'
@@ -12,6 +13,10 @@ import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
 const router = useRouter()
+
+useHead({
+    title: 'Mot de passe oublié',
+})
 
 const fields = ref({
     email: null

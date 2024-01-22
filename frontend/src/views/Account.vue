@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import { useHead } from '@unhead/vue'
 
 import AccountUpdateForm from '@/components/AccountUpdateForm.vue'
 import AccountView from '@/components/AccountView.vue'
@@ -7,6 +8,10 @@ import AccountView from '@/components/AccountView.vue'
 
 const router = useRouter()
 const route = useRoute()
+
+useHead({
+    title: 'Mon Compte',
+})
 
 defineProps({
     edit: Boolean
