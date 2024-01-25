@@ -104,7 +104,7 @@ const router = createRouter({
                     resolve(savedPosition)
                 }, 300)
             })
-        } else if (to.query.ns !== undefined) {
+        } else if (to.query.ns !== undefined || to.fullPath === from.fullPath) {
             return {}
         } else {
             return new Promise((resolve) => {
@@ -116,7 +116,7 @@ const router = createRouter({
     },
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
     // redirect to login page if not logged in and trying to access a restricted page
     const authRequired = !to.meta.public
     const auth = useAuthStore()
@@ -129,6 +129,8 @@ router.beforeEach(async (to) => {
         auth.return_url = to.fullPath
         return '/login'
     }
+    if (to.fullPath === from.fullPath)
+        return false
 })
 
 export default router

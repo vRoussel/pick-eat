@@ -34,7 +34,6 @@ function page(position) {
 function buttonClass(page) {
     return {
         btn: true,
-        'join-item': props.max_page > 1,
         'w-9': true,
         'sm:w-10': true,
         'lg:w-16': true,
@@ -46,6 +45,7 @@ function buttonClass(page) {
         'border-x-0': true,
         'border-l': page == props.min_page,
         'border-r': page == props.max_page,
+        'rounded-[inherit]': true
     }
 }
 </script>
@@ -53,31 +53,26 @@ function buttonClass(page) {
 <template>
     <nav class="join" role="navigation" aria-label="pagination">
         <template v-if="current_page >= props.min_page + props.page_offset">
-            <button :class="buttonClass(props.min_page)" @click="go_page(props.min_page)">
-                {{ props.min_page }}
-            </button>
-            <button :class="buttonClass('...')">...</button>
+            <router-link :to="{ query: { page: page(props.min_page) } }">
+                <button :class="buttonClass(props.min_page)">
+                    {{ props.min_page }}
+                </button>
+                <button :class="buttonClass('...')">...</button>
+            </router-link>
         </template>
-        <button v-if="props.max_page >= 1" :class="buttonClass(page(1))" @click="go_page(page(1))">
-            {{ page(1) }}
-        </button>
-        <button v-if="props.max_page >= 2" :class="buttonClass(page(2))" @click="go_page(page(2))">
-            {{ page(2) }}
-        </button>
-        <button v-if="props.max_page >= 3" :class="buttonClass(page(3))" @click="go_page(page(3))">
-            {{ page(3) }}
-        </button>
-        <button v-if="props.max_page >= 4" :class="buttonClass(page(4))" @click="go_page(page(4))">
-            {{ page(4) }}
-        </button>
-        <button v-if="props.max_page >= 5" :class="buttonClass(page(5))" @click="go_page(page(5))">
-            {{ page(5) }}
-        </button>
-        <template v-if="current_page <= props.max_page - props.page_offset">
-            <button :class="buttonClass('...')">...</button>
-            <button :class="buttonClass(props.max_page)" @click="go_page(props.max_page)">
-                {{ props.max_page }}
+
+        <router-link v-for="i in Math.min(props.max_page, 5)" :to="{ query: { page: page(i) } }" class="join-item">
+            <button v-if="props.max_page >= i" :class="buttonClass(page(i))">
+                {{ page(i) }}
             </button>
+        </router-link>
+        <template v-if="current_page <= props.max_page - props.page_offset">
+            <router-link :to="{ query: { page: page(props.max_page) } }">
+                <button :class="buttonClass('...')">...</button>
+                <button :class="buttonClass(props.max_page)">
+                    {{ props.max_page }}
+                </button>
+            </router-link>
         </template>
     </nav>
 </template>
