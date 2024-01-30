@@ -76,7 +76,7 @@ function image(format = null) {
                     <picture>
                         <source type="image/avif" :srcset="image('avif')" />
                         <source type="image/webp" :srcset="image('webp')" />
-                        <img :src="image()" class="rounded-xl w-[512px] aspect-square" />
+                        <img :src="image()" :alt="props.recipe.name" class="rounded-xl w-[512px] aspect-square" />
                     </picture>
                 </a>
             </div>

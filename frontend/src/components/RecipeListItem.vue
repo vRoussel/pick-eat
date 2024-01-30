@@ -101,11 +101,11 @@ function toggleCart(recipe) {
                 <source type="image/webp"
                     :srcset="props.recipe.image.replace('upload', 'upload/c_limit,h_512,w_512,f_webp')" />
                 <img class="rounded-t-xl w-[512px] aspect-square" :loading="props.lazy ? 'lazy' : 'eager'"
-                    :src="props.recipe.image.replace('upload', 'upload/c_limit,h_512,w_512')" />
+                    :alt="props.recipe.name" :src="props.recipe.image.replace('upload', 'upload/c_limit,h_512,w_512')" />
             </picture>
             <picture v-else class="relative">
                 <img class="rounded-t-xl w-[512px] aspect-square" :loading="props.lazy ? 'lazy' : 'eager'"
-                    :src="icons.camera" />
+                    alt="icone de caméra" :src="icons.camera" />
             </picture>
             <Icon v-if="props.recipe.is_private" :icon="icons.private"
                 class="text-3xl absolute text-primary left-2 top-2 bg-primary-content rounded-full ring-primary ring-2" />
