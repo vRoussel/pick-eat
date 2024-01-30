@@ -45,7 +45,6 @@ function buttonClass(page) {
         'border-x-0': true,
         'border-l': page == props.min_page,
         'border-r': page == props.max_page,
-        'rounded-[inherit]': true
     }
 }
 </script>
@@ -53,25 +52,23 @@ function buttonClass(page) {
 <template>
     <nav class="join" role="navigation" aria-label="pagination">
         <template v-if="current_page >= props.min_page + props.page_offset">
-            <router-link :to="{ query: { page: page(props.min_page) } }">
-                <button :class="buttonClass(props.min_page)">
-                    {{ props.min_page }}
-                </button>
-                <button :class="buttonClass('...')">...</button>
+            <router-link :to="{ query: { page: page(props.min_page) } }" :class="buttonClass(props.min_page)">
+                {{ props.min_page }}
+            </router-link>
+            <button :class="buttonClass('...')">...</button>
+        </template>
+
+        <template v-for="i in Math.min(props.max_page, 5)">
+            <router-link :to="{ query: { page: page(i) } }" class="join-item" :v-if="props.max_page >= i"
+                :class="buttonClass(page(i))">
+                {{ page(i) }}
             </router-link>
         </template>
 
-        <router-link v-for="i in Math.min(props.max_page, 5)" :to="{ query: { page: page(i) } }" class="join-item">
-            <button v-if="props.max_page >= i" :class="buttonClass(page(i))">
-                {{ page(i) }}
-            </button>
-        </router-link>
         <template v-if="current_page <= props.max_page - props.page_offset">
-            <router-link :to="{ query: { page: page(props.max_page) } }">
-                <button :class="buttonClass('...')">...</button>
-                <button :class="buttonClass(props.max_page)">
-                    {{ props.max_page }}
-                </button>
+            <button :class="buttonClass('...')">...</button>
+            <router-link :class="buttonClass(props.max_page)" :to="{ query: { page: page(props.max_page) } }">
+                {{ props.max_page }}
             </router-link>
         </template>
     </nav>
