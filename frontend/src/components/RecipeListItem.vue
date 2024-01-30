@@ -92,9 +92,9 @@ function toggleCart(recipe) {
 </style>
 
 <template>
-    <div
-        class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2">
-        <router-link :to="'/recipe/' + props.recipe.id">
+    <router-link :to="'/recipe/' + props.recipe.id" :title="props.recipe.name">
+        <div
+            class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2">
             <picture v-if="props.recipe.image" class="relative">
                 <source type="image/avif"
                     :srcset="props.recipe.image.replace('upload', 'upload/c_limit,h_512,w_512,f_avif')" />
@@ -131,6 +131,6 @@ function toggleCart(recipe) {
                     </h2>
                 </div>
             </div>
-        </router-link>
-    </div>
+        </div>
+    </router-link>
 </template>
