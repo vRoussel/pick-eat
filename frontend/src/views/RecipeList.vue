@@ -20,10 +20,6 @@ const recipes = ref([])
 const per_page = ref(12)
 const total_count = ref(null)
 
-useHead({
-    title: "Liste des recettes"
-})
-
 const page = computed({
     get() {
         return parseInt(route.query.page) || 1
@@ -40,6 +36,22 @@ const to = computed(() => {
 })
 const max_page = computed(() => {
     return Math.ceil(total_count.value / per_page.value) || 1
+})
+
+const canonical_url = computed(() => {
+    let url = new URL(window.location)
+    let params = new URLSearchParams()
+    params.set('page', page.value)
+    url.search = params
+    return url.toString()
+})
+
+useHead({
+    title: "Liste des recettes",
+    link: () => canonical_url.value === window.location.toString() ? null : {
+        rel: 'canonical',
+        href: canonical_url.value
+    }
 })
 
 const filters = computed({
