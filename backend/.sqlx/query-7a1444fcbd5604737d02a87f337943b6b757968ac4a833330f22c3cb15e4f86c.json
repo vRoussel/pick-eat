@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                r.id as \"id!\",\n                r.name as \"name!\",\n                r.notes as \"notes!\",\n                r.preparation_time_min as \"preparation_time_min!\",\n                r.cooking_time_min as \"cooking_time_min!\",\n                r.image as \"image!\",\n                r.publication_date as \"publication_date!\",\n                r.instructions as \"instructions!\",\n                r.n_shares as \"n_shares!\",\n                r.is_private as \"is_private!\",\n                r.author_id as \"author_id!\",\n                is_recipe_in_account_favs(r.id, $1) as \"is_favorite!\",\n                a.display_name as \"author_name!\",\n                r.tags as \"tags!: Vec<Tag>\",\n                r.categories as \"categories!: Vec<Category>\",\n                r.diets as \"diets!: Vec<Diet>\",\n                r.seasons as \"seasons!: Vec<Season>\",\n                r.ingredients as \"ingredients!: Vec<QIngredient>\"\n            FROM\n                recipes_full r\n                INNER JOIN accounts a\n                    ON a.id = r.author_id\n            WHERE r.id = $2\n        ",
+  "query": "\n            SELECT\n                r.id as \"id!\",\n                r.name as \"name!\",\n                r.notes as \"notes!\",\n                r.preparation_time_min as \"preparation_time_min!\",\n                r.cooking_time_min as \"cooking_time_min!\",\n                r.image as \"image!\",\n                r.publication_date as \"publication_date!\",\n                r.update_date as \"update_date\",\n                r.instructions as \"instructions!\",\n                r.n_shares as \"n_shares!\",\n                r.is_private as \"is_private!\",\n                r.author_id as \"author_id!\",\n                is_recipe_in_account_favs(r.id, $1) as \"is_favorite!\",\n                a.display_name as \"author_name!\",\n                r.tags as \"tags!: Vec<Tag>\",\n                r.categories as \"categories!: Vec<Category>\",\n                r.diets as \"diets!: Vec<Diet>\",\n                r.seasons as \"seasons!: Vec<Season>\",\n                r.ingredients as \"ingredients!: Vec<QIngredient>\"\n            FROM\n                recipes_full r\n                INNER JOIN accounts a\n                    ON a.id = r.author_id\n            WHERE r.id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -40,36 +40,41 @@
       },
       {
         "ordinal": 7,
+        "name": "update_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 8,
         "name": "instructions!",
         "type_info": "TextArray"
       },
       {
-        "ordinal": 8,
+        "ordinal": 9,
         "name": "n_shares!",
         "type_info": "Int2"
       },
       {
-        "ordinal": 9,
+        "ordinal": 10,
         "name": "is_private!",
         "type_info": "Bool"
       },
       {
-        "ordinal": 10,
+        "ordinal": 11,
         "name": "author_id!",
         "type_info": "Int4"
       },
       {
-        "ordinal": 11,
+        "ordinal": 12,
         "name": "is_favorite!",
         "type_info": "Bool"
       },
       {
-        "ordinal": 12,
+        "ordinal": 13,
         "name": "author_name!",
         "type_info": "Text"
       },
       {
-        "ordinal": 13,
+        "ordinal": 14,
         "name": "tags!: Vec<Tag>",
         "type_info": {
           "Custom": {
@@ -97,7 +102,7 @@
         }
       },
       {
-        "ordinal": 14,
+        "ordinal": 15,
         "name": "categories!: Vec<Category>",
         "type_info": {
           "Custom": {
@@ -125,7 +130,7 @@
         }
       },
       {
-        "ordinal": 15,
+        "ordinal": 16,
         "name": "diets!: Vec<Diet>",
         "type_info": {
           "Custom": {
@@ -157,7 +162,7 @@
         }
       },
       {
-        "ordinal": 16,
+        "ordinal": 17,
         "name": "seasons!: Vec<Season>",
         "type_info": {
           "Custom": {
@@ -189,7 +194,7 @@
         }
       },
       {
-        "ordinal": 17,
+        "ordinal": 18,
         "name": "ingredients!: Vec<QIngredient>",
         "type_info": {
           "Custom": {
@@ -263,6 +268,7 @@
       true,
       true,
       true,
+      true,
       null,
       false,
       true,
@@ -272,5 +278,5 @@
       true
     ]
   },
-  "hash": "ecf12bad0c2a498a9ed06629b0af63e943f2f7df250b4f1b21988f200cd35e4d"
+  "hash": "7a1444fcbd5604737d02a87f337943b6b757968ac4a833330f22c3cb15e4f86c"
 }
