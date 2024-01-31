@@ -16,6 +16,10 @@ const router = useRouter()
 
 useHead({
     title: 'Mot de passe oublié',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 const fields = ref({

@@ -15,6 +15,10 @@ const router = useRouter()
 
 useHead({
     title: 'Connection',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 const fields = ref({

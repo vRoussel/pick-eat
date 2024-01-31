@@ -15,6 +15,10 @@ const router = useRouter()
 
 useHead({
     title: 'Réinitialisation du mot de passe',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 const props = defineProps({

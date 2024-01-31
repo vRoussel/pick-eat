@@ -10,7 +10,11 @@ const foodStore = useFoodStore()
 const router = useRouter()
 
 useHead({
-    title: "Ajouter une recette"
+    title: "Ajouter une recette",
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 function viewRecipe(recipe) {

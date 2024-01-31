@@ -11,6 +11,10 @@ const route = useRoute()
 
 useHead({
     title: 'Mon Compte',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 defineProps({

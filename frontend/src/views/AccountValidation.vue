@@ -16,6 +16,10 @@ const router = useRouter()
 
 useHead({
     title: 'Validation de compte',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 const props = defineProps({
