@@ -16,6 +16,10 @@ const router = useRouter()
 
 useHead({
     title: 'Inscription',
+    meta: {
+        name: 'robots',
+        content: 'noindex'
+    }
 })
 
 const validator = object().shape({
