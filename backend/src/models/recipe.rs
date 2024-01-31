@@ -9,6 +9,7 @@ pub struct Recipe {
     pub cooking_time_min: i16,
     pub image: String,
     pub publication_date: chrono::NaiveDate,
+    pub update_date: Option<chrono::NaiveDate>,
     pub instructions: Vec<String>,
     pub n_shares: i16,
     pub is_favorite: bool,
