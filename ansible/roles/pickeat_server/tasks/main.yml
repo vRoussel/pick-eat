@@ -45,6 +45,14 @@
     owner: pickeat
     group: pickeat
 
+- name: Create pickeat var directory
+  file:
+    path: /var/log/pickeat/
+    state: directory
+    recurse: true
+    owner: pickeat
+    group: pickeat
+
 - name: Install pickeat conf
   template:
     src: pickeat.conf.j2
