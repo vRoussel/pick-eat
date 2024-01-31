@@ -10,6 +10,7 @@ const AccountValidation = () => import('@/views/AccountValidation.vue')
 const ForgottenPassword = () => import('@/views/ForgottenPassword.vue')
 const PasswordReset = () => import('@/views/PasswordReset.vue')
 const Register = () => import('@/views/Register.vue')
+const NotFound = () => import('@/views/NotFound.vue')
 
 const routes = [
     {
@@ -72,6 +73,10 @@ const routes = [
         path: '/',
         redirect: '/recipes',
     },
+    {
+        path: '/:pathMatch(.*)',
+        component: NotFound
+    }
 ]
 
 const router = createRouter({
