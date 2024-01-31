@@ -16,79 +16,61 @@ const routes = [
         name: 'new-recipe',
         path: '/new-recipe',
         component: NewRecipe,
+        meta: {
+            private: true
+        }
     },
     {
         name: 'recipe-list',
         path: '/recipes',
         component: RecipeList,
-        meta: {
-            public: true
-        },
     },
     {
         name: 'recipe',
         path: '/recipe/:id',
         component: Recipe,
         props: (route) => ({ id: parseInt(route.params.id), edit: 'edit' in route.query }),
-        meta: {
-            public: true
-        },
     },
     {
         name: 'register',
         path: '/register',
         component: Register,
-        meta: {
-            public: true,
-        },
     },
     {
         name: 'login',
         path: '/login',
         component: Login,
-        meta: {
-            public: true
-        },
     },
     {
         name: 'account',
         path: '/account',
         component: Account,
-        props: (route) => ({ edit: 'edit' in route.query })
+        props: (route) => ({ edit: 'edit' in route.query }),
+        meta: {
+            private: true
+        }
     },
     {
         name: 'account_validation',
         path: '/account_validation',
         component: AccountValidation,
         props: (route) => ({ token: route.query.token }),
-        meta: {
-            public: true,
-        },
     },
     {
         name: '/forgotten_password',
         path: '/forgotten_password',
         component: ForgottenPassword,
-        meta: {
-            public: true
-        },
     },
     {
         name: 'password_reset',
         path: '/password_reset',
         component: PasswordReset,
         props: (route) => ({ token: route.query.token }),
-        meta: {
-            public: true
-        },
     },
     {
         name: 'default',
         path: '/',
         redirect: '/recipes',
-        meta: {
-            public: true
-        },
     },
 ]
 
@@ -118,7 +100,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
     // redirect to login page if not logged in and trying to access a restricted page
-    const authRequired = !to.meta.public
+    const authRequired = to.meta.private
     const auth = useAuthStore()
 
     if (to.path == '/login' && auth.is_logged_in) {
