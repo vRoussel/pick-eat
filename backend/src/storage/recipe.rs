@@ -368,6 +368,7 @@ pub async fn get_recipe_by_id(
                 r.cooking_time_min as "cooking_time_min!",
                 r.image as "image!",
                 r.publication_date as "publication_date!",
+                r.update_date as "update_date",
                 r.instructions as "instructions!",
                 r.n_shares as "n_shares!",
                 r.is_private as "is_private!",
@@ -410,7 +411,8 @@ pub async fn replace_recipe(
                 image = $5,
                 instructions = $6,
                 n_shares = $7,
-                is_private = $8
+                is_private = $8,
+                update_date = CURRENT_DATE
             WHERE id = $9
         ",
         new_recipe.name,

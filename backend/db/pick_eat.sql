@@ -211,6 +211,7 @@ CREATE TABLE public.recipes (
 	n_shares smallint NOT NULL,
 	author_id integer NOT NULL,
 	is_private bool DEFAULT false,
+	update_date date DEFAULT NULL,
 	CONSTRAINT recipes_pk PRIMARY KEY (id),
 	CONSTRAINT recipes_ck_times CHECK (preparation_time_min >= 0 AND cooking_time_min >= 0)
 );
