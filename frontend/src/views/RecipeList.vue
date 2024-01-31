@@ -47,7 +47,8 @@ const canonical_url = computed(() => {
 })
 
 useHead({
-    title: "Liste des recettes",
+    title: "Recettes et liste de courses",
+    description: "Trouvez de nouvelles recettes et générez votre liste de courses, c'est tout. Sur pick-eat, vous ne trouverez ni pub ni blabla.",
     link: () => canonical_url.value === window.location.toString() ? null : {
         rel: 'canonical',
         href: canonical_url.value
