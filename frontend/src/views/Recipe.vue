@@ -21,10 +21,6 @@ const props = defineProps({
 
 const recipe = ref(null)
 
-useHead({
-    title: () => recipe.value ? recipe.value.name : null
-})
-
 onMounted(() => {
     loadRecipe()
     if (!authStore.is_logged_in && props.edit) {
@@ -51,6 +47,7 @@ function diet_to_schema_org_format(diet) {
 function loadRecipe() {
     foodStore.getRecipeById(props.id).then((result) => {
         recipe.value = result
+
         useSchemaOrg([
             defineRecipe({
                 name: recipe.value.name,
@@ -64,6 +61,12 @@ function loadRecipe() {
                 suitableForDiet: recipe.value.diets.map(diet_to_schema_org_format)
             })
         ])
+
+        useHead({
+            title: () => recipe.value.name,
+            description: () => `Decouvez la recette de "${recipe.value.name}" de ${recipe.value.author_name}, sans pubs et sans blabla`
+        })
+
     })
 }
 
