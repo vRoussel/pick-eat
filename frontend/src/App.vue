@@ -101,7 +101,7 @@ function close_dropdown_if_opened() {
                 </ul>
             </div>
             <router-link class="xs:min-w-[150px] sm:min-w-[200px]" to="/recipes">
-                <img :src="pickeat_logo" class="aspect-[200/84]" width="150" sm:width="200" />
+                <img :src="pickeat_logo" class="aspect-[200/84]" width="150" sm:width="200" alt="Logo pickeat" />
             </router-link>
             <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
                 <li class="shrink-0">
@@ -113,14 +113,15 @@ function close_dropdown_if_opened() {
             </ul>
         </div>
         <div class="navbar-end space-x-3">
-            <button class="indicator" type="button" @click="grocery_list_modal_el.open()">
+            <button class="indicator" type="button" @click="grocery_list_modal_el.open()"
+                aria-label="Ouvrir la liste de course">
                 <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline" />
                 <span v-if="cartStore.recipeCount > 0" class="indicator-item badge badge-primary">{{
                     cartStore.recipeCount
                 }}</span>
             </button>
             <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
-            <button type="button" @click="$router.push({ name: 'account' })">
+            <button type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
                 <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
             </button>
         </div>

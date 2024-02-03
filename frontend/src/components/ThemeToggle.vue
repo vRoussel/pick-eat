@@ -38,8 +38,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <label class="swap swap-rotate">
-        <input v-model="state" type="checkbox" :data-toggle-theme="light_theme + ',' + dark_theme" />
+    <label class="swap swap-rotate" for="theme-toggle-input">
+        <input id="theme-toggle-input" v-model="state" type="checkbox"
+            :data-toggle-theme="light_theme + ',' + dark_theme" />
 
         <!-- sun icon -->
         <svg class="swap-on fill-current w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10"
