@@ -63,8 +63,13 @@ function loadRecipe() {
         ])
 
         useHead({
-            title: () => recipe.value.name,
-            description: () => `Decouvez la recette de "${recipe.value.name}" de ${recipe.value.author_name}, sans pubs et sans blabla`
+            title: recipe.value.name,
+            meta: [
+                {
+                    name: 'description',
+                    content: `Decouvez la recette de "${recipe.value.name}" de ${recipe.value.author_name}, sans pubs et sans blabla`
+                }
+            ]
         })
 
     })
