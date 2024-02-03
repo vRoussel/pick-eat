@@ -148,7 +148,7 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
     <div>
         <div class="flex gap-x-2">
             <div class="form-control md:hidden">
-                <button class="btn btn-accent btn-square" @click="toggle">
+                <button class="btn btn-accent btn-square" @click="toggle" aria-label="Afficher/cacher les filtres">
                     <span class="icon text-xl">
                         <Icon :icon="icons.options" />
                     </span>
@@ -238,7 +238,7 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
                     searchable :strict="false" track-by="display_name" value-prop="id" :close-on-select="true" />
             </div>
             <div class="form-control">
-                <button class="btn btn-accent" @click="clearFilters">
+                <button class="btn btn-accent" @click="clearFilters" aria-label="Reinitialiser les filtres">
                     <span class="icon text-xl">
                         <Icon :icon="icons.reset" />
                     </span>
