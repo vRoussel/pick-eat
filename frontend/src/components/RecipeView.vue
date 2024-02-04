@@ -75,7 +75,7 @@ function image(format = null) {
                     <picture>
                         <source type="image/avif" :srcset="image('avif')" />
                         <source type="image/webp" :srcset="image('webp')" />
-                        <img :src="image()" :alt="'Photo de ' + props.recipe.name + ' en taille originale'"
+                        <img :src="image()" :alt="'Photo de ' + props.recipe.name"
                             class="rounded-xl w-[512px] aspect-square" />
                     </picture>
                 </a>
