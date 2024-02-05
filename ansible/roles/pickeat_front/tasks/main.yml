@@ -20,6 +20,8 @@
     delete: true
     rsync_opts:
     - "--chmod=F444"
+    - "--exclude=sitemap.xml"
+    - "--exclude=robots.txt"
   notify: Reload nginx service
 
 - name: Copy robots.txt
