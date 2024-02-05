@@ -52,10 +52,7 @@ def url_elem(website_url, url_path, last_mod=None):
 
 
 def gen_sitemap(website_url, recipe_ids):
-    ns = {
-        "xsi:schemaLocation": "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd",
-        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    }
+    ns = {"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     root = ET.Element("urlset", ns)
     root.append(url_elem(website_url, "/recipes"))
     for r in recipe_ids:
@@ -85,4 +82,4 @@ if __name__ == "__main__":
     website_url = app_conf["website_url"]
 
     xml = gen_sitemap(website_url, recipe_ids)
-    xml.write(output_path)
+    xml.write(output_path, encoding="utf-8", xml_declaration=True)
