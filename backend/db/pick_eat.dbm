@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.6" use-changelog="false" last-position="43,27" last-zoom="0.8" max-obj-count="22"
+<dbmodel pgmodeler-ver="1.0.6" use-changelog="false" last-position="42,123" last-zoom="0.8" max-obj-count="22"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -280,7 +280,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="14" z-value="0">
+<table name="recipes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="15" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
 	<position x="320" y="540"/>
@@ -311,6 +311,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="n_shares" not-null="true">
 		<type name="smallint" length="0"/>
+	</column>
+	<column name="shares_unit" not-null="true" default-value="'personnes'">
+		<type name="text" length="0"/>
 	</column>
 	<column name="author_id" not-null="true">
 		<type name="integer" length="0"/>

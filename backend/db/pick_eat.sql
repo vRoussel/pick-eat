@@ -209,6 +209,7 @@ CREATE TABLE public.recipes (
 	publication_date date NOT NULL DEFAULT CURRENT_DATE,
 	instructions text[] NOT NULL,
 	n_shares smallint NOT NULL,
+	shares_unit text NOT NULL DEFAULT 'personnes',
 	author_id integer NOT NULL,
 	is_private bool DEFAULT false,
 	update_date date DEFAULT NULL,
