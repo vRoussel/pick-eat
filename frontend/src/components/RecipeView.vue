@@ -130,11 +130,7 @@ function image(format = null) {
                 <thead>
                     <tr class="text-center">
                         <th colspan="2" class="text-primary-content !bg-primary text-lg rounded-t-xl">
-                            <span v-if="props.recipe.n_shares > 0" class="icon inline-flex items-center">Ingrédients ({{
-                                props.recipe.n_shares }}
-                                <Icon class="pl-0.5" :icon="icons.person" />)
-                            </span>
-                            <span v-else>Ingrédients</span>
+                            <span>Ingrédients ({{ props.recipe.n_shares }} {{ props.recipe.shares_unit }})</span>
                         </th>
                     </tr>
                 </thead>

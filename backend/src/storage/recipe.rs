@@ -57,6 +57,7 @@ pub async fn get_many_recipes(
                 r.ingredients as "ingredients!: Vec<QIngredient>",
                 r.diets as "diets!: Vec<Diet>",
                 n_shares as "n_shares!",
+                shares_unit as "shares_unit!",
                 is_private as "is_private!",
                 count(*) OVER() AS "total_count!"
             FROM recipes_full AS r
@@ -219,8 +220,8 @@ pub async fn add_recipe(
     let new_id: i32 = query!(
         "
             INSERT INTO recipes
-            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, is_private, author_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            (name, notes, preparation_time_min, cooking_time_min, image, instructions, n_shares, shares_unit, is_private, author_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id;
         ",
         new_recipe.name,
@@ -230,6 +231,7 @@ pub async fn add_recipe(
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
+        new_recipe.shares_unit,
         new_recipe.is_private,
         user_id
     )
@@ -371,6 +373,7 @@ pub async fn get_recipe_by_id(
                 r.update_date as "update_date",
                 r.instructions as "instructions!",
                 r.n_shares as "n_shares!",
+                r.shares_unit as "shares_unit!",
                 r.is_private as "is_private!",
                 r.author_id as "author_id!",
                 is_recipe_in_account_favs(r.id, $1) as "is_favorite!",
@@ -411,9 +414,10 @@ pub async fn replace_recipe(
                 image = $5,
                 instructions = $6,
                 n_shares = $7,
-                is_private = $8,
+                shares_unit = $8,
+                is_private = $9,
                 update_date = CURRENT_DATE
-            WHERE id = $9
+            WHERE id = $10
         ",
         new_recipe.name,
         new_recipe.notes,
@@ -422,6 +426,7 @@ pub async fn replace_recipe(
         new_recipe.image,
         &new_recipe.instructions,
         new_recipe.n_shares,
+        new_recipe.shares_unit,
         new_recipe.is_private,
         id
     )

@@ -20,6 +20,10 @@ const props = defineProps({
     shares: {
         type: Number,
         required: true
+    },
+    shares_unit: {
+        type: String,
+        required: true
     }
 });
 
@@ -41,7 +45,7 @@ onMounted(async () => {
     <span> x </span>
     <number-input class="basis-10 grow-0" :model-value="shares" :min="0"
         @update:modelValue="(val) => cartStore.updateRecipeShares(recipe_id, val)" />
-    <span> parts</span>
+    <span> {{ shares_unit }}</span>
     <button class="btn btn-circle btn-xs btn-outline grow-0" tabindex="-1" type="button"
         @click="cartStore.removeRecipe(recipe_id)">
         <svg viewBox="0 0 512 512">

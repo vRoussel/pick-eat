@@ -26,6 +26,11 @@ fn check_recipe_input(input: &NewRecipe) -> Result<(), InvalidRecipe> {
     if input.n_shares <= 0 {
         invalid_recipe.n_shares = Some(InvalidityKind::BadValue);
     }
+    if input.shares_unit.is_empty() {
+        invalid_recipe.shares_unit = Some(InvalidityKind::Empty);
+    } else if input.shares_unit.len() > 15 {
+        invalid_recipe.shares_unit = Some(InvalidityKind::TooLong);
+    }
     if input.categories.is_empty() {
         invalid_recipe.categories = Some(InvalidityKind::Empty);
     }

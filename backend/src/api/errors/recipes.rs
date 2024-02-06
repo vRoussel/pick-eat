@@ -76,6 +76,30 @@ impl From<InvalidRecipe> for Vec<APIError> {
                 }
             };
         };
+        if let Some(v) = value.shares_unit {
+            match v {
+                Kind::Empty => {
+                    ret.push(APIError {
+                        message: "La dénomination des parts est obligatoire",
+                        field: Some("shares_unit"),
+                        code: None,
+                    });
+                }
+                Kind::TooLong => {
+                    ret.push(APIError {
+                        message: "La dénomination des parts ne doit pas dépasser 15 caractères",
+                        field: Some("shares_unit"),
+                        code: None,
+                    });
+                }
+                _ => {
+                    warn!(
+                        "{:?} error received for recipe's shares_unit, this should not happen",
+                        v
+                    );
+                }
+            };
+        };
         if let Some(v) = value.categories {
             match v {
                 Kind::Empty => {

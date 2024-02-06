@@ -36,6 +36,7 @@ pub enum InvalidityKind {
     Empty,
     InvalidRef,
     TooShort,
+    TooLong,
     BadFormat,
     Mismatch,
     Expired,

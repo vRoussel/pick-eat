@@ -36,6 +36,9 @@ const validator = object().shape({
         .typeError('Le nombre de parts est vide ou invalide')
         .positive('Le nombre de parts doit être positif')
         .integer('Le nombre de parts doit être un nombre entier'),
+    shares_unit: string()
+        .required('La dénomination des parts est obligatoire')
+        .max(15, 'La dénomination des parts ne peut pas dépasser 15 caractères'),
     categories: array()
         .transform((value) => Array.from(value))
         .min(1, 'Selectionnez au moins une catégorie'),
@@ -63,6 +66,7 @@ const fields = ref({
     prep_time: null,
     cook_time: null,
     shares: 0,
+    shares_unit: "personnes",
     instructions: '',
     categories: new Set(),
     tags: new Set(),
@@ -79,6 +83,7 @@ const errors = ref({
     prep_time: null,
     cook_time: null,
     shares: null,
+    shares_unit: null,
     instructions: null,
     categories: null,
     tags: null,
@@ -146,6 +151,7 @@ function sendRecipe() {
         instructions: f.instructions.split(/\r?\n/).filter((i) => i),
         notes: f.notes,
         n_shares: f.shares,
+        shares_unit: f.shares_unit,
         is_private: f.is_private,
     }
     for (var ingr of recipe.q_ingredients) {
@@ -217,6 +223,7 @@ function fillForm() {
         f.instructions = other.instructions.join('\n')
         f.notes = other.notes
         f.shares = other.n_shares
+        f.shares_unit = other.shares_unit
         f.is_private = other.is_private
     }
 }
@@ -227,6 +234,7 @@ function clearForm() {
     f.prep_time = null
     f.cook_time = null
     f.shares = 0
+    f.shares_unit = "personnes"
     f.instructions = ''
     f.categories.clear()
     f.tags.clear()
@@ -292,12 +300,24 @@ function validate(field) {
 
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text">Parts</span>
+                        <span class="label-text">Nombre de parts</span>
                     </label>
-                    <number-input v-model.number="fields.shares" :min="0" :badvalue="errors.shares != null" />
-                    <label v-if="errors.shares" class="label">
-                        <span class="label-text-alt text-error">{{ errors.shares }}</span>
-                    </label>
+                    <div class="flex flex-row items-start gap-x-5">
+                        <div class="form-control">
+                            <number-input v-model.number="fields.shares" :min="0" :badvalue="errors.shares != null" />
+                            <label v-if="errors.shares" class="label">
+                                <span class="label-text-alt text-error">{{ errors.shares }}</span>
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <input v-model="fields.shares_unit" class="input input-bordered"
+                                :class="errors.shares_unit && '!input-error'" @blur=" validate('shares_unit')"
+                                placeholder="parts, personnes, crêpes, etc" />
+                            <label v-if="errors.shares_unit" class="label">
+                                <span class="label-text-alt text-error">{{ errors.shares_unit }}</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-control grow order-first sm:order-none justify-self-center">
