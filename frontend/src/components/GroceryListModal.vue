@@ -105,7 +105,8 @@ defineExpose({ open });
                 </table>
                 <div v-if="tab == 1" class="flex flex-col items-center space-y-4">
                     <div v-for="[r_id, val] in cartStore.content" :key="r_id" class="flex items-center gap-x-4 w-full">
-                        <grocery-list-item :recipe_id="r_id" :recipe_name="val.recipe.name" :shares="val.shares" />
+                        <grocery-list-item :recipe_id="r_id" :recipe_name="val.recipe.name" :shares="val.shares"
+                            :shares_unit="val.recipe.shares_unit" />
                     </div>
                 </div>
             </div>
