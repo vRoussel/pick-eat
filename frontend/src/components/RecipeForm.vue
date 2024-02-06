@@ -166,6 +166,7 @@ function sendRecipe() {
                             icon: 'success',
                         })
                         emit('done', recipe)
+                        clearForm()
                     })
                     .catch((err) => {
                         handle_form_api_errors(err.response, errors.value, notifStore)
@@ -180,7 +181,6 @@ function sendRecipe() {
                         handle_form_api_errors(err.response, errors.value, notifStore)
                     })
             }
-            clearForm()
         })
         .catch((err) => {
             handle_form_local_errors(err.inner, errors.value, notifStore)
