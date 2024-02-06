@@ -60,8 +60,8 @@ function notify_input_selected() {
         <span class="icon text-2xl basis-6 grow-0 text-primary cursor-pointer" @click="emit('delete')">
             <Icon :icon="icons.close" />
         </span>
-        <div class="flex flex-wrap items-center gap-2 grow">
-            <span class="sm:text-end basis-full sm:basis-3/12 grow shrink" tabindex="-1">
+        <div class="flex flex-wrap items-stretch gap-2 grow">
+            <span class="basis-full sm:basis-3/12 grow shrink flex items-center sm:justify-end" tabindex="-1">
                 {{ ingredient_name }}</span>
             <number-input v-model.number="ingredient_quantity" :min="0" placeholder="Quantité"
                 class="basis-5/12 sm:basis-3/12" />
