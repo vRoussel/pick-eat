@@ -72,7 +72,7 @@ defineExpose({ open });
 <template>
     <div class="modal cursor-pointer" :class="{ 'modal-open': opened }" tabindex="-1" @click.self="close"
         @keyup.esc.stop="close">
-        <div class="modal-box relative overflow-y-scroll max-w-md cursor-default">
+        <div class="modal-box relative overflow-y-scroll max-w-xl cursor-default">
             <div v-if="cartStore.recipeCount > 0" class="space-y-4">
                 <div class="tabs tabs-boxed">
                     <a class="tab grow" :class="{ 'tab-active': tab == 0 }" @click="tab = 0">Ingrédients</a>
@@ -104,10 +104,8 @@ defineExpose({ open });
                     </tbody>
                 </table>
                 <div v-if="tab == 1" class="flex flex-col items-center space-y-4">
-                    <div v-for="[r_id, val] in cartStore.content" :key="r_id" class="flex items-center gap-x-4 w-full">
-                        <grocery-list-item :recipe_id="r_id" :recipe_name="val.recipe.name" :shares="val.shares"
-                            :shares_unit="val.recipe.shares_unit" />
-                    </div>
+                    <grocery-list-item v-for="[r_id, val] in cartStore.content" :key="r_id" :recipe_id="r_id"
+                        :recipe_name="val.recipe.name" :shares="val.shares" :shares_unit="val.recipe.shares_unit" />
                 </div>
             </div>
             <p v-else>
