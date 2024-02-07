@@ -105,7 +105,8 @@ defineExpose({ open });
                 </table>
                 <div v-if="tab == 1" class="flex flex-col items-center space-y-4">
                     <grocery-list-item v-for="[r_id, val] in cartStore.content" :key="r_id" :recipe_id="r_id"
-                        :recipe_name="val.recipe.name" :shares="val.shares" :shares_unit="val.recipe.shares_unit" />
+                        :recipe_name="val.recipe.name" :shares="val.shares" :shares_unit="val.recipe.shares_unit"
+                        @recipe-opened="close" />
                 </div>
             </div>
             <p v-else>
