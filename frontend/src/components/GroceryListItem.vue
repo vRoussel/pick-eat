@@ -43,7 +43,7 @@ onMounted(async () => {
 <template>
     <div class="flex items-center gap-x-2 sm:gap-x-4 w-full justify-stretch">
         <router-link ref="recipe_name_input_el" v-tooltip="overflown_recipe_name ? recipe_name : null"
-            class="text-end link-hover truncate basis-4/12 grow" :to="'/recipe/' + recipe_id" tabindex="-1">
+            class="recipe-name text-end link-hover basis-4/12 grow" :to="'/recipe/' + recipe_id" tabindex="-1">
             {{ recipe_name }}
         </router-link>
         <span> x </span>
@@ -60,4 +60,15 @@ onMounted(async () => {
         </button>
     </div>
 </template>
+
+<style scoped>
+.recipe-name {
+    overflow-wrap: anywhere;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+    overflow: hidden;
+}
+</style>
 
