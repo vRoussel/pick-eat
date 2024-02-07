@@ -78,19 +78,6 @@ function toggleCart(recipe) {
 }
 </script>
 
-<style scoped>
-.recipe-name {
-    font-family: 'Rounded_Elegance';
-
-    overflow-wrap: anywhere;
-    -webkit-line-clamp: 3;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-pack: center;
-    overflow: hidden;
-}
-</style>
-
 <template>
     <router-link :to="'/recipe/' + props.recipe.id" :title="props.recipe.name">
         <div
@@ -134,3 +121,17 @@ function toggleCart(recipe) {
         </div>
     </router-link>
 </template>
+
+<style scoped>
+.recipe-name {
+    font-family: 'Rounded_Elegance';
+
+    overflow-wrap: anywhere;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+    overflow: hidden;
+}
+</style>
+
