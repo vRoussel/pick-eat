@@ -52,8 +52,9 @@ onMounted(async () => {
         <span> x </span>
         <number-input class="basis-10" :model-value="shares" :min="0"
             @update:modelValue="(val) => cartStore.updateRecipeShares(recipe_id, val)" />
-        <span ref="shares_unit_el" v-tooltip="overflown_shares_unit ? shares_unit : null" class="truncate basis-2/12"> {{
-            shares_unit }}</span>
+        <span ref="shares_unit_el" v-tooltip="overflown_shares_unit ? shares_unit : null"
+            class="text-sm truncate basis-2/12"> {{
+                shares_unit }}</span>
         <button class="btn btn-circle btn-xs btn-outline" tabindex="-1" type="button"
             @click="cartStore.removeRecipe(recipe_id)">
             <svg viewBox="0 0 512 512">

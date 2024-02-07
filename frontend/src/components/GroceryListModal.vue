@@ -72,7 +72,7 @@ defineExpose({ open });
 <template>
     <div class="modal cursor-pointer" :class="{ 'modal-open': opened }" tabindex="-1" @click.self="close"
         @keyup.esc.stop="close">
-        <div class="modal-box relative overflow-y-scroll max-w-xl cursor-default">
+        <div class="modal-box relative overflow-y-scroll max-w-xl cursor-default p-4 sm:p-6">
             <div v-if="cartStore.recipeCount > 0" class="space-y-4">
                 <div class="tabs tabs-boxed">
                     <a class="tab grow" :class="{ 'tab-active': tab == 0 }" @click="tab = 0">Ingrédients</a>
