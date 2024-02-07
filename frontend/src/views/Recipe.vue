@@ -55,9 +55,9 @@ function loadRecipe() {
                 recipeInstructions: recipe.value.instructions,
                 recipeIngredient: recipe.value.q_ingredients.map(q_ingredient_to_text),
                 datePublished: recipe.value.publication_date,
-                recipeYield: recipe.value.n_shares.toString(),
                 cookTime: `PT${recipe.value.cook_time_min}M`,
                 prepTime: `PT${recipe.value.prep_time_min}M`,
+                recipeYield: `${recipe.value.n_shares} ${recipe.value.shares_unit}`,
                 suitableForDiet: recipe.value.diets.map(diet_to_schema_org_format)
             })
         ])
