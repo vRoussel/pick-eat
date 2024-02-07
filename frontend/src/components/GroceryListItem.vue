@@ -8,6 +8,8 @@ import { isOverflown } from '@/utils/utils.js'
 
 const cartStore = useCartStore()
 
+const emit = defineEmits(['recipeOpened'])
+
 const props = defineProps({
     recipe_id: {
         type: Number,
@@ -43,7 +45,8 @@ onMounted(async () => {
 <template>
     <div class="flex items-center gap-x-2 sm:gap-x-4 w-full justify-stretch">
         <router-link ref="recipe_name_input_el" v-tooltip="overflown_recipe_name ? recipe_name : null"
-            class="recipe-name text-end link-hover basis-4/12 grow" :to="'/recipe/' + recipe_id" tabindex="-1">
+            class="recipe-name text-end link-primary basis-4/12 grow" :to="'/recipe/' + recipe_id"
+            @click="emit('recipeOpened')" tabindex="-1">
             {{ recipe_name }}
         </router-link>
         <span> x </span>
