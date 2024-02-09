@@ -159,7 +159,7 @@ function decrease_shares() {
                 <tbody>
                     <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
                         <td class="!text-right">
-                            {{ ingr.quantity * shares_ratio }} {{ ingr.unit ? ingr.unit.short_name : '' }}
+                            {{ Number((ingr.quantity * shares_ratio).toFixed(2)) }} {{ ingr.unit ? ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>

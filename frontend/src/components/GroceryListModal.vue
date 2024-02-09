@@ -46,7 +46,7 @@ const list = computed(() => {
                 let unit_id = ingr.unit ? ingr.unit.id : null
                 if (!q.has(unit_id)) q.set(unit_id, new Array())
                 let unit_qtys = q.get(unit_id)
-                let qty = Math.round((ingr.quantity * ratio + Number.EPSILON) * 100) / 100
+                let qty = Number((ingr.quantity * ratio).toFixed(2))
                 unit_qtys.push({ r_id: recipe_id, r_name: recipe_name, qty: qty })
             } else {
                 let u = list.get(ingr.id).u
