@@ -52,6 +52,20 @@ function image(format = null) {
     }
     return props.recipe.image.replace('/upload', replacement)
 }
+
+const asked_shares = ref(props.recipe.n_shares)
+const shares_ratio = computed(() => {
+    return asked_shares.value / props.recipe.n_shares
+})
+
+function increase_shares() {
+    asked_shares.value += 1
+}
+
+function decrease_shares() {
+    if (asked_shares.value > 1)
+        asked_shares.value -= 1
+}
 </script>
 
 <template>
@@ -130,14 +144,22 @@ function image(format = null) {
                 <thead>
                     <tr class="text-center">
                         <th colspan="2" class="text-primary-content !bg-primary text-lg rounded-t-xl">
-                            <span>Ingrédients ({{ props.recipe.n_shares }} {{ props.recipe.shares_unit }})</span>
+                            <span class="flex flex-row items-center justify-around">
+                                <button class="text-xl text-primary bg-white rounded-full" @click.prevent.stop="decrease_shares" aria-label="Décrémenter le nombre de parts">
+                                <Icon :icon="icons.minus"/>
+                                </button>
+                                <span>Ingrédients<br>({{ asked_shares }} {{ props.recipe.shares_unit }})</span>
+                                <button class="text-xl text-primary bg-white rounded-full" @click.prevent.stop="increase_shares" aria-label="Incrémenter le nombre de parts">
+                                <Icon :icon="icons.plus"/>
+                                </button>
+                            </span>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
                         <td class="!text-right">
-                            {{ ingr.quantity }} {{ ingr.unit ? ingr.unit.short_name : '' }}
+                            {{ ingr.quantity * shares_ratio }} {{ ingr.unit ? ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>
@@ -148,7 +170,7 @@ function image(format = null) {
                     <col class="w-8" />
                     <col />
                 </colgroup>
-                <thead>
+                <thead class="h-20">
                     <tr class="text-center border-b border-primary">
                         <th class="bg-transparent !text-primary text-lg" colspan="2">Étapes</th>
                     </tr>
