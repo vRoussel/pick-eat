@@ -5,6 +5,8 @@ import GroceryListItem from '@/components/GroceryListItem.vue'
 import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
 
+import { qty_scaled } from '@/utils/utils.js'
+
 
 let cartStore = useCartStore()
 let foodStore = useFoodStore()
@@ -46,7 +48,7 @@ const list = computed(() => {
                 let unit_id = ingr.unit ? ingr.unit.id : null
                 if (!q.has(unit_id)) q.set(unit_id, new Array())
                 let unit_qtys = q.get(unit_id)
-                let qty = Number((ingr.quantity * ratio).toFixed(2))
+                let qty = qty_scaled(ingr.quantity, ratio, 0.25)
                 unit_qtys.push({ r_id: recipe_id, r_name: recipe_name, qty: qty })
             } else {
                 let u = list.get(ingr.id).u

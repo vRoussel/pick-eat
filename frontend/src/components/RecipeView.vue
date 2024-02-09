@@ -4,7 +4,7 @@ import { inject, ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import SeasonIcons from '@/components/SeasonIcons.vue'
 
-import { isOverflown } from '@/utils/utils.js'
+import { isOverflown, qty_scaled } from '@/utils/utils.js'
 
 const authStore = useAuthStore()
 
@@ -66,6 +66,7 @@ function decrease_shares() {
     if (asked_shares.value > 1)
         asked_shares.value -= 1
 }
+
 </script>
 
 <template>
@@ -159,7 +160,7 @@ function decrease_shares() {
                 <tbody>
                     <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
                         <td class="!text-right">
-                            {{ Number((ingr.quantity * shares_ratio).toFixed(2)) }} {{ ingr.unit ? ingr.unit.short_name : '' }}
+                            {{ ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : '' }} {{ ingr.unit ? ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>
