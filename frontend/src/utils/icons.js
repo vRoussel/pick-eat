@@ -16,6 +16,8 @@ import menu from '@iconify-icons/mdi/menu'
 import vegan from '@iconify-icons/iconoir/vegan'
 import vege from '@iconify-icons/iconoir/vegan'
 import priv from '@iconify-icons/mdi/eye-off-outline'
+import plus from '@iconify-icons/mdi/plus';
+import minus from '@iconify-icons/mdi/minus';
 
 import flower from '@iconify-icons/ph/flower-fill'
 import sun from '@iconify-icons/ph/sun-fill'
@@ -45,4 +47,6 @@ export default {
     vegan: vegan,
     vege: vege,
     private: priv,
+    plus: plus,
+    minus: minus
 }
