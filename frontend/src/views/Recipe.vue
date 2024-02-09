@@ -6,6 +6,7 @@ import { defineRecipe, useSchemaOrg } from '@unhead/schema-org'
 
 const RecipeForm = defineAsyncComponent(() => import('@/components/RecipeForm.vue'))
 const RecipeView = defineAsyncComponent(() => import('@/components/RecipeView.vue'))
+const RecipeSkeleton = defineAsyncComponent(() => import('@/components/RecipeSkeleton.vue'))
 import { useFoodStore } from '@/store/food.js'
 import { useAuthStore } from '@/store/auth.js'
 
@@ -92,7 +93,8 @@ function afterEdit() {
 
 <template>
     <div class="container px-4 my-4">
-        <recipe-view v-if="!edit" :recipe="recipe" @edit="editRecipe" />
+        <recipe-skeleton v-if="recipe === null"/>
+        <recipe-view v-else-if="!edit" :recipe="recipe" @edit="editRecipe" />
         <recipe-form v-else :existing_recipe="recipe" @done="afterEdit" />
     </div>
 </template>
