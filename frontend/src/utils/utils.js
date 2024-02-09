@@ -63,3 +63,11 @@ export function loadScript(src, callback) {
     var doc = document.head || document.body
     doc.appendChild(script)
 }
+
+export function qty_scaled(base_qty, scaling_factor, tick_size) {
+    let scaled = base_qty * scaling_factor
+    let ticks = scaled / tick_size
+    let ticks_rounded = Math.round(ticks)
+    return ticks_rounded * tick_size
+}
+
