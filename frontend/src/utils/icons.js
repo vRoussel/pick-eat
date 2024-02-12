@@ -18,6 +18,8 @@ import vege from '@iconify-icons/iconoir/vegan'
 import priv from '@iconify-icons/mdi/eye-off-outline'
 import plus from '@iconify-icons/mdi/plus';
 import minus from '@iconify-icons/mdi/minus';
+import arrow_down from '@iconify-icons/mdi/keyboard-arrow-down';
+import arrow_up from '@iconify-icons/mdi/keyboard-arrow-up';
 
 import flower from '@iconify-icons/ph/flower-fill'
 import sun from '@iconify-icons/ph/sun-fill'
@@ -48,5 +50,7 @@ export default {
     vege: vege,
     private: priv,
     plus: plus,
-    minus: minus
+    minus: minus,
+    arrow_down: arrow_down,
+    arrow_up: arrow_up,
 }

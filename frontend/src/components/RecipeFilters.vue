@@ -89,6 +89,12 @@ const diets = computed({
     },
 })
 
+const active_filters_count = computed(() => {
+    let f = model.value
+    console.log(f.diets)
+    return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0)
+})
+
 onMounted(() => {
     expanded.value = !on_mobile();
     innerWidth_cached.value = window.innerWidth
@@ -145,15 +151,8 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
 </script>
 
 <template>
-    <div>
+    <div class="space-y-4 lg:space-y-6">
         <div class="flex gap-x-2">
-            <div class="form-control md:hidden">
-                <button class="btn btn-accent btn-square" @click="toggle" aria-label="Afficher/cacher les filtres">
-                    <span class="icon text-xl">
-                        <Icon :icon="icons.options" />
-                    </span>
-                </button>
-            </div>
             <div class="form-control relative grow">
                 <div class="join bg-accent flex items-center">
                     <span class="icon text-xl bg-accent text-accent-content join px-3">
@@ -167,7 +166,16 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
                 </span>
             </div>
         </div>
-        <div v-show="expanded" class="flex flex-col gap-y-4 mt-4">
+        <div class="form-control">
+            <button class="btn w-full mx-auto btn-primary" :class="expanded ? '' : 'btn-outline'" @click="toggle"
+                aria-label="Afficher/cacher les filtres">
+                Filtres ({{ active_filters_count }})
+                <span class="icon text-xl">
+                    <Icon :icon="expanded ? icons.arrow_up : icons.arrow_down" />
+                </span>
+            </button>
+        </div>
+        <div v-show="expanded" class="flex flex-col gap-y-4 border-b md:border-0 border-primary pb-8">
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">Ingrédients</span>
@@ -238,8 +246,9 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
                     searchable :strict="false" track-by="display_name" value-prop="id" :close-on-select="true" />
             </div>
             <div class="form-control">
-                <button class="btn btn-accent" @click="clearFilters" aria-label="Reinitialiser les filtres">
-                    <span class="icon text-xl">
+                <button class="btn btn-outline btn-primary" @click="clearFilters" aria-label="Réinitialiser les filtres">
+                    Reinitialiser les filtres
+                    <span class="text-xl">
                         <Icon :icon="icons.reset" />
                     </span>
                 </button>
