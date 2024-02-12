@@ -34,7 +34,7 @@ const categories = computed({
         return model.value.categories
     },
     set: function (val) {
-        let new_filters = { ...model.value.filters, categories: val }
+        let new_filters = { ...model.value, categories: val }
         updateFilters(new_filters, 0)
     },
 })
