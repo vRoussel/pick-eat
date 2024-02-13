@@ -47,20 +47,6 @@ const canonical_url = computed(() => {
     return url.toString()
 })
 
-useHead({
-    title: "Recettes et liste de courses",
-    meta: [
-        {
-            name: 'description',
-            content: "Trouvez de nouvelles recettes et générez votre liste de courses, c'est tout. Sur pick-eat, vous ne trouverez ni pubs ni blabla."
-        }
-    ],
-    link: () => canonical_url.value === window.location.toString() ? null : {
-        rel: 'canonical',
-        href: canonical_url.value
-    }
-})
-
 const filters = computed({
     get() {
         let q = route.query
@@ -140,6 +126,21 @@ onActivated(async () => {
         loadRecipes()
         saved_query = null
     }
+
+    useHead({
+        title: "Recettes et liste de courses",
+        meta: [
+            {
+                name: 'description',
+                content: "Trouvez de nouvelles recettes et générez votre liste de courses, c'est tout. Sur pick-eat, vous ne trouverez ni pubs ni blabla."
+            }
+        ],
+        link: () => canonical_url.value === window.location.toString() ? null : {
+            rel: 'canonical',
+            href: canonical_url.value
+        }
+    })
+
 })
 
 watch(() => route.query, () => {
