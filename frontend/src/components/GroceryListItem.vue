@@ -1,10 +1,7 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
 
 import NumberInput from '@/components/NumberInput.vue'
 import { useCartStore } from '@/store/cart.js'
-
-import { isOverflown } from '@/utils/utils.js'
 
 const cartStore = useCartStore()
 
@@ -29,32 +26,19 @@ const props = defineProps({
     }
 });
 
-const overflown_recipe_name = ref(false);
-const overflown_shares_unit = ref(false);
-
-const recipe_name_input_el = ref(null);
-const shares_unit_el = ref(null);
-onMounted(async () => {
-    await nextTick()
-    overflown_recipe_name.value = isOverflown(recipe_name_input_el.value.$el)
-    overflown_shares_unit.value = isOverflown(shares_unit_el.value)
-
-})
 </script>
 
 <template>
     <div class="flex items-center gap-x-2 sm:gap-x-4 w-full justify-stretch">
-        <router-link ref="recipe_name_input_el" v-tooltip="overflown_recipe_name ? recipe_name : null"
-            class="recipe-name text-end link-primary basis-4/12 grow" :to="'/recipe/' + recipe_id"
+        <router-link class="line-clamp-3 break-all text-end link-primary basis-4/12 grow" :to="'/recipe/' + recipe_id"
             @click="emit('recipeOpened')" tabindex="-1">
             {{ recipe_name }}
         </router-link>
         <span> x </span>
         <number-input class="basis-10" :model-value="shares" :min="0"
             @update:modelValue="(val) => cartStore.updateRecipeShares(recipe_id, val)" />
-        <span ref="shares_unit_el" v-tooltip="overflown_shares_unit ? shares_unit : null"
-            class="text-sm truncate basis-2/12"> {{
-                shares_unit }}</span>
+        <span class="line-clamp-2 break-all text-sm basis-2/12"> {{
+            shares_unit }}</span>
         <button class="btn btn-circle btn-xs btn-outline" tabindex="-1" type="button"
             @click="cartStore.removeRecipe(recipe_id)">
             <svg viewBox="0 0 512 512">
@@ -64,15 +48,3 @@ onMounted(async () => {
         </button>
     </div>
 </template>
-
-<style scoped>
-.recipe-name {
-    overflow-wrap: anywhere;
-    -webkit-line-clamp: 3;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-pack: center;
-    overflow: hidden;
-}
-</style>
-

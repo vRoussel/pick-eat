@@ -97,10 +97,12 @@ function decrease_shares() {
                 <img v-else :src="icons.camera" alt="icone de caméra" class="rounded-xl w-[512px] aspect-square" />
             </div>
             <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
-                <p ref="recipe_name_el" v-tooltip="overflown ? props.recipe.name : null"
-                    class="recipe-name text-primary text-center font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-                    {{ props.recipe.name }}
-                </p>
+                <div :data-tip="props.recipe.name" :class="overflown ? 'tooltip' : ''">
+                    <p ref="recipe_name_el"
+                        class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                        {{ props.recipe.name }}
+                    </p>
+                </div>
                 <season-icons :seasons="props.recipe.seasons" class="text-2xl md:text-3xl lg:text-4xl gap-x-1" />
                 <p class="space-x-4">
                     <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
@@ -146,12 +148,14 @@ function decrease_shares() {
                     <tr class="text-center">
                         <th colspan="2" class="text-primary-content !bg-primary text-lg rounded-t-xl">
                             <span class="flex flex-row items-center justify-around">
-                                <button class="text-xl text-primary bg-white rounded-full" @click.prevent.stop="decrease_shares" aria-label="Décrémenter le nombre de parts">
-                                <Icon :icon="icons.minus"/>
+                                <button class="text-xl text-primary bg-white rounded-full"
+                                    @click.prevent.stop="decrease_shares" aria-label="Décrémenter le nombre de parts">
+                                    <Icon :icon="icons.minus" />
                                 </button>
                                 <span>Ingrédients<br>({{ asked_shares }} {{ props.recipe.shares_unit }})</span>
-                                <button class="text-xl text-primary bg-white rounded-full" @click.prevent.stop="increase_shares" aria-label="Incrémenter le nombre de parts">
-                                <Icon :icon="icons.plus"/>
+                                <button class="text-xl text-primary bg-white rounded-full"
+                                    @click.prevent.stop="increase_shares" aria-label="Incrémenter le nombre de parts">
+                                    <Icon :icon="icons.plus" />
                                 </button>
                             </span>
                         </th>
@@ -160,7 +164,8 @@ function decrease_shares() {
                 <tbody>
                     <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
                         <td class="!text-right">
-                            {{ ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : '' }} {{ ingr.unit ? ingr.unit.short_name : '' }}
+                            {{ ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : '' }} {{ ingr.unit ?
+                                ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>
@@ -203,13 +208,5 @@ function decrease_shares() {
 th,
 .recipe-name {
     font-family: 'Rounded_Elegance';
-}
-
-.recipe-name {
-    overflow-wrap: anywhere;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 </style>
