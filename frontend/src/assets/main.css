@@ -34,7 +34,7 @@ input[type='number'] {
     @apply input-accent;
 }
 
-.input:focus {
+.input:focus, .select:focus {
     outline-offset: 0;
 }
 
