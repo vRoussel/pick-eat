@@ -1,3 +1,4 @@
+use log::*;
 use std::convert::TryFrom;
 
 use super::{begin_transaction, DBConstraint, IsolationLevel, StorageError};
@@ -6,8 +7,7 @@ use crate::models::{
     RecipeFilters, RecipeSummary, Season, SortMethod, Tag,
 };
 use sqlx::postgres::PgConnection;
-use sqlx::{query, query_as, query_unchecked, Connection};
-use sqlx_conditional_queries::conditional_query_as;
+use sqlx::{query, query_as, query_unchecked, Connection, QueryBuilder};
 
 impl<'a> TryFrom<&DBConstraint> for InvalidRecipe {
     type Error = String;
@@ -35,178 +35,234 @@ pub async fn get_many_recipes(
     sort_method: SortMethod,
     account_id: Option<i32>,
 ) -> Result<Vec<RecipeSummary>, StorageError> {
+    let mut builder = QueryBuilder::new("");
+    let mut joins = String::new();
+    let mut sorting_fields: Vec<String> = Vec::new();
+
+    builder.push("WITH dummy as (SELECT 1)");
+
+    //
+    // Simple filters
+    //
+
+    if let Some(ids) = &filters.categories {
+        builder
+            .push(
+                "
+                , categ_filter as (
+                    SELECT
+                        distinct(recipe_id) as id
+                    FROM
+                        recipes_categories
+                    WHERE
+                        category_id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push("))");
+        joins.push_str(" INNER JOIN categ_filter USING (id)");
+    }
+
+    if let Some(ids) = &filters.seasons {
+        builder
+            .push(
+                "
+                , season_filter as (
+                    SELECT
+                        distinct(recipe_id) as id
+                    FROM
+                        recipes_seasons
+                    WHERE
+                        season_id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push("))");
+        joins.push_str(" INNER JOIN season_filter USING (id)");
+    }
+
+    if let Some(ids) = &filters.diets {
+        builder
+            .push(
+                "
+                , diet_filter as (
+                    SELECT
+                        distinct(recipe_id) as id
+                    FROM
+                        recipes_diets
+                    WHERE
+                        diet_id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push("))");
+        joins.push_str(" INNER JOIN diet_filter USING (id)");
+    }
+
+    if let Some(id) = &filters.account {
+        builder
+            .push(
+                "
+                , account_filter as (
+                    SELECT
+                        distinct(id) as id
+                    FROM
+                        recipes
+                    WHERE
+                        author_id = 
+                ",
+            )
+            .push_bind(id)
+            .push(")");
+        joins.push_str(" INNER JOIN account_filter USING (id)");
+    }
+
+    //
+    // Complex filters
+    // Order is important because we push to sorting_fields
+    //
+
+    if let Some(query) = &filters.search {
+        builder
+            .push(
+                "
+                , search_filter as (
+                    SELECT
+                        r.id,
+                        AVG(w.word <<-> unaccent(r.name)) AS rank
+                    FROM
+                    (
+                        SELECT UNNEST(
+                            STRING_TO_ARRAY(
+                                unaccent(
+                ",
+            )
+            .push_bind(query)
+            .push(
+                "
+                            ) , ' ')
+                        ) as word
+                    ) as w
+                    CROSS JOIN recipes as r
+                    GROUP BY r.id
+                    HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.7
+                )
+                ",
+            );
+        joins.push_str(" INNER JOIN search_filter as sf USING (id)");
+        sorting_fields.push(String::from("sf.rank"));
+    }
+
+    if let Some(ids) = &filters.ingredients {
+        builder
+            .push(
+                "
+                , ingredient_filter as (
+                    SELECT
+                        recipe_id as id,
+                        count(*) as rank
+                    FROM
+                        recipes_ingredients
+                    WHERE
+                        ingredient_id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push(
+                ")
+                    GROUP BY id)",
+            );
+        joins.push_str(" INNER JOIN ingredient_filter as if USING (id)");
+        sorting_fields.push(String::from("if.rank DESC"));
+    }
+
+    if let Some(ids) = &filters.tags {
+        builder
+            .push(
+                "
+                , tag_filter as (
+                    SELECT
+                        recipe_id as id, count(*) as rank
+                    FROM
+                        recipes_tags
+                    WHERE
+                        tag_id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push(
+                ")
+                    GROUP BY id)",
+            );
+        joins.push_str(" INNER JOIN tag_filter tf USING (id)");
+        sorting_fields.push(String::from("tf.rank DESC"));
+    }
+
+    //
+    // Order by
+    //
+
+    let base_order = match sort_method {
+        SortMethod::Random => {
+            "(extract(epoch from publication_date)+id)::bigint % get_weekly_seed()"
+        }
+    };
+
+    sorting_fields.push(String::from(base_order));
+
     let offset = range.from - 1;
     let limit = range.to - range.from + 1;
-    let recipes: Vec<RecipeSummary> = conditional_query_as!(
-        RecipeSummary,
-        r#"
-            WITH
-                dummy as (SELECT 1)
-                {#search_filter}
-                {#categ_filter}
-                {#season_filter}
-                {#tag_filter}
-                {#diet_filter}
-                {#ingredient_filter}
-                {#account_filter}
+
+    //
+    // Request body
+    //
+
+    builder
+        .push(
+            "
             SELECT
-                r.id as "id!",
-                r.name as "name!",
-                r.image as "image!",
-                is_recipe_in_account_favs(r.id, {account_id}) as "is_favorite!",
-                r.ingredients as "ingredients!: Vec<QIngredient>",
-                r.diets as "diets!: Vec<Diet>",
-                n_shares as "n_shares!",
-                shares_unit as "shares_unit!",
-                is_private as "is_private!",
-                count(*) OVER() AS "total_count!"
+                r.id,
+                r.name,
+                r.image,
+                is_recipe_in_account_favs(r.id, 
+            ",
+        )
+        .push_bind(account_id)
+        .push(
+            " ) as is_favorite,
+                r.ingredients,
+                r.diets,
+                n_shares,
+                shares_unit,
+                is_private,
+                count(*) OVER() AS total_count
             FROM recipes_full AS r
-                {#search_filter_join}
-                {#categ_filter_join}
-                {#season_filter_join}
-                {#tag_filter_join}
-                {#diet_filter_join}
-                {#ingredient_filter_join}
-                {#account_filter_join}
-            WHERE
-                is_private = 'f' OR author_id = {account_id}
-            ORDER BY
-                {#search_filter_order}
-                {#ingredient_filter_order}
-                {#tag_filter_order}
-                {#base_order}
-            OFFSET {offset}
-            LIMIT {limit}
-        "#,
-        #(search_filter, search_filter_join, search_filter_order) = match &filters.search {
-            None => ("","",""),
-            Some(query) => (
-                "
-                    , search_filter as (
-                        SELECT
-                            r.id,
-                            AVG(w.word <<-> unaccent(r.name)) AS rank
-                        FROM
-                        (
-                            SELECT UNNEST(
-                                STRING_TO_ARRAY(
-                                    unaccent({query})
-                                    , ' '
-                                )
-                            ) as word
-                        ) as w
-                        CROSS JOIN recipes as r
-                        GROUP BY r.id
-                        HAVING MAX(w.word <<-> unaccent(r.name)) <= 0.7
-                    )
-                ",
-                " INNER JOIN search_filter as sf USING (id)",
-                " sf.rank, "
-            )
-        },
-        #(categ_filter, categ_filter_join) = match &filters.categories {
-            None => ("",""),
-            Some(categ_ids) => (
-                "
-                    , categ_filter as (
-                        SELECT
-                            distinct(recipe_id) as id
-                        FROM
-                            recipes_categories
-                        WHERE category_id = any({categ_ids})
-                    )
-                ",
-                " INNER JOIN categ_filter USING (id)",
-            )
-        },
-        #(season_filter, season_filter_join) = match &filters.seasons {
-            None => ("",""),
-            Some(season_ids) => (
-                "
-                    , season_filter as (
-                        SELECT
-                            distinct(recipe_id) as id
-                        FROM
-                            recipes_seasons
-                        WHERE season_id = any({season_ids})
-                    )
-                ",
-                " INNER JOIN season_filter USING (id)",
-            )
-        },
-        #(tag_filter, tag_filter_join, tag_filter_order) = match &filters.tags {
-            None => ("","",""),
-            Some(tag_ids) => (
-                "
-                    , tag_filter as (
-                        SELECT
-                            recipe_id as id,
-                            count(*) as rank
-                        FROM
-                            recipes_tags
-                        WHERE tag_id = any({tag_ids})
-                        GROUP BY id
-                    )
-                ",
-                " INNER JOIN tag_filter as tf USING (id)",
-                "tf.rank DESC, "
-            )
-        },
-        #(diet_filter, diet_filter_join) = match &filters.diets {
-            None => ("",""),
-            Some(diet_ids) => (
-                "
-                    , diet_filter as (
-                        SELECT
-                            distinct(recipe_id) as id
-                        FROM
-                            recipes_diets
-                        WHERE diet_id = any({diet_ids})
-                    )
-                ",
-                " INNER JOIN diet_filter USING (id)",
-            )
-        },
-        #(ingredient_filter, ingredient_filter_join, ingredient_filter_order) = match &filters.ingredients {
-            None => ("","",""),
-            Some(ingredient_ids) => (
-                "
-                    , ingredient_filter as (
-                        SELECT
-                            recipe_id as id,
-                            count(*) as rank
-                        FROM
-                            recipes_ingredients
-                        WHERE ingredient_id = any({ingredient_ids})
-                        GROUP BY id
-                    )
-                ",
-                " INNER JOIN ingredient_filter as if USING (id)",
-                " if.rank DESC, "
-            )
-        },
-        #(account_filter, account_filter_join) = match &filters.account {
-            None => ("",""),
-            Some(account_id) => (
-                "
-                    , account_filter as (
-                        SELECT
-                            distinct(id)
-                        FROM
-                            recipes
-                        WHERE author_id = {account_id}
-                    )
-                ",
-                " INNER JOIN account_filter USING (id)",
-            )
-        },
-        #base_order = match sort_method {
-            SortMethod::Random =>
-                "(extract(epoch from publication_date)+id)::bigint % get_weekly_seed()"
-        }
-    )
-    .fetch_all(db_conn)
-    .await?;
+            ",
+        )
+        .push(" \n")
+        .push(joins)
+        .push(
+            "
+            WHERE is_private = 'f' OR author_id = 
+            ",
+        )
+        .push_bind(account_id)
+        .push(
+            "
+        ORDER BY ",
+        )
+        .push(sorting_fields.join(", "))
+        .push(" OFFSET ")
+        .push_bind(offset)
+        .push(" LIMIT ")
+        .push_bind(limit);
+
+    debug!("{}", builder.sql());
+
+    let recipes: Vec<RecipeSummary> = builder
+        .build_query_as::<RecipeSummary>()
+        .fetch_all(db_conn)
+        .await?;
 
     Ok(recipes)
 }
