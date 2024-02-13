@@ -75,14 +75,15 @@ const filters = computed({
         )
     },
     set(f) {
-        let q = {}
-        if (f.search_query) q.search = f.search_query
-        if (f.ingredients.length > 0) q.i = f.ingredients.join(',')
-        if (f.tags.length > 0) q.t = f.tags.join(',')
-        if (f.categories.length > 0) q.c = f.categories.join(',')
-        if (f.seasons.length > 0) q.s = f.seasons.join(',')
-        if (f.account) q.a = f.account
-        if (f.diets.length > 0) q.d = f.diets.join(',')
+        let q = { ...route.query }
+
+        q.search = f.search_query || undefined
+        q.i = f.ingredients.join(',') || undefined
+        q.t = f.tags.join(',') || undefined
+        q.c = f.categories.join(',') || undefined
+        q.s = f.seasons.join(',') || undefined
+        q.d = f.diets.join(',') || undefined
+        q.a = f.account || undefined
 
         // Avoid scrolling to top if we are changing filters
         q.ns = null
