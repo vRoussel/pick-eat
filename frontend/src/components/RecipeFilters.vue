@@ -246,7 +246,7 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
             </div>
             <div class="form-control">
                 <button class="btn btn-outline btn-primary" @click="clearFilters" aria-label="Réinitialiser les filtres">
-                    Reinitialiser les filtres
+                    Réinitialiser les filtres
                     <span class="text-xl">
                         <Icon :icon="icons.reset" />
                     </span>
