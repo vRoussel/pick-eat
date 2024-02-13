@@ -113,6 +113,11 @@ pub struct RecipeFilters {
 #[derive(Debug, Clone)]
 pub enum SortMethod {
     Random,
+    Name,
+    PubDateAsc,
+    PubDateDesc,
+    IngrCount,
+    TotalTime,
 }
 
 // We can't use #[derive(Type)] here

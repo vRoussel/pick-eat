@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, watch, onActivated, onDeactivated } from 'vue'
+import { computed, ref, onMounted, watch, onActivated, onDeactivated, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
 import isEqual from 'lodash.isequal'
@@ -15,6 +15,7 @@ import no_recipe_video from '@/assets/homer_hungry.mp4'
 const foodStore = useFoodStore()
 const router = useRouter()
 const route = useRoute()
+const icons = inject('icons')
 
 const recipes = ref([])
 const per_page = ref(12)
@@ -89,10 +90,28 @@ const filters = computed({
     },
 })
 
+let sort_method = computed({
+    get: function () {
+        return route.query.sort || "random"
+    },
+    set: function (val) {
+        router.push({ name: 'recipe-list', query: { ...route.query, 'sort': val } })
+    }
+})
+
+const sort_methods = ref([
+    { text: "Ordre aléatoire (choix par défaut)", value: "random" },
+    { text: "Ordre alphabétique", value: "name" },
+    { text: "Les plus récentes", value: "pub_date_desc" },
+    { text: "Les plus anciennes", value: "pub_date_asc" },
+    { text: "Les plus rapides", value: "total_time" },
+    { text: "Le moins d'ingrédients", value: "ingr_count" },
+])
+
 let last_query = null;
 let saved_query = null;
 function loadRecipes() {
-    foodStore.getRecipes(from.value, to.value, filters.value).then((result) => {
+    foodStore.getRecipes(from.value, to.value, filters.value, sort_method.value).then((result) => {
         let [_recipes, _total_count] = result
         recipes.value = _recipes
         total_count.value = _total_count
@@ -136,9 +155,19 @@ function on_mobile() {
 </script>
 
 <template>
-    <div class="flex my-4 mx-4 lg:mx-8 gap-x-8 gap-y-8 flex-col md:flex-row">
+    <div class="flex my-4 mx-4 lg:mx-8 gap-x-8 gap-y-4 flex-col md:flex-row">
         <recipe-filters v-model:filters="filters" class="md:min-w-[16rem] md:max-w-[16rem]" />
         <div v-if="total_count > 0" class="w-full">
+            <div class="join flex items-center w-full">
+                <span class="icon text-xl text-accent-content join px-3">
+                    <Icon :icon="icons.sort" :inline="true" />
+                </span>
+                <select v-model="sort_method" class="select grow">
+                    <option v-for="sm in sort_methods" :value="sm.value">
+                        {{ sm.text }}
+                    </option>
+                </select>
+            </div>
             <!--
             <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
         -->

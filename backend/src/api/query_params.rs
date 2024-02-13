@@ -136,6 +136,11 @@ impl TryFrom<SortMethodQueryParams> for SortMethod {
     fn try_from(value: SortMethodQueryParams) -> Result<Self, Self::Error> {
         match value.sort.as_ref() {
             "random" => Ok(SortMethod::Random),
+            "name" => Ok(SortMethod::Name),
+            "pub_date_asc" => Ok(SortMethod::PubDateAsc),
+            "pub_date_desc" => Ok(SortMethod::PubDateDesc),
+            "ingr_count" => Ok(SortMethod::IngrCount),
+            "total_time" => Ok(SortMethod::TotalTime),
             _ => Err(QueryParamError::WrongValue {
                 param: "sort",
                 error: "unhandled sort query param value".to_owned(),

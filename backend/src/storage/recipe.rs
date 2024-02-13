@@ -206,6 +206,11 @@ pub async fn get_many_recipes(
         SortMethod::Random => {
             "(extract(epoch from publication_date)+id)::bigint % get_weekly_seed()"
         }
+        SortMethod::Name => "r.name",
+        SortMethod::PubDateAsc => "r.publication_date asc",
+        SortMethod::PubDateDesc => "r.publication_date desc",
+        SortMethod::IngrCount => "array_length(r.ingredients, 1)",
+        SortMethod::TotalTime => "r.preparation_time_min + r.cooking_time_min",
     };
 
     sorting_fields.push(String::from(base_order));
