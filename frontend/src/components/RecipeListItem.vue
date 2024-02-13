@@ -1,13 +1,11 @@
 <script setup>
-import { ref, onMounted, inject, computed } from 'vue'
+import { inject, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
 import { useAuthStore } from '@/store/auth.js'
 import { useNotifStore } from '@/store/notif.js'
-
-import { isOverflown } from '@/utils/utils.js'
 
 const cartStore = useCartStore()
 const foodStore = useFoodStore()
@@ -28,8 +26,6 @@ const props = defineProps({
     }
 });
 
-const overflown = ref(false)
-
 const heart_svg = computed(() => {
     return props.recipe.is_favorite ? icons.heart : icons.heart_outline
 })
@@ -46,16 +42,6 @@ const is_vege = computed(() => {
 
 const is_vegan = computed(() => {
     return props.recipe.diets.find((d) => d.label == 'vegan')
-})
-
-const recipe_name_el = ref(null)
-onMounted(() => {
-    const interval = setInterval(() => {
-        if (recipe_name_el.value) {
-            overflown.value = isOverflown(recipe_name_el.value)
-            clearInterval(interval)
-        }
-    }, 100)
 })
 
 function toggleFavorite(recipe) {
@@ -79,7 +65,7 @@ function toggleCart(recipe) {
 </script>
 
 <template>
-    <router-link :to="'/recipe/' + props.recipe.id" :title="props.recipe.name">
+    <router-link :to="'/recipe/' + props.recipe.id" :aria-label="props.recipe.name">
         <div
             class="card card-compact h-full card-bordered hover:border-primary transition ease-in-out hover:scale-105 border-accent border-2">
             <picture v-if="props.recipe.image" class="relative">
@@ -112,8 +98,7 @@ function toggleCart(recipe) {
                     </span>
                 </div>
                 <div class="py-4">
-                    <h2 ref="recipe_name_el" v-tooltip="overflown ? props.recipe.name : null"
-                        class="text-xl recipe-name grow text-center">
+                    <h2 class="text-xl recipe-name line-clamp-3 break-words grow text-center">
                         {{ props.recipe.name }}
                     </h2>
                 </div>
@@ -125,13 +110,6 @@ function toggleCart(recipe) {
 <style scoped>
 .recipe-name {
     font-family: 'Rounded_Elegance';
-
-    overflow-wrap: anywhere;
-    -webkit-line-clamp: 3;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-pack: center;
-    overflow: hidden;
 }
 </style>
 

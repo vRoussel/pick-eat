@@ -99,7 +99,7 @@ defineExpose({ open });
                                 </span>
                                 <span v-if="qu.u.length > 0">
                                     <span v-if="qu.q.size > 0"> + </span>
-                                    <span v-tooltip="qu.u.map((x) => x.r_name).join(', ')">...</span>
+                                    <span class="tooltip" :data-tip="qu.u.map((x) => x.r_name).join(', ')">...</span>
                                 </span>
                             </td>
                         </tr>
