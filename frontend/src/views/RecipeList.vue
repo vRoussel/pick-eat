@@ -159,7 +159,7 @@ function on_mobile() {
         <recipe-filters v-model:filters="filters" class="md:min-w-[16rem] md:max-w-[16rem]" />
         <div v-if="total_count > 0" class="w-full">
             <div class="join flex items-center w-full">
-                <span class="icon text-xl text-accent-content join px-3">
+                <span class="icon text-xl text-base-content join px-3">
                     <Icon :icon="icons.sort" :inline="true" />
                 </span>
                 <select v-model="sort_method" class="select grow">
