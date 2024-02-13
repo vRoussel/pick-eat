@@ -1,4 +1,4 @@
-
+use sqlx::postgres::{PgHasArrayType, PgTypeInfo};
 
 use super::{InvalidInput, InvalidityKind};
 
@@ -49,6 +49,12 @@ where
 
 impl ::sqlx::Type<::sqlx::Postgres> for Diet {
     fn type_info() -> ::sqlx::postgres::PgTypeInfo {
-        ::sqlx::postgres::PgTypeInfo::with_name("Diet")
+        ::sqlx::postgres::PgTypeInfo::with_name("diets")
+    }
+}
+
+impl PgHasArrayType for Diet {
+    fn array_type_info() -> PgTypeInfo {
+        ::sqlx::postgres::PgTypeInfo::with_name("_diets")
     }
 }

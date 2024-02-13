@@ -1,3 +1,8 @@
+use sqlx::{
+    postgres::{PgHasArrayType, PgTypeInfo},
+    prelude::FromRow,
+};
+
 use super::{Category, Diet, InvalidInput, InvalidityKind, Season, Tag, Unit};
 
 #[derive(Debug)]
@@ -64,7 +69,7 @@ pub struct InvalidRecipe {
 
 impl InvalidInput for InvalidRecipe {}
 
-#[derive(Debug)]
+#[derive(Debug, FromRow)]
 pub struct RecipeSummary {
     pub id: i32,
     pub name: String,
@@ -143,9 +148,16 @@ where
         })
     }
 }
+
 impl ::sqlx::Type<::sqlx::Postgres> for QIngredient {
     fn type_info() -> ::sqlx::postgres::PgTypeInfo {
-        ::sqlx::postgres::PgTypeInfo::with_name("QIngredient")
+        ::sqlx::postgres::PgTypeInfo::with_name("qingredient")
+    }
+}
+
+impl PgHasArrayType for QIngredient {
+    fn array_type_info() -> PgTypeInfo {
+        ::sqlx::postgres::PgTypeInfo::with_name("_qingredient")
     }
 }
 
