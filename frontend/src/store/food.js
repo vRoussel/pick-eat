@@ -106,12 +106,12 @@ export const useFoodStore = defineStore('food', {
             })
         },
 
-        async getRecipes(from, to, filters) {
+        async getRecipes(from, to, filters, sort_method) {
             let f = filters
             let url = `${API_ROOT}/recipes`
             let params = {
                 range: `${from}-${to}`,
-                sort: 'random',
+                sort: sort_method,
             }
             if (f.search_query) params.search = f.search_query
             if (f.ingredients.length > 0) params.ingredients = f.ingredients.join(',')
