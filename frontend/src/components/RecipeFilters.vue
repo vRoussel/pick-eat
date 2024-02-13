@@ -91,7 +91,6 @@ const diets = computed({
 
 const active_filters_count = computed(() => {
     let f = model.value
-    console.log(f.diets)
     return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0)
 })
 
