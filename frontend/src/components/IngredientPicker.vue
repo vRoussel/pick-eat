@@ -28,17 +28,12 @@ const ingr_remaining = computed(() => {
     return foodStore.ingredients.filter((ingr) => !model.value.has(ingr.id))
 })
 
-const _picked = computed(() => {
-    return new Map(model.value)
-})
-
 function add_ingr(ingr) {
-    _picked.value.set(ingr.id, {
+    model.value.set(ingr.id, {
         id: ingr.id,
         unit_id: ingr.default_unit ? ingr.default_unit.id : null,
         quantity: null,
     })
-    model.value = _picked.value
     multiselect_el.value.clear()
     nextTick(() => {
         multiselect_el.value.focus()
@@ -46,8 +41,7 @@ function add_ingr(ingr) {
 }
 
 function del_ingr(id) {
-    _picked.value.delete(id)
-    model.value = _picked.value
+    model.value.delete(id)
 }
 
 function save_ingredient_search() {
