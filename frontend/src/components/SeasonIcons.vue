@@ -13,8 +13,8 @@ const season_labels = computed(() => {
 function dynClass(label) {
     return {
         'text-primary': has_season(label),
-        'text-base-300': !has_season(label),
-        'opacity-50': !has_season(label),
+        'text-base-content': !has_season(label),
+        'opacity-20': !has_season(label),
     }
 }
 
