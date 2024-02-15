@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 1.0.6
--- PostgreSQL version: 15.0
+-- PostgreSQL version: 16.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
@@ -90,6 +90,7 @@ CREATE TABLE public.recipes_ingredients (
 	ingredient_id integer NOT NULL,
 	quantity real,
 	unit_id integer,
+	ingredient_index integer NOT NULL,
 	CONSTRAINT recipes_ingredients_pk PRIMARY KEY (recipe_id,ingredient_id),
 	CONSTRAINT recipes_ingredients_ck_qty CHECK (quantity > 0)
 );
@@ -463,6 +464,7 @@ SELECT
             ri.quantity,
             get_unit(ri.unit_id)
         )::qingredient
+		ORDER BY ri.ingredient_index
     ),
     '{}'
 ) as ingredients

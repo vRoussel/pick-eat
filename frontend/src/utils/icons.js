@@ -21,6 +21,7 @@ import minus from '@iconify-icons/mdi/minus';
 import arrow_down from '@iconify-icons/mdi/keyboard-arrow-down';
 import arrow_up from '@iconify-icons/mdi/keyboard-arrow-up';
 import sort from '@iconify-icons/mdi/sort-variant';
+import dragv from '@iconify-icons/mdi/drag-vertical';
 
 import flower from '@iconify-icons/ph/flower-fill'
 import sun from '@iconify-icons/ph/sun-fill'
@@ -54,5 +55,6 @@ export default {
     minus: minus,
     arrow_down: arrow_down,
     arrow_up: arrow_up,
-    sort: sort
+    sort: sort,
+    dragv: dragv
 }

@@ -636,11 +636,11 @@ pub async fn replace_recipe(
                         AS x(i_id, q, u_id)
                 )
                 INSERT INTO recipes_ingredients as ri
-                (recipe_id, ingredient_id, quantity, unit_id)
-                SELECT $1, i_id, q, u_id
+                (recipe_id, ingredient_id, quantity, unit_id, ingredient_index)
+                SELECT $1, i_id, q, u_id, row_number() over()
                 FROM input
                 ON CONFLICT(recipe_id, ingredient_id) DO UPDATE
-                    SET quantity = EXCLUDED.quantity, unit_id = EXCLUDED.unit_id
+                    SET quantity = EXCLUDED.quantity, unit_id = EXCLUDED.unit_id, ingredient_index = EXCLUDED.ingredient_index
                     WHERE ri.recipe_id = $1 AND ri.ingredient_id = EXCLUDED.ingredient_id
                 ;
             ",

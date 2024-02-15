@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.6" use-changelog="false" last-position="42,123" last-zoom="0.8" max-obj-count="22"
+<dbmodel pgmodeler-ver="1.0.6" use-changelog="false" last-position="0,127" last-zoom="0.8" max-obj-count="22"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -121,6 +121,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="real" length="0"/>
 	</column>
 	<column name="unit_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="ingredient_index" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
 	<constraint name="recipes_ingredients_pk" type="pk-constr" table="public.recipes_ingredients">
@@ -640,6 +643,7 @@ WHERE u.id = unit_id_in]]> </definition>
             ri.quantity,
             get_unit(ri.unit_id)
         )::qingredient
+		ORDER BY ri.ingredient_index
     ),
     '{}'
 ) as ingredients
