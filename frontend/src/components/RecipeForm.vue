@@ -46,7 +46,6 @@ const validator = object().shape({
         .transform((value) => Array.from(value))
         .min(1, 'Selectionnez au moins une saison'),
     ingredients: array()
-        .transform((value) => Array.from(value))
         .min(1, 'Ajoutez au moins un ingrédient'),
     instructions: string().required('Ajoutez les étapes pour réaliser la recette'),
     // Mandatory image is too annoying, find a better way
@@ -71,7 +70,7 @@ const fields = ref({
     categories: new Set(),
     tags: new Set(),
     seasons: new Set(),
-    ingredients: new Map(),
+    ingredients: new Array(),
     diets: new Set(),
     notes: '',
     image_url: '',
@@ -140,7 +139,7 @@ function sendRecipe() {
     let f = fields.value
     let recipe = {
         name: f.name,
-        q_ingredients: Array.from(f.ingredients.values()),
+        q_ingredients: f.ingredients,
         category_ids: Array.from(f.categories),
         tag_ids: Array.from(f.tags),
         season_ids: Array.from(f.seasons),
@@ -203,16 +202,13 @@ function fillForm() {
 
         let f = fields.value
         f.name = other.name
-        f.ingredients = new Map(
-            other.q_ingredients.map((ingr) => [
-                ingr.id,
-                {
-                    id: ingr.id,
-                    unit_id: ingr.unit ? ingr.unit.id : null,
-                    quantity: ingr.quantity,
-                },
-            ]),
-        )
+        f.ingredients = other.q_ingredients.map((ingr) => {
+            return {
+                id: ingr.id,
+                unit_id: ingr.unit ? ingr.unit.id : null,
+                quantity: ingr.quantity
+            }
+        })
         f.categories = new Set(other.categories.map((c) => c.id))
         f.tags = new Set(other.tags.map((t) => t.id))
         f.seasons = new Set(other.seasons.map((s) => s.id))

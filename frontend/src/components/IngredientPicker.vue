@@ -1,6 +1,7 @@
 <script setup>
 
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, onMounted } from 'vue'
+import Sortable from 'sortablejs';
 
 import Multiselect from '@vueform/multiselect'
 import IngredientListItem from '@/components/IngredientListItem.vue'
@@ -11,7 +12,7 @@ import { useFoodStore } from '@/store/food.js'
 const foodStore = useFoodStore()
 
 const model = defineModel('picked', {
-    type: Map,
+    type: Array,
     required: true
 })
 
@@ -25,11 +26,12 @@ const unit_modal_el = ref(null)
 const current_unit_input_el = ref(null)
 
 const ingr_remaining = computed(() => {
-    return foodStore.ingredients.filter((ingr) => !model.value.has(ingr.id))
+    let picked_ids = new Set(model.value.map((ingr) => ingr.id))
+    return foodStore.ingredients.filter((ingr) => !picked_ids.has(ingr.id))
 })
 
 function add_ingr(ingr) {
-    model.value.set(ingr.id, {
+    model.value.push({
         id: ingr.id,
         unit_id: ingr.default_unit ? ingr.default_unit.id : null,
         quantity: null,
@@ -41,7 +43,7 @@ function add_ingr(ingr) {
 }
 
 function del_ingr(id) {
-    model.value.delete(id)
+    model.value.filter((ingr) => ingr.id != id)
 }
 
 function save_ingredient_search() {
@@ -69,6 +71,26 @@ function open_ingr_modal() {
 function open_unit_modal() {
     unit_modal_el.value.open()
 }
+
+let ingr_container_el = ref(null);
+// Default SortableJS
+
+onMounted(() => {
+    var sortable = Sortable.create(ingr_container_el.value, {
+        handle: ".handle",
+        onEnd: (evt) => {
+            let old_idx = evt.oldDraggableIndex
+            let new_idx = evt.newDraggableIndex
+            if (old_idx == new_idx)
+                return
+
+            let tmp = model.value[new_idx]
+            model.value[new_idx] = model.value[old_idx]
+            model.value[old_idx] = tmp
+        }
+    });
+})
+
 </script>
 
 <template>
@@ -87,8 +109,8 @@ function open_unit_modal() {
             Unité manquante ?
         </button>
     </div>
-    <div class="flex flex-col items-center mt-2 gap-y-5">
-        <ingredient-list-item v-for="ingr in model.values()" :id="ingr.id" :key="ingr.id" v-model:quantity="ingr.quantity"
+    <div ref="ingr_container_el" class="flex flex-col items-center mt-2 divide-y *:py-4 first:*:pt-0 last:*:pb-0">
+        <ingredient-list-item v-for="ingr in model" :id="ingr.id" :key="ingr.id" v-model:quantity="ingr.quantity"
             v-model:unit_id="ingr.unit_id" @delete="del_ingr(ingr.id)" @createUnit="save_unit_search(), open_unit_modal()"
             @unit-input-selected="save_current_unit_input" />
     </div>
