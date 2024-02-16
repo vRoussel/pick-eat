@@ -17,12 +17,12 @@ export const useCartStore = defineStore('cart', () => {
             return
         }
         content.value.set(recipe.id, { recipe: recipe, shares: shares })
-        save_cart(content.value)
+        backup()
     }
 
     function removeRecipe(r_id) {
         content.value.delete(r_id)
-        save_cart(content.value)
+        backup()
     }
 
     function hasRecipe(r_id) {
@@ -31,7 +31,11 @@ export const useCartStore = defineStore('cart', () => {
 
     function updateRecipeShares(r_id, shares) {
         content.value.get(r_id).shares = shares
-        save_cart(content.value)
+        backup()
+    }
+
+    function backup() {
+        localStorage.setItem("cart", JSON.stringify([...content.value]))
     }
 
     function restore() {
@@ -47,6 +51,3 @@ export const useCartStore = defineStore('cart', () => {
     return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipeShares, restore }
 })
 
-function save_cart(content) {
-    localStorage.setItem("cart", JSON.stringify([...content]))
-}
