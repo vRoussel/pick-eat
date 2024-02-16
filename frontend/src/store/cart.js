@@ -2,9 +2,12 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 import { useNotifStore } from '@/store/notif.js'
+import { useFoodStore } from '@/store/food.js'
 
 export const useCartStore = defineStore('cart', () => {
     const notifStore = useNotifStore()
+    const foodStore = useFoodStore()
+
     const content = ref(new Map())
 
     let recipeCount = computed(() => {
@@ -34,20 +37,38 @@ export const useCartStore = defineStore('cart', () => {
         backup()
     }
 
+    function updateRecipe(new_recipe, should_backup = true) {
+        content.value.get(new_recipe.id).recipe = new_recipe
+        if (should_backup)
+            backup()
+    }
+
     function backup() {
         localStorage.setItem("cart", JSON.stringify([...content.value]))
     }
 
-    function restore() {
+    async function restore() {
         try {
             let saved = new Map(JSON.parse(localStorage.getItem("cart")))
-            if (saved)
+            if (saved) {
                 content.value = saved
+            }
         } catch {
             console.error("Unable to restore cart from local storage")
         }
+
+        try {
+            let ids = Array.from(content.value.keys())
+            let up_to_date_recipes = await foodStore.getRecipesFromIds(ids)
+            for (const r of up_to_date_recipes) {
+                updateRecipe(r, should_backup = false)
+            }
+            backup()
+        } catch (e) {
+            console.error("Unable to update cart recipes from API")
+        }
     }
 
-    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipeShares, restore }
+    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipe, updateRecipeShares, restore }
 })
 
