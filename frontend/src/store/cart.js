@@ -37,8 +37,8 @@ export const useCartStore = defineStore('cart', () => {
         backup()
     }
 
-    function updateRecipe(new_recipe, should_backup = true) {
-        content.value.get(new_recipe.id).recipe = new_recipe
+    function updateRecipe(id, new_recipe, should_backup = true) {
+        content.value.get(id).recipe = new_recipe
         if (should_backup)
             backup()
     }
@@ -61,7 +61,7 @@ export const useCartStore = defineStore('cart', () => {
             let ids = Array.from(content.value.keys())
             let up_to_date_recipes = await foodStore.getRecipesFromIds(ids)
             for (const r of up_to_date_recipes) {
-                updateRecipe(r, should_backup = false)
+                updateRecipe(r.id, r, should_backup = false)
             }
             backup()
         } catch (e) {
