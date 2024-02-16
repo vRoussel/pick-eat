@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use std::{convert::TryFrom, fmt::Display, str::FromStr};
 
 use serde::Deserialize;
 use thiserror::Error;
@@ -64,16 +64,24 @@ impl TryFrom<RangeQueryParams> for Range {
     }
 }
 
+fn parse_list<T, E>(input: &str, sep: &str) -> Result<Vec<T>, E>
+where
+    T: FromStr<Err = E>,
+    E: Display,
+{
+    input
+        .split(sep)
+        .map(|s| s.parse::<T>())
+        .collect::<Result<_, _>>()
+}
+
 impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
     type Error = QueryParamError;
 
     fn try_from(value: RecipeFiltersQueryParams) -> Result<Self, Self::Error> {
         let mut filters: RecipeFilters = Default::default();
         if let Some(v) = value.categories {
-            filters.categories = v
-                .split(',')
-                .map(|s| s.parse::<i32>())
-                .collect::<Result<_, _>>()
+            filters.categories = parse_list::<i32, _>(&v, ",")
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "categories",
@@ -81,10 +89,7 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
                 })?;
         }
         if let Some(v) = value.seasons {
-            filters.seasons = v
-                .split(',')
-                .map(|s| s.parse::<i32>())
-                .collect::<Result<_, _>>()
+            filters.seasons = parse_list::<i32, _>(&v, ",")
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "seasons",
@@ -92,10 +97,7 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
                 })?;
         }
         if let Some(v) = value.ingredients {
-            filters.ingredients = v
-                .split(',')
-                .map(|s| s.parse::<i32>())
-                .collect::<Result<_, _>>()
+            filters.ingredients = parse_list::<i32, _>(&v, ",")
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "ingredients",
@@ -103,10 +105,7 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
                 })?;
         }
         if let Some(v) = value.tags {
-            filters.tags = v
-                .split(',')
-                .map(|s| s.parse::<i32>())
-                .collect::<Result<_, _>>()
+            filters.tags = parse_list::<i32, _>(&v, ",")
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "tags",
@@ -114,10 +113,7 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
                 })?;
         }
         if let Some(v) = value.diets {
-            filters.diets = v
-                .split(',')
-                .map(|s| s.parse::<i32>())
-                .collect::<Result<_, _>>()
+            filters.diets = parse_list::<i32, _>(&v, ",")
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "diets",
