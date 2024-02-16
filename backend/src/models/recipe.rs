@@ -107,6 +107,7 @@ pub struct RecipeFilters {
     pub tags: Option<Vec<i32>>,
     pub account: Option<i32>,
     pub diets: Option<Vec<i32>>,
+    pub ids: Option<Vec<i32>>,
     //TODO mes recettes privéees
 }
 

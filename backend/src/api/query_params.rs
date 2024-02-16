@@ -24,6 +24,7 @@ pub struct RecipeFiltersQueryParams {
     tags: Option<String>,
     account: Option<i32>,
     diets: Option<String>,
+    ids: Option<String>,
 }
 
 #[derive(Error, Debug)]
@@ -117,6 +118,14 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
                 .map(|x| Some(x))
                 .map_err(|e| QueryParamError::WrongFormat {
                     param: "diets",
+                    error: e.to_string(),
+                })?;
+        }
+        if let Some(v) = value.ids {
+            filters.ids = parse_list::<i32, _>(&v, ",")
+                .map(|x| Some(x))
+                .map_err(|e| QueryParamError::WrongFormat {
+                    param: "ids",
                     error: e.to_string(),
                 })?;
         }
