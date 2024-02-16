@@ -125,6 +125,20 @@ export const useFoodStore = defineStore('food', {
             return [resp.data, total_count]
         },
 
+        async getRecipesFromIds(ids) {
+            if (ids.length > 25) {
+                console.warn("More than 25 recipes asked by ID, this should not happen")
+            }
+            let url = `${API_ROOT}/recipes`
+            let params = {
+                range: `1-25`,
+                sort: 'random',
+            }
+            params.ids = ids.join(',')
+            let resp = await axios.get(url, { params: params })
+            return resp.data
+        },
+
         getTagById(id) {
             return this.tagsById.get(id)
         },
