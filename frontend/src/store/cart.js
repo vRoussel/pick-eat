@@ -1,7 +1,10 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
+import { useNotifStore } from '@/store/notif.js'
+
 export const useCartStore = defineStore('cart', () => {
+    const notifStore = useNotifStore()
     const content = ref(new Map())
 
     let recipeCount = computed(() => {
@@ -9,6 +12,10 @@ export const useCartStore = defineStore('cart', () => {
     })
 
     function addRecipe(recipe, shares) {
+        if (recipeCount.value >= 25) {
+            notifStore.show_error("Vous ne pouvez pas ajouter plus de 25 recettes à votre panier")
+            return
+        }
         content.value.set(recipe.id, { recipe: recipe, shares: shares })
         save_cart(content.value)
     }
