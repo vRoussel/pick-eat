@@ -55,7 +55,9 @@ const dropdown_main_opened = ref(false)
 const grocery_list_modal_el = ref(null);
 
 onMounted(() => {
-    foodStore.fetchAll()
+    foodStore.fetchAll().then(() => {
+        cartStore.restore()
+    })
     window.setInterval(
         () => {
             foodStore.fetchAll()
