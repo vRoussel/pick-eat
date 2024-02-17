@@ -117,6 +117,24 @@ pub async fn get_many_recipes(
         joins.push_str(" INNER JOIN account_filter USING (id)");
     }
 
+    if let Some(ids) = &filters.ids {
+        builder
+            .push(
+                "
+                , ids_filter as (
+                    SELECT
+                        distinct(id) as id
+                    FROM
+                        recipes
+                    WHERE
+                        id = any(
+                ",
+            )
+            .push_bind(ids)
+            .push("))");
+        joins.push_str(" INNER JOIN ids_filter USING (id)");
+    }
+
     //
     // Complex filters
     // Order is important because we push to sorting_fields

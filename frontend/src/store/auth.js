@@ -126,5 +126,18 @@ export const useAuthStore = defineStore('auth', {
                 headers: headers,
             })
         },
+        async save_account_data(key, data) {
+            let post = data
+            let headers = {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            }
+            await axios.put(`${API_ROOT}/accounts/me/data/${key}`, post, { headers: headers })
+        },
+        async get_account_data(key) {
+            return axios.get(`${API_ROOT}/accounts/me/data/${key}`).then((resp) => {
+                return resp.data
+            })
+        }
     },
 })

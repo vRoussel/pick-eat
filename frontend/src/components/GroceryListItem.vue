@@ -35,7 +35,7 @@ const props = defineProps({
             {{ recipe_name }}
         </router-link>
         <span> x </span>
-        <number-input class="basis-10" :model-value="shares" :min="0"
+        <number-input class="basis-10" :model-value.number="shares" :min="0"
             @update:modelValue="(val) => cartStore.updateRecipeShares(recipe_id, val)" />
         <span class="line-clamp-2 break-all text-sm basis-2/12"> {{
             shares_unit }}</span>

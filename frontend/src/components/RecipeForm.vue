@@ -12,12 +12,14 @@ import NumberInput from '@/components/NumberInput.vue'
 import { useFoodStore } from '@/store/food.js'
 import { useAuthStore } from '@/store/auth.js'
 import { useNotifStore } from '@/store/notif.js'
+import { useCartStore } from '@/store/cart.js'
 
 import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.js'
 
 const foodStore = useFoodStore()
 const authStore = useAuthStore()
 const notifStore = useNotifStore()
+const cartStore = useCartStore()
 
 const validator = object().shape({
     name: string().required('Le nom de la recette est obligatoire'),
@@ -180,6 +182,9 @@ function sendRecipe() {
                 foodStore
                     .updateRecipe(props.existing_recipe.id, recipe)
                     .then(() => {
+                        if (cartStore.hasRecipe(props.existing_recipe.id)) {
+                            cartStore.updateRecipe(props.existing_recipe.id, recipe)
+                        }
                         emit('done')
                     })
                     .catch((err) => {

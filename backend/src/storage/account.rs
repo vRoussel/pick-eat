@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 
-use sqlx::{postgres::PgConnection, query, query_as, Connection};
+use serde_json::value::RawValue;
+use sqlx::{postgres::PgConnection, query, query_as, types::Json, Connection};
 
 use crate::models::{
     Account, AccountUpdate, InvalidAccountUpdate, InvalidNewAccount, InvalidityKind, NewAccount,
@@ -300,4 +301,45 @@ pub async fn remove_recipe_from_account_favs(
     .execute(db_conn)
     .await?;
     Ok(Some(()))
+}
+
+pub async fn save_account_data(
+    db_conn: &mut PgConnection,
+    account_id: i32,
+    key: &str,
+    data: &serde_json::Value,
+) -> Result<Option<()>, StorageError> {
+    query!(
+        "
+            INSERT INTO accounts_data (account_id, key, data)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (account_id, key) DO UPDATE SET
+                data = excluded.data
+        ",
+        account_id,
+        key,
+        data
+    )
+    .execute(db_conn)
+    .await?;
+    Ok(Some(()))
+}
+
+pub async fn get_account_data(
+    db_conn: &mut PgConnection,
+    account_id: i32,
+    key: &str,
+) -> Result<Option<serde_json::Value>, StorageError> {
+    let row = query!(
+        "
+            SELECT data FROM accounts_data
+            WHERE account_id = $1 AND key = $2
+        ",
+        account_id,
+        key
+    )
+    .fetch_optional(db_conn)
+    .await?;
+
+    Ok(row.map(|r| r.data))
 }

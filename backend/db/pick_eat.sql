@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 1.0.6
--- PostgreSQL version: 16.0
+-- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- -- object: pickeat | type: ROLE --
@@ -534,6 +534,18 @@ $$;
 ALTER FUNCTION public.get_weekly_seed() OWNER TO pickeat;
 -- ddl-end --
 
+-- object: public.accounts_data | type: TABLE --
+-- DROP TABLE IF EXISTS public.accounts_data CASCADE;
+CREATE TABLE public.accounts_data (
+	account_id integer NOT NULL,
+	key text NOT NULL,
+	data json NOT NULL,
+	CONSTRAINT accounts_saved_data_pk PRIMARY KEY (account_id,key)
+);
+-- ddl-end --
+ALTER TABLE public.accounts_data OWNER TO pickeat;
+-- ddl-end --
+
 -- object: recipes_tags_fk_tag_id | type: CONSTRAINT --
 -- ALTER TABLE public.recipes_tags DROP CONSTRAINT IF EXISTS recipes_tags_fk_tag_id CASCADE;
 ALTER TABLE public.recipes_tags ADD CONSTRAINT recipes_tags_fk_tag_id FOREIGN KEY (tag_id)
@@ -649,6 +661,13 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- object: password_reset_tokens_fk_account_id | type: CONSTRAINT --
 -- ALTER TABLE public.password_reset_tokens DROP CONSTRAINT IF EXISTS password_reset_tokens_fk_account_id CASCADE;
 ALTER TABLE public.password_reset_tokens ADD CONSTRAINT password_reset_tokens_fk_account_id FOREIGN KEY (account_id)
+REFERENCES public.accounts (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: accounts_saved_data_fk_account_id | type: CONSTRAINT --
+-- ALTER TABLE public.accounts_data DROP CONSTRAINT IF EXISTS accounts_saved_data_fk_account_id CASCADE;
+ALTER TABLE public.accounts_data ADD CONSTRAINT accounts_saved_data_fk_account_id FOREIGN KEY (account_id)
 REFERENCES public.accounts (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
