@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use super::{App, AppError, AppErrorWith};
 use crate::{
     models::*,
@@ -206,6 +208,45 @@ impl App {
             || async {
                 let mut db_conn = self.db_pool.acquire().await?;
                 storage::remove_recipe_from_account_favs(&mut db_conn, account_id, recipe_id).await
+            },
+            self.max_retry,
+        )
+        .await
+        .map_err(|e| e.into())
+    }
+
+    pub async fn save_account_data(
+        &self,
+        account_id: i32,
+        key: &str,
+        data: serde_json::Value,
+    ) -> Result<Option<()>, AppError> {
+        let allowed_data_keys = HashSet::from(["grocery_list"]);
+
+        if !allowed_data_keys.contains(key) {
+            return Err(AppError::NotAllowed);
+        }
+
+        retry_up_to_n_times(
+            || async {
+                let mut db_conn = self.db_pool.acquire().await?;
+                storage::save_account_data(&mut db_conn, account_id, key, &data).await
+            },
+            self.max_retry,
+        )
+        .await
+        .map_err(|e| e.into())
+    }
+
+    pub async fn get_account_data(
+        &self,
+        account_id: i32,
+        key: &str,
+    ) -> Result<Option<serde_json::Value>, AppError> {
+        retry_up_to_n_times(
+            || async {
+                let mut db_conn = self.db_pool.acquire().await?;
+                storage::get_account_data(&mut db_conn, account_id, key).await
             },
             self.max_retry,
         )
