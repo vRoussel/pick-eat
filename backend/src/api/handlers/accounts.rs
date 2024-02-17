@@ -16,7 +16,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(get_all_public_accounts_data)
         .service(replace_current_account)
         .service(add_recipe_to_account_favs)
-        .service(remove_recipe_from_account_favs);
+        .service(remove_recipe_from_account_favs)
+        .service(save_account_data)
+        .service(get_account_data);
 }
 
 #[derive(Debug, Deserialize)]
@@ -168,4 +170,42 @@ async fn remove_recipe_from_account_favs(
         }
     }
     HttpResponse::Ok().finish()
+}
+
+#[put("/accounts/me/data/{key}")]
+async fn save_account_data(
+    user: User,
+    key: web::Path<String>,
+    data: web::Json<serde_json::Value>,
+    app: web::Data<App>,
+) -> impl Responder {
+    match app
+        .save_account_data(user.id, &*key, data.into_inner())
+        .await
+    {
+        Ok(Some(_)) => (),
+        Ok(None) => return HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return e.into();
+        }
+    }
+    HttpResponse::Ok().finish()
+}
+
+#[get("/accounts/me/data/{key}")]
+async fn get_account_data(
+    user: User,
+    key: web::Path<String>,
+    app: web::Data<App>,
+) -> impl Responder {
+    let data: serde_json::Value = match app.get_account_data(user.id, &*key).await {
+        Ok(Some(v)) => v,
+        Ok(None) => return HttpResponse::NotFound().finish(),
+        Err(e) => {
+            error!("{}", e);
+            return e.into();
+        }
+    };
+    set_and_log_json_body(HttpResponse::Ok(), data)
 }
