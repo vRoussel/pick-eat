@@ -51,7 +51,7 @@ function decrement() {
             </button>
             <input type="number" :placeholder="props.placeholder" step="any"
                 class="input input-bordered rounded-none w-full min-w-[50px]" :class="props.badvalue && '!input-error'"
-                :value="model" @input="(e) => model = e.target.value" />
+                :value="model" @change="(e) => model = isFinite(e.target.value) ? Number(e.target.value) : 0" />
             <button type="button"
                 class="bg-base text-base-content hover:bg-accent px-1 sm:px-2 rounded-r-md border-accent border-y border-r focus:!outline-none"
                 :class="props.badvalue && '!input-error'" tabindex="-1" @click="increment">
