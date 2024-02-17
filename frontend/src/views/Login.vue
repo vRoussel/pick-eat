@@ -6,11 +6,13 @@ import { object, string } from 'yup'
 
 import { useAuthStore } from '@/store/auth.js'
 import { useNotifStore } from '@/store/notif.js'
+import { useCartStore } from '@/store/cart.js'
 
 import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.js'
 
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 const router = useRouter()
 
 useHead({
@@ -54,6 +56,7 @@ async function login() {
                 .then(() => {
                     router.push(authStore.return_url || '/account')
                     authStore.return_url = null
+                    cartStore.restore()
                 })
                 .catch((err) => {
                     handle_form_api_errors(err.response, errors.value, notifStore)
