@@ -11,6 +11,7 @@ import Toast from '@/components/Toast.vue'
 import { useCartStore } from '@/store/cart.js'
 import { useFoodStore } from '@/store/food.js'
 import { useNotifStore } from '@/store/notif.js'
+import { useAuthStore } from '@/store/auth.js'
 
 import pickeat_logo_light from '@/assets/pickeat_light.png'
 import pickeat_logo_dark from '@/assets/pickeat_dark.png'
@@ -23,6 +24,7 @@ const WEBSITE_URL = `${WEBSITE_PROTO}//${WEBSITE_HOST}`
 const cartStore = useCartStore()
 const foodStore = useFoodStore()
 const notifStore = useNotifStore()
+const authStore = useAuthStore()
 
 useHead({
     titleTemplate: (title) => !title ? 'Pickeat' : `${title} - Pickeat`,
@@ -123,8 +125,9 @@ function close_dropdown_if_opened() {
                 }}</span>
             </button>
             <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
-            <button type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
+            <button class="indicator" type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
                 <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
+                <span v-if="authStore.is_logged_in" class="indicator-item badge badge-primary badge-xs "></span>
             </button>
         </div>
     </nav>
