@@ -1,13 +1,16 @@
 use actix_identity::IdentityMiddleware;
-use actix_session::config::CookieContentSecurity;
+use actix_session::config::{CookieContentSecurity, PersistentSession, TtlExtensionPolicy};
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
+use actix_web::cookie::time::Duration;
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
 use crate::api;
 use crate::conf::{RedisConf, SessionsConf};
+
+const SECS_IN_TEN_DAYS: i64 = 60 * 60 * 24 * 10;
 
 pub async fn start_web_server(
     pickeat_app: crate::app::App,
@@ -35,6 +38,11 @@ pub async fn start_web_server(
                     .cookie_content_security(CookieContentSecurity::Signed)
                     .cookie_same_site(actix_web::cookie::SameSite::Strict)
                     .cookie_secure(cookie_secure)
+                    .session_lifecycle(
+                        PersistentSession::default()
+                            .session_ttl(Duration::seconds(SECS_IN_TEN_DAYS))
+                            .session_ttl_extension_policy(TtlExtensionPolicy::OnEveryRequest),
+                    )
                     .build(),
             )
             .app_data(app_data.clone())
