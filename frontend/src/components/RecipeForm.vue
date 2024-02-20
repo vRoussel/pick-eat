@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef, ref, watch, onMounted, computed } from 'vue'
+import { shallowRef, ref, watch, onMounted, computed, inject } from 'vue'
 import Swal from 'sweetalert2'
 import { object, string, number, array } from 'yup'
 
@@ -20,6 +20,8 @@ const foodStore = useFoodStore()
 const authStore = useAuthStore()
 const notifStore = useNotifStore()
 const cartStore = useCartStore()
+
+const icons = inject('icons')
 
 const validator = object().shape({
     name: string().required('Le nom de la recette est obligatoire'),
@@ -102,32 +104,40 @@ const update_mode = computed(() => {
     return props.existing_recipe != null
 })
 
-watch(() => props.existing_recipe, () => {
-    fillForm()
-})
+function addWatchers() {
+    watch(() => fields.value.diets, (new_val, old_val) => {
+        let added_vegan = !old_val.has(2) && new_val.has(2)
+        let removed_vege = old_val.has(1) && !new_val.has(1)
+        if (added_vegan) {
+            new_val.add(1)
+        } else if (removed_vege) {
+            new_val.delete(2)
+        }
+    })
 
-watch(() => fields.value.diets, (new_val, old_val) => {
-    let added_vegan = !old_val.has(2) && new_val.has(2)
-    let removed_vege = old_val.has(1) && !new_val.has(1)
-    if (added_vegan) {
-        new_val.add(1)
-    } else if (removed_vege) {
-        new_val.delete(2)
-    }
-})
+    watch(() => fields.value.categories, () => {
+        validate('categories')
+    })
+    watch(() => fields.value.seasons, () => {
+        validate('seasons')
+    })
+    watch(() => fields.value.ingredients, () => {
+        validate('ingredients')
+    })
+    watch(() => fields.value.shares, () => {
+        validate('shares')
+    })
 
-watch(() => fields.value.categories, () => {
-    validate('categories')
-})
-watch(() => fields.value.seasons, () => {
-    validate('seasons')
-})
-watch(() => fields.value.ingredients, () => {
-    validate('ingredients')
-})
-watch(() => fields.value.shares, () => {
-    validate('shares')
-})
+    watch(fields, (value) => {
+        localStorage.setItem("recipeform", JSON.stringify({
+            ...value,
+            categories: Array.from(value.categories),
+            tags: Array.from(value.tags),
+            seasons: Array.from(value.seasons),
+            diets: Array.from(value.diets)
+        }))
+    }, { deep: true })
+}
 
 // Mandatory image is too annoying, find a better way
 //image_url() {
@@ -135,6 +145,7 @@ watch(() => fields.value.shares, () => {
 //}
 onMounted(() => {
     fillForm()
+    addWatchers()
 })
 
 function sendRecipe() {
@@ -202,6 +213,7 @@ function cancel() {
 }
 
 function fillForm() {
+    let backup = JSON.parse(localStorage.getItem("recipeform"))
     if (props.existing_recipe) {
         let other = props.existing_recipe
 
@@ -226,6 +238,19 @@ function fillForm() {
         f.shares = other.n_shares
         f.shares_unit = other.shares_unit
         f.is_private = other.is_private
+    } else if (backup) {
+        try {
+            fields.value = {
+                ...backup,
+                categories: new Set(backup.categories),
+                tags: new Set(backup.tags),
+                seasons: new Set(backup.seasons),
+                diets: new Set(backup.diets)
+            }
+            errors.value = {}
+        } catch (e) {
+            console.error("Unable to restore recipe form from local storage")
+        }
     }
 }
 
@@ -260,8 +285,16 @@ function validate(field) {
 </script>
 
 <template>
-    <form id="recipe-form" autocomplete="off" class="gap-y-8 flex flex-col items-center max-w-3xl mx-auto px-2 my-4"
+    <form id="recipe-form" autocomplete="off" class="gap-y-8 flex flex-col items-start max-w-3xl mx-auto px-2 my-4"
         @submit.prevent="sendRecipe">
+        <div class="form-control mt-6">
+            <button type="button" class="btn btn-outline btn-primary btn-wide" @click="clearForm">
+                Réinitialiser les champs
+                <span class="text-xl">
+                    <Icon :icon="icons.reset" />
+                </span>
+            </button>
+        </div>
         <div class="form-control w-full">
             <label class="label">
                 <span class="label-text">Nom</span>
