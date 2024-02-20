@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import debounce from 'lodash.debounce'
+import isEqual from 'lodash.isequal'
 
 import { useNotifStore } from '@/store/notif.js'
 import { useAuthStore } from '@/store/auth.js'
@@ -83,10 +84,20 @@ export const useCartStore = defineStore('cart', () => {
             }
         }
 
-        backup = merge_backups(local_backup, api_backup)
+        let backups_merged = false
+        if (isEqual(local_backup, api_backup)) {
+            backup = local_backup
+        } else {
+            backup = merge_backups(local_backup, api_backup)
+            backups_merged = true
+        }
+
         if (backup) {
             content.value = backup.content
             last_update.value = backup.last_update
+            if (backups_merged) {
+                backup()
+            }
         }
     }
 
