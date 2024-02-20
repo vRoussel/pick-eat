@@ -24,13 +24,13 @@ export const useCartStore = defineStore('cart', () => {
         }
         content.value.set(recipe.id, { recipe: recipe, shares: shares })
         last_update.value = Date.now()
-        backup()
+        do_backup()
     }
 
     function removeRecipe(r_id) {
         content.value.delete(r_id)
         last_update.value = Date.now()
-        backup()
+        do_backup()
     }
 
     function hasRecipe(r_id) {
@@ -40,32 +40,32 @@ export const useCartStore = defineStore('cart', () => {
     function updateRecipeShares(r_id, shares) {
         content.value.get(r_id).shares = shares
         last_update.value = Date.now()
-        backup()
+        do_backup()
     }
 
     function updateRecipe(id, new_recipe, should_backup = true) {
         content.value.get(id).recipe = new_recipe
         if (should_backup)
-            backup()
+            do_backup()
     }
 
-    var save_account_data_debounced = debounce(async (data) => {
+    var do_backup_api_debounced = debounce(async (data) => {
         await authStore.save_account_data('grocery_list', data)
     }, 5000)
 
-    async function backup() {
+    async function do_backup() {
         let data = JSON.stringify({ content: [...content.value], last_update: last_update.value })
-        backup_local(data)
+        do_backup_local(data)
         if (authStore.is_logged_in) {
-            save_account_data_debounced(data)
+            do_backup_api_debounced(data)
         }
     }
 
-    function backup_local(data) {
+    function do_backup_local(data) {
         localStorage.setItem("cart", data)
     }
 
-    async function restore() {
+    async function do_restore() {
         let backup, local_backup, api_backup
         try {
             local_backup = get_local_backup();
@@ -96,7 +96,7 @@ export const useCartStore = defineStore('cart', () => {
             content.value = backup.content
             last_update.value = backup.last_update
             if (backups_merged) {
-                backup()
+                do_backup()
             }
         }
     }
@@ -129,6 +129,6 @@ export const useCartStore = defineStore('cart', () => {
         }
     }
 
-    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipe, updateRecipeShares, restore }
+    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipe, updateRecipeShares, restore: do_restore }
 })
 
