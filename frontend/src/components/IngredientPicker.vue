@@ -43,7 +43,7 @@ function add_ingr(ingr) {
 }
 
 function del_ingr(id) {
-    model.value.filter((ingr) => ingr.id != id)
+    model.value = model.value.filter((ingr) => ingr.id != id)
 }
 
 function save_ingredient_search() {
