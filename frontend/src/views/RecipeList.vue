@@ -70,6 +70,7 @@ const filters = computed({
         q.s = f.seasons.join(',') || undefined
         q.d = f.diets.join(',') || undefined
         q.a = f.account || undefined
+        q.page = 1
 
         // Avoid scrolling to top if we are changing filters
         q.ns = null
