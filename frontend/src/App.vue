@@ -127,7 +127,7 @@ function close_dropdown_if_opened() {
             <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
             <button class="indicator" type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
                 <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
-                <span v-if="authStore.is_logged_in" class="indicator-item badge badge-primary badge-xs "></span>
+                <span v-if="authStore.is_logged_in" class="indicator-item badge badge-success badge-xs "></span>
             </button>
         </div>
     </nav>
