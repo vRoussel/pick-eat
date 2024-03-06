@@ -135,6 +135,24 @@ pub async fn get_many_recipes(
         joins.push_str(" INNER JOIN ids_filter USING (id)");
     }
 
+    if filters.only_favs && account_id.is_some() {
+        builder
+            .push(
+                "
+                , only_favs_filter as (
+                    SELECT
+                        distinct(recipe_id) as id
+                    FROM
+                        accounts_fav_recipes
+                    WHERE
+                        account_id = 
+                ",
+            )
+            .push_bind(account_id)
+            .push(")");
+        joins.push_str(" INNER JOIN only_favs_filter USING (id)");
+    }
+
     //
     // Complex filters
     // Order is important because we push to sorting_fields

@@ -4,8 +4,10 @@ import { inject, ref, computed, onMounted } from 'vue'
 import Multiselect from '@vueform/multiselect'
 
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
 
 const foodStore = useFoodStore()
+const authStore = useAuthStore()
 
 const icons = inject('icons')
 
@@ -89,9 +91,19 @@ const diets = computed({
     },
 })
 
+const only_favs = computed({
+    get: function () {
+        return model.value.only_favs
+    },
+    set: function (val) {
+        let new_filters = { ...model.value, only_favs: val }
+        updateFilters(new_filters, 0)
+    },
+})
+
 const active_filters_count = computed(() => {
     let f = model.value
-    return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0)
+    return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0) + (f.only_favs ? 1 : 0)
 })
 
 onMounted(() => {
@@ -136,7 +148,7 @@ function on_mobile() {
 
 //Maybe this should be in a dedicated .js file, I'm not sure
 <script>
-export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = []) {
+export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = [], of = false) {
     return {
         search_query: q,
         ingredients: i,
@@ -145,6 +157,7 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
         seasons: s,
         account: a,
         diets: d,
+        only_favs: of
     }
 }
 </script>
@@ -175,6 +188,12 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
             </button>
         </div>
         <div v-show="expanded" class="flex flex-col gap-y-4 border-b md:border-0 border-primary pb-8">
+            <div v-if="authStore.is_logged_in" class="form-control">
+                <label class="label cursor-pointer justify-start gap-x-4 py-1">
+                    <input v-model="only_favs" type="checkbox" class="checkbox checkbox-sm checkbox-accent" />
+                    <span class="label-text">Mes favoris</span>
+                </label>
+            </div>
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">Ingrédients</span>

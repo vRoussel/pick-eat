@@ -8,11 +8,13 @@ import Pagination from '@/components/Pagination.vue'
 import RecipeFilters from '@/components/RecipeFilters.vue'
 import RecipeListItem from '@/components/RecipeListItem.vue'
 import { useFoodStore } from '@/store/food.js'
+import { useAuthStore } from '@/store/auth.js'
 
 import { Filters } from '@/components/RecipeFilters.vue'
 import no_recipe_video from '@/assets/homer_hungry.mp4'
 
 const foodStore = useFoodStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const icons = inject('icons')
@@ -49,7 +51,11 @@ const canonical_url = computed(() => {
 
 const filters = computed({
     get() {
+        if (!authStore.is_logged_in)
+            router.replace({ query: { ...route.query, of: undefined } })
+
         let q = route.query
+
         return Filters(
             q.search,
             q.i ? q.i.split(',') : [],
@@ -58,9 +64,13 @@ const filters = computed({
             q.s ? q.s.split(',') : [],
             q.a,
             q.d ? q.d.split(',') : [],
+            q.of !== undefined,
         )
     },
     set(f) {
+        if (!authStore.is_logged_in)
+            f.only_favs = false
+
         let q = { ...route.query }
 
         q.search = f.search_query || undefined
@@ -70,6 +80,7 @@ const filters = computed({
         q.s = f.seasons.join(',') || undefined
         q.d = f.diets.join(',') || undefined
         q.a = f.account || undefined
+        q.of = f.only_favs ? null : undefined
         q.page = 1
 
         // Avoid scrolling to top if we are changing filters
