@@ -394,8 +394,8 @@ pub async fn add_recipe(
         query_unchecked!(
             r#"
                 INSERT INTO recipes_ingredients
-                (recipe_id, ingredient_id, quantity, unit_id)
-                SELECT $1, ingredient_id, quantity, unit_id
+                (recipe_id, ingredient_id, quantity, unit_id, ingredient_index)
+                SELECT $1, ingredient_id, quantity, unit_id, row_number() over()
                 FROM
                     UNNEST($2::int[], $3::real[], $4::int[])
                     AS x(ingredient_id, quantity, unit_id)
