@@ -51,8 +51,9 @@ const canonical_url = computed(() => {
 
 const filters = computed({
     get() {
-        if (!authStore.is_logged_in)
-            router.replace({ query: { ...route.query, of: undefined } })
+        if (!authStore.is_logged_in) {
+            router.replace({ query: { ...route.query, of: undefined, op: undefined } })
+        }
 
         let q = route.query
 
@@ -65,11 +66,14 @@ const filters = computed({
             q.a,
             q.d ? q.d.split(',') : [],
             q.of !== undefined,
+            q.op !== undefined,
         )
     },
     set(f) {
-        if (!authStore.is_logged_in)
+        if (!authStore.is_logged_in) {
             f.only_favs = false
+            f.only_private = false
+        }
 
         let q = { ...route.query }
 
@@ -81,6 +85,7 @@ const filters = computed({
         q.d = f.diets.join(',') || undefined
         q.a = f.account || undefined
         q.of = f.only_favs ? null : undefined
+        q.op = f.only_private ? null : undefined
         q.page = 1
 
         // Avoid scrolling to top if we are changing filters

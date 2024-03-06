@@ -25,6 +25,7 @@ pub struct RecipeFiltersQueryParams {
     account: Option<i32>,
     diets: Option<String>,
     only_favs: Option<bool>,
+    only_private: Option<bool>,
     ids: Option<String>,
 }
 
@@ -133,6 +134,7 @@ impl TryFrom<RecipeFiltersQueryParams> for RecipeFilters {
         filters.search = value.search;
         filters.account = value.account;
         filters.only_favs = value.only_favs.unwrap_or(false);
+        filters.only_private = value.only_private.unwrap_or(false);
         Ok(filters)
     }
 }

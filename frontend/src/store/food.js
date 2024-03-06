@@ -120,6 +120,7 @@ export const useFoodStore = defineStore('food', () => {
         if (f.account) params.account = f.account
         if (f.diets.length > 0) params.diets = f.diets.join(',')
         if (f.only_favs) params.only_favs = true
+        if (f.only_private) params.only_private = true
         let resp = await axios.get(url, { params: params })
         let total_count = parseInt(resp.headers['content-range'].split('/')[1])
         return [resp.data, total_count]

@@ -101,9 +101,19 @@ const only_favs = computed({
     },
 })
 
+const only_private = computed({
+    get: function () {
+        return model.value.only_private
+    },
+    set: function (val) {
+        let new_filters = { ...model.value, only_private: val }
+        updateFilters(new_filters, 0)
+    },
+})
+
 const active_filters_count = computed(() => {
     let f = model.value
-    return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0) + (f.only_favs ? 1 : 0)
+    return f.diets.length + f.seasons.length + f.ingredients.length + f.tags.length + f.categories.length + (f.account ? 1 : 0) + (f.only_favs ? 1 : 0) + (f.only_private ? 1 : 0)
 })
 
 onMounted(() => {
@@ -148,7 +158,7 @@ function on_mobile() {
 
 //Maybe this should be in a dedicated .js file, I'm not sure
 <script>
-export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = [], of = false) {
+export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = [], of = false, op = false) {
     return {
         search_query: q,
         ingredients: i,
@@ -157,7 +167,8 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
         seasons: s,
         account: a,
         diets: d,
-        only_favs: of
+        only_favs: of,
+        only_private: op
     }
 }
 </script>
@@ -193,13 +204,10 @@ export function Filters(q = null, i = [], t = [], c = [], s = [], a = null, d = 
                     <input v-model="only_favs" type="checkbox" class="checkbox checkbox-sm checkbox-accent" />
                     <span class="label-text">Mes favoris</span>
                 </label>
-            </div>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Ingrédients</span>
+                <label class="label cursor-pointer justify-start gap-x-4 py-1">
+                    <input v-model="only_private" type="checkbox" class="checkbox checkbox-sm checkbox-accent" />
+                    <span class="label-text">Mes recettes privées</span>
                 </label>
-                <Multiselect v-model="ingredients" mode="tags" :options="foodStore.ingredients" label="name" searchable
-                    :strict="false" track-by="name" value-prop="id" :close-on-select="false" />
             </div>
             <div class="form-control">
                 <label class="label">

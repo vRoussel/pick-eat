@@ -153,6 +153,25 @@ pub async fn get_many_recipes(
         joins.push_str(" INNER JOIN only_favs_filter USING (id)");
     }
 
+    if filters.only_private && account_id.is_some() {
+        builder
+            .push(
+                "
+                , only_private_filter as (
+                    SELECT
+                        distinct(id) as id
+                    FROM
+                        recipes
+                    WHERE
+                        is_private = 't'
+                        AND author_id = 
+                ",
+            )
+            .push_bind(account_id)
+            .push(")");
+        joins.push_str(" INNER JOIN only_private_filter USING (id)");
+    }
+
     //
     // Complex filters
     // Order is important because we push to sorting_fields
