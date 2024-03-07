@@ -55,6 +55,7 @@ const icons = inject('icons')
 const pickeat_logo = ref(null)
 const dropdown_main_opened = ref(false)
 const grocery_list_modal_el = ref(null);
+const contact_btn_el = ref(null);
 
 onMounted(() => {
     foodStore.fetchAll().then(() => {
@@ -66,6 +67,12 @@ onMounted(() => {
         },
         5 * 60 * 1000,
     )
+
+    const name = "contact"
+    const host = "pick-eat.fr"
+    setTimeout(function () {
+        contact_btn_el.value.href = `mailto:${name}@${host}`
+    }, 1000);
 })
 
 function set_logo(theme) {
@@ -138,6 +145,36 @@ function close_dropdown_if_opened() {
             </KeepAlive>
         </transition>
     </router-view>
+    <div class="border-primary border-t">
+        <footer class="footer footer-center p-10 grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
+            <div>
+                <p class="footer-title">
+                    100% open source</p>
+                <p class="italic inline-flex items-center gap-x-4">
+                    <a href="https://github.com/vRoussel/pick-eat" target="_blank">
+                        <Icon :icon="icons.github" class="text-4xl" />
+                    </a>
+                    <span class="text-left">
+                        Ce site web est entièrement open source.<br />N'hésitez pas à consulter le code source et
+                        pourquoi
+                        pas,
+                        proposer des améliorations :)
+                    </span>
+                </p>
+            </div>
+            <div>
+                <p class="footer-title">Contact</p>
+                <p class="italic inline-flex items-center gap-x-4">
+                    <a ref="contact_btn_el">
+                        <Icon :icon="icons.email" class="text-4xl" />
+                    </a>
+                    <span class="text-left">
+                        Vous rencontrez un problème ou vous avez une suggestion à faire ?<br />Envoyez moi un message !
+                    </span>
+                </p>
+            </div>
+        </footer>
+    </div>
     <grocery-list-modal ref="grocery_list_modal_el" />
     <toast :error_queue="notifStore.error_msgs" :info_queue="notifStore.info_msgs" />
 </template>

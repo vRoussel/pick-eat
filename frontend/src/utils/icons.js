@@ -23,6 +23,8 @@ import arrow_up from '@iconify-icons/mdi/keyboard-arrow-up';
 import sort from '@iconify-icons/mdi/sort-variant';
 import dragv from '@iconify-icons/mdi/drag-vertical';
 import copy from '@iconify-icons/mdi/content-copy'
+import github from '@iconify-icons/mdi/github'
+import email from '@iconify-icons/mdi/email'
 
 import flower from '@iconify-icons/ph/flower-fill'
 import sun from '@iconify-icons/ph/sun-fill'
@@ -58,5 +60,7 @@ export default {
     arrow_up: arrow_up,
     sort: sort,
     dragv: dragv,
-    copy: copy
+    copy: copy,
+    github: github,
+    email: email
 }
