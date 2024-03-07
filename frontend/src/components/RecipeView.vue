@@ -98,10 +98,10 @@ function decrease_shares() {
             </div>
             <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
                 <div :data-tip="props.recipe.name" :class="overflown ? 'tooltip' : ''">
-                    <p ref="recipe_name_el"
+                    <h1 ref="recipe_name_el"
                         class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
                         {{ props.recipe.name }}
-                    </p>
+                    </h1>
                 </div>
                 <season-icons :seasons="props.recipe.seasons" class="text-2xl md:text-3xl lg:text-4xl gap-x-1" />
                 <p class="space-x-4">
