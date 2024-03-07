@@ -78,3 +78,7 @@
     until: postgres_status.is_available
     retries: 10
     delay: 5
+
+  - name: Setup PG backups
+    ansible.builtin.include_tasks:
+      file: backup.yml
