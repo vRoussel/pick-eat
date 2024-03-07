@@ -3,7 +3,8 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.6" use-changelog="false" last-position="0,12" last-zoom="0.7" max-obj-count="24"
+<dbmodel pgmodeler-ver="1.1.0" use-changelog="false" max-obj-count="24"
+	 last-position="0,0" last-zoom="1" scene-rect="0,0,2252.39,1284.52"
 	 default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -29,7 +30,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <database name="pickeat" is-template="false" allow-conns="true">
 </database>
 
-<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
+<schema name="public" layers="0" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
 </schema>
 
 <table name="categories" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
@@ -429,7 +430,7 @@ WHERE rs.recipe_id = recipe_id_in]]> </definition>
 </function>
 
 <index name="trgm_idx" table="public.recipes"
-	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
 	 index-type="gist" factor="0">
 		<idxelement use-sorting="false">
 			<column name="name"/>
@@ -653,18 +654,22 @@ FROM
 WHERE ri.recipe_id = recipe_id_in]]> </definition>
 </function>
 
-<view name="ingredients_full" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+<view name="ingredients_full" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
 	<position x="1940" y="280"/>
-	<reference table="public.ingredients" column="id" alias="i"/>
-	<reference table="public.ingredients" column="name" alias="i"/>
-	<reference alias="default_unit">
-		<expression> <![CDATA[get_unit(i.default_unit_id)]]> </expression>
-	</reference>
-	<reference table="public.ingredients" alias="i"/>
-	<expression type="select-exp">0,1,2</expression>
-	<expression type="from-exp">3</expression>
+	<reference object="public.ingredients.id" type="column" ref-name="id1" use-signature="true" format-name="true"/>
+	<reference object="public.ingredients.name" type="column" ref-name="name2" use-signature="true" format-name="true"/>
+	<reference object="public.ingredients" type="table" ref-name="ingredients1" ref-alias="i" use-signature="true" format-name="true"/>
+	<simplecol name="id" alias="id" type="integer"/>
+	<simplecol name="name" alias="name" type="text"/>
+	<simplecol name="default_unit" alias="default_unit" type="text"/>
+	<definition> <![CDATA[SELECT
+   i.id,
+   i.name,
+   get_unit(i.default_unit_id) AS default_unit
+FROM
+   public.ingredients AS i;;]]> </definition>
 </view>
 
 <relationship name="rel_ingredients_full_ingredients" type="reltv" layers="0"
@@ -672,28 +677,38 @@ WHERE ri.recipe_id = recipe_id_in]]> </definition>
 	 dst-table="public.ingredients"
 	 src-required="false" dst-required="false"/>
 
-<view name="recipes_full" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<view name="recipes_full" layers="0" collapse-mode="2" max-obj-count="1" z-value="0">
 	<schema name="public"/>
 	<role name="pickeat"/>
 	<position x="1960" y="500"/>
-	<reference table="public.recipes" alias="r"/>
-	<reference alias="tags">
-		<expression> <![CDATA[get_recipe_tags(r.id)]]> </expression>
-	</reference>
-	<reference alias="categories">
-		<expression> <![CDATA[get_recipe_categories(r.id)]]> </expression>
-	</reference>
-	<reference alias="diets">
-		<expression> <![CDATA[get_recipe_diets(r.id)]]> </expression>
-	</reference>
-	<reference alias="seasons">
-		<expression> <![CDATA[get_recipe_seasons(r.id)]]> </expression>
-	</reference>
-	<reference alias="ingredients">
-		<expression> <![CDATA[get_recipe_ingredients(r.id)]]> </expression>
-	</reference>
-	<expression type="select-exp">0,1,2,3,4,5</expression>
-	<expression type="from-exp">0</expression>
+	<reference object="public.recipes" type="table" ref-name="recipes1" ref-alias="r" use-signature="true" format-name="true"/>
+	<simplecol name="id" alias="id" type="integer"/>
+	<simplecol name="name" alias="name" type="text"/>
+	<simplecol name="notes" alias="notes" type="text"/>
+	<simplecol name="preparation_time_min" alias="preparation_time_min" type="smallint"/>
+	<simplecol name="cooking_time_min" alias="cooking_time_min" type="smallint"/>
+	<simplecol name="image" alias="image" type="text"/>
+	<simplecol name="publication_date" alias="publication_date" type="date"/>
+	<simplecol name="instructions" alias="instructions" type="text[]"/>
+	<simplecol name="n_shares" alias="n_shares" type="smallint"/>
+	<simplecol name="shares_unit" alias="shares_unit" type="text"/>
+	<simplecol name="author_id" alias="author_id" type="integer"/>
+	<simplecol name="is_private" alias="is_private" type="bool"/>
+	<simplecol name="update_date" alias="update_date" type="date"/>
+	<simplecol name="tags" alias="tags" type="text"/>
+	<simplecol name="categories" alias="categories" type="text"/>
+	<simplecol name="diets" alias="diets" type="text"/>
+	<simplecol name="seasons" alias="seasons" type="text"/>
+	<simplecol name="ingredients" alias="ingredients" type="text"/>
+	<definition> <![CDATA[SELECT
+   r.*,
+   get_recipe_tags(r.id) AS tags,
+   get_recipe_categories(r.id) AS categories,
+   get_recipe_diets(r.id) AS diets,
+   get_recipe_seasons(r.id) AS seasons,
+   get_recipe_ingredients(r.id) AS ingredients
+FROM
+   public.recipes AS r;;]]> </definition>
 </view>
 
 <relationship name="rel_recipes_full_recipes" type="reltv" layers="0"
@@ -937,7 +952,7 @@ end;]]> </definition>
 	 dst-table="public.accounts" reference-fk="password_reset_tokens_fk_account_id"
 	 src-required="false" dst-required="true"/>
 
-<relationship name="rel_accounts_saved_data_accounts" type="relfk" layers="0"
+<relationship name="rel_accounts_data_accounts" type="relfk" layers="0"
 	 src-table="public.accounts_data"
 	 dst-table="public.accounts" reference-fk="accounts_saved_data_fk_account_id"
 	 src-required="false" dst-required="true"/>

@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler version: 1.0.6
+-- pgModeler version: 1.1.0
 -- PostgreSQL version: 15.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
@@ -481,13 +481,12 @@ ALTER FUNCTION public.get_recipe_ingredients(integer) OWNER TO pickeat;
 -- DROP VIEW IF EXISTS public.ingredients_full CASCADE;
 CREATE VIEW public.ingredients_full
 AS 
-
 SELECT
    i.id,
    i.name,
    get_unit(i.default_unit_id) AS default_unit
 FROM
-   public.ingredients AS i;
+   public.ingredients AS i;;;
 -- ddl-end --
 ALTER VIEW public.ingredients_full OWNER TO pickeat;
 -- ddl-end --
@@ -496,7 +495,6 @@ ALTER VIEW public.ingredients_full OWNER TO pickeat;
 -- DROP VIEW IF EXISTS public.recipes_full CASCADE;
 CREATE VIEW public.recipes_full
 AS 
-
 SELECT
    r.*,
    get_recipe_tags(r.id) AS tags,
@@ -505,7 +503,7 @@ SELECT
    get_recipe_seasons(r.id) AS seasons,
    get_recipe_ingredients(r.id) AS ingredients
 FROM
-   public.recipes AS r;
+   public.recipes AS r;;;
 -- ddl-end --
 ALTER VIEW public.recipes_full OWNER TO pickeat;
 -- ddl-end --
