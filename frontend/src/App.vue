@@ -55,7 +55,7 @@ const icons = inject('icons')
 const pickeat_logo = ref(null)
 const dropdown_main_opened = ref(false)
 const grocery_list_modal_el = ref(null);
-const contact_btn_el = ref(null);
+const contact_link_el = ref(null);
 
 onMounted(() => {
     foodStore.fetchAll().then(() => {
@@ -71,7 +71,7 @@ onMounted(() => {
     const name = "contact"
     const host = "pick-eat.fr"
     setTimeout(function () {
-        contact_btn_el.value.href = `mailto:${name}@${host}`
+        contact_link_el.value.href = `mailto:${name}@${host}`
     }, 1000);
 })
 
@@ -151,12 +151,13 @@ function close_dropdown_if_opened() {
                 <div>
                     <p class="footer-title">
                         100% open source</p>
-                    <p class="italic inline-flex items-center gap-x-4">
-                        <a href="https://github.com/vRoussel/pick-eat" target="_blank">
+                    <p class="inline-flex items-center gap-x-4">
+                        <span>
                             <Icon :icon="icons.github" class="text-4xl" />
-                        </a>
-                        <span class="text-left">
-                            Ce site web est entièrement open source.<br />N'hésitez pas à consulter le code source et
+                        </span>
+                        <span class="text-left italic">
+                            Ce site web est entièrement open source.<br />N'hésitez pas à <a class="link-primary"
+                                href="https://github.com/vRoussel/pick-eat" target="_blank"> consulter le code source</a> et
                             pourquoi
                             pas,
                             proposer des améliorations :)
@@ -165,12 +166,14 @@ function close_dropdown_if_opened() {
                 </div>
                 <div>
                     <p class="footer-title">Contact</p>
-                    <p class="italic inline-flex items-center gap-x-4">
-                        <a ref="contact_btn_el">
+                    <p class="inline-flex items-center gap-x-4">
+                        <span>
                             <Icon :icon="icons.email" class="text-4xl" />
-                        </a>
-                        <span class="text-left">
-                            Vous rencontrez un problème ou vous avez une suggestion à faire ?<br />Envoyez moi un message !
+                        </span>
+                        <span class="text-left italic">
+                            Vous rencontrez un problème ou vous avez une suggestion à faire ?<br /><a class="link-primary"
+                                ref="contact_link_el">
+                                Envoyez moi un message !</a>
                         </span>
                     </p>
                 </div>
