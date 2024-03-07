@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, .container {
+    min-height: 100vh;
+}
+
 .label-text {
     @apply font-bold;
 }

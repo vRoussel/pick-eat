@@ -93,87 +93,89 @@ function close_dropdown_if_opened() {
 </script>
 
 <template>
-    <nav class="navbar bg-base-100 border-b border-primary">
-        <div class="navbar-start">
-            <div class="dropdown sm:hidden" @click="close_dropdown_if_opened">
-                <label tabindex="0" class="btn btn-ghost">
-                    <Icon class="icon text-2xl" :icon="icons.menu" />
-                </label>
-                <ul tabindex="0"
-                    class="z-10 menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-                    <li>
+    <div class="flex flex-col min-h-screen">
+        <nav class="navbar bg-base-100 border-b border-primary">
+            <div class="navbar-start">
+                <div class="dropdown sm:hidden" @click="close_dropdown_if_opened">
+                    <label tabindex="0" class="btn btn-ghost">
+                        <Icon class="icon text-2xl" :icon="icons.menu" />
+                    </label>
+                    <ul tabindex="0"
+                        class="z-10 menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                        <li>
+                            <router-link to="/recipes"> Recettes </router-link>
+                        </li>
+                        <li>
+                            <router-link to="/new-recipe">
+                                Nouvelle recette
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
+                <router-link class="xs:min-w-[150px] sm:min-w-[200px]" to="/recipes">
+                    <img :src="pickeat_logo" class="aspect-[200/84]" width="150" sm:width="200" alt="Logo pickeat" />
+                </router-link>
+                <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
+                    <li class="shrink-0">
                         <router-link to="/recipes"> Recettes </router-link>
                     </li>
-                    <li>
-                        <router-link to="/new-recipe">
-                            Nouvelle recette
-                        </router-link>
+                    <li class="shrink-0">
+                        <router-link to="/new-recipe"> Nouvelle recette </router-link>
                     </li>
                 </ul>
             </div>
-            <router-link class="xs:min-w-[150px] sm:min-w-[200px]" to="/recipes">
-                <img :src="pickeat_logo" class="aspect-[200/84]" width="150" sm:width="200" alt="Logo pickeat" />
-            </router-link>
-            <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
-                <li class="shrink-0">
-                    <router-link to="/recipes"> Recettes </router-link>
-                </li>
-                <li class="shrink-0">
-                    <router-link to="/new-recipe"> Nouvelle recette </router-link>
-                </li>
-            </ul>
-        </div>
-        <div class="navbar-end space-x-3">
-            <button class="indicator" type="button" @click="grocery_list_modal_el.open()"
-                aria-label="Ouvrir la liste de course">
-                <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline" />
-                <span v-if="cartStore.recipeCount > 0" class="indicator-item badge badge-primary">{{
-                    cartStore.recipeCount
-                }}</span>
-            </button>
-            <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
-            <button class="indicator" type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
-                <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
-                <span v-if="authStore.is_logged_in" class="indicator-item badge badge-success badge-xs "></span>
-            </button>
-        </div>
-    </nav>
-    <router-view v-slot="{ Component, route }">
-        <transition name="fade" mode="out-in">
-            <KeepAlive include="NewRecipe,RecipeList">
-                <component :is="Component" :key="route.path" ref="main" />
-            </KeepAlive>
-        </transition>
-    </router-view>
-    <div class="border-primary border-t">
-        <footer class="footer footer-center p-10 grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
-            <div>
-                <p class="footer-title">
-                    100% open source</p>
-                <p class="italic inline-flex items-center gap-x-4">
-                    <a href="https://github.com/vRoussel/pick-eat" target="_blank">
-                        <Icon :icon="icons.github" class="text-4xl" />
-                    </a>
-                    <span class="text-left">
-                        Ce site web est entièrement open source.<br />N'hésitez pas à consulter le code source et
-                        pourquoi
-                        pas,
-                        proposer des améliorations :)
-                    </span>
-                </p>
+            <div class="navbar-end space-x-3">
+                <button class="indicator" type="button" @click="grocery_list_modal_el.open()"
+                    aria-label="Ouvrir la liste de course">
+                    <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline" />
+                    <span v-if="cartStore.recipeCount > 0" class="indicator-item badge badge-primary">{{
+                        cartStore.recipeCount
+                    }}</span>
+                </button>
+                <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
+                <button class="indicator" type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
+                    <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
+                    <span v-if="authStore.is_logged_in" class="indicator-item badge badge-success badge-xs "></span>
+                </button>
             </div>
-            <div>
-                <p class="footer-title">Contact</p>
-                <p class="italic inline-flex items-center gap-x-4">
-                    <a ref="contact_btn_el">
-                        <Icon :icon="icons.email" class="text-4xl" />
-                    </a>
-                    <span class="text-left">
-                        Vous rencontrez un problème ou vous avez une suggestion à faire ?<br />Envoyez moi un message !
-                    </span>
-                </p>
-            </div>
-        </footer>
+        </nav>
+        <router-view v-slot="{ Component, route }" class="grow">
+            <transition name="fade" mode="out-in">
+                <KeepAlive include="NewRecipe,RecipeList">
+                    <component :is="Component" :key="route.path" ref="main" />
+                </KeepAlive>
+            </transition>
+        </router-view>
+        <div class="border-primary border-t">
+            <footer class="footer footer-center p-10 grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
+                <div>
+                    <p class="footer-title">
+                        100% open source</p>
+                    <p class="italic inline-flex items-center gap-x-4">
+                        <a href="https://github.com/vRoussel/pick-eat" target="_blank">
+                            <Icon :icon="icons.github" class="text-4xl" />
+                        </a>
+                        <span class="text-left">
+                            Ce site web est entièrement open source.<br />N'hésitez pas à consulter le code source et
+                            pourquoi
+                            pas,
+                            proposer des améliorations :)
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <p class="footer-title">Contact</p>
+                    <p class="italic inline-flex items-center gap-x-4">
+                        <a ref="contact_btn_el">
+                            <Icon :icon="icons.email" class="text-4xl" />
+                        </a>
+                        <span class="text-left">
+                            Vous rencontrez un problème ou vous avez une suggestion à faire ?<br />Envoyez moi un message !
+                        </span>
+                    </p>
+                </div>
+            </footer>
+        </div>
     </div>
     <grocery-list-modal ref="grocery_list_modal_el" />
     <toast :error_queue="notifStore.error_msgs" :info_queue="notifStore.info_msgs" />
