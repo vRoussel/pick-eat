@@ -147,11 +147,11 @@ function close_dropdown_if_opened() {
             </transition>
         </router-view>
         <div class="border-primary border-t">
-            <footer class="footer footer-center p-10 grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
+            <footer class="footer footer-center p-10 *:w-full grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
                 <div>
                     <p class="footer-title">
                         100% open source</p>
-                    <p class="inline-flex items-center gap-x-4">
+                    <p class="w-full inline-flex items-center gap-x-4">
                         <span>
                             <Icon :icon="icons.github" class="text-4xl" />
                         </span>
@@ -166,7 +166,7 @@ function close_dropdown_if_opened() {
                 </div>
                 <div>
                     <p class="footer-title">Contact</p>
-                    <p class="inline-flex items-center gap-x-4">
+                    <p class="w-full inline-flex items-center gap-x-4">
                         <span>
                             <Icon :icon="icons.email" class="text-4xl" />
                         </span>
