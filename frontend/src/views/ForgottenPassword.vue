@@ -9,7 +9,6 @@ import { useNotifStore } from '@/store/notif.js'
 
 import { handle_form_api_errors, handle_form_local_errors } from '@/utils/utils.js'
 
-
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
 const router = useRouter()
@@ -18,20 +17,18 @@ useHead({
     title: 'Mot de passe oublié',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 
 const fields = ref({
-    email: null
+    email: null,
 })
 const errors = ref({
-    email: null
+    email: null,
 })
 const validator = object().shape({
-    email: string()
-        .required("L'adresse mail est obligatoire")
-        .email("L'adresse mail est invalide")
+    email: string().required("L'adresse mail est obligatoire").email("L'adresse mail est invalide"),
 })
 
 const email_input_el = ref(null)
@@ -39,7 +36,6 @@ onMounted(async () => {
     await nextTick()
     email_input_el.value.focus()
 })
-
 
 async function send_password_reset_token_request() {
     errors.value = {}
@@ -66,8 +62,10 @@ async function send_password_reset_token_request() {
 
 <template>
     <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
-            @submit.prevent="send_password_reset_token_request">
+        <form
+            class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+            @submit.prevent="send_password_reset_token_request"
+        >
             <h1 class="text-xl font-bold text-center">Mot de passe oublié</h1>
             <p class="text-center">
                 Entrez votre email pour recevoir un lien qui vous permettra de choisir un nouveau
@@ -77,8 +75,13 @@ async function send_password_reset_token_request() {
                 <label class="label">
                     <span class="label-text">Adresse mail</span>
                 </label>
-                <input ref="email_input_el" v-model="fields.email" type="text" class="input input-bordered w-full"
-                    :class="errors.email && '!input-error'" />
+                <input
+                    ref="email_input_el"
+                    v-model="fields.email"
+                    type="text"
+                    class="input input-bordered w-full"
+                    :class="errors.email && '!input-error'"
+                />
                 <label v-if="errors.email" class="label">
                     <span class="label-text-alt text-error">{{ errors.email }}</span>
                 </label>

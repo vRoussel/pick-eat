@@ -21,6 +21,6 @@ authStore.load_account().finally(() => {
         .use(pinia)
         .use(head)
         .component('Icon', Icon)
-        .provide("icons", icons)
+        .provide('icons', icons)
         .mount('#app')
 })

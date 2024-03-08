@@ -5,7 +5,7 @@ import ToggleButton from '@/components/ToggleButton.vue'
 
 const model = defineModel('picked', {
     type: Set,
-    required: true
+    required: true,
 })
 
 const props = defineProps({
@@ -18,17 +18,15 @@ const props = defineProps({
     extendModalComponent: {
         type: Object,
     },
-});
+})
 
 const _picked = computed(() => {
     return new Set(model.value)
 })
 
 function toggle(id) {
-    if (_picked.value.has(id))
-        _picked.value.delete(id)
-    else
-        _picked.value.add(id)
+    if (_picked.value.has(id)) _picked.value.delete(id)
+    else _picked.value.add(id)
     model.value = _picked.value
 }
 
@@ -44,8 +42,12 @@ function created(new_choice) {
                 {{ el.name }}
             </toggle-button>
         </template>
-        <button v-if="extendable && extendModalComponent" class="btn rounded-full btn-primary btn-outline btn-sm"
-            type="button" @click="$refs.modal.open()">
+        <button
+            v-if="extendable && extendModalComponent"
+            class="btn rounded-full btn-primary btn-outline btn-sm"
+            type="button"
+            @click="$refs.modal.open()"
+        >
             +
         </button>
     </div>

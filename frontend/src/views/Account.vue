@@ -5,7 +5,6 @@ import { useHead } from '@unhead/vue'
 import AccountUpdateForm from '@/components/AccountUpdateForm.vue'
 import AccountView from '@/components/AccountView.vue'
 
-
 const router = useRouter()
 const route = useRoute()
 
@@ -13,12 +12,12 @@ useHead({
     title: 'Mon Compte',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 
 defineProps({
-    edit: Boolean
+    edit: Boolean,
 })
 
 function editAccount() {

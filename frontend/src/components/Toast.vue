@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
     error_queue: Array,
-    info_queue: Array
+    info_queue: Array,
 })
 </script>
 

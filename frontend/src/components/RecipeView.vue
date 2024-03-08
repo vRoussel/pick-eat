@@ -13,8 +13,8 @@ const foodStore = useFoodStore()
 const cartStore = useCartStore()
 
 const props = defineProps({
-    recipe: Object
-});
+    recipe: Object,
+})
 
 const is_vege = computed(() => {
     return props.recipe.diets.find((d) => d.label == 'vegetarian')
@@ -67,8 +67,7 @@ function increase_shares() {
 }
 
 function decrease_shares() {
-    if (asked_shares.value > 1)
-        asked_shares.value -= 1
+    if (asked_shares.value > 1) asked_shares.value -= 1
 }
 
 const fav_btn_icon = computed(() => {
@@ -84,9 +83,10 @@ const cart_btn_icon = computed(() => {
 })
 
 const cart_btn_text = computed(() => {
-    return cartStore.hasRecipe(props.recipe.id) ? 'Retirer de la liste de courses' : 'Ajouter à la liste de courses'
+    return cartStore.hasRecipe(props.recipe.id)
+        ? 'Retirer de la liste de courses'
+        : 'Ajouter à la liste de courses'
 })
-
 </script>
 
 <template>
@@ -98,29 +98,45 @@ const cart_btn_text = computed(() => {
             </span>
         </div>
 -->
-    <div v-if="props.recipe"
-        class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl">
+    <div
+        v-if="props.recipe"
+        class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl"
+    >
         <div class="flex flex-wrap sm:flex-nowrap gap-y-12 gap-x-4 md:gap-x-6">
             <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2 sm:p-0">
                 <a :href="props.recipe.image" v-if="props.recipe.image">
                     <picture>
                         <source type="image/avif" :srcset="image('avif')" />
                         <source type="image/webp" :srcset="image('webp')" />
-                        <img :src="image()" :alt="'Photo de ' + props.recipe.name"
-                            class="rounded-xl w-[512px] aspect-square" />
+                        <img
+                            :src="image()"
+                            :alt="'Photo de ' + props.recipe.name"
+                            class="rounded-xl w-[512px] aspect-square"
+                        />
                     </picture>
                 </a>
-                <img v-else :src="icons.camera" alt="icone de caméra" class="rounded-xl w-[512px] aspect-square" />
+                <img
+                    v-else
+                    :src="icons.camera"
+                    alt="icone de caméra"
+                    class="rounded-xl w-[512px] aspect-square"
+                />
             </div>
-            <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-3 sm:gap-y-0">
+            <div
+                class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-3 sm:gap-y-0"
+            >
                 <div :data-tip="props.recipe.name" :class="overflown ? 'tooltip' : ''">
-                    <h1 ref="recipe_name_el"
-                        class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-3xl lg:text-4xl">
+                    <h1
+                        ref="recipe_name_el"
+                        class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-3xl lg:text-4xl"
+                    >
                         {{ props.recipe.name }}
                     </h1>
                 </div>
-                <season-icons :seasons="props.recipe.seasons"
-                    class="text-3xl sm:text-2xl md:text-3xl lg:text-4xl gap-x-1" />
+                <season-icons
+                    :seasons="props.recipe.seasons"
+                    class="text-3xl sm:text-2xl md:text-3xl lg:text-4xl gap-x-1"
+                />
                 <p class="space-x-6">
                     <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
                         <Icon :icon="icons.knife" :rotate="3" class="text-primary" />
@@ -128,8 +144,8 @@ const cart_btn_text = computed(() => {
                     </span>
                     <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
                         <Icon :icon="icons.cooking_pot" class="text-primary" />{{
-        props.recipe.cook_time_min
-    }}
+                            props.recipe.cook_time_min
+                        }}
                         min
                     </span>
                 </p>
@@ -146,32 +162,52 @@ const cart_btn_text = computed(() => {
                     </span>
                 </p>
                 <p class="text-sm italic text-center">
-                    Ajoutée par {{ props.recipe.author_name }} <br /><router-link class="link-primary"
-                        :to="'/recipes?a=' + props.recipe.author_id">
+                    Ajoutée par {{ props.recipe.author_name }} <br /><router-link
+                        class="link-primary"
+                        :to="'/recipes?a=' + props.recipe.author_id"
+                    >
                         voir toutes ses recettes
                     </router-link>
                 </p>
             </div>
         </div>
         <div class="flex gap-2 flex-wrap justify-center">
-            <router-link v-for="tag in props.recipe.tags" :key="tag.id" :to="'/recipes?t=' + tag.id"
-                class="badge badge-outline badge-primary badge-md sm:badge-lg">
+            <router-link
+                v-for="tag in props.recipe.tags"
+                :key="tag.id"
+                :to="'/recipes?t=' + tag.id"
+                class="badge badge-outline badge-primary badge-md sm:badge-lg"
+            >
                 {{ tag.name }}
             </router-link>
         </div>
-        <div class="flex flex-wrap md:flex-nowrap gap-x-4 md:gap-x-8 items-start justify-center gap-y-12">
+        <div
+            class="flex flex-wrap md:flex-nowrap gap-x-4 md:gap-x-8 items-start justify-center gap-y-12"
+        >
             <table class="table table-compact basis-3/4 md:basis-1/3 shrink-0 grow sm:grow-0">
                 <thead>
                     <tr class="text-center">
-                        <th colspan="2" class="text-primary-content !bg-primary text-lg rounded-t-xl">
+                        <th
+                            colspan="2"
+                            class="text-primary-content !bg-primary text-lg rounded-t-xl"
+                        >
                             <span class="flex flex-row items-center justify-around">
-                                <button class="text-xl text-primary bg-white rounded-full"
-                                    @click.prevent.stop="decrease_shares" aria-label="Décrémenter le nombre de parts">
+                                <button
+                                    class="text-xl text-primary bg-white rounded-full"
+                                    @click.prevent.stop="decrease_shares"
+                                    aria-label="Décrémenter le nombre de parts"
+                                >
                                     <Icon :icon="icons.minus" />
                                 </button>
-                                <span>Ingrédients<br>({{ asked_shares }} {{ props.recipe.shares_unit }})</span>
-                                <button class="text-xl text-primary bg-white rounded-full"
-                                    @click.prevent.stop="increase_shares" aria-label="Incrémenter le nombre de parts">
+                                <span
+                                    >Ingrédients<br />({{ asked_shares }}
+                                    {{ props.recipe.shares_unit }})</span
+                                >
+                                <button
+                                    class="text-xl text-primary bg-white rounded-full"
+                                    @click.prevent.stop="increase_shares"
+                                    aria-label="Incrémenter le nombre de parts"
+                                >
                                     <Icon :icon="icons.plus" />
                                 </button>
                             </span>
@@ -179,10 +215,16 @@ const cart_btn_text = computed(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
+                    <tr
+                        v-for="ingr in props.recipe.q_ingredients"
+                        :key="ingr.id"
+                        class="border-b border-base-200"
+                    >
                         <td class="!text-right">
-                            {{ ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : '' }} {{ ingr.unit ?
-        ingr.unit.short_name : '' }}
+                            {{
+                                ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : ''
+                            }}
+                            {{ ingr.unit ? ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>
@@ -199,7 +241,11 @@ const cart_btn_text = computed(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(step, index) in props.recipe.instructions" :key="index" class="border-0">
+                    <tr
+                        v-for="(step, index) in props.recipe.instructions"
+                        :key="index"
+                        class="border-0"
+                    >
                         <td class="text-primary border-0 font-bold w-8">
                             {{ index + 1 }}
                         </td>
@@ -219,20 +265,32 @@ const cart_btn_text = computed(() => {
             </p>
         </blockquote>
         <div class="flex flex-col md:flex-row gap-y-2 *:lg:btn-wide justify-evenly">
-            <button v-if="allowed_to_modify" type="button" class="btn btn-outline btn-primary" @click="editRecipe">
+            <button
+                v-if="allowed_to_modify"
+                type="button"
+                class="btn btn-outline btn-primary"
+                @click="editRecipe"
+            >
                 Modifier la recette
                 <span class="text-xl">
                     <Icon :icon="icons.pencil" />
                 </span>
             </button>
-            <button type="button" class="btn btn-outline btn-primary" @click="foodStore.toggleFavorite(props.recipe)">
+            <button
+                type="button"
+                class="btn btn-outline btn-primary"
+                @click="foodStore.toggleFavorite(props.recipe)"
+            >
                 {{ fav_btn_text }}
                 <span class="text-xl">
                     <Icon :icon="fav_btn_icon" />
                 </span>
             </button>
-            <button type="button" class="btn btn-outline btn-primary"
-                @click="cartStore.toggleRecipe(props.recipe, asked_shares)">
+            <button
+                type="button"
+                class="btn btn-outline btn-primary"
+                @click="cartStore.toggleRecipe(props.recipe, asked_shares)"
+            >
                 {{ cart_btn_text }}
                 <span class="text-xl">
                     <Icon :icon="cart_btn_icon" />

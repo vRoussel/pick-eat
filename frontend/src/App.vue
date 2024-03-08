@@ -20,14 +20,13 @@ const WEBSITE_PROTO = window.location.protocol
 const WEBSITE_HOST = window.location.hostname
 const WEBSITE_URL = `${WEBSITE_PROTO}//${WEBSITE_HOST}`
 
-
 const cartStore = useCartStore()
 const foodStore = useFoodStore()
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
 
 useHead({
-    titleTemplate: (title) => !title ? 'Pickeat' : `${title} - Pickeat`,
+    titleTemplate: (title) => (!title ? 'Pickeat' : `${title} - Pickeat`),
 })
 
 useHead({
@@ -35,9 +34,9 @@ useHead({
         schemaOrg: {
             host: WEBSITE_URL,
             path: useRoute().path,
-            inLanguage: 'fr-FR'
-        }
-    }
+            inLanguage: 'fr-FR',
+        },
+    },
 })
 
 useSchemaOrg([
@@ -47,15 +46,15 @@ useSchemaOrg([
     }),
     defineWebSite({
         name: 'Pickeat',
-    })
+    }),
 ])
 
 const icons = inject('icons')
 
 const pickeat_logo = ref(null)
 const dropdown_main_opened = ref(false)
-const grocery_list_modal_el = ref(null);
-const contact_link_el = ref(null);
+const grocery_list_modal_el = ref(null)
+const contact_link_el = ref(null)
 
 onMounted(() => {
     foodStore.fetchAll().then(() => {
@@ -68,18 +67,16 @@ onMounted(() => {
         5 * 60 * 1000,
     )
 
-    const name = "contact"
-    const host = "pick-eat.fr"
+    const name = 'contact'
+    const host = 'pick-eat.fr'
     setTimeout(function () {
         contact_link_el.value.href = `mailto:${name}@${host}`
-    }, 1000);
+    }, 1000)
 })
 
 function set_logo(theme) {
-    if (theme == 'light')
-        pickeat_logo.value = pickeat_logo_light
-    else
-        pickeat_logo.value = pickeat_logo_dark
+    if (theme == 'light') pickeat_logo.value = pickeat_logo_light
+    else pickeat_logo.value = pickeat_logo_dark
 }
 
 function close_dropdown_if_opened() {
@@ -100,22 +97,30 @@ function close_dropdown_if_opened() {
                     <label tabindex="0" class="btn btn-ghost">
                         <Icon class="icon text-2xl" :icon="icons.menu" />
                     </label>
-                    <ul tabindex="0"
-                        class="z-10 menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                    <ul
+                        tabindex="0"
+                        class="z-10 menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+                    >
                         <li>
                             <router-link to="/recipes"> Recettes </router-link>
                         </li>
                         <li>
-                            <router-link to="/new-recipe">
-                                Nouvelle recette
-                            </router-link>
+                            <router-link to="/new-recipe"> Nouvelle recette </router-link>
                         </li>
                     </ul>
                 </div>
                 <router-link class="xs:min-w-[150px] sm:min-w-[200px]" to="/recipes">
-                    <img :src="pickeat_logo" class="aspect-[200/84]" width="150" sm:width="200" alt="Logo pickeat" />
+                    <img
+                        :src="pickeat_logo"
+                        class="aspect-[200/84]"
+                        width="150"
+                        sm:width="200"
+                        alt="Logo pickeat"
+                    />
                 </router-link>
-                <ul class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2">
+                <ul
+                    class="shrink-0 grow menu menu-horizontal p-2 rounded-box hidden sm:flex sm:space-x-2"
+                >
                     <li class="shrink-0">
                         <router-link to="/recipes"> Recettes </router-link>
                     </li>
@@ -125,17 +130,41 @@ function close_dropdown_if_opened() {
                 </ul>
             </div>
             <div class="navbar-end space-x-3">
-                <button class="indicator" type="button" @click="grocery_list_modal_el.open()"
-                    aria-label="Ouvrir la liste de course">
-                    <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.cart_outline" />
-                    <span v-if="cartStore.recipeCount > 0" class="indicator-item badge badge-primary">{{
-                        cartStore.recipeCount
-                    }}</span>
+                <button
+                    class="indicator"
+                    type="button"
+                    @click="grocery_list_modal_el.open()"
+                    aria-label="Ouvrir la liste de course"
+                >
+                    <Icon
+                        class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
+                        :icon="icons.cart_outline"
+                    />
+                    <span
+                        v-if="cartStore.recipeCount > 0"
+                        class="indicator-item badge badge-primary"
+                        >{{ cartStore.recipeCount }}</span
+                    >
                 </button>
-                <theme-toggle dark_theme="pickeat_dark" light_theme="pickeat_light" @theme_changed="set_logo" />
-                <button class="indicator" type="button" @click="$router.push({ name: 'account' })" aria-label="Mon compte">
-                    <Icon class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer" :icon="icons.account" />
-                    <span v-if="authStore.is_logged_in" class="indicator-item badge badge-success badge-xs "></span>
+                <theme-toggle
+                    dark_theme="pickeat_dark"
+                    light_theme="pickeat_light"
+                    @theme_changed="set_logo"
+                />
+                <button
+                    class="indicator"
+                    type="button"
+                    @click="$router.push({ name: 'account' })"
+                    aria-label="Mon compte"
+                >
+                    <Icon
+                        class="icon text-2xl sm:text-3xl md:text-4xl cursor-pointer"
+                        :icon="icons.account"
+                    />
+                    <span
+                        v-if="authStore.is_logged_in"
+                        class="indicator-item badge badge-success badge-xs"
+                    ></span>
                 </button>
             </div>
         </nav>
@@ -147,20 +176,25 @@ function close_dropdown_if_opened() {
             </transition>
         </router-view>
         <div class="border-primary border-t">
-            <footer class="footer footer-center p-10 *:w-full grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto">
+            <footer
+                class="footer footer-center p-10 *:w-full grid-cols-1 md:grid-cols-2 items-start max-w-4xl mx-auto"
+            >
                 <div>
-                    <p class="footer-title">
-                        100% open source</p>
+                    <p class="footer-title">100% open source</p>
                     <p class="w-full inline-flex items-center gap-x-4">
                         <span>
                             <Icon :icon="icons.github" class="text-4xl" />
                         </span>
                         <span class="text-left italic">
-                            Ce site web est entièrement open source.<br />N'hésitez pas à <a class="link-primary"
-                                href="https://github.com/vRoussel/pick-eat" target="_blank"> consulter le code source</a> et
-                            pourquoi
-                            pas,
-                            proposer des améliorations :)
+                            Ce site web est entièrement open source.<br />N'hésitez pas à
+                            <a
+                                class="link-primary"
+                                href="https://github.com/vRoussel/pick-eat"
+                                target="_blank"
+                            >
+                                consulter le code source</a
+                            >
+                            et pourquoi pas, proposer des améliorations :)
                         </span>
                     </p>
                 </div>
@@ -171,9 +205,12 @@ function close_dropdown_if_opened() {
                             <Icon :icon="icons.email" class="text-4xl" />
                         </span>
                         <span class="text-left italic">
-                            Vous rencontrez un problème ou vous avez une suggestion à faire ?<br /><a class="link-primary"
-                                ref="contact_link_el">
-                                Envoyez moi un message !</a>
+                            Vous rencontrez un problème ou vous avez une suggestion à faire ?<br /><a
+                                class="link-primary"
+                                ref="contact_link_el"
+                            >
+                                Envoyez moi un message !</a
+                            >
                         </span>
                     </p>
                 </div>

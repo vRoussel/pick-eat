@@ -4,11 +4,11 @@ import { useHead } from '@unhead/vue'
 import no_recipe_video from '@/assets/homer_not_found.mp4'
 
 useHead({
-    title: "404 not found",
+    title: '404 not found',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 </script>
 

@@ -19,7 +19,7 @@ export const useCartStore = defineStore('cart', () => {
 
     function addRecipe(recipe, shares) {
         if (recipeCount.value >= 25) {
-            notifStore.show_error("Vous ne pouvez pas ajouter plus de 25 recettes à votre panier")
+            notifStore.show_error('Vous ne pouvez pas ajouter plus de 25 recettes à votre panier')
             return
         }
         content.value.set(recipe.id, { recipe: recipe, shares: shares })
@@ -53,8 +53,7 @@ export const useCartStore = defineStore('cart', () => {
 
     function updateRecipe(id, new_recipe, should_backup = true) {
         content.value.get(id).recipe = new_recipe
-        if (should_backup)
-            do_backup()
+        if (should_backup) do_backup()
     }
 
     var do_backup_api_debounced = debounce(async (data) => {
@@ -70,16 +69,16 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     function do_backup_local(data) {
-        localStorage.setItem("cart", data)
+        localStorage.setItem('cart', data)
     }
 
     async function do_restore() {
         let backup, local_backup, api_backup
         try {
-            local_backup = get_local_backup();
+            local_backup = get_local_backup()
         } catch (e) {
             local_backup = null
-            console.error("Unable to restore cart from local storage and/or api")
+            console.error('Unable to restore cart from local storage and/or api')
         }
 
         if (authStore.is_logged_in) {
@@ -88,7 +87,7 @@ export const useCartStore = defineStore('cart', () => {
                 api_backup.content = new Map(api_backup.content)
             } catch (e) {
                 api_backup = null
-                console.error("Unable to restore cart from local storage and/or api")
+                console.error('Unable to restore cart from local storage and/or api')
             }
         }
 
@@ -110,7 +109,7 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     function get_local_backup() {
-        let tmp = JSON.parse(localStorage.getItem("cart"))
+        let tmp = JSON.parse(localStorage.getItem('cart'))
         tmp.content = new Map(tmp.content)
         return tmp
     }
@@ -118,12 +117,9 @@ export const useCartStore = defineStore('cart', () => {
     function merge_backups(cart1, cart2) {
         let merged_last_update
         let merged_content
-        if (!cart1 && !cart2)
-            return null
-        else if (!cart1)
-            return cart2
-        else if (!cart2)
-            return cart1
+        if (!cart1 && !cart2) return null
+        else if (!cart1) return cart2
+        else if (!cart2) return cart1
 
         merged_last_update = Math.max(cart1.last_update, cart2.last_update)
         if (cart1.last_update >= cart2.last_update) {
@@ -134,10 +130,19 @@ export const useCartStore = defineStore('cart', () => {
 
         return {
             last_update: merged_last_update,
-            content: merged_content
+            content: merged_content,
         }
     }
 
-    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, toggleRecipe, updateRecipe, updateRecipeShares, restore: do_restore }
+    return {
+        content,
+        recipeCount,
+        addRecipe,
+        removeRecipe,
+        hasRecipe,
+        toggleRecipe,
+        updateRecipe,
+        updateRecipeShares,
+        restore: do_restore,
+    }
 })
-

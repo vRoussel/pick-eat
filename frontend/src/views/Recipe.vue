@@ -17,8 +17,8 @@ const route = useRoute()
 
 const props = defineProps({
     id: Number,
-    edit: Boolean
-});
+    edit: Boolean,
+})
 
 const recipe = ref(null)
 
@@ -59,8 +59,8 @@ function loadRecipe() {
                 cookTime: `PT${recipe.value.cook_time_min}M`,
                 prepTime: `PT${recipe.value.prep_time_min}M`,
                 recipeYield: `${recipe.value.n_shares} ${recipe.value.shares_unit}`,
-                suitableForDiet: recipe.value.diets.map(diet_to_schema_org_format)
-            })
+                suitableForDiet: recipe.value.diets.map(diet_to_schema_org_format),
+            }),
         ])
 
         useHead({
@@ -68,11 +68,10 @@ function loadRecipe() {
             meta: [
                 {
                     name: 'description',
-                    content: `Decouvez la recette de "${recipe.value.name}" de ${recipe.value.author_name}, sans pubs et sans blabla`
-                }
-            ]
+                    content: `Decouvez la recette de "${recipe.value.name}" de ${recipe.value.author_name}, sans pubs et sans blabla`,
+                },
+            ],
         })
-
     })
 }
 
@@ -93,9 +92,8 @@ function afterEdit() {
 
 <template>
     <div class="container px-4 my-4">
-        <recipe-skeleton v-if="recipe === null"/>
+        <recipe-skeleton v-if="recipe === null" />
         <recipe-view v-else-if="!edit" :recipe="recipe" @edit="editRecipe" />
         <recipe-form v-else :existing_recipe="recipe" @done="afterEdit" />
     </div>
 </template>
-

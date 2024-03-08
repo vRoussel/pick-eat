@@ -49,8 +49,7 @@ const validator = object().shape({
     seasons: array()
         .transform((value) => Array.from(value))
         .min(1, 'Selectionnez au moins une saison'),
-    ingredients: array()
-        .min(1, 'Ajoutez au moins un ingrédient'),
+    ingredients: array().min(1, 'Ajoutez au moins un ingrédient'),
     instructions: string().required('Ajoutez les étapes pour réaliser la recette'),
     // Mandatory image is too annoying, find a better way
     //image_url: string()
@@ -59,8 +58,8 @@ const validator = object().shape({
 })
 
 const props = defineProps({
-    existing_recipe: Object
-});
+    existing_recipe: Object,
+})
 
 const emit = defineEmits(['done'])
 
@@ -69,7 +68,7 @@ const fields = ref({
     prep_time: null,
     cook_time: null,
     shares: 0,
-    shares_unit: "personnes",
+    shares_unit: 'personnes',
     instructions: '',
     categories: new Set(),
     tags: new Set(),
@@ -105,38 +104,60 @@ const update_mode = computed(() => {
 })
 
 function addWatchers() {
-    watch(() => fields.value.diets, (new_val, old_val) => {
-        let added_vegan = !old_val.has(2) && new_val.has(2)
-        let removed_vege = old_val.has(1) && !new_val.has(1)
-        if (added_vegan) {
-            new_val.add(1)
-        } else if (removed_vege) {
-            new_val.delete(2)
-        }
-    })
+    watch(
+        () => fields.value.diets,
+        (new_val, old_val) => {
+            let added_vegan = !old_val.has(2) && new_val.has(2)
+            let removed_vege = old_val.has(1) && !new_val.has(1)
+            if (added_vegan) {
+                new_val.add(1)
+            } else if (removed_vege) {
+                new_val.delete(2)
+            }
+        },
+    )
 
-    watch(() => fields.value.categories, () => {
-        validate('categories')
-    })
-    watch(() => fields.value.seasons, () => {
-        validate('seasons')
-    })
-    watch(() => fields.value.ingredients, () => {
-        validate('ingredients')
-    })
-    watch(() => fields.value.shares, () => {
-        validate('shares')
-    })
+    watch(
+        () => fields.value.categories,
+        () => {
+            validate('categories')
+        },
+    )
+    watch(
+        () => fields.value.seasons,
+        () => {
+            validate('seasons')
+        },
+    )
+    watch(
+        () => fields.value.ingredients,
+        () => {
+            validate('ingredients')
+        },
+    )
+    watch(
+        () => fields.value.shares,
+        () => {
+            validate('shares')
+        },
+    )
 
-    watch(fields, (value) => {
-        localStorage.setItem("recipeform", JSON.stringify({
-            ...value,
-            categories: Array.from(value.categories),
-            tags: Array.from(value.tags),
-            seasons: Array.from(value.seasons),
-            diets: Array.from(value.diets)
-        }))
-    }, { deep: true })
+    watch(
+        fields,
+        (value) => {
+            localStorage.setItem(
+                'recipeform',
+                JSON.stringify({
+                    ...value,
+                    categories: Array.from(value.categories),
+                    tags: Array.from(value.tags),
+                    seasons: Array.from(value.seasons),
+                    diets: Array.from(value.diets),
+                }),
+            )
+        },
+        { deep: true },
+    )
 }
 
 // Mandatory image is too annoying, find a better way
@@ -167,8 +188,7 @@ function sendRecipe() {
         is_private: f.is_private,
     }
     for (var ingr of recipe.q_ingredients) {
-        if (ingr.quantity == null)
-            ingr.unit_id = null
+        if (ingr.quantity == null) ingr.unit_id = null
     }
 
     errors.value = {}
@@ -213,7 +233,7 @@ function cancel() {
 }
 
 function fillForm() {
-    let backup = JSON.parse(localStorage.getItem("recipeform"))
+    let backup = JSON.parse(localStorage.getItem('recipeform'))
     if (props.existing_recipe) {
         let other = props.existing_recipe
 
@@ -223,7 +243,7 @@ function fillForm() {
             return {
                 id: ingr.id,
                 unit_id: ingr.unit ? ingr.unit.id : null,
-                quantity: ingr.quantity
+                quantity: ingr.quantity,
             }
         })
         f.categories = new Set(other.categories.map((c) => c.id))
@@ -245,11 +265,11 @@ function fillForm() {
                 categories: new Set(backup.categories),
                 tags: new Set(backup.tags),
                 seasons: new Set(backup.seasons),
-                diets: new Set(backup.diets)
+                diets: new Set(backup.diets),
             }
             errors.value = {}
         } catch (e) {
-            console.error("Unable to restore recipe form from local storage")
+            console.error('Unable to restore recipe form from local storage')
         }
     }
 }
@@ -260,7 +280,7 @@ function clearForm() {
     f.prep_time = null
     f.cook_time = null
     f.shares = 0
-    f.shares_unit = "personnes"
+    f.shares_unit = 'personnes'
     f.instructions = ''
     f.categories.clear()
     f.tags.clear()
@@ -285,8 +305,12 @@ function validate(field) {
 </script>
 
 <template>
-    <form id="recipe-form" autocomplete="off" class="gap-y-8 flex flex-col items-start max-w-3xl mx-auto px-2 my-4"
-        @submit.prevent="sendRecipe">
+    <form
+        id="recipe-form"
+        autocomplete="off"
+        class="gap-y-8 flex flex-col items-start max-w-3xl mx-auto px-2 my-4"
+        @submit.prevent="sendRecipe"
+    >
         <div class="form-control mt-6">
             <button type="button" class="btn btn-outline btn-primary btn-wide" @click="clearForm">
                 Réinitialiser les champs
@@ -299,8 +323,13 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Nom</span>
             </label>
-            <input v-model="fields.name" type="text" class="input input-bordered w-full"
-                :class="errors.name && '!input-error'" @blur="validate('name')" />
+            <input
+                v-model="fields.name"
+                type="text"
+                class="input input-bordered w-full"
+                :class="errors.name && '!input-error'"
+                @blur="validate('name')"
+            />
             <label v-if="errors.name" class="label">
                 <span class="label-text-alt text-error">{{ errors.name }}</span>
             </label>
@@ -312,9 +341,14 @@ function validate(field) {
                     <label class="label">
                         <span class="label-text">Temps de préparation</span>
                     </label>
-                    <input v-model="fields.prep_time" type="number" class="input input-bordered w-full"
-                        placeholder="(en minutes)" :class="errors.prep_time && '!input-error'"
-                        @blur="validate('prep_time')" />
+                    <input
+                        v-model="fields.prep_time"
+                        type="number"
+                        class="input input-bordered w-full"
+                        placeholder="(en minutes)"
+                        :class="errors.prep_time && '!input-error'"
+                        @blur="validate('prep_time')"
+                    />
                     <label v-if="errors.prep_time" class="label">
                         <span class="label-text-alt text-error">{{ errors.prep_time }}</span>
                     </label>
@@ -324,9 +358,14 @@ function validate(field) {
                     <label class="label">
                         <span class="label-text">Temps de cuisson</span>
                     </label>
-                    <input v-model="fields.cook_time" type="number" class="input input-bordered w-full"
-                        placeholder="(en minutes)" :class="errors.cook_time && '!input-error'"
-                        @blur="validate('cook_time')" />
+                    <input
+                        v-model="fields.cook_time"
+                        type="number"
+                        class="input input-bordered w-full"
+                        placeholder="(en minutes)"
+                        :class="errors.cook_time && '!input-error'"
+                        @blur="validate('cook_time')"
+                    />
                     <label v-if="errors.cook_time" class="label">
                         <span class="label-text-alt text-error">{{ errors.cook_time }}</span>
                     </label>
@@ -338,17 +377,27 @@ function validate(field) {
                     </label>
                     <div class="flex flex-row items-start gap-x-5">
                         <div class="form-control">
-                            <number-input v-model.number="fields.shares" :min="0" :badvalue="errors.shares != null" />
+                            <number-input
+                                v-model.number="fields.shares"
+                                :min="0"
+                                :badvalue="errors.shares != null"
+                            />
                             <label v-if="errors.shares" class="label">
                                 <span class="label-text-alt text-error">{{ errors.shares }}</span>
                             </label>
                         </div>
                         <div class="form-control">
-                            <input v-model="fields.shares_unit" class="input input-bordered"
-                                :class="errors.shares_unit && '!input-error'" @blur=" validate('shares_unit')"
-                                placeholder="parts, personnes, crêpes, etc" />
+                            <input
+                                v-model="fields.shares_unit"
+                                class="input input-bordered"
+                                :class="errors.shares_unit && '!input-error'"
+                                @blur="validate('shares_unit')"
+                                placeholder="parts, personnes, crêpes, etc"
+                            />
                             <label v-if="errors.shares_unit" class="label">
-                                <span class="label-text-alt text-error">{{ errors.shares_unit }}</span>
+                                <span class="label-text-alt text-error">{{
+                                    errors.shares_unit
+                                }}</span>
                             </label>
                         </div>
                     </div>
@@ -366,9 +415,13 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Catégories</span>
             </label>
-            <toggle-buttons v-model:picked="fields.categories" :choices="foodStore.categories"
-                :extendable="authStore.is_admin" :extend-modal-component="NewCategoryModal_"
-                :class="errors.categories && '!border-error'" />
+            <toggle-buttons
+                v-model:picked="fields.categories"
+                :choices="foodStore.categories"
+                :extendable="authStore.is_admin"
+                :extend-modal-component="NewCategoryModal_"
+                :class="errors.categories && '!border-error'"
+            />
             <label v-if="errors.categories" class="label">
                 <span class="label-text-alt text-error">{{ errors.categories }}</span>
             </label>
@@ -378,16 +431,23 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Tags</span>
             </label>
-            <toggle-buttons v-model:picked="fields.tags" :choices="foodStore.tags" :extendable="authStore.is_admin"
-                :extend-modal-component="NewTagModal_" />
+            <toggle-buttons
+                v-model:picked="fields.tags"
+                :choices="foodStore.tags"
+                :extendable="authStore.is_admin"
+                :extend-modal-component="NewTagModal_"
+            />
         </div>
 
         <div class="form-control w-full">
             <label class="label">
                 <span class="label-text">Saisons</span>
             </label>
-            <toggle-buttons v-model:picked="fields.seasons" :choices="foodStore.seasons"
-                :class="errors.seasons && '!border-error'" />
+            <toggle-buttons
+                v-model:picked="fields.seasons"
+                :choices="foodStore.seasons"
+                :class="errors.seasons && '!border-error'"
+            />
             <label v-if="errors.seasons" class="label">
                 <span class="label-text-alt text-error">{{ errors.seasons }}</span>
             </label>
@@ -404,8 +464,11 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Ingrédients</span>
             </label>
-            <ingredient-picker ref="ingredients" v-model:picked="fields.ingredients"
-                :class="errors.ingredients && '!input-error !border-2'" />
+            <ingredient-picker
+                ref="ingredients"
+                v-model:picked="fields.ingredients"
+                :class="errors.ingredients && '!input-error !border-2'"
+            />
             <label v-if="errors.ingredients" class="label">
                 <span class="label-text-alt text-error">{{ errors.ingredients }}</span>
             </label>
@@ -415,9 +478,13 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Étapes</span>
             </label>
-            <textarea v-model="fields.instructions" class="textarea textarea-bordered h-40"
-                placeholder="Une étape par ligne" :class="errors.instructions && '!input-error'"
-                @blur="validate('instructions')" />
+            <textarea
+                v-model="fields.instructions"
+                class="textarea textarea-bordered h-40"
+                placeholder="Une étape par ligne"
+                :class="errors.instructions && '!input-error'"
+                @blur="validate('instructions')"
+            />
             <label v-if="errors.instructions" class="label">
                 <span class="label-text-alt text-error">{{ errors.instructions }}</span>
             </label>
@@ -432,13 +499,22 @@ function validate(field) {
 
         <div class="form-control w-full">
             <label class="label cursor-pointer justify-start gap-x-4">
-                <input v-model="fields.is_private" type="checkbox" class="checkbox checkbox-sm checkbox-accent" />
+                <input
+                    v-model="fields.is_private"
+                    type="checkbox"
+                    class="checkbox checkbox-sm checkbox-accent"
+                />
                 <span class="label-text">Recette privée</span>
             </label>
         </div>
 
         <div class="flex flex-row md:flex-row gap-y-2 sm:*:btn-wide *:btn-lg justify-evenly w-full">
-            <button v-if="update_mode" type="button" class="btn btn-primary btn-outline" @click="cancel">
+            <button
+                v-if="update_mode"
+                type="button"
+                class="btn btn-primary btn-outline"
+                @click="cancel"
+            >
                 Annuler
             </button>
             <button class="btn btn-primary">

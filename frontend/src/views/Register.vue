@@ -18,8 +18,8 @@ useHead({
     title: 'Inscription',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 
 const validator = object().shape({
@@ -35,12 +35,12 @@ const validator = object().shape({
 const fields = ref({
     email: null,
     password: null,
-    display_name: null
+    display_name: null,
 })
 const errors = ref({
     email: null,
     password: null,
-    display_name: null
+    display_name: null,
 })
 
 const display_name_input_el = ref(null)
@@ -91,7 +91,10 @@ function validate(field) {
 
 <template>
     <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="register">
+        <form
+            class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+            @submit.prevent="register"
+        >
             <h1 class="text-xl font-bold text-center">Inscription</h1>
             <p class="text-center">
                 Vous avez déjà un compte ?
@@ -101,9 +104,14 @@ function validate(field) {
                 <label class="label">
                     <span class="label-text">Pseudo</span>
                 </label>
-                <input ref="display_name_input_el" v-model="fields.display_name" type="text"
-                    class="input input-bordered w-full" :class="errors.display_name && '!input-error'"
-                    @blur="validate('display_name')" />
+                <input
+                    ref="display_name_input_el"
+                    v-model="fields.display_name"
+                    type="text"
+                    class="input input-bordered w-full"
+                    :class="errors.display_name && '!input-error'"
+                    @blur="validate('display_name')"
+                />
                 <label v-if="errors.display_name" class="label">
                     <span class="label-text-alt text-error">{{ errors.display_name }}</span>
                 </label>
@@ -112,8 +120,13 @@ function validate(field) {
                 <label class="label">
                     <span class="label-text">Adresse mail</span>
                 </label>
-                <input v-model="fields.email" type="text" class="input input-bordered w-full"
-                    :class="errors.email && '!input-error'" @blur="validate('email')" />
+                <input
+                    v-model="fields.email"
+                    type="text"
+                    class="input input-bordered w-full"
+                    :class="errors.email && '!input-error'"
+                    @blur="validate('email')"
+                />
                 <label v-if="errors.email" class="label">
                     <span class="label-text-alt text-error">{{ errors.email }}</span>
                 </label>
@@ -122,16 +135,19 @@ function validate(field) {
                 <label class="label">
                     <span class="label-text">Mot de passe</span>
                 </label>
-                <input v-model="fields.password" type="password" class="input input-bordered w-full"
-                    :class="errors.password && '!input-error'" @blur="validate('password')" />
+                <input
+                    v-model="fields.password"
+                    type="password"
+                    class="input input-bordered w-full"
+                    :class="errors.password && '!input-error'"
+                    @blur="validate('password')"
+                />
                 <label v-if="errors.password" class="label">
                     <span class="label-text-alt text-error">{{ errors.password }}</span>
                 </label>
             </div>
             <div class="form-control">
-                <button class="btn btn-primary w-full btn-lg">
-                    Créer mon compte
-                </button>
+                <button class="btn btn-primary w-full btn-lg">Créer mon compte</button>
             </div>
         </form>
     </div>

@@ -3,8 +3,8 @@ import { inject, computed } from 'vue'
 
 const icons = inject('icons')
 const props = defineProps({
-    seasons: Array
-});
+    seasons: Array,
+})
 
 const season_labels = computed(() => {
     return props.seasons.map((r) => r.label)
@@ -39,4 +39,3 @@ function has_season(label) {
         </span>
     </div>
 </template>
-

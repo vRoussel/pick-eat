@@ -36,8 +36,6 @@ export const useFoodStore = defineStore('food', () => {
     const diets = ref([])
     const accounts_with_recipes = ref([])
 
-
-
     const tagsById = computed(() => {
         return new Map(tags.value.map((t) => [t.id, t]))
     })
@@ -134,7 +132,7 @@ export const useFoodStore = defineStore('food', () => {
 
     async function getRecipesFromIds(ids) {
         if (ids.length > 25) {
-            console.warn("More than 25 recipes asked by ID, this should not happen")
+            console.warn('More than 25 recipes asked by ID, this should not happen')
         }
         let url = `${API_ROOT}/recipes`
         let params = {
@@ -244,9 +242,43 @@ export const useFoodStore = defineStore('food', () => {
         return f(`${API_ROOT}/accounts/me/favorites/${recipe.id}`, { headers: headers }).catch(
             () => {
                 recipe.is_favorite = !recipe.is_favorite
-            }
+            },
         )
     }
 
-    return { tags, categories, seasons, ingredients, units, diets, accounts_with_recipes, fetchTags, fetchCategories, fetchSeasons, fetchIngredients, fetchUnits, fetchDiets, fetchAccountsWithRecipes, fetchAll, getRecipes, getRecipesFromIds, getTagById, getIngredientById, getCategoryById, getUnitById, getSeasonById, getDietById, getRecipeById, sendNewTag, sendNewCategory, sendNewSeason, sendNewDiet, sendNewIngredient, sendNewUnit, sendNewRecipe, updateRecipe, toggleFavorite }
+    return {
+        tags,
+        categories,
+        seasons,
+        ingredients,
+        units,
+        diets,
+        accounts_with_recipes,
+        fetchTags,
+        fetchCategories,
+        fetchSeasons,
+        fetchIngredients,
+        fetchUnits,
+        fetchDiets,
+        fetchAccountsWithRecipes,
+        fetchAll,
+        getRecipes,
+        getRecipesFromIds,
+        getTagById,
+        getIngredientById,
+        getCategoryById,
+        getUnitById,
+        getSeasonById,
+        getDietById,
+        getRecipeById,
+        sendNewTag,
+        sendNewCategory,
+        sendNewSeason,
+        sendNewDiet,
+        sendNewIngredient,
+        sendNewUnit,
+        sendNewRecipe,
+        updateRecipe,
+        toggleFavorite,
+    }
 })

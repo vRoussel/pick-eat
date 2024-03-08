@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref, nextTick } from 'vue'
 import { object, string } from 'yup'
 
 import { useAuthStore } from '@/store/auth.js'
@@ -16,14 +16,14 @@ const fields = ref({
     email: null,
     password: null,
     old_password: null,
-    name: null
+    name: null,
 })
 
 const errors = ref({
     email: null,
     password: null,
     old_password: null,
-    name: null
+    name: null,
 })
 
 const validator = object().shape({
@@ -53,7 +53,12 @@ function updateAccount() {
         .validate(fields.value, { abortEarly: false })
         .then(() => {
             authStore
-                .update_account(fields.value.old_password, fields.value.email, fields.value.password, fields.value.name)
+                .update_account(
+                    fields.value.old_password,
+                    fields.value.email,
+                    fields.value.password,
+                    fields.value.name,
+                )
                 .then(() => {
                     emit('done')
                 })
@@ -83,15 +88,24 @@ function validate(field) {
 </script>
 
 <template>
-    <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md" @submit.prevent="updateAccount">
+    <form
+        class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+        @submit.prevent="updateAccount"
+    >
         <h1 class="text-xl font-bold text-center">Modification du compte</h1>
         <div class="form-control">
             <label class="label">
                 <span class="label-text">Mot de passe actuel</span>
             </label>
-            <input ref="old_password_input_el" v-model="fields.old_password" type="password" placeholder="Requis"
-                class="input input-bordered w-full" :class="errors.old_password && '!input-error'"
-                @blur="validate('old_password')" />
+            <input
+                ref="old_password_input_el"
+                v-model="fields.old_password"
+                type="password"
+                placeholder="Requis"
+                class="input input-bordered w-full"
+                :class="errors.old_password && '!input-error'"
+                @blur="validate('old_password')"
+            />
             <label v-if="errors.old_password" class="label">
                 <span class="label-text-alt text-error">{{ errors.old_password }}</span>
             </label>
@@ -100,8 +114,13 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Nom</span>
             </label>
-            <input v-model="fields.name" type="text" class="input input-bordered w-full"
-                :class="errors.name && '!input-error'" @blur="validate('name')" />
+            <input
+                v-model="fields.name"
+                type="text"
+                class="input input-bordered w-full"
+                :class="errors.name && '!input-error'"
+                @blur="validate('name')"
+            />
             <label v-if="errors.name" class="label">
                 <span class="label-text-alt text-error">{{ errors.name }}</span>
             </label>
@@ -110,8 +129,13 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Adresse mail</span>
             </label>
-            <input v-model="fields.email" type="text" class="input input-bordered w-full"
-                :class="errors.email && '!input-error'" @blur="validate('email')" />
+            <input
+                v-model="fields.email"
+                type="text"
+                class="input input-bordered w-full"
+                :class="errors.email && '!input-error'"
+                @blur="validate('email')"
+            />
             <label v-if="errors.email" class="label">
                 <span class="label-text-alt text-error">{{ errors.email }}</span>
             </label>
@@ -120,9 +144,14 @@ function validate(field) {
             <label class="label">
                 <span class="label-text">Nouveau mot de passe (si changement)</span>
             </label>
-            <input v-model="fields.password" type="password" placeholder="Laisser vide pour conserver l'actuel"
-                class="input input-bordered w-full" :class="errors.password && '!input-error'"
-                @blur="validate('password')" />
+            <input
+                v-model="fields.password"
+                type="password"
+                placeholder="Laisser vide pour conserver l'actuel"
+                class="input input-bordered w-full"
+                :class="errors.password && '!input-error'"
+                @blur="validate('password')"
+            />
             <label v-if="errors.password" class="label">
                 <span class="label-text-alt text-error">{{ errors.password }}</span>
             </label>

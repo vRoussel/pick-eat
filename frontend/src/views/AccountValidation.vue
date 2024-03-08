@@ -9,7 +9,6 @@ import { useAuthStore } from '@/store/auth.js'
 import { handle_form_api_errors } from '@/utils/utils.js'
 import welcome_video from '@/assets/gatsby_welcome.mp4'
 
-
 const notifStore = useNotifStore()
 const authStore = useAuthStore()
 const router = useRouter()
@@ -18,8 +17,8 @@ useHead({
     title: 'Validation de compte',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 
 const props = defineProps({
@@ -46,8 +45,10 @@ async function validate_account() {
 
 <template>
     <div class="my-8">
-        <form class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
-            @submit.prevent="validate_account">
+        <form
+            class="mx-auto space-y-4 p-8 border-primary border-[1px] rounded-xl max-w-md"
+            @submit.prevent="validate_account"
+        >
             <div>
                 <video :src="welcome_video" autoplay loop muted playsinline />
             </div>

@@ -1,7 +1,7 @@
 <script setup>
 const model = defineModel('state', {
     type: Boolean,
-    required: true
+    required: true,
 })
 
 function buttonClass() {
@@ -12,7 +12,7 @@ function buttonClass() {
         'btn-primary': model.value,
         'hover:btn-primary': true,
         'border-gray-300': true,
-        'btn-outline': !model.value
+        'btn-outline': !model.value,
     }
 }
 
@@ -26,4 +26,3 @@ function toggle() {
         <slot />
     </button>
 </template>
-

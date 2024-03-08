@@ -10,11 +10,11 @@ const foodStore = useFoodStore()
 const router = useRouter()
 
 useHead({
-    title: "Ajouter une recette",
+    title: 'Ajouter une recette',
     meta: {
         name: 'robots',
-        content: 'noindex'
-    }
+        content: 'noindex',
+    },
 })
 
 function viewRecipe(recipe) {
@@ -31,4 +31,3 @@ onActivated(() => {
         <recipe-form @done="viewRecipe" />
     </div>
 </template>
-

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { object, string } from 'yup'
 
 import { useFoodStore } from '@/store/food.js'
@@ -13,11 +13,11 @@ const notifStore = useNotifStore()
 const emit = defineEmits(['closed', 'created'])
 
 const fields = ref({
-    name: null
+    name: null,
 })
 
 const errors = ref({
-    name: null
+    name: null,
 })
 
 const validator = object().shape({
@@ -73,20 +73,33 @@ function validate(field) {
             setTimeout(() => (errors.value[field] = err.message), 200)
         })
 }
-defineExpose({ open });
+defineExpose({ open })
 </script>
 
 <template>
-    <div class="modal cursor-pointer" :class="{ 'modal-open': opened }" tabindex="-1" @click.self="close"
-        @keyup.esc.stop="close">
+    <div
+        class="modal cursor-pointer"
+        :class="{ 'modal-open': opened }"
+        tabindex="-1"
+        @click.self="close"
+        @keyup.esc.stop="close"
+    >
         <div class="modal-box relative overflow-visible cursor-default">
             <form autocomplete="off" @submit.prevent="sendCategory">
                 <div class="form-control w-full">
                     <label class="label">
                         <span class="label-text">Nom</span>
                     </label>
-                    <input id="name" ref="categ_name_input_el" v-model="fields.name" class="input input-bordered w-full"
-                        type="text" name="name" :class="errors.name && '!input-error'" @blur="validate('name')" />
+                    <input
+                        id="name"
+                        ref="categ_name_input_el"
+                        v-model="fields.name"
+                        class="input input-bordered w-full"
+                        type="text"
+                        name="name"
+                        :class="errors.name && '!input-error'"
+                        @blur="validate('name')"
+                    />
                     <label v-if="errors.name" class="label">
                         <span class="label-text-alt text-error">{{ errors.name }}</span>
                     </label>

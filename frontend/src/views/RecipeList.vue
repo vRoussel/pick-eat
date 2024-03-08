@@ -96,24 +96,24 @@ const filters = computed({
 
 let sort_method = computed({
     get: function () {
-        return route.query.sort || "random"
+        return route.query.sort || 'random'
     },
     set: function (val) {
-        router.push({ name: 'recipe-list', query: { ...route.query, 'sort': val } })
-    }
+        router.push({ name: 'recipe-list', query: { ...route.query, sort: val } })
+    },
 })
 
 const sort_methods = ref([
-    { text: "Ordre aléatoire (choix par défaut)", value: "random" },
-    { text: "Ordre alphabétique", value: "name" },
-    { text: "Les plus récentes", value: "pub_date_desc" },
-    { text: "Les plus anciennes", value: "pub_date_asc" },
-    { text: "Les plus rapides", value: "total_time" },
-    { text: "Le moins d'ingrédients", value: "ingr_count" },
+    { text: 'Ordre aléatoire (choix par défaut)', value: 'random' },
+    { text: 'Ordre alphabétique', value: 'name' },
+    { text: 'Les plus récentes', value: 'pub_date_desc' },
+    { text: 'Les plus anciennes', value: 'pub_date_asc' },
+    { text: 'Les plus rapides', value: 'total_time' },
+    { text: "Le moins d'ingrédients", value: 'ingr_count' },
 ])
 
-let last_query = null;
-let saved_query = null;
+let last_query = null
+let saved_query = null
 function loadRecipes() {
     foodStore.getRecipes(from.value, to.value, filters.value, sort_method.value).then((result) => {
         let [_recipes, _total_count] = result
@@ -134,10 +134,7 @@ onDeactivated(() => {
 onActivated(async () => {
     if (saved_query != null) {
         // Only restore saved_query if the current_one  has no query params
-        if (
-            Object.keys(route.query).length == 0 &&
-            !isEqual(saved_query, route.query)
-        ) {
+        if (Object.keys(route.query).length == 0 && !isEqual(saved_query, route.query)) {
             await router.replace({ query: saved_query })
         }
         loadRecipes()
@@ -145,28 +142,34 @@ onActivated(async () => {
     }
 
     useHead({
-        title: "Recettes et liste de courses",
+        title: 'Recettes et liste de courses',
         meta: [
             {
                 name: 'description',
-                content: "Trouvez de nouvelles recettes et générez votre liste de courses, c'est tout. Sur pick-eat, vous ne trouverez ni pubs ni blabla."
-            }
+                content:
+                    "Trouvez de nouvelles recettes et générez votre liste de courses, c'est tout. Sur pick-eat, vous ne trouverez ni pubs ni blabla.",
+            },
         ],
-        link: () => canonical_url.value === window.location.toString() ? null : {
-            rel: 'canonical',
-            href: canonical_url.value
-        }
+        link: () =>
+            canonical_url.value === window.location.toString()
+                ? null
+                : {
+                      rel: 'canonical',
+                      href: canonical_url.value,
+                  },
     })
-
 })
 
-watch(() => route.query, () => {
-    // If saved_query exists, it means it hasn't been restore yet
-    // It will be soon so there's no point to call loadRecipes before that
-    if (route.name == 'recipe-list' && saved_query == null) {
-        loadRecipes()
-    }
-})
+watch(
+    () => route.query,
+    () => {
+        // If saved_query exists, it means it hasn't been restore yet
+        // It will be soon so there's no point to call loadRecipes before that
+        if (route.name == 'recipe-list' && saved_query == null) {
+            loadRecipes()
+        }
+    },
+)
 
 function on_mobile() {
     return window.innerWidth < 768
@@ -191,7 +194,8 @@ function on_mobile() {
             <p class="text-xl my-2">{{total_count}}  {{total_count > 1 ? "résultats" : "résultat"}}</p>
         -->
             <div
-                class="p-4 gap-x-4 gap-y-6 lg:p-6 lg:gap-x-6 lg:gap-y-9 shadow-md shadow-accent rounded-md grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                class="p-4 gap-x-4 gap-y-6 lg:p-6 lg:gap-x-6 lg:gap-y-9 shadow-md shadow-accent rounded-md grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            >
                 <div v-for="(recipe, idx) in recipes" :key="'r' + recipe.id">
                     <recipe-list-item :recipe="recipe" :lazy="idx >= 2 && on_mobile()" />
                 </div>

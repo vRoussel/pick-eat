@@ -8,15 +8,14 @@ import { useNotifStore } from '@/store/notif.js'
 
 import { qty_scaled } from '@/utils/utils.js'
 
-
 let cartStore = useCartStore()
 let foodStore = useFoodStore()
 const notifStore = useNotifStore()
 
 const icons = inject('icons')
 
-const opened = ref(false);
-const tab = ref(0);
+const opened = ref(false)
+const tab = ref(0)
 
 /*
 {
@@ -73,7 +72,7 @@ function close() {
 }
 
 async function copyIngredients() {
-    let ret = ""
+    let ret = ''
     for (const [ingr_id, qu] of list.value) {
         let ingr_name = foodStore.getIngredientById(ingr_id).name
         let quantities = new Array()
@@ -96,23 +95,32 @@ async function copyIngredients() {
     }
     try {
         await navigator.clipboard.writeText(ret)
-        notifStore.show_info("Liste de course copiée dans le presse-papier")
+        notifStore.show_info('Liste de course copiée dans le presse-papier')
     } catch (e) {
-        notifStore.show_error("Impossible de copier la liste de course dans le presse-papier")
+        notifStore.show_error('Impossible de copier la liste de course dans le presse-papier')
     }
 }
 
-defineExpose({ open });
+defineExpose({ open })
 </script>
 
 <template>
-    <div class="modal cursor-pointer" :class="{ 'modal-open': opened }" tabindex="-1" @click.self="close"
-        @keyup.esc.stop="close">
+    <div
+        class="modal cursor-pointer"
+        :class="{ 'modal-open': opened }"
+        tabindex="-1"
+        @click.self="close"
+        @keyup.esc.stop="close"
+    >
         <div class="modal-box relative overflow-y-scroll max-w-xl cursor-default p-4 sm:p-6">
             <div v-if="cartStore.recipeCount > 0" class="space-y-4">
                 <div class="tabs tabs-boxed mb-4">
-                    <a class="tab grow" :class="{ 'tab-active': tab == 0 }" @click="tab = 0">Ingrédients</a>
-                    <a class="tab grow" :class="{ 'tab-active': tab == 1 }" @click="tab = 1">Recettes</a>
+                    <a class="tab grow" :class="{ 'tab-active': tab == 0 }" @click="tab = 0"
+                        >Ingrédients</a
+                    >
+                    <a class="tab grow" :class="{ 'tab-active': tab == 1 }" @click="tab = 1"
+                        >Recettes</a
+                    >
                 </div>
                 <table v-if="tab == 0" class="table leading-none table-zebra mx-auto pt-4">
                     <tbody>
@@ -127,29 +135,42 @@ defineExpose({ open });
                                     {{ qtys.reduce((s, q) => s + q.qty, 0) }}
                                     {{
                                         unit_id == null
-                                        ? ''
-                                        : foodStore.getUnitById(unit_id).short_name
+                                            ? ''
+                                            : foodStore.getUnitById(unit_id).short_name
                                     }}
                                 </span>
                                 <span v-if="qu.u.length > 0">
                                     <span v-if="qu.q.size > 0"> + </span>
-                                    <span class="tooltip italic" :data-tip="qu.u.map((x) => x.r_name).join(', ')">un
-                                        peu</span>
+                                    <span
+                                        class="tooltip italic"
+                                        :data-tip="qu.u.map((x) => x.r_name).join(', ')"
+                                        >un peu</span
+                                    >
                                 </span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="flex justify-center">
-                    <button v-if="tab == 0" class="btn btn-sm btn-primary btn-outline btn-wide" @click="copyIngredients">
+                    <button
+                        v-if="tab == 0"
+                        class="btn btn-sm btn-primary btn-outline btn-wide"
+                        @click="copyIngredients"
+                    >
                         Copier la liste des ingredients
                         <Icon class="text-primary cursor-pointer" :icon="icons.copy" @click="" />
                     </button>
                 </div>
                 <div v-if="tab == 1" class="flex flex-col items-center space-y-4">
-                    <grocery-list-item v-for="[r_id, val] in cartStore.content" :key="r_id" :recipe_id="r_id"
-                        :recipe_name="val.recipe.name" :shares="val.shares" :shares_unit="val.recipe.shares_unit"
-                        @recipe-opened="close" />
+                    <grocery-list-item
+                        v-for="[r_id, val] in cartStore.content"
+                        :key="r_id"
+                        :recipe_id="r_id"
+                        :recipe_name="val.recipe.name"
+                        :shares="val.shares"
+                        :shares_unit="val.recipe.shares_unit"
+                        @recipe-opened="close"
+                    />
                 </div>
             </div>
             <p v-else>

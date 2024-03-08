@@ -65,12 +65,10 @@ export function loadScript(src, callback) {
 }
 
 export function qty_scaled(base_qty, scaling_factor, tick_size) {
-    if (scaling_factor == 1)
-        return base_qty
+    if (scaling_factor == 1) return base_qty
 
     let scaled = base_qty * scaling_factor
     let ticks = scaled / tick_size
     let ticks_rounded = Math.round(ticks)
     return ticks_rounded * tick_size
 }
-

@@ -10,16 +10,16 @@ const foodStore = useFoodStore()
 const icons = inject('icons')
 
 const model_unit_id = defineModel('unit_id', {
-    type: Number
+    type: Number,
 })
 
 const model_quantity = defineModel('quantity', {
-    type: Number
+    type: Number,
 })
 
 const props = defineProps({
     id: Number,
-});
+})
 
 const emit = defineEmits(['delete', 'createUnit', 'unit-input-selected'])
 
@@ -37,8 +37,8 @@ const ingredient_quantity = computed({
         return model_quantity.value
     },
     set(v) {
-        model_quantity.value = (v == '' ? null : v)
-    }
+        model_quantity.value = v == '' ? null : v
+    },
 })
 
 const ingredient_name = computed(() => {
@@ -57,18 +57,39 @@ function notify_input_selected() {
 
 <template>
     <div class="flex items-center gap-x-4 w-full">
-        <span class="icon text-2xl basis-6 grow-0 text-primary cursor-pointer" @click="emit('delete')">
+        <span
+            class="icon text-2xl basis-6 grow-0 text-primary cursor-pointer"
+            @click="emit('delete')"
+        >
             <Icon :icon="icons.close" />
         </span>
         <div class="flex flex-wrap items-center gap-2 grow">
-            <span class="basis-full sm:basis-3/12 grow shrink flex items-center sm:justify-end" tabindex="-1">
-                {{ ingredient_name }}</span>
-            <number-input v-model.number="ingredient_quantity" :min="0" placeholder="Quantité"
-                class="basis-5/12 sm:basis-3/12" />
-            <multiselect ref="multiselect_el" v-model="ingredient_unit"
-                class="self-stretch basis-5/12 sm:basis-1/3 flex-grow" :options="foodStore.units" :strict="false"
-                label="full_name" searchable track-by="full_name" value-prop="id" placeholder="Unité"
-                @keydown.ctrl.enter.prevent="create_unit()" @open="notify_input_selected" />
+            <span
+                class="basis-full sm:basis-3/12 grow shrink flex items-center sm:justify-end"
+                tabindex="-1"
+            >
+                {{ ingredient_name }}</span
+            >
+            <number-input
+                v-model.number="ingredient_quantity"
+                :min="0"
+                placeholder="Quantité"
+                class="basis-5/12 sm:basis-3/12"
+            />
+            <multiselect
+                ref="multiselect_el"
+                v-model="ingredient_unit"
+                class="self-stretch basis-5/12 sm:basis-1/3 flex-grow"
+                :options="foodStore.units"
+                :strict="false"
+                label="full_name"
+                searchable
+                track-by="full_name"
+                value-prop="id"
+                placeholder="Unité"
+                @keydown.ctrl.enter.prevent="create_unit()"
+                @open="notify_input_selected"
+            />
         </div>
         <span class="icon text-2xl basis-6 grow-0 text-primary handle cursor-move">
             <Icon :icon="icons.dragv" />

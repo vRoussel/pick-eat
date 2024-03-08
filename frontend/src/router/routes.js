@@ -18,8 +18,8 @@ const routes = [
         path: '/new-recipe',
         component: NewRecipe,
         meta: {
-            private: true
-        }
+            private: true,
+        },
     },
     {
         name: 'recipe-list',
@@ -48,8 +48,8 @@ const routes = [
         component: Account,
         props: (route) => ({ edit: 'edit' in route.query }),
         meta: {
-            private: true
-        }
+            private: true,
+        },
     },
     {
         name: 'account_validation',
@@ -75,8 +75,8 @@ const routes = [
     },
     {
         path: '/:pathMatch(.*)',
-        component: NotFound
-    }
+        component: NotFound,
+    },
 ]
 
 const router = createRouter({
@@ -116,8 +116,7 @@ router.beforeEach(async (to, from) => {
         auth.return_url = to.fullPath
         return '/login'
     }
-    if (to.fullPath === from.fullPath)
-        return false
+    if (to.fullPath === from.fullPath) return false
 })
 
 export default router

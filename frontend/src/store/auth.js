@@ -138,6 +138,6 @@ export const useAuthStore = defineStore('auth', {
             return axios.get(`${API_ROOT}/accounts/me/data/${key}`).then((resp) => {
                 return resp.data
             })
-        }
+        },
     },
 })

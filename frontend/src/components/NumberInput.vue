@@ -1,5 +1,4 @@
 <script setup>
-
 const model = defineModel({
     required: true,
     validator: (prop) => typeof prop === 'number' || prop === null,
@@ -26,7 +25,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-});
+})
 
 function increment() {
     let new_value = model.value + props.step
@@ -44,20 +43,33 @@ function decrement() {
 <template>
     <div class="w-32">
         <div class="flex flex-row w-full rounded-lg bg-transparent">
-            <button type="button"
+            <button
+                type="button"
                 class="bg-base text-base-content hover:bg-accent px-1 sm:px-2 rounded-l-md border-accent border-y border-l focus:!outline-none"
-                :class="props.badvalue && '!input-error'" tabindex="-1" @click="decrement">
+                :class="props.badvalue && '!input-error'"
+                tabindex="-1"
+                @click="decrement"
+            >
                 <span class="m-auto text-2xl font-thin">−</span>
             </button>
-            <input type="number" :placeholder="props.placeholder" step="any"
-                class="input input-bordered rounded-none w-full min-w-[50px]" :class="props.badvalue && '!input-error'"
-                :value="model" @change="(e) => model = isFinite(e.target.value) ? Number(e.target.value) : 0" />
-            <button type="button"
+            <input
+                type="number"
+                :placeholder="props.placeholder"
+                step="any"
+                class="input input-bordered rounded-none w-full min-w-[50px]"
+                :class="props.badvalue && '!input-error'"
+                :value="model"
+                @change="(e) => (model = isFinite(e.target.value) ? Number(e.target.value) : 0)"
+            />
+            <button
+                type="button"
                 class="bg-base text-base-content hover:bg-accent px-1 sm:px-2 rounded-r-md border-accent border-y border-r focus:!outline-none"
-                :class="props.badvalue && '!input-error'" tabindex="-1" @click="increment">
+                :class="props.badvalue && '!input-error'"
+                tabindex="-1"
+                @click="increment"
+            >
                 <span class="m-auto text-2xl font-thin">+</span>
             </button>
         </div>
     </div>
 </template>
-

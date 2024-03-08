@@ -16,12 +16,12 @@ import menu from '@iconify-icons/mdi/menu'
 import vegan from '@iconify-icons/iconoir/vegan'
 import vege from '@iconify-icons/iconoir/vegan'
 import priv from '@iconify-icons/mdi/eye-off-outline'
-import plus from '@iconify-icons/mdi/plus';
-import minus from '@iconify-icons/mdi/minus';
-import arrow_down from '@iconify-icons/mdi/keyboard-arrow-down';
-import arrow_up from '@iconify-icons/mdi/keyboard-arrow-up';
-import sort from '@iconify-icons/mdi/sort-variant';
-import dragv from '@iconify-icons/mdi/drag-vertical';
+import plus from '@iconify-icons/mdi/plus'
+import minus from '@iconify-icons/mdi/minus'
+import arrow_down from '@iconify-icons/mdi/keyboard-arrow-down'
+import arrow_up from '@iconify-icons/mdi/keyboard-arrow-up'
+import sort from '@iconify-icons/mdi/sort-variant'
+import dragv from '@iconify-icons/mdi/drag-vertical'
 import copy from '@iconify-icons/mdi/content-copy'
 import github from '@iconify-icons/mdi/github'
 import email from '@iconify-icons/mdi/email'
@@ -62,5 +62,5 @@ export default {
     dragv: dragv,
     copy: copy,
     github: github,
-    email: email
+    email: email,
 }
