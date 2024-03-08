@@ -14,7 +14,7 @@ function dynClass(label) {
     return {
         'text-primary': has_season(label),
         'text-base-content': !has_season(label),
-        'opacity-20': !has_season(label),
+        'opacity-15': !has_season(label),
     }
 }
 

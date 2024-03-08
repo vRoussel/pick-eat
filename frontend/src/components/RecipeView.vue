@@ -139,7 +139,7 @@ const cart_btn_text = computed(() => {
                 />
                 <p class="space-x-6">
                     <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
-                        <Icon :icon="icons.knife" :rotate="3" class="text-primary" />
+                        <Icon :icon="icons.knife" class="text-primary" />
                         {{ props.recipe.prep_time_min }} min
                     </span>
                     <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
