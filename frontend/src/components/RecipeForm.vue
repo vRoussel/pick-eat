@@ -437,12 +437,13 @@ function validate(field) {
             </label>
         </div>
 
-        <button class="btn btn-primary w-full btn-lg">
-            {{ update_mode ? 'Valider' : 'Ajouter' }}
-        </button>
-        <button v-if="update_mode" type="button" class="btn btn-accent w-full btn-lg" @click="cancel">
-            Annuler
-        </button>
+        <div class="flex flex-row md:flex-row gap-y-2 sm:*:btn-wide *:btn-lg justify-evenly w-full">
+            <button v-if="update_mode" type="button" class="btn btn-primary btn-outline" @click="cancel">
+                Annuler
+            </button>
+            <button class="btn btn-primary">
+                {{ update_mode ? 'Valider' : 'Ajouter' }}
+            </button>
+        </div>
     </form>
 </template>
-
