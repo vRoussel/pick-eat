@@ -54,7 +54,7 @@ async function login() {
             authStore
                 .login(fields.value.email, fields.value.password)
                 .then(() => {
-                    router.push(authStore.return_url || '/account')
+                    router.replace(authStore.return_url || '/account')
                     authStore.return_url = null
                     cartStore.restore()
                 })
