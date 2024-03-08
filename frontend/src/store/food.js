@@ -2,6 +2,9 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+import { useNotifStore } from '@/store/notif.js'
+import { useAuthStore } from '@/store/auth.js'
+
 import { insert_sorted } from '@/utils/utils.js'
 
 const API_PROTO = window.location.protocol
@@ -22,6 +25,9 @@ async function sendNewThing(post, endpoint) {
 }
 
 export const useFoodStore = defineStore('food', () => {
+    const notifStore = useNotifStore()
+    const authStore = useAuthStore()
+
     const tags = ref([])
     const categories = ref([])
     const seasons = ref([])
@@ -219,6 +225,11 @@ export const useFoodStore = defineStore('food', () => {
     }
 
     async function toggleFavorite(recipe) {
+        if (!authStore.is_logged_in) {
+            notifStore.show_error('Vous devez vous connecter pour utiliser les favoris')
+            return
+        }
+
         recipe.is_favorite = !recipe.is_favorite
         let headers = {
             Accept: 'application/json',

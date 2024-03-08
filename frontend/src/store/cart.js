@@ -37,6 +37,14 @@ export const useCartStore = defineStore('cart', () => {
         return content.value.has(r_id)
     }
 
+    function toggleRecipe(recipe, shares = undefined) {
+        if (hasRecipe(recipe.id)) {
+            removeRecipe(recipe.id)
+        } else {
+            addRecipe(recipe, shares || recipe.n_shares)
+        }
+    }
+
     function updateRecipeShares(r_id, shares) {
         content.value.get(r_id).shares = shares
         last_update.value = Date.now()
@@ -129,6 +137,6 @@ export const useCartStore = defineStore('cart', () => {
         }
     }
 
-    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, updateRecipe, updateRecipeShares, restore: do_restore }
+    return { content, recipeCount, addRecipe, removeRecipe, hasRecipe, toggleRecipe, updateRecipe, updateRecipeShares, restore: do_restore }
 })
 

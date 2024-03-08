@@ -44,24 +44,10 @@ const is_vegan = computed(() => {
     return props.recipe.diets.find((d) => d.label == 'vegan')
 })
 
-function toggleFavorite(recipe) {
-    if (authStore.is_logged_in)
-        foodStore.toggleFavorite(recipe)
-    else
-        notifStore.show_error('Vous devez vous connecter pour utiliser les favoris')
-}
-
 function openRecipe(id) {
     router.push({ name: 'recipe', params: { id } })
 }
 
-function toggleCart(recipe) {
-    if (cartStore.hasRecipe(recipe.id)) {
-        cartStore.removeRecipe(recipe.id)
-    } else {
-        cartStore.addRecipe(recipe, recipe.n_shares)
-    }
-}
 </script>
 
 <template>
@@ -90,11 +76,11 @@ function toggleCart(recipe) {
                 <div class="card-actions justify-evenly">
                     <span class="icon">
                         <Icon :icon="heart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-red-600"
-                            @click.stop.prevent="toggleFavorite(props.recipe)" />
+                            @click.stop.prevent="foodStore.toggleFavorite(props.recipe)" />
                     </span>
                     <span class="icon">
                         <Icon :icon="cart_svg" class="transition ease-in-out hover:scale-125 text-2xl text-primary"
-                            @click.stop.prevent="toggleCart(props.recipe)" />
+                            @click.stop.prevent="cartStore.toggleRecipe(props.recipe)" />
                     </span>
                 </div>
                 <div class="py-4">
