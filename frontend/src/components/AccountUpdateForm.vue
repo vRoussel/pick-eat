@@ -157,6 +157,8 @@ function validate(field) {
             </label>
         </div>
         <button class="btn btn-primary w-full">Valider</button>
-        <button type="button" class="btn btn-accent w-full" @click="cancel">Annuler</button>
+        <button type="button" class="btn btn-primary btn-outline w-full" @click="cancel">
+            Annuler
+        </button>
     </form>
 </template>
