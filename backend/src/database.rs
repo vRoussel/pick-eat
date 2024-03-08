@@ -82,6 +82,7 @@ pub async fn add_default_data(db_conn: &PgPool) -> Result<(), Error> {
             ,('Repas')
             ,('Gouter')
             ,('Dessert')
+            ,('Pâte')
         ON CONFLICT DO NOTHING
         ;
     "
