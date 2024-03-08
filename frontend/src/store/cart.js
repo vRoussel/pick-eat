@@ -112,6 +112,7 @@ export const useCartStore = defineStore('cart', () => {
     function get_local_backup() {
         let tmp = JSON.parse(localStorage.getItem("cart"))
         tmp.content = new Map(tmp.content)
+        return tmp
     }
 
     function merge_backups(cart1, cart2) {
