@@ -2,11 +2,15 @@
 import { inject, ref, computed, onMounted } from 'vue'
 
 import { useAuthStore } from '@/store/auth.js'
+import { useFoodStore } from '@/store/food.js'
+import { useCartStore } from '@/store/cart.js'
 import SeasonIcons from '@/components/SeasonIcons.vue'
 
 import { isOverflown, qty_scaled } from '@/utils/utils.js'
 
 const authStore = useAuthStore()
+const foodStore = useFoodStore()
+const cartStore = useCartStore()
 
 const props = defineProps({
     recipe: Object
@@ -67,6 +71,22 @@ function decrease_shares() {
         asked_shares.value -= 1
 }
 
+const fav_btn_icon = computed(() => {
+    return props.recipe.is_favorite ? icons.heart : icons.heart_outline
+})
+
+const fav_btn_text = computed(() => {
+    return props.recipe.is_favorite ? 'Retirer des favoris' : 'Ajouter aux favoris'
+})
+
+const cart_btn_icon = computed(() => {
+    return cartStore.hasRecipe(props.recipe.id) ? icons.cart : icons.cart_outline
+})
+
+const cart_btn_text = computed(() => {
+    return cartStore.hasRecipe(props.recipe.id) ? 'Retirer de la liste de courses' : 'Ajouter à la liste de courses'
+})
+
 </script>
 
 <template>
@@ -79,11 +99,7 @@ function decrease_shares() {
         </div>
 -->
     <div v-if="props.recipe"
-        class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl relative">
-        <span v-if="allowed_to_modify"
-            class="icon absolute right-1 top-1 text-xl sm:right-4 sm:top-4 sm:text-2xl md:right-6 md:top-6 md:text-3xl">
-            <Icon class="text-primary cursor-pointer" :icon="icons.pencil" @click="editRecipe()" />
-        </span>
+        class="flex flex-col w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 xl:p-12 gap-y-12 border border-primary rounded-xl">
         <div class="flex flex-wrap sm:flex-nowrap gap-y-12 gap-x-4 md:gap-x-6">
             <div class="basis-full sm:basis-2/5 md:basis-1/3 p-2 sm:p-0">
                 <a :href="props.recipe.image" v-if="props.recipe.image">
@@ -111,8 +127,8 @@ function decrease_shares() {
                     </span>
                     <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
                         <Icon :icon="icons.cooking_pot" class="text-primary" />{{
-                            props.recipe.cook_time_min
-                        }}
+        props.recipe.cook_time_min
+    }}
                         min
                     </span>
                 </p>
@@ -165,7 +181,7 @@ function decrease_shares() {
                     <tr v-for="ingr in props.recipe.q_ingredients" :key="ingr.id" class="border-b border-base-200">
                         <td class="!text-right">
                             {{ ingr.quantity ? qty_scaled(ingr.quantity, shares_ratio, 0.25) : '' }} {{ ingr.unit ?
-                                ingr.unit.short_name : '' }}
+        ingr.unit.short_name : '' }}
                         </td>
                         <td>{{ ingr.name }}</td>
                     </tr>
@@ -201,6 +217,27 @@ function decrease_shares() {
                 </em>
             </p>
         </blockquote>
+        <div class="flex flex-col md:flex-row gap-y-2 *:lg:btn-wide justify-evenly">
+            <button v-if="allowed_to_modify" type="button" class="btn btn-outline btn-primary" @click="editRecipe">
+                Modifier la recette
+                <span class="text-xl">
+                    <Icon :icon="icons.pencil" />
+                </span>
+            </button>
+            <button type="button" class="btn btn-outline btn-primary" @click="foodStore.toggleFavorite(props.recipe)">
+                {{ fav_btn_text }}
+                <span class="text-xl">
+                    <Icon :icon="fav_btn_icon" />
+                </span>
+            </button>
+            <button type="button" class="btn btn-outline btn-primary"
+                @click="cartStore.toggleRecipe(props.recipe, asked_shares)">
+                {{ cart_btn_text }}
+                <span class="text-xl">
+                    <Icon :icon="cart_btn_icon" />
+                </span>
+            </button>
+        </div>
     </div>
 </template>
 
