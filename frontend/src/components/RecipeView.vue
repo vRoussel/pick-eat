@@ -112,20 +112,21 @@ const cart_btn_text = computed(() => {
                 </a>
                 <img v-else :src="icons.camera" alt="icone de caméra" class="rounded-xl w-[512px] aspect-square" />
             </div>
-            <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-2 sm:gap-y-0">
+            <div class="flex flex-col basis-full sm:basis-1/2 justify-between items-center mx-auto gap-y-3 sm:gap-y-0">
                 <div :data-tip="props.recipe.name" :class="overflown ? 'tooltip' : ''">
                     <h1 ref="recipe_name_el"
-                        class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                        class="recipe-name line-clamp-2 break-words text-primary text-center font-bold text-3xl lg:text-4xl">
                         {{ props.recipe.name }}
                     </h1>
                 </div>
-                <season-icons :seasons="props.recipe.seasons" class="text-2xl md:text-3xl lg:text-4xl gap-x-1" />
-                <p class="space-x-4">
-                    <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
+                <season-icons :seasons="props.recipe.seasons"
+                    class="text-3xl sm:text-2xl md:text-3xl lg:text-4xl gap-x-1" />
+                <p class="space-x-6">
+                    <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
                         <Icon :icon="icons.knife" :rotate="3" class="text-primary" />
                         {{ props.recipe.prep_time_min }} min
                     </span>
-                    <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
+                    <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
                         <Icon :icon="icons.cooking_pot" class="text-primary" />{{
         props.recipe.cook_time_min
     }}
@@ -133,18 +134,18 @@ const cart_btn_text = computed(() => {
                     </span>
                 </p>
                 <p v-if="is_vegan">
-                    <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
-                        <Icon :icon="icons.vegan" class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl" />
+                    <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
+                        <Icon :icon="icons.vegan" class="text-primary text-xl lg:text-3xl" />
                         Vegan
                     </span>
                 </p>
                 <p v-else-if="is_vege">
-                    <span class="icon inline-flex items-center gap-x-1 text-sm sm:text-lg md:text-xl lg:text-2xl">
-                        <Icon :icon="icons.vege" class="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl" />
+                    <span class="icon inline-flex items-center gap-x-2 text-md lg:text-xl">
+                        <Icon :icon="icons.vege" class="text-primary text-2xl lg:text-3xl" />
                         Végétarien
                     </span>
                 </p>
-                <p class="text-xs sm:text-sm italic text-center">
+                <p class="text-sm italic text-center">
                     Ajoutée par {{ props.recipe.author_name }} <br /><router-link class="link-primary"
                         :to="'/recipes?a=' + props.recipe.author_id">
                         voir toutes ses recettes
@@ -158,8 +159,8 @@ const cart_btn_text = computed(() => {
                 {{ tag.name }}
             </router-link>
         </div>
-        <div class="flex flex-wrap sm:flex-nowrap gap-x-4 sm:gap-x-6 md:gap-x-8 items-start gap-y-12">
-            <table class="table table-compact basis-2/5 md:basis-1/3 shrink-0 grow sm:grow-0">
+        <div class="flex flex-wrap md:flex-nowrap gap-x-4 md:gap-x-8 items-start justify-center gap-y-12">
+            <table class="table table-compact basis-3/4 md:basis-1/3 shrink-0 grow sm:grow-0">
                 <thead>
                     <tr class="text-center">
                         <th colspan="2" class="text-primary-content !bg-primary text-lg rounded-t-xl">
