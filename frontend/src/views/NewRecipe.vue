@@ -9,20 +9,19 @@ import { useFoodStore } from '@/store/food.js'
 const foodStore = useFoodStore()
 const router = useRouter()
 
-useHead({
-    title: 'Ajouter une recette',
-    meta: {
-        name: 'robots',
-        content: 'noindex',
-    },
-})
-
 function viewRecipe(recipe) {
     let id = recipe.id
     router.push({ name: 'recipe', params: { id } })
 }
 onActivated(() => {
     foodStore.fetchAll()
+    useHead({
+        title: 'Ajouter une recette',
+        meta: {
+            name: 'robots',
+            content: 'noindex',
+        },
+    })
 })
 </script>
 
