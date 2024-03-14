@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef, ref, watch, onMounted, computed, inject } from 'vue'
+import { shallowRef, ref, watch, onMounted, computed, inject, nextTick } from 'vue'
 import Swal from 'sweetalert2'
 import { object, string, number, array } from 'yup'
 
@@ -285,11 +285,15 @@ function clearForm() {
     f.categories.clear()
     f.tags.clear()
     f.seasons.clear()
-    f.ingredients.clear()
+    f.ingredients = new Array()
     f.diets.clear()
     f.notes = ''
     f.image_url = ''
     f.is_private = false
+
+    setTimeout(() => {
+        errors.value = {}
+    }, 500)
 }
 
 function validate(field) {
