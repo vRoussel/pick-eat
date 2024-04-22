@@ -145,16 +145,18 @@ function addWatchers() {
     watch(
         fields,
         (value) => {
-            localStorage.setItem(
-                'recipeform',
-                JSON.stringify({
-                    ...value,
-                    categories: Array.from(value.categories),
-                    tags: Array.from(value.tags),
-                    seasons: Array.from(value.seasons),
-                    diets: Array.from(value.diets),
-                }),
-            )
+            if (!update_mode.value) {
+                localStorage.setItem(
+                    'recipeform',
+                    JSON.stringify({
+                        ...value,
+                        categories: Array.from(value.categories),
+                        tags: Array.from(value.tags),
+                        seasons: Array.from(value.seasons),
+                        diets: Array.from(value.diets),
+                    }),
+                )
+            }
         },
         { deep: true },
     )
