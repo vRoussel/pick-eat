@@ -1,4 +1,7 @@
 <script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 const current_page = defineModel('current_page', {
     type: Number,
     required: true,
@@ -50,7 +53,7 @@ function buttonClass(page) {
     <nav class="join" role="navigation" aria-label="pagination">
         <template v-if="current_page >= props.min_page + props.page_offset">
             <router-link
-                :to="{ query: { page: page(props.min_page) } }"
+                :to="{ query: { ...route.query, page: page(props.min_page), ns: undefined } }"
                 :class="buttonClass(props.min_page)"
             >
                 {{ props.min_page }}
@@ -60,7 +63,7 @@ function buttonClass(page) {
 
         <template v-for="i in Math.min(props.max_page, 5)">
             <router-link
-                :to="{ query: { page: page(i) } }"
+                :to="{ query: { ...route.query, page: page(i), ns: undefined } }"
                 class="join-item"
                 :v-if="props.max_page >= i"
                 :class="buttonClass(page(i))"
@@ -73,7 +76,7 @@ function buttonClass(page) {
             <button :class="buttonClass('...')">...</button>
             <router-link
                 :class="buttonClass(props.max_page)"
-                :to="{ query: { page: page(props.max_page) } }"
+                :to="{ query: { ...route.query, page: page(props.max_page), ns: undefined } }"
             >
                 {{ props.max_page }}
             </router-link>
