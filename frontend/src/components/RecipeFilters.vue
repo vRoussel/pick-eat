@@ -266,6 +266,22 @@ export function Filters(
                     :close-on-select="false"
                 />
             </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Ingrédients</span>
+                </label>
+                <Multiselect
+                    v-model="ingredients"
+                    mode="tags"
+                    :options="foodStore.ingredients"
+                    label="name"
+                    searchable
+                    :strict="false"
+                    track-by="name"
+                    value-prop="id"
+                    :close-on-select="false"
+                />
+            </div>
             <!--
         <fieldset>
             <legend class="label">
