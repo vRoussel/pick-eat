@@ -25,10 +25,11 @@ function go_page(page) {
 }
 
 function page(position) {
-    if (current_page.value < props.min_page + props.page_offset) return position
+    if (props.max_page <= props.page_offset) return position
+    else if (current_page.value < props.page_offset) return position
     else if (current_page.value > props.max_page - props.page_offset)
-        return props.max_page + position - 5
-    else return current_page.value + position - props.page_offset
+        return props.max_page + position - props.page_offset
+    else return current_page.value + position - Math.floor(props.page_offset / 2)
 }
 
 function buttonClass(page) {
@@ -51,7 +52,12 @@ function buttonClass(page) {
 
 <template>
     <nav class="join" role="navigation" aria-label="pagination">
-        <template v-if="current_page >= props.min_page + props.page_offset">
+        <template
+            v-if="
+                props.max_page > props.page_offset &&
+                current_page > props.min_page + Math.floor(props.page_offset / 2)
+            "
+        >
             <router-link
                 :to="{ query: { ...route.query, page: page(props.min_page), ns: undefined } }"
                 :class="buttonClass(props.min_page)"
@@ -61,7 +67,7 @@ function buttonClass(page) {
             <button :class="buttonClass('...')">...</button>
         </template>
 
-        <template v-for="i in Math.min(props.max_page, 5)">
+        <template v-for="i in Math.min(props.page_offset, props.max_page)">
             <router-link
                 :to="{ query: { ...route.query, page: page(i), ns: undefined } }"
                 class="join-item"
@@ -72,7 +78,12 @@ function buttonClass(page) {
             </router-link>
         </template>
 
-        <template v-if="current_page <= props.max_page - props.page_offset">
+        <template
+            v-if="
+                props.max_page > props.page_offset &&
+                current_page < props.max_page - Math.floor(props.page_offset / 2)
+            "
+        >
             <button :class="buttonClass('...')">...</button>
             <router-link
                 :class="buttonClass(props.max_page)"
